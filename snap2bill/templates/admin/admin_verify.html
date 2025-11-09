@@ -1,0 +1,641 @@
+{#{% load static %}#}
+{##}
+{##}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin verify Distributors</title>#}
+{# <link#}
+{#    href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
+{#    rel="stylesheet"#}
+{#/>#}
+{#     <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">#}
+{##}
+{##}
+{##}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{##}
+{##}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{##}
+{#                <div id="navbar-section">#}
+{##}
+{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars active"><span>Verify Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
+{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
+{##}
+{#            </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#             <div class="setting-dropdown">#}
+{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
+{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
+{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#        </div>#}
+{#        <div class="admin-right-main-content">#}
+{#<div class="name-search-div">#}
+{#           <div class="heading-name"> <h1 id="customer-name">Verify Distributors</h1></div>#}
+{##}
+{#  <!-- Search bar -->#}
+{#                <div class="search-filter">#}
+{#                    <div class="search-bar">#}
+{#                    <i class="ri-search-2-line"></i>#}
+{#                    <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />#}
+{##}
+{#                </div>#}
+{#            <div class="filter">#}
+{#                <i class="ri-filter-line"></i>#}
+{#            </div>#}
+{#                </div>#}
+{#        </div>#}
+{##}
+{#<form action="" method="post">#}
+{#<table class="table"    border="1" >#}
+{#<caption><h1>Verify Distributors</h1></caption>#}
+{#              <tr>#}
+{#                <th  scope="col">Id</th>#}
+{#                <th  scope="col">Name</th>#}
+{#                <th  scope="col">Profile Pic</th>#}
+{#                <th  scope="col">Email</th>#}
+{#                <th  scope="col">Phone number</th>#}
+{#                <th  scope="col">Address</th>#}
+{#                <th  scope="col">Place</th>#}
+{#                <th  scope="col">pincode</th>#}
+{#                <th  scope="col">post</th>#}
+{#                <th  scope="col">Latitude</th>#}
+{#                <th  scope="col">Longitude</th>#}
+{#                <th  scope="col">proof</th>#}
+{#                <th scope="col">Bio</th>#}
+{#                 <th  scope="col">verify</th>#}
+{#              </tr>#}
+{#            {% for i in distributordata %}#}
+{##}
+{#              <tr >#}
+{#                  <td>{{ forloop.counter }}</td>#}
+{#                  <td>{{ i.name }}</td>#}
+{#                  <td>{{ i.profile_image }}</td>#}
+{#                  <td>{{ i.email }}</td>#}
+{#                  <td>{{ i.phone }}</td>#}
+{#                  <td>{{ i.address }}</td>#}
+{#                  <td>{{ i.place }}</td>#}
+{#                  <td>{{ i.pincode }}</td>#}
+{#                  <td>{{ i.post }}</td>#}
+{#                  <td>{{ i.latitude }}</td>#}
+{#                  <td>{{ i.longitude }}</td>#}
+{#                  <td>{{ i.proof }}</td>#}
+{#                  <td>{{ i.bio }}</td>#}
+{#                  <td id="accept-reject"><a id="acceptbtn" href="/accept_distributor/{{ i.id }}">Accept</a><br><br>#}
+{#                      <a  id="rejectbtn" href="/reject_distributor/{{ i.id }}">Reject</a></td>#}
+{#              </tr>#}
+{#            {% endfor %}#}
+{##}
+{#            </table>#}
+{#        </form>#}
+{##}
+{# <div class="cards-container">#}
+{#    {% for i in distributordata %}#}
+{#    <div class="customer-card"#}
+{#         data-name="{{ i.name|default_if_none:''|escape }}"#}
+{#         data-email="{{ i.email|default_if_none:''|escape }}"#}
+{#         data-phone="{{ i.phone|default_if_none:''|escape }}">#}
+{##}
+{#      <!-- Avatar -->#}
+{#      <div class="avatar">#}
+{#        {% if i.profile_image %}#}
+{#          <img src="{{ i.profile_image }}" alt="{{ i.name }}">#}
+{#        {% else %}#}
+{#          <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">#}
+{#        {% endif %}#}
+{#      </div>#}
+{##}
+{#      <!-- Name + Bio -->#}
+{#      <h2 class="name">{{ i.name }}</h2>#}
+{#        <p class="email">{{ i.email }}</p>#}
+{##}
+{##}
+{#      <!-- Other details -->#}
+{#      <div class="details">#}
+{#        <p class="phone"><strong>Phone :</strong> {{ i.phone }}</p>#}
+{#        <p><strong>Address :</strong> {{ i.address }}</p>#}
+{#        <p><strong>Place :</strong> {{ i.place }}</p>#}
+{#        <p><strong>Pincode :</strong> {{ i.pincode }}</p>#}
+{#        <p><strong>Post :</strong> {{ i.post }}</p>#}
+{#                <p><strong>Latitude :</strong> {{ i.latitude }}</p>#}
+{#        <p><strong>Longitude :</strong> {{ i.longitude }}</p>#}
+{#        <p><strong>Proof :</strong> {{ i.proof }}</p>#}
+{#          <p class="bio"><strong>Bio :</strong>{{ i.bio }}</p>#}
+{#        <div id="accept-reject">#}
+{#            <a id="acceptbtn" href="/accept_distributor/{{ i.id }}">Accept</a>#}
+{#            <a  id="rejectbtn" href="/reject_distributor/{{ i.id }}">Reject</a>#}
+{#        </div>#}
+{##}
+{#      </div>#}
+{#    </div>#}
+{#    {% endfor %}#}
+{##}
+{#    </div>#}
+{##}
+{##}
+{##}
+{##}
+{#    </div>#}
+{#</div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#<script>#}
+{#  // Normalize numbers: remove spaces, dashes, dots#}
+{#  function normalizeForNumber(s) {#}
+{#    return s.replace(/[\s\-\.\(\)]/g, '');#}
+{#  }#}
+{##}
+{#  document.getElementById("searchInput").addEventListener("input", function() {#}
+{#    const rawQuery = this.value || '';#}
+{#    const query = rawQuery.toLowerCase().trim();#}
+{#    const queryNorm = normalizeForNumber(query);#}
+{##}
+{#    const cards = document.querySelectorAll(".customer-card");#}
+{#    cards.forEach(card => {#}
+{#      const name = (card.dataset.name || '').toLowerCase();#}
+{#      const email = (card.dataset.email || '').toLowerCase();#}
+{#      const phone = (card.dataset.phone || '').toLowerCase();#}
+{##}
+{#      const nameNorm = normalizeForNumber(name);#}
+{#      const emailNorm = normalizeForNumber(email);#}
+{#      const phoneNorm = normalizeForNumber(phone);#}
+{##}
+{#      const matched = (#}
+{#        query === '' ||#}
+{#        name.includes(query) ||#}
+{#        email.includes(query) ||#}
+{#        phone.includes(query) ||#}
+{#        nameNorm.includes(queryNorm) ||#}
+{#        emailNorm.includes(queryNorm) ||#}
+{#        phoneNorm.includes(queryNorm)#}
+{#      );#}
+{##}
+{#      card.style.display = matched ? "" : "none";#}
+{#    });#}
+{#  });#}
+{##}
+{##}
+{##}
+{#  const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{##}
+{#    let body = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function () {#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    // Optional: close dropdown if clicked outside#}
+{#    body.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{#</script>#}
+{##}
+{##}
+{#</body>#}
+{#</html>#}
+
+
+
+
+
+
+
+
+
+
+
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Admin Verify Distributors</title>
+<link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">
+<style>
+
+
+
+
+
+
+
+
+</style>
+</head>
+
+<body>
+<div class="main-content">
+  <div class="admin-left-main-content">
+    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
+    <div class="admin-mid-left-content">
+      <div id="navbar-section">
+        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars active"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
+      </div>
+    </div>
+    <hr>
+ <div class="admin-bottom-left-content">
+      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+        <div class="setting-dropdown">
+          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+          <!-- ✅ Theme toggle with Remix Icon -->
+          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+          </a>
+          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+        </div>
+      </div>
+    </div>  </div>
+
+  <div class="admin-right-main-content">
+
+    {% if messages %}
+      <div id="toast-container">
+        {% for message in messages %}
+          <div class="toast {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="name-search-div">
+      <div class="heading-name"><h1 id="heading-name">Verify Distributors</h1></div>
+      <div class="search-actions">
+        <div class="search-bar">
+          <i class="ri-search-2-line"></i>
+          <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />
+        </div>
+
+        <!-- Sort -->
+        <select id="sortOrder" class="btn-chip">
+          <option value="newest" selected>Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+        </select>
+
+        <!-- Filter drawer open -->
+        <button class="btn-chip" id="openFilters" title="More filters">
+          <i class="ri-filter-line"></i><span>Filters</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Flex cards -->
+    <div class="cards-container" id="cardsWrap">
+      {% for i in distributordata %}
+      <div class="card"
+           data-name="{{ i.name|default_if_none:''|escape }}"
+           data-email="{{ i.email|default_if_none:''|escape }}"
+           data-phone="{{ i.phone|default_if_none:''|escape }}"
+           data-place="{{ i.place|default_if_none:''|escape }}"
+           data-pincode="{{ i.pincode|default_if_none:''|escape }}"
+           data-hasproof="{{ i.proof|yesno:'1,0' }}"
+           data-date="{{ i.created_at|date:'Y-m-d' }}">
+        <div class="card-head">
+          <div class="avatar">
+            {% if i.profile_image %}
+              <img src="{{ i.profile_image }}" alt="{{ i.name }}">
+            {% else %}
+              <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">
+            {% endif %}
+          </div>
+          <div class="primary-info">
+            <div class="name">{{ i.name }}</div>
+            <div class="contact-line">
+              {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i>{{ i.phone }}</span>{% endif %}
+            </div>
+          </div>
+        </div>
+
+        <div class="details">
+            {% if i.email %}<span class="pill mail"><i class="ri-mail-line"></i>{{ i.email }}</span>{% endif %}
+          <p><strong>Address :</strong> {{ i.address }}</p>
+          <p><strong>Place :</strong> {{ i.place }}</p>
+          <p><strong>Pincode :</strong> {{ i.pincode }}</p>
+          <p><strong>Post :</strong> {{ i.post }}</p>
+          <p><strong>Latitude :</strong> {{ i.latitude }}</p>
+          <p><strong>Longitude :</strong> {{ i.longitude }}</p>
+          <p><strong>Proof :</strong> {{ i.proof }}</p>
+          <p class="bio"><strong>Bio :</strong> {{ i.bio }}</p>
+            {% if i.latitude and i.longitude %}
+    <a class="btn-map"
+       href="https://www.google.com/maps?q={{ i.latitude }},{{ i.longitude }}"
+       target="_blank" rel="noopener">
+      <i class="ri-map-pin-2-line"></i> Map
+    </a>
+  {% else %}
+    <a class="btn-map" aria-disabled="true" title="Location not available">
+      <i class="ri-map-pin-2-line"></i> Map
+    </a>
+  {% endif %}
+        </div>
+
+        <div class="actions">
+          <a class="btn-action btn-accept" href="/accept_distributor/{{ i.id }}"><i class="ri-check-line"></i>Accept</a>
+          <a class="btn-action btn-reject" href="/reject_distributor/{{ i.id }}"><i class="ri-close-line"></i>Reject</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Filter Drawer -->
+    <div id="filterBackdrop" class="filter-panel__backdrop" aria-hidden="true">
+      <div class="filter-panel" role="dialog" aria-modal="true">
+        <div class="fp-header">
+          <div class="fp-title">Filters</div>
+          <button class="fp-close" type="button" id="closeFilters" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="fp-row">
+          <label for="fpPlace">Place</label>
+          <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kannur" />
+        </div>
+
+        <div class="fp-row">
+          <label for="fpPincode">Pincode</label>
+          <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 670001" />
+        </div>
+
+        <div class="fp-row fp-check">
+          <input id="fpHasEmail" type="checkbox" />
+          <label for="fpHasEmail">Has Email</label>
+        </div>
+
+        <div class="fp-row fp-check">
+          <input id="fpHasPhone" type="checkbox" />
+          <label for="fpHasPhone">Has Phone</label>
+        </div>
+
+        <div class="fp-row fp-check">
+          <input id="fpHasProof" type="checkbox" />
+          <label for="fpHasProof">Has Proof</label>
+        </div>
+
+        <div class="fp-row">
+          <label>Date (Specific Day)</label>
+          <input id="fpExactDay" class="fp-input" type="date" />
+        </div>
+
+        <div class="fp-row">
+          <label>Quick Ranges</label>
+          <div class="quick-row">
+            <button type="button" class="quick" data-range="today">Today</button>
+            <button type="button" class="quick" data-range="7">Last 7 Days</button>
+            <button type="button" class="quick" data-range="month">This Month</button>
+          </div>
+        </div>
+
+        <div class="fp-row" style="display:grid; grid-template-columns:1fr 1fr; gap:.6rem;">
+          <div>
+            <label for="fpFrom">From</label>
+            <input id="fpFrom" class="fp-input" type="date" />
+          </div>
+          <div>
+            <label for="fpTo">To</label>
+            <input id="fpTo" class="fp-input" type="date" />
+          </div>
+        </div>
+
+        <div class="fp-actions">
+          <button type="button" class="btn btn-ghost" id="fpClear">Clear</button>
+          <button type="button" class="btn btn-primary" id="fpApply">Apply</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* Sidebar dropdown */
+  const moreBtn=document.querySelector('.more-section');
+  const dropdown=document.querySelector('.setting-dropdown');
+  document.body.addEventListener('click',(e)=>{
+    if(moreBtn && moreBtn.contains(e.target)){
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display==='block' ? 'none' : 'block';
+    } else if(dropdown && !dropdown.contains(e.target)){
+      dropdown.style.display='none';
+    }
+  });
+
+
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  root.setAttribute('data-theme', savedTheme);
+  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+
+  themeBtn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+  });
+
+  /* Remove toasts later */
+  setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);
+
+  /* Helpers */
+  const normalizeForNumber = (s)=> (s||'').toString().replace(/[\s\-\.\(\)]/g,'');
+  const norm = (t)=> (t||'').toString().toLowerCase().trim();
+  function parseYMD(ymd){
+    if(!ymd) return null;
+    const [y,m,d] = ymd.split('-').map(Number);
+    if(!y||!m||!d) return null;
+    return new Date(y, m-1, d, 12, 0, 0); // noon local time
+  }
+  function ymd(dt){ if(!dt) return ''; const y=dt.getFullYear(); const m=('0'+(dt.getMonth()+1)).slice(-2); const d=('0'+dt.getDate()).slice(-2); return `${y}-${m}-${d}`; }
+
+  /* Elements */
+  const searchInput = document.getElementById('searchInput');
+  const sortOrder   = document.getElementById('sortOrder');
+  const cardsWrap   = document.getElementById('cardsWrap');
+  const cards       = Array.from(document.querySelectorAll('.distributor-card'));
+
+  /* Filter drawer refs */
+  const fpBackdrop  = document.getElementById('filterBackdrop');
+  const openFilters = document.getElementById('openFilters');
+  const closeFilters= document.getElementById('closeFilters');
+  const fpPlace     = document.getElementById('fpPlace');
+  const fpPincode   = document.getElementById('fpPincode');
+  const fpHasEmail  = document.getElementById('fpHasEmail');
+  const fpHasPhone  = document.getElementById('fpHasPhone');
+  const fpHasProof  = document.getElementById('fpHasProof');
+  const fpExactDay  = document.getElementById('fpExactDay');
+  const fpFrom      = document.getElementById('fpFrom');
+  const fpTo        = document.getElementById('fpTo');
+  const fpApply     = document.getElementById('fpApply');
+  const fpClear     = document.getElementById('fpClear');
+  const quickBtns   = Array.from(document.querySelectorAll('.quick'));
+
+  /* Open/close filter panel */
+  function openPanel(){ fpBackdrop.style.display='grid'; requestAnimationFrame(()=>fpBackdrop.querySelector('.filter-panel').classList.add('open')); }
+  function closePanel(){ fpBackdrop.querySelector('.filter-panel').classList.remove('open'); setTimeout(()=>fpBackdrop.style.display='none', 150); }
+  openFilters.addEventListener('click', openPanel);
+  closeFilters.addEventListener('click', closePanel);
+  fpBackdrop.addEventListener('click', (e)=>{ if(e.target===fpBackdrop) closePanel(); });
+  document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && fpBackdrop.style.display==='grid') closePanel(); });
+
+  /* Apply filters + sorting */
+  function applyFiltersAndSort(){
+    const q = norm(searchInput.value); const qn = normalizeForNumber(q);
+    const fPlace = norm(fpPlace.value); const fPin = norm(fpPincode.value);
+    const hasEmail = fpHasEmail.checked; const hasPhone = fpHasPhone.checked; const hasProof = fpHasProof.checked;
+    const exactDay = fpExactDay.value; const fromVal = fpFrom.value; const toVal = fpTo.value;
+
+    const fromDate = parseYMD(fromVal);
+    const toDate   = parseYMD(toVal);
+    const exactDate= parseYMD(exactDay);
+
+    cards.forEach(card=>{
+      const name = norm(card.dataset.name);
+      const email= norm(card.dataset.email);
+      const phone= norm(card.dataset.phone);
+      const place= norm(card.dataset.place||'');
+      const pincode = norm(card.dataset.pincode||'');
+      const nameN= normalizeForNumber(name);
+      const emailN= normalizeForNumber(email);
+      const phoneN= normalizeForNumber(phone);
+      const proofFlag = card.dataset.hasproof === '1';
+
+      const d = parseYMD(card.dataset.date || '');
+
+      const textMatch = !q || name.includes(q) || email.includes(q) || phone.includes(q) ||
+                        nameN.includes(qn) || emailN.includes(qn) || phoneN.includes(qn);
+      const placeMatch= !fPlace || (place && place.includes(fPlace));
+      const pinMatch  = !fPin   || (pincode && pincode.includes(fPin));
+      const emailMatch= !hasEmail || !!email;
+      const phoneMatch= !hasPhone || !!phone;
+      const proofMatch= !hasProof || proofFlag;
+
+      let dateMatch = true;
+      if (exactDate){
+        dateMatch = !!d && ymd(d) === ymd(exactDate);
+      } else {
+        if (fromDate && (!d || d < new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0,0,0))) dateMatch = false;
+        if (toDate   && (!d || d > new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23,59,59))) dateMatch = false;
+      }
+
+      card.style.display = (textMatch && placeMatch && pinMatch && emailMatch && phoneMatch && proofMatch && dateMatch) ? '' : 'none';
+    });
+
+    // Sort visible cards
+    const visible = cards.filter(c=>c.style.display!=='none');
+    const order = sortOrder.value;
+
+    visible.sort((a,b)=>{
+      const aName = (a.dataset.name||'').toLowerCase();
+      const bName = (b.dataset.name||'').toLowerCase();
+      const aDate = parseYMD(a.dataset.date);
+      const bDate = parseYMD(b.dataset.date);
+
+      if(order==='name-asc')  return aName.localeCompare(bName);
+      if(order==='name-desc') return bName.localeCompare(aName);
+      if(order==='oldest') {
+        if (aDate && bDate) return aDate - bDate;
+        if (aDate) return -1; if (bDate) return 1; return 0;
+      }
+      /* newest (default) */
+      if (aDate && bDate) return bDate - aDate;
+      if (aDate) return -1; if (bDate) return 1; return 0;
+    });
+
+    // Re-append in sorted order
+    visible.forEach(c=>cardsWrap.appendChild(c));
+  }
+
+  /* Search / Sort listeners */
+  document.getElementById('searchInput').addEventListener('input', applyFiltersAndSort);
+  document.getElementById('sortOrder').addEventListener('change', applyFiltersAndSort);
+
+  /* Quick ranges */
+  function setQuick(range){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    if(range==='today'){
+      document.getElementById('fpExactDay').value = ymd(today);
+      document.getElementById('fpFrom').value = ''; document.getElementById('fpTo').value = '';
+    } else if(range==='7'){
+      const from = new Date(today); from.setDate(from.getDate()-6);
+      document.getElementById('fpExactDay').value = '';
+      document.getElementById('fpFrom').value = ymd(from); document.getElementById('fpTo').value = ymd(today);
+    } else if(range==='month'){
+      document.getElementById('fpExactDay').value='';
+      document.getElementById('fpFrom').value = ymd(firstDayMonth); document.getElementById('fpTo').value = ymd(today);
+    }
+  }
+  document.querySelectorAll('.quick').forEach(btn=>btn.addEventListener('click', ()=> setQuick(btn.dataset.range)));
+
+  /* Apply & Clear */
+  document.getElementById('fpApply').addEventListener('click', ()=>{ applyFiltersAndSort(); closePanel(); });
+  document.getElementById('fpClear').addEventListener('click', ()=>{
+    fpPlace.value=''; fpPincode.value='';
+    fpHasEmail.checked=false; fpHasPhone.checked=false; fpHasProof.checked=false;
+    fpExactDay.value=''; fpFrom.value=''; fpTo.value='';
+    applyFiltersAndSort();
+  });
+
+  /* Initial run */
+  applyFiltersAndSort();
+
+  // Optional confirm on Reject
+  document.querySelectorAll('.btn-reject').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      if(!confirm('Reject this distributor?')) e.preventDefault();
+    });
+  });
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

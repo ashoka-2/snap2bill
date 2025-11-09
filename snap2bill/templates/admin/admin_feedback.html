@@ -1,0 +1,799 @@
+{#{% load static %}#}
+{##}
+{##}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin Feedbacks</title>#}
+{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{##}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{##}
+{#                <div id="navbar-section">#}
+{##}
+{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
+{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars active"><span>View Feedback</span></div></a>#}
+{##}
+{#            </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#             <div class="setting-dropdown">#}
+{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
+{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
+{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#        </div>#}
+{#        <div class="admin-right-main-content">#}
+{##}
+{##}
+{#<form action="" method="post">#}
+{#<table class="table" border="2" cellspacing="2" cellpadding="2">#}
+{#<caption><h1>Feedbacks</h1></caption>#}
+{#  <tr>#}
+{#      <th scope="col">Serial No.</th>#}
+{#    <th scope="col">Username</th>#}
+{#    <th scope="col">Feedback </th>#}
+{#    <th scope="col">Feedback Date</th>#}
+{#  </tr>#}
+{#    {% for i in feeddata %}#}
+{#    <tr>#}
+{##}
+{#        <td>{{ forloop.counter }}</td>#}
+{#        <td>{{ i.USER.name }}</td>#}
+{#        <td>&nbsp;{{ i.feedbacks }}</td>#}
+{#        <td>{{ i.feedback_date }}</td>#}
+{#    </tr>#}
+{#      {% endfor %}#}
+{##}
+{#</table>#}
+{##}
+{#</form>#}
+{##}
+{##}
+{##}
+{##}
+{#    </div>#}
+{#</div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#<script>#}
+{#    const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{##}
+{#    let body = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function () {#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    // Optional: close dropdown if clicked outside#}
+{#    body.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{#</script>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#</body>#}
+{#</html>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#{% load static %}#}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin Feedbacks</title>#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{##}
+{#<style>#}
+{#  :root{#}
+{#    --primary:#1565c0; --primary-dark:#003c8f; --accent:#0ea5e9;#}
+{#    --text-main:#0a0a0a; --text-soft:#4b5563;#}
+{#    --surface:#ffffff; --line:#e5e7eb;#}
+{#    --radius:.8rem; --shadow:0 1.2rem 3rem rgba(2,6,23,.08);#}
+{#  }#}
+{##}
+{#  /* Right pane */#}
+{#  .admin-right-main-content{#}
+{#    width:100%; min-height:100vh;#}
+{#    background:#}
+{#      radial-gradient(85vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),#}
+{#      radial-gradient(65vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),#}
+{#      var(--surface);#}
+{#    color:var(--text-main);#}
+{#    padding:clamp(1rem,2.5vw,2rem);#}
+{#    box-sizing:border-box; overflow:auto;#}
+{#  }#}
+{##}
+{#  /* Header + actions */#}
+{#  .fb-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block-end:1.25rem; }#}
+{#  .fb-title{ font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:800; color:#0b1324; }#}
+{#  .fb-sub{ color:var(--text-soft); font-size:clamp(.9rem,1.2vw,1rem); margin-top:.25em; }#}
+{#  .fb-actions{ display:flex; gap:.75rem; flex-wrap:wrap; }#}
+{##}
+{#  /* Buttons */#}
+{#  .btn{ display:inline-block; text-decoration:none; border-radius:9999px; font-weight:700; letter-spacing:.02em; border:0; cursor:pointer; white-space:nowrap; }#}
+{#  .btn-primary{ --g:linear-gradient(90deg,var(--primary),var(--accent),var(--primary)); background:var(--g); background-size:200% 100%; color:#fff; padding:.9rem 1.2rem; box-shadow:var(--shadow); transition:transform .15s, box-shadow .2s; animation:moveGrad 8s linear infinite; }#}
+{#  .btn-primary:hover{ transform:translateY(-.1rem); box-shadow:0 1.4rem 2.2rem rgba(21,101,192,.22); }#}
+{#  .btn-ghost{ background:transparent; color:var(--primary); border:.0625rem solid rgba(21,101,192,.4); padding:.85rem 1.1rem; transition:background .2s, transform .15s, border-color .2s; }#}
+{#  .btn-ghost:hover{ background:rgba(21,101,192,.12); transform:translateY(-.08rem); border-color:var(--primary); }#}
+{#  @keyframes moveGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}#}
+{##}
+{#  /* Filters */#}
+{#  .fb-filters{#}
+{#    display:grid; gap:clamp(.6rem, 1vw, .9rem); grid-template-columns:1fr;#}
+{#    margin-block-end:1rem;#}
+{#  }#}
+{#  @media (min-width:48rem){#}
+{#    .fb-filters{ grid-template-columns: 1.2fr .8fr .8fr auto; align-items:end; }#}
+{#  }#}
+{#  .field{ display:flex; flex-direction:column; gap:.4rem; }#}
+{#  .label{ font-weight:700; color:#0b1324; font-size:1rem; }#}
+{#  .input, .select{#}
+{#    width:100%; font-size:1rem; line-height:1.4;#}
+{#    padding:.85rem 1rem; border:.0625rem solid var(--line);#}
+{#    border-radius:.7rem; background:#fff; color:var(--text-main);#}
+{#    outline:none; transition:border-color .2s, box-shadow .2s;#}
+{#  }#}
+{#  .input:focus, .select:focus{ border-color:rgba(21,101,192,.4); box-shadow:0 0 0 .18rem rgba(21,101,192,.15); }#}
+{##}
+{#  /* Table */#}
+{#  .fb-table-wrap{ background:#fff; border:.0625rem solid var(--line); border-radius:calc(var(--radius) + .25rem); box-shadow:var(--shadow); overflow:auto; }#}
+{#  table.fb-table{ width:100%; border-collapse:separate; border-spacing:0; font-size:clamp(.95rem,1.1vw,1rem); }#}
+{#  .fb-table thead th{#}
+{#    position:sticky; top:0; z-index:1;#}
+{#    background:linear-gradient(0deg,#f7faff,#ffffff);#}
+{#    color:#0b1324; text-align:left; padding:1rem 1.2rem; font-weight:800; border-bottom:.0625rem solid var(--line);#}
+{#  }#}
+{#  .fb-table tbody td{ padding:1rem 1.2rem; color:var(--text-main); border-bottom:.0625rem solid var(--line); vertical-align:top; }#}
+{#  .fb-table tbody tr:nth-child(odd){ background:#fbfdff; }#}
+{#  .fb-table tbody tr:hover{ background:#eef6ff; transition:background .15s; }#}
+{##}
+{#  /* Toasts (bottom-right) */#}
+{#  #toast-container{ position:fixed; right:2rem; bottom:2rem; display:flex; flex-direction:column; align-items:flex-end; z-index:9999; gap:.75rem; }#}
+{#  .toast{ background-color:var(--primary); color:#fff; padding:1rem 1.25rem; border-radius:var(--radius); box-shadow:0 .75rem 1.25rem rgba(0,0,0,.12); font-weight:600; opacity:0; transform:translateY(1rem) translateX(20%); animation:toastIn .35s ease forwards, toastOut .35s ease 4.3s forwards; }#}
+{#  .toast.success{ background:#2e7d32; } .toast.error{ background:#d32f2f; }#}
+{#  @keyframes toastIn{ from{opacity:0; transform:translateY(1rem) translateX(20%)} to{opacity:1; transform:translateY(0) translateX(0)} }#}
+{#  @keyframes toastOut{ to{ opacity:0; transform:translateY(1rem) translateX(20%) } }#}
+{#</style>#}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{#<div class="main-content">#}
+{#  <div class="admin-left-main-content">#}
+{#    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#    <div class="admin-mid-left-content">#}
+{#      <div id="navbar-section">#}
+{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#        <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
+{#        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars active"><span>View Feedback</span></div></a>#}
+{#      </div>#}
+{#    </div>#}
+{#    <hr>#}
+{#    <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#      <div class="setting-dropdown">#}
+{#        <a href="#"><div class="setting-menu-dropdown">Setting</div></a>#}
+{#        <a href="#"><div class="setting-menu-dropdown">Switch theme</div></a>#}
+{#        <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#      </div>#}
+{#    </div></div>#}
+{#  </div>#}
+{##}
+{#  <!-- ========= RIGHT: Feedbacks ========= -->#}
+{#  <div class="admin-right-main-content">#}
+{##}
+{#    {% if messages %}#}
+{#      <div id="toast-container">#}
+{#        {% for message in messages %}#}
+{#          <div class="toast {{ message.tags }}">{{ message }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+{#    {% endif %}#}
+{##}
+{#    <!-- Header -->#}
+{#    <div class="fb-header">#}
+{#      <div>#}
+{#        <div class="fb-title">Feedbacks</div>#}
+{#        <div class="fb-sub">Scan user feedback, filter quickly, and review dates.</div>#}
+{#      </div>#}
+{#      <div class="fb-actions">#}
+{#        <a class="btn btn-ghost" href="/admin_home">Dashboard</a>#}
+{#        <a class="btn btn-primary" href="/admin_viewcustomer">View Customers</a>#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <!-- Filters (client-side) -->#}
+{#    <div class="fb-filters">#}
+{#      <div class="field">#}
+{#        <label class="label" for="search">Search (User / Feedback)</label>#}
+{#        <input id="search" class="input" type="text" placeholder="Type to filter… (e.g., 'payment', 'Ravi')" />#}
+{#      </div>#}
+{##}
+{#      <div class="field">#}
+{#        <label class="label" for="fromDate">From Date</label>#}
+{#        <input id="fromDate" class="input" type="date" />#}
+{#      </div>#}
+{##}
+{#      <div class="field">#}
+{#        <label class="label" for="toDate">To Date</label>#}
+{#        <input id="toDate" class="input" type="date" />#}
+{#      </div>#}
+{##}
+{#      <div class="field">#}
+{#        <label class="label" style="opacity:0;">Apply</label>#}
+{#        <button id="clearFilters" type="button" class="btn btn-ghost">Clear filters</button>#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <!-- Table -->#}
+{#    <div class="fb-table-wrap">#}
+{#      <form action="" method="post">#}
+{#        {% csrf_token %}#}
+{#        <table class="fb-table" id="feedbackTable">#}
+{#          <thead>#}
+{#            <tr>#}
+{#              <th style="width:10rem;">Serial No.</th>#}
+{#              <th>Username</th>#}
+{#                <th>Distributor name</th>#}
+{#              <th>Feedback</th>#}
+{#              <th style="width:14rem;">Feedback Date</th>#}
+{#            </tr>#}
+{#          </thead>#}
+{#          <tbody>#}
+{#            {% for i in feeddata %}#}
+{#            <tr>#}
+{#              <td data-col="serial">{{ forloop.counter }}</td>#}
+{##}
+{#              <td data-col="user">{{ i.USER.name }}</td>#}
+{#              <td data-col="user">{{ i.DISTRIBUTOR.name }}</td>#}
+{#              <td data-col="text">{{ i.feedbacks }}</td>#}
+{#              <td data-col="date">{{ i.feedback_date }}</td>#}
+{#            </tr>#}
+{#            {% empty %}#}
+{#            <tr><td colspan="4" style="text-align:center; color:var(--text-soft); padding:2rem;">No feedbacks yet.</td></tr>#}
+{#            {% endfor %}#}
+{#          </tbody>#}
+{#        </table>#}
+{#      </form>#}
+{#    </div>#}
+{##}
+{#  </div>#}
+{#</div>#}
+{##}
+{#<script>#}
+{#  // Sidebar dropdown#}
+{#  const moreBtn=document.querySelector(".more-section");#}
+{#  const dropdown=document.querySelector(".setting-dropdown");#}
+{#  document.body.addEventListener("click",e=>{#}
+{#    if(moreBtn && moreBtn.contains(e.target)){#}
+{#      e.stopPropagation();#}
+{#      dropdown.style.display = dropdown.style.display==='block' ? 'none' : 'block';#}
+{#    }else if(dropdown && !dropdown.contains(e.target)){#}
+{#      dropdown.style.display='none';#}
+{#    }#}
+{#  });#}
+{##}
+{#  // Toast auto-remove#}
+{#  setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);#}
+{##}
+{#  // Client-side filters#}
+{#  const searchInput = document.getElementById('search');#}
+{#  const fromDate = document.getElementById('fromDate');#}
+{#  const toDate = document.getElementById('toDate');#}
+{#  const clearBtn = document.getElementById('clearFilters');#}
+{#  const rows = Array.from(document.querySelectorAll('#feedbackTable tbody tr'));#}
+{##}
+{#  function normalize(t){ return (t||'').toString().toLowerCase().trim(); }#}
+{##}
+{#  function parseDate(d){#}
+{#    if(!d) return null;#}
+{#    const x = new Date(d);#}
+{#    return isNaN(x.getTime()) ? null : x;#}
+{#  }#}
+{##}
+{#  function applyFilters(){#}
+{#    const q = normalize(searchInput.value);#}
+{#    const from = parseDate(fromDate.value);#}
+{#    const to = parseDate(toDate.value);#}
+{#    if(to) to.setHours(23,59,59,999);#}
+{##}
+{#    rows.forEach(row=>{#}
+{#      const user = normalize(row.querySelector('[data-col=\"user\"]')?.textContent);#}
+{#      const text = normalize(row.querySelector('[data-col=\"text\"]')?.textContent);#}
+{#      const dateText = row.querySelector('[data-col=\"date\"]')?.textContent?.trim() || '';#}
+{#      const d = parseDate(dateText);#}
+{##}
+{#      const matchText = !q || user.includes(q) || text.includes(q);#}
+{#      const matchFrom = !from || (d && d >= from);#}
+{#      const matchTo = !to || (d && d <= to);#}
+{##}
+{#      row.style.display = (matchText && matchFrom && matchTo) ? '' : 'none';#}
+{#    });#}
+{#  }#}
+{##}
+{#  searchInput.addEventListener('input', applyFilters);#}
+{#  fromDate.addEventListener('change', applyFilters);#}
+{#  toDate.addEventListener('change', applyFilters);#}
+{#  clearBtn.addEventListener('click', ()=>{#}
+{#    searchInput.value=''; fromDate.value=''; toDate.value=''; applyFilters();#}
+{#  });#}
+{##}
+{#  // first render#}
+{#  applyFilters();#}
+{#</script>#}
+{##}
+{#</body>#}
+{#</html>#}
+{##}
+{##}
+{##}
+{##}
+{#{% load static %}#}
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#<meta charset="utf-8" />#}
+{#<title>Admin Feedbacks</title>#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{##}
+{#<style>#}
+{#  :root{#}
+{#    --primary:#1565c0; --accent:#0ea5e9;#}
+{#    --text-main:#0a0a0a; --text-soft:#4b5563;#}
+{#    --surface:#ffffff; --line:#e5e7eb;#}
+{#    --radius:.8rem; --shadow:0 1.2rem 3rem rgba(2,6,23,.08);#}
+{#  }#}
+{##}
+{#  .admin-right-main-content{#}
+{#    width:100%; min-height:100vh;#}
+{#    background:#}
+{#      radial-gradient(85vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),#}
+{#      radial-gradient(65vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),#}
+{#      var(--surface);#}
+{#    color:var(--text-main);#}
+{#    padding:clamp(1rem,2.5vw,2rem);#}
+{#    box-sizing:border-box; overflow:auto;#}
+{#  }#}
+{##}
+{#  .fb-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block-end:1.25rem; }#}
+{#  .fb-title{ font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:800; color:#0b1324; }#}
+{#  .fb-sub{ color:var(--text-soft); font-size:clamp(.9rem,1.2vw,1rem); margin-top:.25em; }#}
+{#  .fb-actions{ display:flex; gap:.75rem; flex-wrap:wrap; }#}
+{##}
+{#  .btn{ display:inline-block; text-decoration:none; border-radius:9999px; font-weight:700; border:0; cursor:pointer; }#}
+{#  .btn-primary{ background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary)); color:#fff; padding:.9rem 1.2rem; box-shadow:var(--shadow); }#}
+{#  .btn-ghost{ background:transparent; color:var(--primary); border:.0625rem solid rgba(21,101,192,.4); padding:.85rem 1.1rem; }#}
+{##}
+{#  .fb-filters{ display:grid; gap:.9rem; grid-template-columns:1fr; margin-block-end:1rem; }#}
+{#  @media (min-width:48rem){ .fb-filters{ grid-template-columns: 1.2fr .8fr .8fr auto; align-items:end; } }#}
+{##}
+{#  .input{#}
+{#    width:100%; padding:.85rem 1rem; border:.0625rem solid var(--line);#}
+{#    border-radius:.7rem; background:#fff; color:var(--text-main);#}
+{#  }#}
+{##}
+{#  .fb-table-wrap{ background:#fff; border:.0625rem solid var(--line); border-radius:calc(var(--radius) + .25rem); box-shadow:var(--shadow); overflow:auto; }#}
+{#  table.fb-table{ width:100%; border-collapse:separate; border-spacing:0; }#}
+{#  .fb-table thead th{#}
+{#    position:sticky; top:0; background:linear-gradient(0deg,#f7faff,#ffffff);#}
+{#    color:#0b1324; text-align:left; padding:1rem 1.2rem; font-weight:800;#}
+{#  }#}
+{#  .fb-table tbody td{ padding:1rem 1.2rem; color:var(--text-main); border-bottom:.0625rem solid var(--line); }#}
+{#  .fb-table tbody tr:nth-child(odd){ background:#fbfdff; }#}
+{#  .fb-table tbody tr:hover{ background:#eef6ff; }#}
+{#</style>#}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{#<div class="main-content">#}
+{#  <div class="admin-left-main-content">#}
+{#    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#    <div class="admin-mid-left-content">#}
+{#      <div id="navbar-section">#}
+{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#        <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
+{#        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars active"><span>View Feedback</span></div></a>#}
+{#      </div>#}
+{#    </div>#}
+{#    <hr>#}
+{#    <div class="admin-bottom-left-content">#}
+{#      <div class="more-section"><span>More</span>#}
+{#        <div class="setting-dropdown">#}
+{#          <a href="#"><div class="setting-menu-dropdown">Setting</div></a>#}
+{#          <a href="#"><div class="setting-menu-dropdown">Switch theme</div></a>#}
+{#          <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>#}
+{#  </div>#}
+{##}
+{#  <!-- ========= RIGHT: Feedbacks ========= -->#}
+{#  <div class="admin-right-main-content">#}
+{##}
+{#    <div class="fb-header">#}
+{#      <div>#}
+{#        <div class="fb-title">Feedbacks</div>#}
+{#        <div class="fb-sub">View feedbacks from both customers and distributors.</div>#}
+{#      </div>#}
+{#      <div class="fb-actions">#}
+{#        <a class="btn btn-ghost" href="/admin_home">Dashboard</a>#}
+{#        <a class="btn btn-primary" href="/admin_viewcustomer">View Customers</a>#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <div class="fb-filters">#}
+{#      <input id="search" class="input" type="text" placeholder="Search (User / Distributor / Feedback)" />#}
+{#      <input id="fromDate" class="input" type="date" />#}
+{#      <input id="toDate" class="input" type="date" />#}
+{#      <button id="clearFilters" type="button" class="btn btn-ghost">Clear filters</button>#}
+{#    </div>#}
+{##}
+{#    <div class="fb-table-wrap">#}
+{#      <table class="fb-table" id="feedbackTable">#}
+{#        <thead>#}
+{#          <tr>#}
+{#            <th>Serial No.</th>#}
+{#            <th>User Name</th>#}
+{#            <th>Distributor Name</th>#}
+{#            <th>Feedback</th>#}
+{#            <th>Date</th>#}
+{#          </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#          {% for i in feeddata %}#}
+{#          <tr>#}
+{#            <td>{{ forloop.counter }}</td>#}
+{#            <td>{% if i.USER %}{{ i.USER.name }}{% else %}<span style="color:#9ca3af;">—</span>{% endif %}</td>#}
+{#            <td>{% if i.DISTRIBUTOR %}{{ i.DISTRIBUTOR.name }}{% else %}<span style="color:#9ca3af;">—</span>{% endif %}</td>#}
+{#            <td>{{ i.feedbacks }}</td>#}
+{#            <td>{{ i.feedback_date }}</td>#}
+{#          </tr>#}
+{#          {% empty %}#}
+{#          <tr><td colspan="5" style="text-align:center; color:var(--text-soft); padding:2rem;">No feedbacks yet.</td></tr>#}
+{#          {% endfor %}#}
+{#        </tbody>#}
+{#      </table>#}
+{#    </div>#}
+{##}
+{#  </div>#}
+{#</div>#}
+{##}
+{#<script>#}
+{#  // Sidebar dropdown#}
+{#  const moreBtn = document.querySelector(".more-section");#}
+{#  const dropdown = document.querySelector(".setting-dropdown");#}
+{#  document.body.addEventListener("click", e => {#}
+{#    if (moreBtn && moreBtn.contains(e.target)) {#}
+{#      e.stopPropagation();#}
+{#      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    } else if (dropdown && !dropdown.contains(e.target)) {#}
+{#      dropdown.style.display = "none";#}
+{#    }#}
+{#  });#}
+{##}
+{#  // ✅ Proper filter logic — same-day matching works#}
+{#  const searchInput = document.getElementById('search');#}
+{#  const fromDate = document.getElementById('fromDate');#}
+{#  const toDate = document.getElementById('toDate');#}
+{#  const clearBtn = document.getElementById('clearFilters');#}
+{#  const rows = Array.from(document.querySelectorAll('#feedbackTable tbody tr'));#}
+{##}
+{#  function normalize(t){ return (t || '').toString().toLowerCase().trim(); }#}
+{##}
+{#  // Extract only YYYY-MM-DD#}
+{#  function extractDatePart(str){#}
+{#    if(!str) return null;#}
+{#    const match = str.match(/^(\d{4}-\d{2}-\d{2})/);#}
+{#    return match ? match[1] : null;#}
+{#  }#}
+{##}
+{#  function applyFilters(){#}
+{#    const q = normalize(searchInput.value);#}
+{#    const from = extractDatePart(fromDate.value);#}
+{#    const to = extractDatePart(toDate.value);#}
+{##}
+{#    rows.forEach(row=>{#}
+{#      const user = normalize(row.cells[1].textContent);#}
+{#      const dist = normalize(row.cells[2].textContent);#}
+{#      const text = normalize(row.cells[3].textContent);#}
+{#      const dateText = row.cells[4].textContent.trim();#}
+{#      const feedbackDate = extractDatePart(dateText);#}
+{##}
+{#      const matchText = !q || user.includes(q) || dist.includes(q) || text.includes(q);#}
+{#      const matchFrom = !from || (feedbackDate && feedbackDate >= from);#}
+{#      const matchTo = !to || (feedbackDate && feedbackDate <= to);#}
+{##}
+{#      row.style.display = (matchText && matchFrom && matchTo) ? '' : 'none';#}
+{#    });#}
+{#  }#}
+{##}
+{#  searchInput.addEventListener('input', applyFilters);#}
+{#  fromDate.addEventListener('change', applyFilters);#}
+{#  toDate.addEventListener('change', applyFilters);#}
+{#  clearBtn.addEventListener('click', ()=>{#}
+{#    searchInput.value = ''; fromDate.value = ''; toDate.value = ''; applyFilters();#}
+{#  });#}
+{##}
+{#  applyFilters();#}
+{#</script>#}
+{#</body>#}
+{#</html>#}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<title>Admin Feedbacks</title>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<!-- Remix Icons -->
+<link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
+
+<style>
+
+  .admin-right-main-content{
+    width:100%; min-height:100vh;
+    background:
+      radial-gradient(85vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),
+      radial-gradient(65vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),
+      var(--surface);
+    color:var(--text-main);
+    padding:clamp(1rem,2.5vw,2rem);
+    box-sizing:border-box; overflow:auto;
+    transition: background .4s ease, color .4s ease;
+  }
+
+  .fb-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block-end:1.25rem; }
+  .fb-title{ font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:800; color:var(--text-main); }
+  .fb-sub{ color:var(--text-soft); font-size:clamp(.9rem,1.2vw,1rem); margin-top:.25em; }
+  .fb-actions{ display:flex; gap:.75rem; flex-wrap:wrap; }
+
+  .btn{ display:inline-flex; align-items:center; gap:.4rem; text-decoration:none; border-radius:9999px; font-weight:700; border:0; cursor:pointer; transition:all .3s ease; }
+  .btn i{ font-size:1.2rem; }
+  .btn-primary{ background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary)); color:#fff; padding:.9rem 1.2rem; box-shadow:var(--shadow); }
+  .btn-primary:hover{ transform:translateY(-3px); opacity:.9; }
+  .btn-ghost{ background:transparent; color:var(--primary); border:.0625rem solid rgba(21,101,192,.4); padding:.85rem 1.1rem; }
+  .btn-ghost:hover{ background:rgba(21,101,192,0.08); transform:translateY(-2px); }
+
+  .fb-filters{ display:grid; gap:.9rem; grid-template-columns:1fr; margin-block-end:1rem; }
+  @media (min-width:48rem){ .fb-filters{ grid-template-columns: 1.2fr .8fr .8fr auto; align-items:end; } }
+
+  .input{
+    width:100%; padding:.85rem 1rem; border:.0625rem solid var(--line);
+    border-radius:.7rem; background:#fff; color:var(--text-main);
+    transition:border-color .3s ease, background .3s ease;
+  }
+  [data-theme="dark"] .input{ background:#1e293b; color:#f1f5f9; border-color:#334155; }
+
+  .fb-table-wrap{ background:#fff; border:.0625rem solid var(--line); border-radius:calc(var(--radius) + .25rem); box-shadow:var(--shadow); overflow:auto; transition: background .3s ease; }
+  [data-theme="dark"] .fb-table-wrap{ background:#1e293b; }
+
+  table.fb-table{ width:100%; border-collapse:separate; border-spacing:0; }
+  .fb-table thead th{
+    position:sticky; top:0; background:linear-gradient(0deg,#f7faff,#ffffff);
+    color:var(--text-main); text-align:left; padding:1rem 1.2rem; font-weight:800;
+    transition:background .3s ease;
+  }
+  [data-theme="dark"] .fb-table thead th{ background:linear-gradient(0deg,#1e3a8a,#1e40af); color:#f3f4f6; }
+
+  .fb-table tbody td{ padding:1rem 1.2rem; color:var(--text-main); border-bottom:.0625rem solid var(--line); }
+  .fb-table tbody tr:nth-child(odd){ background:#fbfdff; }
+  [data-theme="dark"] .fb-table tbody tr:nth-child(odd){ background:#111827; }
+  .fb-table tbody tr:hover{ background:#eef6ff; }
+
+</style>
+</head>
+
+<body>
+
+<div class="main-content">
+  <div class="admin-left-main-content">
+    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
+    <div class="admin-mid-left-content">
+      <div id="navbar-section">
+        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars active"><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
+      </div>
+    </div>
+    <hr>
+    <div class="admin-bottom-left-content">
+      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+        <div class="setting-dropdown">
+          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+          <!-- ✅ Theme toggle with Remix Icon -->
+          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+          </a>
+          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========= RIGHT: Feedbacks ========= -->
+  <div class="admin-right-main-content">
+
+    <div class="fb-header">
+      <div>
+        <div class="fb-title"><i class="ri-feedback-line"></i> Feedbacks</div>
+        <div class="fb-sub">View feedbacks from both customers and distributors.</div>
+      </div>
+      <div class="fb-actions">
+        <a class="btn btn-ghost" href="/admin_home"><i class="ri-dashboard-line"></i> Dashboard</a>
+        <a class="btn btn-primary" href="/admin_viewcustomer"><i class="ri-user-3-line"></i> View Customers</a>
+      </div>
+    </div>
+
+    <div class="fb-filters">
+      <input id="search" class="input" type="text" placeholder="Search (User / Distributor / Feedback)" />
+      <input id="fromDate" class="input" type="date" />
+      <input id="toDate" class="input" type="date" />
+      <button id="clearFilters" type="button" class="btn btn-ghost"><i class="ri-filter-line"></i> Clear filters</button>
+    </div>
+
+    <div class="fb-table-wrap">
+      <table class="fb-table" id="feedbackTable">
+        <thead>
+          <tr>
+            <th><i class="ri-hashtag"></i> Serial No.</th>
+            <th><i class="ri-user-line"></i> User Name</th>
+            <th><i class="ri-store-2-line"></i> Distributor Name</th>
+            <th><i class="ri-chat-3-line"></i> Feedback</th>
+            <th><i class="ri-calendar-line"></i> Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in feeddata %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{% if i.USER %}{{ i.USER.name }}{% else %}<span style="color:#9ca3af;">—</span>{% endif %}</td>
+            <td>{% if i.DISTRIBUTOR %}{{ i.DISTRIBUTOR.name }}{% else %}<span style="color:#9ca3af;">—</span>{% endif %}</td>
+            <td>{{ i.feedbacks }}</td>
+            <td>{{ i.feedback_date }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="5" style="text-align:center; color:var(--text-soft); padding:2rem;">No feedbacks yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Sidebar dropdown
+  const moreBtn = document.querySelector(".more-section");
+  const dropdown = document.querySelector(".setting-dropdown");
+  document.body.addEventListener("click", e => {
+    if (moreBtn && moreBtn.contains(e.target)) {
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    } else if (dropdown && !dropdown.contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+
+  // ✅ Theme toggle with Remix Icons
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  root.setAttribute('data-theme', savedTheme);
+  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+
+  themeBtn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+  });
+
+  // Filters
+  const searchInput = document.getElementById('search');
+  const fromDate = document.getElementById('fromDate');
+  const toDate = document.getElementById('toDate');
+  const clearBtn = document.getElementById('clearFilters');
+  const rows = Array.from(document.querySelectorAll('#feedbackTable tbody tr'));
+
+  function normalize(t){ return (t || '').toString().toLowerCase().trim(); }
+  function extractDatePart(str){
+    if(!str) return null;
+    const match = str.match(/^(\d{4}-\d{2}-\d{2})/);
+    return match ? match[1] : null;
+  }
+
+  function applyFilters(){
+    const q = normalize(searchInput.value);
+    const from = extractDatePart(fromDate.value);
+    const to = extractDatePart(toDate.value);
+
+    rows.forEach(row=>{
+      const user = normalize(row.cells[1].textContent);
+      const dist = normalize(row.cells[2].textContent);
+      const text = normalize(row.cells[3].textContent);
+      const dateText = row.cells[4].textContent.trim();
+      const feedbackDate = extractDatePart(dateText);
+
+      const matchText = !q || user.includes(q) || dist.includes(q) || text.includes(q);
+      const matchFrom = !from || (feedbackDate && feedbackDate >= from);
+      const matchTo = !to || (feedbackDate && feedbackDate <= to);
+
+      row.style.display = (matchText && matchFrom && matchTo) ? '' : 'none';
+    });
+  }
+
+  searchInput.addEventListener('input', applyFilters);
+  fromDate.addEventListener('change', applyFilters);
+  toDate.addEventListener('change', applyFilters);
+  clearBtn.addEventListener('click', ()=>{
+    searchInput.value = ''; fromDate.value = ''; toDate.value = ''; applyFilters();
+  });
+  applyFilters();
+</script>
+</body>
+</html>

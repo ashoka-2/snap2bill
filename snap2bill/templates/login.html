@@ -1,0 +1,383 @@
+{#<!DOCTYPE html>#}
+{#<html lang="en">#}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Document</title>#}
+{#    <style>#}
+{#        body{#}
+{#            background-color: #000000;#}
+{#            font-family: Arial, sans-serif;#}
+{#            display: flex;#}
+{#            justify-content: center;#}
+{#            align-items: center;#}
+{#            height: 100vh;#}
+{#            margin: 0;#}
+{#        }#}
+{#        .login {#}
+{#            width: 30%;#}
+{#            border-radius: 20px;#}
+{#            margin-left: auto;#}
+{#            margin-right: auto;#}
+{#            padding-top: 5px;#}
+{#            background-color: #ccc;#}
+{#            padding: 20px;#}
+{#        }#}
+{#        .form-group {#}
+{#            display: flex;#}
+{#            flex-direction: column;#}
+{#            gap: 10px;#}
+{#        }#}
+{#        label {#}
+{#            font-weight: bold;#}
+{#        }#}
+{#        input[type=text], input[type=password]{#}
+{#            border-radius: 20px;#}
+{#            height: 40px;#}
+{#            outline: none;#}
+{#            border-color: #ccc;#}
+{#            padding-left: 10px;#}
+{#        }#}
+{#        button {#}
+{#            background-color: blueviolet;#}
+{#            color: white;#}
+{#            border: none;#}
+{#            border-radius: 20px;#}
+{#            padding: 20px;#}
+{#        }#}
+{#        button:hover {#}
+{#            cursor: pointer;#}
+{#        }#}
+{#    </style>#}
+{#</head>#}
+{#<body>#}
+{#    #}
+{#<div class="login">#}
+{#    <form action="/login_post" method="post">#}
+{#        <div class="form-group">#}
+{#            <label for="username">Username:</label>#}
+{#            <input type="text" id="username" name="username" required>#}
+{#            <label for="password">Password:</label>#}
+{#            <input type="password" id="password" name="password" required>#}
+{#            <button type="submit">Login</button>#}
+{#        </div>#}
+{#        <a href="/forget_password">Forget password</a>#}
+{#        #}
+{#    </form>#}
+{#</div>#}
+{##}
+{#{% load django_browser_reload %}#}
+{#{% django_browser_reload %}#}
+{##}
+{#</body>#}
+{#</html>#}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snap2Bill Login</title>
+  <style>
+    /* =============================
+       🎨 COLOR VARIABLES
+       ============================= */
+    :root {
+      --primary: #1565c0;
+      --primary-light: #5e92f3;
+      --primary-dark: #003c8f;
+      --text-main: #1a1a1a;
+      --text-soft: #555;
+      --bg-body: #141414;
+      --bg-card: #ffffff;
+      --border-color: #dce3f0;
+      --radius: 0.8rem;
+      --shadow: rgba(0, 0, 0, 0.08);
+    }
+
+    /* =============================
+       🧩 GLOBAL BASE STYLES
+       ============================= */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", "Segoe UI", sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* =============================
+       🧊 LOGIN CARD
+       ============================= */
+    .login {
+      width: 90%;
+      max-width: 28rem;
+      background-color: var(--bg-card);
+      border-radius: var(--radius);
+      box-shadow: 0 1rem 2rem var(--shadow);
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .login h1 {
+      text-align: center;
+      color: var(--primary);
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+
+    .divider {
+      height: 0.2rem;
+      width: 3.5rem;
+      background-color: var(--primary);
+      border-radius: 0.1rem;
+      margin: 0 auto 2rem auto;
+    }
+
+    .login h2 {
+      text-align: center;
+      color: var(--primary-dark);
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      letter-spacing: 0.02em;
+      font-weight: 600;
+    }
+
+    /* =============================
+       🧾 FORM ELEMENTS
+       ============================= */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      font-weight: 500;
+    }
+
+    .password-field {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      border: 0.1rem solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 0.9rem 2.8rem 0.9rem 1.2rem;
+      font-size: 1rem;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+      outline: none;
+      color: var(--text-main);
+      background-color: #fafafa;
+    }
+
+    input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0.3rem rgba(21, 101, 192, 0.25);
+      background-color: #fff;
+    }
+
+    /* 👁️ EYE ICON BUTTON */
+    .toggle-visibility {
+      position: absolute;
+      right: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-soft);
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease;
+    }
+
+    .toggle-visibility:hover {
+      color: var(--primary);
+    }
+
+    .toggle-visibility svg {
+      width: 1.3rem;
+      height: 1.3rem;
+    }
+
+    button[type="submit"] {
+      margin-top: 1.5rem;
+      background-color: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.25s ease, transform 0.15s ease;
+      letter-spacing: 0.02em;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--primary-dark);
+      transform: translateY(-0.1rem);
+    }
+
+    .login a {
+      display: block;
+      text-align: center;
+      margin-top: 1.2rem;
+      font-size: 0.9rem;
+      color: var(--primary);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .login a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    @media (max-width: 600px) {
+      .login {
+        padding: 2rem 1.5rem;
+      }
+      .login h1 {
+        font-size: 1.6rem;
+      }
+      .login h2 {
+        font-size: 1.3rem;
+      }
+      button {
+        font-size: 1rem;
+      }
+    }
+
+    /* =============================
+       🔔 TOAST MESSAGES
+       ============================= */
+    #toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      z-index: 9999;
+    }
+
+    .toast {
+      background-color: #1565c0;
+      color: white;
+      padding: 1rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+      opacity: 0;
+      animation: fadeInOut 3.5s ease forwards;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toast.error {
+      background-color: #d32f2f;
+    }
+
+    .toast.success {
+      background-color: #2e7d32;
+    }
+
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(1rem); }
+      10% { opacity: 1; transform: translateY(0); }
+      90% { opacity: 1; }
+      100% { opacity: 0; transform: translateY(1rem); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login">
+    <h1>SNAP2BILL</h1>
+    <div class="divider"></div>
+    <h2>Welcome Back</h2>
+    <form action="/login_post" method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter your username"
+          required
+        />
+
+        <label for="password">Password</label>
+        <div class="password-field">
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+          <button type="button" class="toggle-visibility" onclick="togglePassword('password', this)">
+            <!-- 👁️ Default Eye (Visible) -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor"
+                 stroke-width="2" viewBox="0 0 24 24">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+
+        <button type="submit">Login</button>
+      </div>
+      <a href="/forget_password">Forgot password?</a>
+    </form>
+  </div>
+
+  <!-- Toast Message Display -->
+{% if messages %}
+<div id="toast-container">
+  {% for message in messages %}
+  <div class="toast {{ message.tags }}">
+    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+
+  <script>
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      const svg = btn.querySelector('svg');
+      const isVisible = input.type === 'text';
+      input.type = isVisible ? 'password' : 'text';
+      svg.innerHTML = isVisible
+        ? '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'
+        : '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a20.46 20.46 0 0 1 5.06-5.94"/><path d="M1 1l22 22"/>';
+    }
+  </script>
+
+</body>
+</html>

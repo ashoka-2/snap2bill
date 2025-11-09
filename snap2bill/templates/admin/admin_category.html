@@ -1,0 +1,542 @@
+{#{% load static %}#}
+{##}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin Category</title>#}
+{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{##}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{##}
+{#                <div id="navbar-section">#}
+{##}
+{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><span>Manage Category</span></div></a>#}
+{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
+{##}
+{#            </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#             <div class="setting-dropdown">#}
+{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
+{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
+{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#        </div>#}
+{#        <div class="admin-right-main-content">#}
+{##}
+{##}
+{#<form  action="" method="post">#}
+{#<table class="table"  border="1" >#}
+{#<caption><h1>Manage Categories</h1></caption>#}
+{#  <tr>#}
+{#    <th scope="col">serial number</th>#}
+{#    <th scope="col">Category Name</th>#}
+{#    <th scope="col">Action</th>#}
+{#  </tr>#}
+{#    {% for i in data %}#}
+{##}
+{#  <tr>#}
+{#    <td>{{ forloop.counter }}</td>#}
+{#    <td>{{ i.category_name }}</td>#}
+{#    <td><a href="/edit_category/{{ i.id }}">Edit</a><br>#}
+{#   	<a href="/delete_category/{{ i.id }}">Delete</a></td>#}
+{#  </tr>#}
+{#    {% endfor %}#}
+{#    <tr>#}
+{#        <td colspan="3"><a id="addcategorybtn" href="/admin_add_category">Add Category</a></td>#}
+{#    </tr>#}
+{##}
+{#</table>#}
+{##}
+{#</form>#}
+{##}
+{##}
+{#    </div>#}
+{#</div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#<script>#}
+{#    const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{##}
+{#    let body = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function () {#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    // Optional: close dropdown if clicked outside#}
+{#    body.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{#</script>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#</body>#}
+{#</html>#}
+
+
+
+
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Admin Category</title>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'admin/category.css' %}">
+
+    <link
+  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
+  rel="stylesheet"
+/>
+
+
+</head>
+
+<body>
+
+<div class="main-content">
+  <div class="admin-left-main-content">
+    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
+    <div class="admin-mid-left-content">
+      <div id="navbar-section">
+        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
+      </div>
+    </div>
+    <hr>
+ <div class="admin-bottom-left-content">
+      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+        <div class="setting-dropdown">
+          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+          <!-- ✅ Theme toggle with Remix Icon -->
+          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+          </a>
+          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+        </div>
+      </div>
+    </div>  </div>
+
+  <div class="admin-right-main-content">
+
+    {% if messages %}
+      <div id="toast-container">
+        {% for message in messages %}
+          <div class="toast {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="cat-header">
+      <div>
+        <div class="cat-title">Manage Categories</div>
+        <div class="cat-sub">Create, edit and organize your product categories.</div>
+      </div>
+      <div class="cat-actions">
+        <a class="btn btn-ghost" href="/admin_home"><i class="ri-dashboard-line"></i>  Dashboard</a>
+        <a class="btn btn-primary" href="/admin_add_category">+ Add Category</a>
+      </div>
+    </div>
+  <div class="search-bar">
+      <i class="ri-search-line"></i>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search categories..." />
+    </div>
+    <div class="cat-table-wrap">
+      <form action="" method="post">
+        {% csrf_token %}
+        <table class="cat-table">
+          <thead>
+            <tr>
+              <th style="width:12rem;">Serial Number</th>
+              <th>Category Name</th>
+              <th style="width:18rem;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in data %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ i.category_name }}</td>
+              <td>
+                <a class="chip chip-edit" href="/edit_category/{{ i.id }}">Edit</a>
+                <!-- Delete button triggers modal -->
+                <button type="button"
+                        class="chip chip-del js-open-delete"
+                        data-id="{{ i.id }}"
+                        data-name="{{ i.category_name }}">
+                  Delete
+                </button>
+              </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="3" class="empty">No categories yet — add your first one!</td></tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="cat-footer">
+                <a class="btn btn-primary" href="/admin_add_category">+ Add Category</a>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </form>
+    </div>
+
+    <!-- Hidden POST form for deletion -->
+    <form id="deleteForm" method="post" action="" style="display:none;">
+      {% csrf_token %}
+    </form>
+
+    <!-- Confirm Delete Modal -->
+    <div id="deleteModalBackdrop" class="modal-backdrop" aria-hidden="true">
+      <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-header">
+          <div class="modal-title" id="modalTitle">Delete Category?</div>
+          <button class="modal-close" type="button" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-body">
+          This action will permanently delete
+          <strong id="modalCatName">this category</strong>.
+          Are you sure you want to proceed?
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-light" id="modalCancel">Cancel</button>
+          <button type="button" class="btn btn-danger" id="modalConfirm">Delete</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+
+
+  // Sidebar dropdown (unchanged)
+  const moreBtn=document.querySelector(".more-section");
+  const dropdown=document.querySelector(".setting-dropdown");
+  document.body.addEventListener("click",e=>{
+    if(moreBtn && moreBtn.contains(e.target)){
+      e.stopPropagation();
+      dropdown.style.display = dropdown.style.display==='block' ? 'none' : 'block';
+    }else if(dropdown && !dropdown.contains(e.target)){
+      dropdown.style.display='none';
+    }
+  });
+const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  root.setAttribute('data-theme', savedTheme);
+  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+
+  themeBtn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+  });
+  // Toast auto-remove
+  setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);
+
+  // ===== Delete Modal logic =====
+  const modalBackdrop = document.getElementById('deleteModalBackdrop');
+  const modalClose = modalBackdrop.querySelector('.modal-close');
+  const modalCancel = document.getElementById('modalCancel');
+  const modalConfirm = document.getElementById('modalConfirm');
+  const modalCatName = document.getElementById('modalCatName');
+  const deleteForm = document.getElementById('deleteForm');
+
+  let pendingId = null;
+
+  function openModal(id, name){
+    pendingId = id;
+    modalCatName.textContent = `'${name}'`;
+    modalBackdrop.style.display = 'grid';
+    requestAnimationFrame(() => {
+      modalBackdrop.querySelector('.modal').classList.add('open');
+    });
+  }
+  function closeModal(){
+    modalBackdrop.querySelector('.modal').classList.remove('open');
+    setTimeout(()=>{ modalBackdrop.style.display='none'; }, 150);
+    pendingId = null;
+  }
+
+  // Open modal from any delete button
+  document.querySelectorAll('.js-open-delete').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      openModal(btn.dataset.id, btn.dataset.name);
+    });
+  });
+
+  // Close handlers
+  modalClose.addEventListener('click', closeModal);
+  modalCancel.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e)=>{
+    if(e.target === modalBackdrop) closeModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && modalBackdrop.style.display === 'grid') closeModal();
+  });
+
+  // Confirm delete => POST submit
+  modalConfirm.addEventListener('click', ()=>{
+    if(!pendingId) return;
+    deleteForm.action = `/delete_category/${pendingId}`;
+    deleteForm.submit();
+  });
+
+
+
+
+
+  const searchInput = document.getElementById('searchInput');
+  const tableRows = document.querySelectorAll('#categoryTable tbody tr');
+
+  searchInput.addEventListener('input', function() {
+    const query = this.value.toLowerCase().trim();
+    tableRows.forEach(row => {
+      const catName = row.cells[1]?.textContent.toLowerCase();
+      row.style.display = catName && catName.includes(query) ? '' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+{##}
+{#{% load static %}#}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin Category</title>#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{##}
+{#<style>#}
+{#  :root{#}
+{#    --primary:#1565c0; --primary-dark:#003c8f; --accent:#0ea5e9;#}
+{#    --text-main:#0a0a0a; --text-soft:#4b5563;#}
+{#    --surface:#ffffff; --line:#e5e7eb;#}
+{#    --radius:.75rem; --shadow:0 1.2rem 3rem rgba(2,6,23,.08);#}
+{#  }#}
+{##}
+{#  .admin-right-main-content{#}
+{#    width:100%; min-height:100vh;#}
+{#    background:#}
+{#      radial-gradient(80vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),#}
+{#      radial-gradient(60vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),#}
+{#      var(--surface);#}
+{#    color:var(--text-main);#}
+{#    padding:clamp(1rem,2.5vw,2rem);#}
+{#    box-sizing:border-box; overflow:auto;#}
+{#  }#}
+{##}
+{#  .cat-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block-end:1.25rem; }#}
+{#  .cat-title{ font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:800; letter-spacing:.02em; color:#0b1324; }#}
+{#  .cat-sub{ color:var(--text-soft); font-size:clamp(.9rem,1.2vw,1rem); margin-top:.25em; }#}
+{#  .cat-actions{ display:flex; gap:.75rem; flex-wrap:wrap; }#}
+{#  .btn{ display:inline-block; text-decoration:none; border-radius:9999px; font-weight:700; letter-spacing:.02em; border:0; cursor:pointer; white-space:nowrap; }#}
+{#  .btn-primary{ --g:linear-gradient(90deg,var(--primary),var(--accent),var(--primary)); background:var(--g); background-size:200% 100%; color:#fff; padding:.9rem 1.2rem; box-shadow:var(--shadow); transition:transform .15s, box-shadow .2s; animation:moveGrad 8s linear infinite; }#}
+{#  .btn-primary:hover{ transform:translateY(-.1rem); box-shadow:0 1.4rem 2.2rem rgba(21,101,192,.22); }#}
+{#  .btn-ghost{ background:transparent; color:var(--primary); border:.0625rem solid rgba(21,101,192,.4); padding:.85rem 1.1rem; transition:background .2s, transform .15s, border-color .2s; }#}
+{#  .btn-ghost:hover{ background:rgba(21,101,192,.12); transform:translateY(-.08rem); border-color:var(--primary); }#}
+{#  @keyframes moveGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}#}
+{##}
+{#  .cat-table-wrap{ background:rgba(255,255,255,.9); border:.0625rem solid var(--line); border-radius:calc(var(--radius) + .25rem); backdrop-filter:blur(.25rem); box-shadow:var(--shadow); overflow:auto; }#}
+{#  table.cat-table{ width:100%; border-collapse:separate; border-spacing:0; background:var(--surface); font-size:clamp(.95rem,1.1vw,1rem); }#}
+{#  .cat-table thead th{ position:sticky; top:0; z-index:1; background:linear-gradient(0deg,#f7faff,#fff); color:#0b1324; text-align:left; padding:1rem 1.2rem; font-weight:800; border-bottom:.0625rem solid var(--line); }#}
+{#  .cat-table tbody td{ padding:1rem 1.2rem; color:var(--text-main); border-bottom:.0625rem solid var(--line); }#}
+{#  .cat-table tbody tr:nth-child(odd){ background:#fbfdff; }#}
+{#  .cat-table tbody tr:hover{ background:#eef6ff; transition:background .15s; }#}
+{##}
+{#  .chip{ display:inline-flex; align-items:center; gap:.5em; padding:.6em .9em; border-radius:9999px; font-weight:700; font-size:.9em; text-decoration:none; user-select:none; border:.0625rem solid var(--line); transition:background .2s, transform .15s, border-color .2s, color .2s; }#}
+{#  .chip-edit{ color:#0b6bcb; background:#eef6ff; border-color:#b9dafc; }#}
+{#  .chip-edit:hover{ background:#dff0ff; transform:translateY(-.06rem); }#}
+{#  .chip-del{ color:#b42318; background:#fff1f0; border-color:#f7c3c0; }#}
+{#  .chip-del:hover{ background:#ffe3e0; transform:translateY(-.06rem); }#}
+{##}
+{#  .cat-footer{ display:flex; justify-content:flex-end; gap:.75rem; padding:1rem; background:linear-gradient(180deg,#fff,#f6f7fb); border-top:.0625rem solid var(--line); }#}
+{##}
+{#  /* Bottom-right toasts */#}
+{#  #toast-container{#}
+{#    position: fixed; right:2rem; bottom:2rem;#}
+{#    display:flex; flex-direction:column; align-items:flex-end; z-index:9999; gap:.75rem;#}
+{#  }#}
+{#  .toast{#}
+{#    background-color:var(--primary); color:#fff; padding:1rem 1.25rem; border-radius:var(--radius);#}
+{#    box-shadow:0 .75rem 1.25rem rgba(0,0,0,.12);#}
+{#    font-weight:600; opacity:0; transform:translateY(1rem) translateX(20%);#}
+{#    animation:toastIn .35s ease forwards, toastOut .35s ease 4.3s forwards;#}
+{#  }#}
+{#  .toast.success{ background:#2e7d32; } .toast.error{ background:#d32f2f; }#}
+{#  @keyframes toastIn{ from{opacity:0; transform:translateY(1rem) translateX(20%)} to{opacity:1; transform:translateY(0) translateX(0)} }#}
+{#  @keyframes toastOut{ to{ opacity:0; transform:translateY(1rem) translateX(20%) } }#}
+{#</style>#}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{#<div class="main-content">#}
+{#  <div class="admin-left-main-content">#}
+{#    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#    <div class="admin-mid-left-content">#}
+{#      <div id="navbar-section">#}
+{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#        <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><span>Manage Category</span></div></a>#}
+{#        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
+{#      </div>#}
+{#    </div>#}
+{#    <hr>#}
+{#    <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#      <div class="setting-dropdown">#}
+{#        <a href="#"><div class="setting-menu-dropdown">Setting</div></a>#}
+{#        <a href="#"><div class="setting-menu-dropdown">Switch theme</div></a>#}
+{#        <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#      </div>#}
+{#    </div></div>#}
+{#  </div>#}
+{##}
+{#  <div class="admin-right-main-content">#}
+{##}
+{#    {% if messages %}#}
+{#      <div id="toast-container">#}
+{#        {% for message in messages %}#}
+{#          <div class="toast {{ message.tags }}">{{ message }}</div>#}
+{#        {% endfor %}#}
+{#      </div>#}
+{#    {% endif %}#}
+{##}
+{#    <div class="cat-header">#}
+{#      <div>#}
+{#        <div class="cat-title">Manage Categories</div>#}
+{#        <div class="cat-sub">Create, edit and organize your product categories.</div>#}
+{#      </div>#}
+{#      <div class="cat-actions">#}
+{#        <a class="btn btn-ghost" href="/admin_home">Dashboard</a>#}
+{#        <a class="btn btn-primary" href="/admin_add_category">+ Add Category</a>#}
+{#      </div>#}
+{#    </div>#}
+{##}
+{#    <div class="cat-table-wrap">#}
+{#      <form action="" method="post">#}
+{#        {% csrf_token %}#}
+{#        <table class="cat-table">#}
+{#          <thead>#}
+{#            <tr>#}
+{#              <th style="width:12rem;">Serial Number</th>#}
+{#              <th>Category Name</th>#}
+{#              <th style="width:18rem;">Action</th>#}
+{#            </tr>#}
+{#          </thead>#}
+{#          <tbody>#}
+{#            {% for i in data %}#}
+{#            <tr>#}
+{#              <td>{{ forloop.counter }}</td>#}
+{#              <td>{{ i.category_name }}</td>#}
+{#              <td>#}
+{#                <a class="chip chip-edit" href="/edit_category/{{ i.id }}">Edit</a>#}
+{#                <a class="chip chip-del" href="/delete_category/{{ i.id }}" onclick="return confirm('Delete this category?');">Delete</a>#}
+{#              </td>#}
+{#            </tr>#}
+{#            {% empty %}#}
+{#            <tr><td colspan="3" class="empty">No categories yet — add your first one!</td></tr>#}
+{#            {% endfor %}#}
+{#          </tbody>#}
+{#          <tfoot>#}
+{#            <tr>#}
+{#              <td colspan="3" class="cat-footer">#}
+{#                <a class="btn btn-primary" href="/admin_add_category">+ Add Category</a>#}
+{#              </td>#}
+{#            </tr>#}
+{#          </tfoot>#}
+{#        </table>#}
+{#      </form>#}
+{#    </div>#}
+{##}
+{#  </div>#}
+{#</div>#}
+{##}
+{#<script>#}
+{#  const moreBtn=document.querySelector(".more-section");#}
+{#  const dropdown=document.querySelector(".setting-dropdown");#}
+{#  document.body.addEventListener("click",e=>{#}
+{#    if(moreBtn.contains(e.target)){ e.stopPropagation(); dropdown.style.display=dropdown.style.display==='block'?'none':'block'; }#}
+{#    else if(!dropdown.contains(e.target)){ dropdown.style.display='none'; }#}
+{#  });#}
+{#  // Auto remove toasts#}
+{#  setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);#}
+{#</script>#}
+{##}
+{#</body>#}
+{#</html>#}

@@ -1,0 +1,236 @@
+{#{% load static %}#}
+{##}
+{##}
+{##}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Edit Category</title>#}
+{#        <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{##}
+{##}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{##}
+{#                <div id="navbar-section">#}
+{##}
+{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
+{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
+{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
+{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><span>Manage Category</span></div></a>#}
+{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
+{##}
+{#            </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
+{#             <div class="setting-dropdown">#}
+{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
+{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
+{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#        </div>#}
+{#        <div class="admin-right-main-content">#}
+{##}
+{##}
+{#            <form  action="/edit_category_post/{{ data.id }}" method="post">#}
+{#            <table class="table" border="2" >#}
+{#            <caption><h1>Edit Category</h1></caption>#}
+{#              <tr>#}
+{#                <th scope="col">Category Name :</th>#}
+{#                <th scope="col"><label for="category"></label>#}
+{#                  <div align="left">#}
+{#                    <input type="text" name="Category" id="category" value="{{ data.category_name }}" />#}
+{#                  </div></th>#}
+{#              </tr>#}
+{#              <tr>#}
+{#                <td colspan="2"><input type="submit" value="Update Category"/></td>#}
+{##}
+{#              </tr>#}
+{#            </table>#}
+{#            </form>#}
+{##}
+{##}
+{##}
+{#    </div>#}
+{#</div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#<script>#}
+{#    const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{##}
+{#    let body = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function () {#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    // Optional: close dropdown if clicked outside#}
+{#    body.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{#</script>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#</body>#}
+{#</html>#}
+
+
+
+
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Edit Category</title>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'admin/category.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+
+
+</head>
+
+<body>
+
+<div class="main-content">
+  <div class="admin-left-main-content">
+    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
+    <div class="admin-mid-left-content">
+      <div id="navbar-section">
+        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
+      </div>
+    </div>
+    <hr>
+ <div class="admin-bottom-left-content">
+      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+        <div class="setting-dropdown">
+          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+          <!-- ✅ Theme toggle with Remix Icon -->
+          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+          </a>
+          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+        </div>
+      </div>
+    </div>  </div>
+
+  <div class="admin-right-main-content">
+
+    {% if messages %}
+      <div id="toast-container">
+        {% for message in messages %}
+          <div class="toast {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="edit-head">
+      <div>
+        <div class="edit-title">Edit Category</div>
+        <div class="edit-sub">Update the category name and save your changes.</div>
+      </div>
+      <div class="edit-actions">
+        <a class="btn btn-ghost" href="/admin_category">Back to Categories</a>
+      </div>
+    </div>
+
+    <div class="form-band">
+      <form action="/edit_category_post/{{ data.id }}" method="post">
+        {% csrf_token %}
+        <div class="form-grid">
+          <label for="category" class="label">Category Name :</label>
+          <div class="control">
+            <input type="text" name="Category" id="category" class="input" value="{{ data.category_name }}" placeholder="Enter category name" required />
+          </div>
+        </div>
+        <div class="form-actions">
+          <a class="btn btn-ghost" href="/admin_category">Cancel</a>
+          <button type="submit" class="btn btn-primary">Update Category</button>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const moreBtn=document.querySelector(".more-section");
+  const dropdown=document.querySelector(".setting-dropdown");
+  document.body.addEventListener("click",e=>{
+    if(moreBtn.contains(e.target)){ e.stopPropagation(); dropdown.style.display=dropdown.style.display==='block'?'none':'block'; }
+    else if(!dropdown.contains(e.target)){ dropdown.style.display='none'; }
+  });
+  setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);
+
+
+
+
+
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('themeToggle');
+  const themeIcon = document.getElementById('themeIcon');
+
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  root.setAttribute('data-theme', savedTheme);
+  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+
+  themeBtn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+  });
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
