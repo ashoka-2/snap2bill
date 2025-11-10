@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snap2bill/Distributordirectory/addfolder/add_product.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/send_feedback.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
@@ -117,10 +118,10 @@ class _home_page_subState extends State<home_page_sub> {
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_distributors()));
               // Navigator.pop(context);
             },),
-            // ListTile(leading: Icon(Icons.receipt),title:Text("View My Bills"),onTap: (){
-            //   Navigator.push(context, MaterialPageRoute(builder: (context)=>view_bills()));
-            //   // Navigator.pop(context);
-            // },),
+            ListTile(leading: Icon(Icons.receipt),title:Text("Add Product"),onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>add_product()));
+              // Navigator.pop(context);
+            },),
             ListTile(leading: Icon(Icons.image),title:Text("Product"),onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_product()));
               // Navigator.pop(context);

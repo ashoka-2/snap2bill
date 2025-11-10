@@ -23,7 +23,7 @@ class _view_feedbackState extends State<view_feedback> {
     String b = prefs.getString("lid").toString();
     String foodimage="";
     var data = await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_feedback"),
-        body: {}
+        body: {"uid":prefs.getString("uid")}
     );
 
     var jsonData = json.decode(data.body);

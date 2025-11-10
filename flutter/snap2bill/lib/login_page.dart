@@ -206,8 +206,8 @@ class login_page_sub extends StatefulWidget {
 
 class _login_page_subState extends State<login_page_sub>
     with SingleTickerProviderStateMixin {
-  TextEditingController username = TextEditingController();
-  TextEditingController password = TextEditingController();
+  TextEditingController username = TextEditingController(text: "ashoka@gmail.com");
+  TextEditingController password = TextEditingController(text: "password");
   bool _obscureText = true;
 
   bool _usernameError = false;

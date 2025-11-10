@@ -218,7 +218,7 @@ class _view_product_subState extends State<view_product_sub> {
     }
 
     final uri = Uri.parse("$base/distributor_view_product");
-    final res = await http.post(uri, body: {"id": uid}); // server expects 'id'
+    final res = await http.post(uri, body: {"uid": uid}); // server expects 'id'
 
     if (res.statusCode != 200) {
       throw Exception("HTTP ${res.statusCode}: ${res.body}");
@@ -319,7 +319,7 @@ class _view_product_subState extends State<view_product_sub> {
                                       description: i.description,
                                       quantity: i.quantity,
                                       category: i.CATEGORY,
-                                      category_name: i.CATEGORY_NAME,
+                                      // category_name: i.CATEGORY_NAME,
                                     ),
                                   ),
                                 ).then((_) => setState(() {})); // refresh on return

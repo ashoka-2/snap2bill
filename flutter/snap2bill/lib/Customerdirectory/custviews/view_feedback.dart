@@ -23,7 +23,7 @@ class _view_feedbackState extends State<view_feedback> {
     String b = prefs.getString("lid").toString();
     String foodimage="";
     var data = await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_feedback"),
-        body: {}
+        body: {"cid":prefs.getString("cid")}
     );
 
     var jsonData = json.decode(data.body);
@@ -33,8 +33,9 @@ class _view_feedbackState extends State<view_feedback> {
       print(joke);
       Joke newJoke = Joke(
           joke["id"].toString(),
-          joke["feedbacks"],
-          joke["feedback_date"].toString()
+          joke["feedbacks"].toString(),
+          joke["feedback_date"].toString(),
+          // joke["username"].toString(),
       );
       jokes.add(newJoke);
     }
@@ -145,10 +146,11 @@ class Joke {
   final String id;
   final String feedbacks;
   final String feedback_date;
+  // final String username;
 
 
 
 
-  Joke(this.id,this.feedbacks, this.feedback_date);
+  Joke(this.id,this.feedbacks, this.feedback_date,);
 //  print("hiiiii");
 }

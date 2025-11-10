@@ -2,6 +2,7 @@ import datetime
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
@@ -331,7 +332,9 @@ def admin_feedback(request):
 
 # ========== API: GET FEEDBACKS (For Flutter / Mobile) ==========
 def view_feedback(request):
-    data = feedback.objects.all().order_by('-feedback_date')
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
+    data = feedback.objects.filter(USER_id=cid, DISTRIBUTOR_id=uid).order_by('-feedback_date')
     feedback_list = []
 
     for f in data:
@@ -487,9 +490,6 @@ def customer_search_page(request):
     return JsonResponse({'status':'ok'})
 
 
-def customer_upload_page(request):
-    return JsonResponse({'status':'ok'})
-
 def customer_follow(request):
     return JsonResponse({'status':'ok'})
 
@@ -516,6 +516,7 @@ def customer_view_bill(request):
     return JsonResponse({'status':'ok'})
 
 def distributor_make_bill(request):
+
     return JsonResponse({'status':'ok'})
 
 def distributor_edit_bill(request):
@@ -530,20 +531,37 @@ def distributor_send_bill(request):
 def customer_receive_bill(request):
     return JsonResponse({'status':'ok'})
 
-def distributor_upload_product(request):
+
+
+
+def distributor_add_product(request):
+    uid = request.POST['uid']
+    image = request.FILES['file']
+
+    product_name = request.POST['product_name']
+    price = request.POST['price']
+    description = request.POST['description']
+    quantity = request.POST['quantity']
+    category = request.POST['category']
+
+
+    fs = FileSystemStorage()
+    path = fs.save(image.name,image)
+
+    obj = product()
+    obj.image = fs.url(path)
+    obj.product_name = product_name
+    obj.price = price
+    obj.quantity = quantity
+    obj.description = description
+    obj.CATEGORY_id = category
+    obj.DISTRIBUTOR_id = uid
+    obj.save()
 
     return JsonResponse({'status':'ok'})
 
-
-# def distributor_view_product(request):
-#     data = product.objects.all()
-#     ar = []
-#     for i in data:
-#         ar.append({'id': i.id, 'product_name': i.product_name, 'price':i.price,'image':i.image,'description':i.description,'quantity':i.quantity})
-#     return JsonResponse({'status': 'ok','data': ar})
-
 def distributor_view_product(request):
-    uid = request.session.get('uid') or request.POST.get('id')
+    uid = request.POST['uid']
     if not uid:
         return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
     data = product.objects.filter(DISTRIBUTOR_id=uid)
@@ -564,45 +582,21 @@ def distributor_view_product(request):
 
 
 def distributor_edit_product(request):
-    product_name = request.POST.get('product_name', '')
-    price = request.POST.get('price', '')
-    description = request.POST.get('description', '')
-    quantity = request.POST.get('quantity', '')
-    uid = request.session.get('uid')
-    pid = request.POST.get('id')
 
-    if not pid:
-        return JsonResponse({'status': 'error', 'message': 'Missing product id'}, status=400)
-    if not uid:
-        return JsonResponse({'status': 'error', 'message': 'Not logged in as distributor'}, status=401)
+    print(request,"popo")
 
-    update = {
-        'product_name': product_name,
-        'price': price,
-        'description': description,
-        'quantity': quantity,
-    }
-
-    caid = request.POST.get('CATEGORY')  # expects key "CATEGORY"
-    if caid:
-        update['CATEGORY_id'] = caid
-
-    updated = product.objects.filter(id=pid, DISTRIBUTOR_id=uid).update(**update)
-    if not updated:
-        return JsonResponse({'status': 'error', 'message': 'Product not found for this distributor'}, status=404)
-
+    product_name = request.POST['product_name']
+    price = request.POST['price']
+    description = request.POST['description']
+    quantity = request.POST['quantity']
+    category = request.POST['category']
+    print(product_name,price,description,quantity,category)
+    uid = request.POST['uid']
+    pid = request.POST['id']
+    print(uid,pid)
+    product.objects.filter(id=pid).update(product_name=product_name,price=price,description=description,quantity=quantity,category=category)
     return JsonResponse({'status': 'ok'})
 
-
-# def distributor_edit_product(request):
-#     product_name = request.POST['product_name']
-#     price = request.POST['price']
-#     description = request.POST['description']
-#     quantity = request.POST['quantity']
-#     uid = request.session.get('uid')
-#     pid = request.POST['id']
-#     product.objects.filter(id=pid,DISTRIBUTOR_id=uid).update(product_name=product_name,price=price,description=description,quantity=quantity)
-#     return JsonResponse({'status':'ok'})
 
 
 
@@ -657,12 +651,14 @@ def customer_registration(request):
 def view_category(request):
 
     data = category.objects.all()
+    print(data)
     ar = []
     for i in data:
         ar.append({
-            'id':i.id,
-            'category_name':i.category_name,
+            'id': i.id,
+            'category_name': i.category_name,
         })
+    print(ar)
     return JsonResponse({'status':'ok','data':ar})
 
 
@@ -680,7 +676,7 @@ def login_page(request):
             if data.groups.filter(name="distributor").exists():
                 print("Distributor")
                 uid = distributor.objects.get(LOGIN=request.user.id).id
-                request.session['uid'] = uid
+
                 print(uid)
                 return JsonResponse({'status':'distok','uid':str(uid)}, status=200)
 
