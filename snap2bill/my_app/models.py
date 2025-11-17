@@ -46,7 +46,6 @@ class product(models.Model):
     description = models.CharField(max_length=100)
     quantity = models.CharField(max_length=100)
     CATEGORY = models.ForeignKey(category,models.CASCADE)
-    DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
 
 
 
@@ -71,7 +70,7 @@ class product(models.Model):
 #         null=True,
 #         blank=True
 #     )
-from django.utils import timezone
+
 
 class review(models.Model):
     reviews = models.TextField()
@@ -127,18 +126,29 @@ class feedback(models.Model):
 
 
 
+
+class stock(models.Model):
+    quantity = models.CharField(max_length=100)
+    DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
+    PRODUCT = models.ForeignKey(product,models.CASCADE)
+
+
+
 class orders(models.Model):
     orders = models.CharField(max_length=100)
     payment_status = models.CharField(max_length=100)
     payment_date = models.CharField(max_length=100)
     date = models.CharField(max_length=100)
     USER = models.ForeignKey(customer,models.CASCADE)
-    CUSTOMER = models.ForeignKey(distributor,models.CASCADE)
+    DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
 
 class order_sub(models.Model):
     PRODUCT = models.ForeignKey(product,models.CASCADE)
     ORDER= models.ForeignKey(orders,models.CASCADE)
     quantity= models.CharField(max_length=100)
+
+    STOCK = models.ForeignKey(stock,models.CASCADE)
+
 
 class cart(models.Model):
     PRODUCT = models.ForeignKey(product,models.CASCADE)

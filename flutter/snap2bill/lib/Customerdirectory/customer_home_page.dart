@@ -5,6 +5,7 @@ import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_review.dart';
 import 'package:snap2bill/Customerdirectory/custviews/view_review.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
+import 'package:snap2bill/Customerdirectory/password/changePassword.dart';
 import 'package:snap2bill/Customerdirectory/search_page.dart';
 import 'package:snap2bill/Customerdirectory/profile_page.dart';
 import '../Customerdirectory/chat_page.dart';
@@ -110,7 +111,10 @@ class _CustomerHomePageState extends State<customer_home_page> {
             SizedBox(height: 10,),
             ElevatedButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_feedback()));
-            }, child: Text("view feedback"))
+            }, child: Text("view feedback")),
+            ElevatedButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>changePassword()));
+            }, child: Text("Change password"))
           ],
         ),
       ),

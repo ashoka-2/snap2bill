@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:snap2bill/Distributordirectory/addfolder/add_product.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/send_feedback.dart';
+import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
 import 'package:snap2bill/Distributordirectory/view/view_product.dart';
 import 'package:snap2bill/Distributordirectory/view/view_bills.dart';
+import 'package:snap2bill/password/changePassword.dart';
 
 
 import '../Distributordirectory/search_page.dart';
@@ -118,11 +120,11 @@ class _home_page_subState extends State<home_page_sub> {
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_distributors()));
               // Navigator.pop(context);
             },),
-            ListTile(leading: Icon(Icons.receipt),title:Text("Add Product"),onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>add_product()));
+            ListTile(leading: Icon(Icons.image),title:Text("My Product"),onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>myProducts()));
               // Navigator.pop(context);
             },),
-            ListTile(leading: Icon(Icons.image),title:Text("Product"),onTap: (){
+            ListTile(leading: Icon(Icons.image),title:Text("View all Product"),onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_product()));
               // Navigator.pop(context);
             },),
@@ -130,6 +132,10 @@ class _home_page_subState extends State<home_page_sub> {
               Navigator.push(context, MaterialPageRoute(builder: (context)=>send_feedback()));
               // Navigator.pop(context);
             },),
+            ListTile(leading: Icon(Icons.password),title:Text("Change password"),onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>changePassword()));
+              // Navigator.pop(context);
+            },)
 
           ],
         ),

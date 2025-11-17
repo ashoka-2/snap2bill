@@ -1,0 +1,119 @@
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Login_page.dart';
+
+
+
+
+class changePassword extends StatelessWidget {
+  const changePassword({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(home: changePasswordSub(),);
+  }
+}
+
+class changePasswordSub extends StatefulWidget {
+  const changePasswordSub({Key? key}) : super(key: key);
+
+  @override
+  State<changePasswordSub> createState() => _changePasswordSubState();
+}
+
+class _changePasswordSubState extends State<changePasswordSub> {
+  TextEditingController oldpassword = TextEditingController();
+  TextEditingController newpassword = TextEditingController();
+  TextEditingController confirmpassword = TextEditingController();
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("change password"),),
+
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          child: Column(
+            children: [
+              TextField(
+                controller: oldpassword,
+                    decoration: InputDecoration(
+                    hintText: 'Enter old password',
+                    labelText: 'Password',
+                    prefixIcon: Icon(Icons.password),
+                    border: OutlineInputBorder()
+                  ),),
+              SizedBox(height: 10,),
+              TextField(
+                controller: newpassword,
+                decoration: InputDecoration(
+                    hintText: 'Enter new password',
+                    labelText: 'New Password',
+                    prefixIcon: Icon(Icons.password),
+                    border: OutlineInputBorder()
+                ),),
+              SizedBox(height: 10,),
+              TextField(
+                controller: confirmpassword,
+                decoration: InputDecoration(
+                    hintText: 'Confirm new password',
+                    labelText: 'Confirm Password',
+                    prefixIcon: Icon(Icons.password),
+                    border: OutlineInputBorder()
+                ),),
+              SizedBox(height: 10,),
+              ElevatedButton(onPressed: () async {
+                SharedPreferences prefs = await SharedPreferences.getInstance();
+                var data = await http.post(Uri.parse(prefs.getString("ip").toString()+"/customer_change_password"),
+                    body: {
+                    'cid':prefs.getString("cid").toString(),
+                      "newpassword":newpassword.text,
+                    }
+                );
+                if(oldpassword.text==prefs.getString("pwd")){
+                  if(newpassword.text==confirmpassword.text){
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>login_page()));
+
+                  }
+                  else{
+                    showDialog(context: context, builder: (BuildContext context){
+                      return AlertDialog(title: Text("Change Password "),
+                        content: Text("Password does not match."),
+                        actions: [
+                          TextButton(onPressed: (){
+                            Navigator.of(context).pop();
+                          }, child: Text("ok"))
+                        ],
+                      );
+                    });
+                  }
+                }
+                else{
+                  showDialog(context: context, builder: (BuildContext context){
+                    return AlertDialog(title: Text("Change Password "),
+                      content: Text("Password does not match."),
+                      actions: [
+                        TextButton(onPressed: (){
+                          Navigator.of(context).pop();
+                        }, child: Text("ok"))
+                      ],
+                    );
+                  });
+                }
+                print(newpassword);
+
+
+
+              }, child: Text("Update Password"))
+
+            ],
+          ),
+
+        ),
+      ),
+
+    );
+  }
+}

@@ -78,17 +78,31 @@ urlpatterns = [
     path('distributor_delete_bill', views.distributor_delete_bill),
     path('distributor_send_bill', views.distributor_send_bill),
     path('customer_receive_bill', views.customer_receive_bill),
-    path('distributor_add_product', views.distributor_add_product),
-    path('distributor_edit_product', views.distributor_edit_product),
     path('distributor_view_product',views.distributor_view_product),
-    path('distributor_delete_product', views.distributor_delete_product),
     path('distributor_delete_customers',views.distributor_delete_customers),
     path('distributor_view_customer',views.distributor_view_customer),
     path('distributor_view_distributor', views.distributor_view_distributor),
     path('edit_distributor_profile',views.edit_distributor_profile),
 
 
+    path('password_change',views.password_change),
+    path('customer_change_password',views.customer_change_password),
 
+
+    path('distributor_products',views.distributor_products),
+
+    path('view_product',views.view_product),
+    path('add_product',views.add_product),
+    path('add_product_post',views.add_product_post),
+    path('edit_product/<id>',views.edit_product),
+    path('edit_product_post/<id>', views.edit_product_post),
+    path('delete_product/<id>',views.delete_product),
+
+
+    path('add_stock',views.add_stock),
+    path('edit_stock', views.edit_stock),
+    path('view_stock', views.view_stock),
+    path('delete_stock', views.delete_stock),
 
 ]
 

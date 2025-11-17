@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 # Create your views here
-from my_app.models import category, distributor, review, feedback, customer,product
+from my_app.models import category, distributor, review, feedback, customer, product, stock
 
 print(make_password("password"))
 
@@ -534,37 +534,17 @@ def customer_receive_bill(request):
 
 
 
-def distributor_add_product(request):
-    uid = request.POST['uid']
-    image = request.FILES['file']
-
-    product_name = request.POST['product_name']
-    price = request.POST['price']
-    description = request.POST['description']
-    quantity = request.POST['quantity']
-    category = request.POST['category']
 
 
-    fs = FileSystemStorage()
-    path = fs.save(image.name,image)
 
-    obj = product()
-    obj.image = fs.url(path)
-    obj.product_name = product_name
-    obj.price = price
-    obj.quantity = quantity
-    obj.description = description
-    obj.CATEGORY_id = category
-    obj.DISTRIBUTOR_id = uid
-    obj.save()
 
-    return JsonResponse({'status':'ok'})
+
 
 def distributor_view_product(request):
-    uid = request.POST['uid']
-    if not uid:
-        return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
-    data = product.objects.filter(DISTRIBUTOR_id=uid)
+    # uid = request.POST['uid']
+    # if not uid:
+    #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
+    data = product.objects.all()
     ar = []
     for i in data:
         ar.append({
@@ -580,29 +560,6 @@ def distributor_view_product(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
-
-def distributor_edit_product(request):
-
-    print(request,"popo")
-
-    product_name = request.POST['product_name']
-    price = request.POST['price']
-    description = request.POST['description']
-    quantity = request.POST['quantity']
-    category = request.POST['category']
-    print(product_name,price,description,quantity,category)
-    uid = request.POST['uid']
-    pid = request.POST['id']
-    print(uid,pid)
-    product.objects.filter(id=pid).update(product_name=product_name,price=price,description=description,quantity=quantity,category=category)
-    return JsonResponse({'status': 'ok'})
-
-
-
-
-
-def distributor_delete_product(request):
-    return JsonResponse({'status':'ok'})
 
 
 def distributor_delete_customers(request):
@@ -645,6 +602,10 @@ def customer_registration(request):
     ob.LOGIN=obj
     ob.save()
     return JsonResponse({'status':'ok'})
+
+
+
+
 
 
 
@@ -694,3 +655,142 @@ def login_page(request):
     return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 
+
+
+def password_change(request):
+    uid = request.POST['uid']
+    newpass = request.POST['newpassword']
+    lid=distributor.objects.get(id=uid).LOGIN_id
+    User.objects.filter(id=lid).update(password=make_password(newpass))
+    return JsonResponse({'status':'ok'})
+
+
+
+def customer_change_password(request):
+    cid = request.POST['cid']
+    newpass = request.POST['newpassword']
+    lid=customer.objects.get(id=cid).LOGIN_id
+    User.objects.filter(id=lid).update(password=make_password(newpass))
+    return JsonResponse({'status':'ok'})
+
+
+
+
+
+
+
+def view_product(request):
+    productdata = product.objects.all()
+    return render(request, 'admin/view_product.html', {'productdata': productdata})
+
+
+def add_product(request):
+    categorydtata = category.objects.all()
+    return render(request,"admin/add_product.html",{'categorydata':categorydtata})
+
+
+
+def add_product_post(request):
+    product_name = request.POST['product_name']
+    img = request.FILES['image']
+    fs=FileSystemStorage()
+    image=fs.save(img.name,img)
+    price = request.POST['price']
+    quantity = request.POST['quantity']
+    description = request.POST['description']
+    category = request.POST['category']
+    obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
+    obj.save()
+    # messages.success(request, f"Category '{category_name}' added successfully!")
+    return redirect('/view_product')
+
+
+
+def edit_product(request,id):
+    data = product.objects.get(id=id)
+    categorydata = category.objects.all()
+    return render(request, 'admin/edit_product.html',{'data': data,'categorydata':categorydata})
+
+
+def edit_product_post(request,id):
+    product_name = request.POST['product_name']
+
+    price = request.POST['price']
+    quantity = request.POST['quantity']
+    description = request.POST['description']
+    category = request.POST['category']
+    if 'image' in request.FILES:
+        img = request.FILES['image']
+        fs = FileSystemStorage()
+        image = fs.save(img.name, img)
+        product.objects.filter(id=id).update( image=fs.url(image))
+
+    product.objects.filter(id=id).update(product_name=product_name, price=price, quantity=quantity,description=description, CATEGORY_id=category)
+
+    return redirect('/view_product')
+
+
+
+def delete_product(request, id):
+    obj = product.objects.get(id=id)
+
+    obj.delete()
+    # messages.error(request, f"Category '{name}' deleted.")
+    return redirect('/view_product')
+
+
+
+
+
+
+
+
+def distributor_products(request):
+    uid = request.POST['uid']
+    data = stock.objects.filter(DISTRIBUTOR_id=uid)
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'product_name': i.PRODUCT.product_name,
+            'price': i.PRODUCT.price,
+            'image': i.PRODUCT.image,
+            'description': i.PRODUCT.description,
+            'quantity': i.quantity,
+            'CATEGORY': i.PRODUCT.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+
+def add_stock(request):
+    quantity = request.POST['quantity']
+    uid= request.POST['uid']
+    pid = request.POST['pid']
+
+    obj = stock()
+    obj.quantity = quantity
+    obj.DISTRIBUTOR_id = uid
+    obj.PRODUCT_id = pid
+    obj.save()
+
+    return JsonResponse({'ststus':'ok'})
+
+
+def edit_stock(request):
+
+    return JsonResponse({'ststus':'ok'})
+
+
+def view_stock(request):
+
+    return JsonResponse({'ststus':'ok'})
+
+
+
+def delete_stock(request):
+
+
+    return JsonResponse({'ststus':'ok'})

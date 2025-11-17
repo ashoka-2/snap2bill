@@ -263,6 +263,7 @@ class _login_page_subState extends State<login_page_sub>
 
       if (decoded['status'] == 'custok') {
         sh.setString("cid", decoded['cid']);
+        sh.setString("pwd", password.text);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login successful')),
         );
@@ -272,6 +273,7 @@ class _login_page_subState extends State<login_page_sub>
         );
       } else if (decoded['status'] == 'distok') {
         sh.setString("uid", decoded['uid']);
+        sh.setString("pwd1", password.text);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login successful')),
         );

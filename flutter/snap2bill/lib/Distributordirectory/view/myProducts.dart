@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 
 
 import 'dart:convert';
@@ -6,25 +8,26 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/Editfolder/edit_product.dart';
 
+import '../Editfolder/editStock.dart';
 import '../addfolder/addStock.dart';
 
-class view_product extends StatelessWidget {
-  const view_product({Key? key}) : super(key: key);
+class myProducts extends StatelessWidget {
+  const myProducts({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(home: view_product_sub());
+    return const MaterialApp(home: myProductsSub());
   }
 }
 
-class view_product_sub extends StatefulWidget {
-  const view_product_sub({Key? key}) : super(key: key);
+class myProductsSub extends StatefulWidget {
+  const myProductsSub({Key? key}) : super(key: key);
 
   @override
-  State<view_product_sub> createState() => _view_product_subState();
+  State<myProductsSub> createState() => _myProductsSubState();
 }
 
-class _view_product_subState extends State<view_product_sub> {
+class _myProductsSubState extends State<myProductsSub> {
   Future<List<Joke>> _getProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final base = prefs.getString("ip") ?? "";
@@ -37,8 +40,8 @@ class _view_product_subState extends State<view_product_sub> {
       throw Exception("Missing distributor id (uid). Save it after login.");
     }
 
-    final uri = Uri.parse("$base/distributor_view_product");
-    final res = await http.post(uri, body: {"uid": uid}); // server expects 'id'
+    final uri = Uri.parse("$base/distributor_products");
+    final res = await http.post(uri, body: {"uid": prefs.getString('uid').toString()}); // server expects 'id'
 
     if (res.statusCode != 200) {
       throw Exception("HTTP ${res.statusCode}: ${res.body}");
@@ -132,11 +135,11 @@ class _view_product_subState extends State<view_product_sub> {
                               onPressed: () async {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 prefs.setString("pid", i.id);
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>addStock()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>editStock()));
 
 
                               },
-                              child: const Text("Add stock"),
+                              child: const Text("Edit stock"),
                             ),
 
                           ],
