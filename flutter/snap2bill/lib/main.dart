@@ -77,6 +77,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFF3F4F6),
+        
       ),
     );
   }
@@ -91,7 +92,7 @@ class MyApp_sub extends StatefulWidget {
 
 class _MyApp_subState extends State<MyApp_sub>
     with SingleTickerProviderStateMixin {
-    TextEditingController ip = TextEditingController(text: "192.168.29.3");
+  TextEditingController ip = TextEditingController(text: "192.168.29.3");
 
   // TextEditingController ip = TextEditingController(text: "10.218.83.28");
 
@@ -102,12 +103,18 @@ class _MyApp_subState extends State<MyApp_sub>
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
-    _fadeAnimation =
-        CurvedAnimation(parent: _controller, curve: Curves.easeInOut);
-    _scaleAnimation =
-        CurvedAnimation(parent: _controller, curve: Curves.elasticOut);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeInOut,
+    );
+    _scaleAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.elasticOut,
+    );
 
     _controller.forward();
   }
@@ -176,7 +183,10 @@ class _MyApp_subState extends State<MyApp_sub>
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none,
                       ),
-                      prefixIcon: const Icon(Icons.wifi, color: Colors.blueAccent),
+                      prefixIcon: const Icon(
+                        Icons.wifi,
+                        color: Colors.blueAccent,
+                      ),
                     ),
                     controller: ip,
                   ),

@@ -57,7 +57,7 @@ class _view_product_subState extends State<view_product_sub> {
       out.add(Joke(
         (it["id"] ?? "").toString(),
         (it["product_name"] ?? "").toString(),
-        (it["price"] ?? "").toString(),
+        // (it["price"] ?? "").toString(),
         _joinUrl(base, (it["image"] ?? "").toString()),
         (it["description"] ?? "").toString(),
         (it["quantity"] ?? "").toString(),
@@ -120,7 +120,7 @@ class _view_product_subState extends State<view_product_sub> {
                             ? const SizedBox(height: 100, width: 100)
                             : Image.network(i.image, height: 100, width: 100, fit: BoxFit.cover),
                         _buildRow("Name:", i.product_name),
-                        _buildRow("Price:", i.price),
+                        // _buildRow("Price:", i.price),
                         _buildRow("Description:", i.description),
                         _buildRow("Quantity:", i.quantity),
                         _buildRow("Category:", i.CATEGORY_NAME),
@@ -177,7 +177,7 @@ class _view_product_subState extends State<view_product_sub> {
 class Joke {
   final String id;
   final String product_name;
-  final String price;
+  // final String price;
   final String image;
   final String description;
   final String quantity;
@@ -187,7 +187,7 @@ class Joke {
   Joke(
       this.id,
       this.product_name,
-      this.price,
+      // this.price,
       this.image,
       this.description,
       this.quantity,

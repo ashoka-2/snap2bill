@@ -6,7 +6,7 @@ import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
 import 'package:snap2bill/Distributordirectory/view/view_product.dart';
 import 'package:snap2bill/Distributordirectory/view/view_bills.dart';
-import 'package:snap2bill/password/changePassword.dart';
+import 'package:snap2bill/Distributordirectory/password/changePassword.dart';
 
 
 import '../Distributordirectory/search_page.dart';

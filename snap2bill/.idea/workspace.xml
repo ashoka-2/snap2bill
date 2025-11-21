@@ -35,8 +35,8 @@
           <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="289">
-                  <caret line="91" column="60" lean-forward="false" selection-start-line="91" selection-start-column="60" selection-end-line="91" selection-end-column="60" />
+                <state relative-caret-position="391">
+                  <caret line="103" column="36" lean-forward="false" selection-start-line="103" selection-start-column="36" selection-end-line="103" selection-end-column="36" />
                   <folding>
                     <element signature="e#633#665#0" expanded="true" />
                   </folding>
@@ -47,12 +47,32 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="313">
-                  <caret line="758" column="25" lean-forward="true" selection-start-line="758" selection-start-column="25" selection-end-line="758" selection-end-column="25" />
+                <state relative-caret-position="252">
+                  <caret line="361" column="37" lean-forward="true" selection-start-line="361" selection-start-column="37" selection-end-line="361" selection-end-column="37" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
-                    <marker date="1763364901663" expanded="true" signature="4324:4400" ph="..." />
+                    <marker date="1763702723246" expanded="true" signature="4324:4400" ph="..." />
                   </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="edit_product.html" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/templates/admin/edit_product.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="328">
+                  <caret line="60" column="8" lean-forward="true" selection-start-line="60" selection-start-column="8" selection-end-line="62" selection-end-column="0" />
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="add_product.html" pinned="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/templates/admin/add_product.html">
+              <provider selected="true" editor-type-id="text-editor">
+                <state relative-caret-position="286">
+                  <caret line="64" column="10" lean-forward="false" selection-start-line="64" selection-start-column="10" selection-end-line="66" selection-end-column="0" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -60,8 +80,8 @@
           <file leaf-file-name="admin_feedback.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/templates/admin/admin_feedback.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="361">
-                  <caret line="719" column="9" lean-forward="true" selection-start-line="719" selection-start-column="9" selection-end-line="719" selection-end-column="22" />
+                <state relative-caret-position="15099">
+                  <caret line="719" column="9" lean-forward="false" selection-start-line="719" selection-start-column="9" selection-end-line="719" selection-end-column="22" />
                   <folding />
                 </state>
               </provider>
@@ -70,16 +90,15 @@
         </leaf>
       </split-first>
       <split-second>
-        <leaf>
+        <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="298">
-                  <caret line="381" column="24" lean-forward="true" selection-start-line="381" selection-start-column="24" selection-end-line="381" selection-end-column="24" />
+                <state relative-caret-position="160">
+                  <caret line="355" column="52" lean-forward="false" selection-start-line="355" selection-start-column="52" selection-end-line="355" selection-end-column="52" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
-                    <marker date="1763364901663" expanded="true" signature="4324:4400" ph="..." />
-                    <marker date="1763364901663" expanded="true" signature="16989:17599" ph="..." />
+                    <marker date="1763702723246" expanded="true" signature="4324:4400" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -88,8 +107,8 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="128">
-                  <caret line="128" column="0" lean-forward="true" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
+                <state relative-caret-position="294">
+                  <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="17" />
                   <folding />
                 </state>
               </provider>
@@ -98,8 +117,8 @@
           <file leaf-file-name="view_product.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/templates/admin/view_product.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="527">
-                  <caret line="89" column="0" lean-forward="true" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+                <state relative-caret-position="315">
+                  <caret line="64" column="28" lean-forward="false" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="28" />
                   <folding />
                 </state>
               </provider>
@@ -119,7 +138,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>distributor_regist</find>
       <find>headers</find>
       <find>seller()</find>
       <find>seller</find>
@@ -149,6 +167,7 @@
       <find>password</find>
       <find>modal-title</find>
       <find>view_prod</find>
+      <find>profile</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -177,10 +196,10 @@
         <option value="$PROJECT_DIR$/templates/admin/admin_verify.html" />
         <option value="$PROJECT_DIR$/templates/admin/admin_viewcustomer.html" />
         <option value="$PROJECT_DIR$/templates/admin/edit_category.html" />
-        <option value="$PROJECT_DIR$/templates/admin/add_product.html" />
-        <option value="$PROJECT_DIR$/templates/admin/edit_product.html" />
-        <option value="$PROJECT_DIR$/templates/admin/view_product.html" />
         <option value="$PROJECT_DIR$/my_app/models.py" />
+        <option value="$PROJECT_DIR$/templates/admin/edit_product.html" />
+        <option value="$PROJECT_DIR$/templates/admin/add_product.html" />
+        <option value="$PROJECT_DIR$/templates/admin/view_product.html" />
         <option value="$PROJECT_DIR$/snap2bill/urls.py" />
         <option value="$PROJECT_DIR$/my_app/views.py" />
       </list>
@@ -213,6 +232,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -295,13 +315,12 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="my_app" />
+              <option name="myItemId" value="media" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
     </panes>
   </component>
@@ -608,18 +627,16 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1038" extended-state="6" />
-    <editor active="true" />
     <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12083781" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2416953" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2416953" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12714776" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.11761547" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.12714776" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -629,6 +646,7 @@
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Concurrent Activities Diagram" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="manage.py@snap2bill" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32938856" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
@@ -865,7 +883,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2814">
           <caret line="134" column="0" lean-forward="false" selection-start-line="134" selection-start-column="0" selection-end-line="134" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -911,8 +928,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/admin_feedback.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="719" column="9" lean-forward="true" selection-start-line="719" selection-start-column="9" selection-end-line="719" selection-end-column="22" />
+        <state relative-caret-position="15099">
+          <caret line="719" column="9" lean-forward="false" selection-start-line="719" selection-start-column="9" selection-end-line="719" selection-end-column="22" />
           <folding />
         </state>
       </provider>
@@ -943,53 +960,53 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/edit_product.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="67" column="83" lean-forward="false" selection-start-line="67" selection-start-column="83" selection-end-line="67" selection-end-column="83" />
+        <state relative-caret-position="328">
+          <caret line="60" column="8" lean-forward="true" selection-start-line="60" selection-start-column="8" selection-end-line="62" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/add_product.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="97">
-          <caret line="55" column="76" lean-forward="false" selection-start-line="55" selection-start-column="47" selection-end-line="55" selection-end-column="76" />
+        <state relative-caret-position="286">
+          <caret line="64" column="10" lean-forward="false" selection-start-line="64" selection-start-column="10" selection-end-line="66" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/view_product.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="89" column="0" lean-forward="true" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="128" column="0" lean-forward="true" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
+        <state relative-caret-position="315">
+          <caret line="64" column="28" lean-forward="false" selection-start-line="64" selection-start-column="28" selection-end-line="64" selection-end-column="28" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="91" column="60" lean-forward="false" selection-start-line="91" selection-start-column="60" selection-end-line="91" selection-end-column="60" />
+        <state relative-caret-position="391">
+          <caret line="103" column="36" lean-forward="false" selection-start-line="103" selection-start-column="36" selection-end-line="103" selection-end-column="36" />
           <folding>
             <element signature="e#633#665#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/my_app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="21" column="17" lean-forward="false" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="313">
-          <caret line="758" column="25" lean-forward="true" selection-start-line="758" selection-start-column="25" selection-end-line="758" selection-end-column="25" />
+        <state relative-caret-position="252">
+          <caret line="361" column="37" lean-forward="true" selection-start-line="361" selection-start-column="37" selection-end-line="361" selection-end-column="37" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
-            <marker date="1763364901663" expanded="true" signature="4324:4400" ph="..." />
+            <marker date="1763702723246" expanded="true" signature="4324:4400" ph="..." />
           </folding>
         </state>
       </provider>

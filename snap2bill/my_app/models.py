@@ -41,7 +41,7 @@ class category(models.Model):
 
 class product(models.Model):
     product_name = models.CharField(max_length=100)
-    price = models.CharField(max_length=100)
+    # price = models.CharField(max_length=100)
     image = models.CharField(max_length=100)
     description = models.CharField(max_length=100)
     quantity = models.CharField(max_length=100)
@@ -128,6 +128,7 @@ class feedback(models.Model):
 
 
 class stock(models.Model):
+    price = models.CharField(max_length=100)
     quantity = models.CharField(max_length=100)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
     PRODUCT = models.ForeignKey(product,models.CASCADE)

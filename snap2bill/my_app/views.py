@@ -351,6 +351,10 @@ def view_feedback(request):
 
 
 def distributor_registration(request):
+    profile_image = request.FILES['file']
+    fs = FileSystemStorage()
+    path = fs.save(profile_image.name,profile_image)
+
     name = request.POST['name']
     email = request.POST['email']
     phone = request.POST['phone']
@@ -375,6 +379,7 @@ def distributor_registration(request):
 
 
     ob = distributor()
+    ob.profile_image = fs.url(path)
     ob.name = name
     ob.email = email
     ob.phone = phone
@@ -408,6 +413,10 @@ def distributor_view_profile(request):
 
 
 def edit_distributor_profile(request):
+    profile_image = request.FILES['file']
+    fs = FileSystemStorage()
+    path = fs.save(profile_image.name, profile_image)
+
     name = request.POST['name']
     phone = request.POST['phone']
     address = request.POST['address']
@@ -540,25 +549,6 @@ def customer_receive_bill(request):
 
 
 
-def distributor_view_product(request):
-    # uid = request.POST['uid']
-    # if not uid:
-    #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
-    data = product.objects.all()
-    ar = []
-    for i in data:
-        ar.append({
-            'id': i.id,
-            'product_name': i.product_name,
-            'price': i.price,
-            'image': i.image,
-            'description': i.description,
-            'quantity': i.quantity,
-            'CATEGORY': i.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.CATEGORY, 'category_name', ''),
-        })
-    return JsonResponse({'status': 'ok', 'data': ar})
-
 
 
 
@@ -676,6 +666,25 @@ def customer_change_password(request):
 
 
 
+def distributor_view_product(request):
+    # uid = request.POST['uid']
+    # if not uid:
+    #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
+    data = product.objects.all()
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'product_name': i.product_name,
+            # 'price': i.price,
+            'image': i.image,
+            'description': i.description,
+            'quantity': i.quantity,
+            'CATEGORY': i.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.CATEGORY, 'category_name', ''),
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
 
 
 
@@ -695,11 +704,12 @@ def add_product_post(request):
     img = request.FILES['image']
     fs=FileSystemStorage()
     image=fs.save(img.name,img)
-    price = request.POST['price']
+    # price = request.POST['price']
     quantity = request.POST['quantity']
     description = request.POST['description']
     category = request.POST['category']
-    obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
+    # obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
+    obj = product(product_name=product_name,image=fs.url(image),quantity=quantity,description=description,CATEGORY_id=category)
     obj.save()
     # messages.success(request, f"Category '{category_name}' added successfully!")
     return redirect('/view_product')
@@ -715,7 +725,7 @@ def edit_product(request,id):
 def edit_product_post(request,id):
     product_name = request.POST['product_name']
 
-    price = request.POST['price']
+    # price = request.POST['price']
     quantity = request.POST['quantity']
     description = request.POST['description']
     category = request.POST['category']
@@ -725,7 +735,8 @@ def edit_product_post(request,id):
         image = fs.save(img.name, img)
         product.objects.filter(id=id).update( image=fs.url(image))
 
-    product.objects.filter(id=id).update(product_name=product_name, price=price, quantity=quantity,description=description, CATEGORY_id=category)
+    # product.objects.filter(id=id).update(product_name=product_name, price=price, quantity=quantity,description=description, CATEGORY_id=category)
+    product.objects.filter(id=id).update(product_name=product_name,quantity=quantity,description=description, CATEGORY_id=category)
 
     return redirect('/view_product')
 
@@ -753,7 +764,7 @@ def distributor_products(request):
         ar.append({
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
-            'price': i.PRODUCT.price,
+            'price': i.price,
             'image': i.PRODUCT.image,
             'description': i.PRODUCT.description,
             'quantity': i.quantity,
@@ -769,9 +780,10 @@ def add_stock(request):
     quantity = request.POST['quantity']
     uid= request.POST['uid']
     pid = request.POST['pid']
-
+    price = request.POST['price']
     obj = stock()
     obj.quantity = quantity
+    obj.price = price
     obj.DISTRIBUTOR_id = uid
     obj.PRODUCT_id = pid
     obj.save()
@@ -780,17 +792,18 @@ def add_stock(request):
 
 
 def edit_stock(request):
+    quantity = request.POST['quantity']
+    # uid = request.POST['uid']
+    pid = request.POST['pid']
+    price = request.POST['price']
 
+    stock.objects.filter(id = pid).update(price = price, quantity = quantity)
     return JsonResponse({'ststus':'ok'})
 
 
-def view_stock(request):
-
-    return JsonResponse({'ststus':'ok'})
 
 
 
-def delete_stock(request):
-
-
+def delete_distributor_product(request,id):
+    stock.objects.filter(id=id).delete()
     return JsonResponse({'ststus':'ok'})

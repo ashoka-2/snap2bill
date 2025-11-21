@@ -135,11 +135,28 @@ class _myProductsSubState extends State<myProductsSub> {
                               onPressed: () async {
                                 SharedPreferences prefs = await SharedPreferences.getInstance();
                                 prefs.setString("pid", i.id);
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>editStock()));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>editStock(
+                                  id:i.id.toString(),
+                                  price:i.price.toString(),
+                                  quantity:i.quantity.toString(),
 
-
+                                )));
                               },
                               child: const Text("Edit stock"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                var data = await http.post(
+                                    Uri.parse(prefs.getString("ip").toString()+"/delete_distributor_product/${i.id}"),
+                                    body: {
+                                      'id': prefs.getString("id").toString(),
+                                    }
+                                );
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>myProducts()));
+                              },
+
+                              child: const Text("Delete stock"),
                             ),
 
                           ],

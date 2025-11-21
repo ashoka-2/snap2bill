@@ -22,6 +22,7 @@ class addStockSub extends StatefulWidget {
 
 class _addStockSubState extends State<addStockSub> {
   TextEditingController stock = TextEditingController();
+  TextEditingController price = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,22 +30,30 @@ class _addStockSubState extends State<addStockSub> {
 
         Column(
           children: [
-            Center(
-              child: TextField(controller: stock,
-                    decoration: InputDecoration(
-                    hintText: 'Enter stock quantity',
-                    labelText: 'Quantity',
-                    prefixIcon: Icon(Icons.clean_hands),
-                    border: OutlineInputBorder()
-                  ),),
-            ),
+            TextField(controller: stock,
+              decoration: InputDecoration(
+                  hintText: 'Enter stock quantity',
+                  labelText: 'Quantity',
+                  prefixIcon: Icon(Icons.clean_hands),
+                  border: OutlineInputBorder()
+              ),),
+            TextField(controller: price,
+              decoration: InputDecoration(
+                  hintText: 'Enter price',
+                  labelText: 'Price',
+                  prefixIcon: Icon(Icons.clean_hands),
+                  border: OutlineInputBorder()
+              ),),
 
             SizedBox(height: 10,),
             ElevatedButton(onPressed: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               var data = await http.post(Uri.parse(prefs.getString("ip").toString()+"/add_stock"),
                   body: {
-                'pid':prefs.getString("pid").toString(),'uid':prefs.getString("uid").toString(),'quantity':stock.text
+                'pid':prefs.getString("pid").toString(),
+                    'uid':prefs.getString("uid").toString(),
+                    'quantity':stock.text,
+                    'price':price.text,
                   }
               );
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_product()));

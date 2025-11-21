@@ -101,8 +101,7 @@ urlpatterns = [
 
     path('add_stock',views.add_stock),
     path('edit_stock', views.edit_stock),
-    path('view_stock', views.view_stock),
-    path('delete_stock', views.delete_stock),
+    path('delete_distributor_product/<id>', views.delete_distributor_product),
 
 ]
 
