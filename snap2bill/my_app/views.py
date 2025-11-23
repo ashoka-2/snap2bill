@@ -350,6 +350,19 @@ def view_feedback(request):
     return JsonResponse({'status': 'ok', 'data': feedback_list})
 
 
+
+
+
+
+
+
+
+
+
+######################  DISTRIBUTOR   ###########################
+
+
+
 def distributor_registration(request):
     profile_image = request.FILES['file']
     proof = request.FILES['file1']
@@ -396,9 +409,6 @@ def distributor_registration(request):
     ob.status='pending'
     ob.LOGIN=obj
     ob.save()
-
-
-
     return JsonResponse({'status':'ok'})
 
 
@@ -443,6 +453,10 @@ def edit_distributor_profile(request):
     distributor.objects.filter(id=uid).update(name=name,phone=phone,address=address,pincode=pincode,place=place,post=post,bio=bio,latitude=latitude,longitude=longitude)
     return JsonResponse({'status':'ok'})
 
+
+
+
+
 def distributor_view_customer(request):
     cid=request.POST['cid']
     data=customer.objects.all()
@@ -456,43 +470,6 @@ def distributor_view_customer(request):
 
 
 
-def customer_view_profile(request):
-    cid=request.POST['cid']
-    data=customer.objects.filter(id=cid)
-    ar=[]
-    for i in data:
-        ar.append({'id':i.id,'name':i.name,'email':i.email,'phone':i.phone,'profile_image':i.profile_image,'bio':i.bio,'address':i.address,'place':i.place,'pincode':i.pincode,'post':i.post})
-
-    return JsonResponse({'status':'ok','data':ar})
-
-
-def edit_customer_profile(request):
-    name = request.POST['name']
-    phone = request.POST['phone']
-    address = request.POST['address']
-    pincode = request.POST['pincode']
-    place = request.POST['place']
-    post = request.POST['post']
-    bio = request.POST['bio']
-    cid = request.POST['cid']
-    customer.objects.filter(id=cid).update(name=name,phone=phone,address=address,pincode=pincode,place=place,post=post,bio=bio)
-    return JsonResponse({'status':'ok'})
-
-
-
-
-def customer_view_distributor(request):
-    uid = request.POST['uid']
-    data = distributor.objects.all()
-
-    ar = []
-    for i in data:
-        ar.append({'id': i.id, 'name': i.name, 'email': i.email, 'phone': i.phone, 'profile_image': i.profile_image,
-                   'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,'latitude':i.latitude,'longitude':i.longitude,'proof':i.proof})
-
-    return JsonResponse({'status': 'ok', 'data': ar})
-
-
 def distributor_view_distributor(request):
     uid = request.POST['uid']
     data = distributor.objects.all()
@@ -504,6 +481,14 @@ def distributor_view_distributor(request):
                    'latitude': i.latitude, 'longitude': i.longitude, 'proof': i.proof})
 
     return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+
+
+
+
+
 
 
 
@@ -572,39 +557,6 @@ def distributor_delete_customers(request):
 
 
 
-
-
-def customer_registration(request):
-    name = request.POST['name']
-    email = request.POST['email']
-    phone = request.POST['phone']
-    password = request.POST['password']
-    address = request.POST['address']
-    pincode = request.POST['pincode']
-    place = request.POST['place']
-    post = request.POST['post']
-    bio = request.POST['bio']
-
-
-    obj=User()
-    obj.username=email
-    obj.password=make_password(password)
-    obj.save()
-    obj.groups.add(Group.objects.get(name='customer'))
-
-
-    ob = customer()
-    ob.name = name
-    ob.email = email
-    ob.phone = phone
-    ob.address = address
-    ob.pincode = pincode
-    ob.place = place
-    ob.post = post
-    ob.bio = bio
-    ob.LOGIN=obj
-    ob.save()
-    return JsonResponse({'status':'ok'})
 
 
 
@@ -843,4 +795,102 @@ def customer_view_products(request):
             'CATEGORY': i.PRODUCT.CATEGORY.id,
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
         })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+
+
+
+
+
+
+
+############################## CUSTOMER  ##############################################
+
+
+def customer_registration(request):
+    profile_image = request.FILES['file']
+    fs = FileSystemStorage()
+    path = fs.save(profile_image.name, profile_image, )
+
+    name = request.POST['name']
+    email = request.POST['email']
+    phone = request.POST['phone']
+    password = request.POST['password']
+    address = request.POST['address']
+    pincode = request.POST['pincode']
+    place = request.POST['place']
+    post = request.POST['post']
+    bio = request.POST['bio']
+
+    obj = User()
+    obj.username = email
+    obj.password = make_password(password)
+    obj.save()
+    obj.groups.add(Group.objects.get(name='customer'))
+
+    ob = customer()
+    ob.profile_image = fs.url(path)
+    ob.name = name
+    ob.email = email
+    ob.phone = phone
+    ob.address = address
+    ob.pincode = pincode
+    ob.place = place
+    ob.post = post
+    ob.bio = bio
+    ob.LOGIN = obj
+    ob.save()
+    return JsonResponse({'status': 'ok'})
+
+
+
+
+
+
+
+
+def customer_view_profile(request):
+    cid=request.POST['cid']
+    data=customer.objects.filter(id=cid)
+    ar=[]
+    for i in data:
+        ar.append({'id':i.id,'name':i.name,'email':i.email,'phone':i.phone,'profile_image':i.profile_image,'bio':i.bio,'address':i.address,'place':i.place,'pincode':i.pincode,'post':i.post})
+
+    return JsonResponse({'status':'ok','data':ar})
+
+
+def edit_customer_profile(request):
+    cid = request.POST['cid']
+    if 'file' in request.FILES:
+        profile_image = request.FILES['file']
+        fs = FileSystemStorage()
+        path = fs.save(profile_image.name, profile_image)
+        customer.objects.filter(id=cid).update(profile_image=fs.url(path))
+
+
+    name = request.POST['name']
+    phone = request.POST['phone']
+    address = request.POST['address']
+    pincode = request.POST['pincode']
+    place = request.POST['place']
+    post = request.POST['post']
+    bio = request.POST['bio']
+    cid = request.POST['cid']
+    customer.objects.filter(id=cid).update(name=name,phone=phone,address=address,pincode=pincode,place=place,post=post,bio=bio)
+    return JsonResponse({'status':'ok'})
+
+
+
+
+def customer_view_distributor(request):
+    uid = request.POST['uid']
+    data = distributor.objects.all()
+
+    ar = []
+    for i in data:
+        ar.append({'id': i.id, 'name': i.name, 'email': i.email, 'phone': i.phone, 'profile_image': i.profile_image,
+                   'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,'latitude':i.latitude,'longitude':i.longitude,'proof':i.proof})
+
     return JsonResponse({'status': 'ok', 'data': ar})

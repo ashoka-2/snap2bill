@@ -11,16 +11,14 @@ import 'dart:typed_data';
 
 
 
-void main() {
-  runApp(distributor_registration());
-}
+
 
 class distributor_registration extends StatelessWidget {
   const distributor_registration({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: distributor_registration_sub());
+    return const distributor_registration_sub();
   }
 }
 
@@ -100,9 +98,21 @@ class _distributor_registration_subState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.arrow_back),
-        title: Text("Hello world"),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          onPressed: () {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          "Distribution registration",
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
       ),
+
       // backgroundColor: Colors.cyan,
       body: SingleChildScrollView(
         child: Center(

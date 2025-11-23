@@ -123,17 +123,21 @@ class _edit_distributor_profile_subState
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
       appBar: AppBar(
-        backgroundColor: Colors.blue.shade700,
-        centerTitle: true,
+        backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          onPressed: () {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+          },
+        ),
         title: const Text(
           "Edit Profile",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
       ),
+
       body: SingleChildScrollView(
         child: Center(
           child: Container(
