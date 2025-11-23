@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_review.dart';
+import 'package:snap2bill/Customerdirectory/custviews/view_product.dart';
 import 'package:snap2bill/Customerdirectory/custviews/view_review.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/Customerdirectory/password/changePassword.dart';
@@ -114,7 +115,11 @@ class _CustomerHomePageState extends State<customer_home_page> {
             }, child: Text("view feedback")),
             ElevatedButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>changePassword()));
-            }, child: Text("Change password"))
+            }, child: Text("Change password")),
+            ElevatedButton(onPressed: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>view_product()));
+            }, child: Text("View Product"))
+
           ],
         ),
       ),

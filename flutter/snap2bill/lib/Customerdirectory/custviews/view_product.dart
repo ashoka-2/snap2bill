@@ -28,7 +28,7 @@ class _view_product_subState extends State<view_product_sub> {
     String b = prefs.getString("lid").toString();
     String foodimage="";
     var data =
-    await http.post(Uri.parse(prefs.getString("ip").toString()+"/distributor_view_product"),
+    await http.post(Uri.parse(prefs.getString("ip").toString()+"/customer_view_products"),
         body: {"id":b}
     );
 
@@ -47,6 +47,7 @@ class _view_product_subState extends State<view_product_sub> {
           joke["quantity"].toString(),
           (joke["CATEGORY"] ?? "").toString(),
           (joke["CATEGORY_NAME"] ?? "").toString(),
+          joke["distributor_name"].toString()
       );
       jokes.add(newJoke);
     }
@@ -91,6 +92,7 @@ class _view_product_subState extends State<view_product_sub> {
 
                             SizedBox(height: 10),
                             Image.network(i.image.toString(),height: 100,width: 100,),
+                            _buildRow("Distributor Name:", i.distributor_name.toString()),
                             _buildRow("Name:", i.product_name.toString()),
                             _buildRow("Price:", i.price.toString()),
                             _buildRow("Description:", i.description.toString()),
@@ -98,6 +100,9 @@ class _view_product_subState extends State<view_product_sub> {
                             _buildRow("Category:", i.CATEGORY_NAME.toString()),
 
                             SizedBox(height: 10,),
+                            ElevatedButton(onPressed: (){
+
+                            }, child: Text("add to cart"))
 
                           ],
                         ),
@@ -163,7 +168,7 @@ class Joke {
   final String quantity;
   final String CATEGORY;
   final String CATEGORY_NAME;
-
+  final String distributor_name;
   Joke(this.id, this.product_name, this.price, this.image, this.description,
-      this.quantity, this.CATEGORY, this.CATEGORY_NAME);
+      this.quantity, this.CATEGORY, this.CATEGORY_NAME, this.distributor_name);
 }

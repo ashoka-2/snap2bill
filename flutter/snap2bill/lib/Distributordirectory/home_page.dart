@@ -83,7 +83,7 @@ class _home_page_subState extends State<home_page_sub> {
           ],
           color: Colors.white,
           buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
           animationCurve: Curves.easeInOut,
           onTap: (index) {
             setState(() {

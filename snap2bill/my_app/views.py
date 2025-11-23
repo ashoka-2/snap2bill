@@ -352,8 +352,10 @@ def view_feedback(request):
 
 def distributor_registration(request):
     profile_image = request.FILES['file']
+    proof = request.FILES['file1']
     fs = FileSystemStorage()
-    path = fs.save(profile_image.name,profile_image)
+    path = fs.save(profile_image.name,profile_image,)
+    path1 = fs.save(proof.name , proof)
 
     name = request.POST['name']
     email = request.POST['email']
@@ -390,6 +392,7 @@ def distributor_registration(request):
     ob.bio = bio
     ob.latitude = latitude
     ob.longitude = longitude
+    ob.proof = fs.url(path1)
     ob.status='pending'
     ob.LOGIN=obj
     ob.save()
@@ -413,9 +416,19 @@ def distributor_view_profile(request):
 
 
 def edit_distributor_profile(request):
-    profile_image = request.FILES['file']
-    fs = FileSystemStorage()
-    path = fs.save(profile_image.name, profile_image)
+    uid = request.POST['uid']
+    if 'file' in request.FILES:
+        profile_image = request.FILES['file']
+        fs = FileSystemStorage()
+        path = fs.save(profile_image.name, profile_image)
+        distributor.objects.filter(id=uid).update(profile_image=fs.url(path))
+
+
+    if 'file1' in request.FILES:
+        proof = request.FILES['file1']
+        fs = FileSystemStorage()
+        path1 = fs.save(proof.name, proof)
+        distributor.objects.filter(id=uid).update(proof=fs.url(path1))
 
     name = request.POST['name']
     phone = request.POST['phone']
@@ -807,3 +820,27 @@ def edit_stock(request):
 def delete_distributor_product(request,id):
     stock.objects.filter(id=id).delete()
     return JsonResponse({'ststus':'ok'})
+
+
+
+
+
+def customer_view_products(request):
+
+
+
+    data = stock.objects.all()
+    ar = []
+    for i in data:
+        ar.append({
+            'distributor_name':i.DISTRIBUTOR.name,
+            'id': i.id,
+            'product_name': i.PRODUCT.product_name,
+            'price': i.price,
+            'image': i.PRODUCT.image,
+            'description': i.PRODUCT.description,
+            'quantity': i.quantity,
+            'CATEGORY': i.PRODUCT.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})

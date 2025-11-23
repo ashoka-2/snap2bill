@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/custviews/view_product.dart';
+import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 
 class addStock extends StatelessWidget {
@@ -56,7 +57,7 @@ class _addStockSubState extends State<addStockSub> {
                     'price':price.text,
                   }
               );
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>view_product()));
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>myProducts()));
 
             }, child: Text("Add"))
           ],

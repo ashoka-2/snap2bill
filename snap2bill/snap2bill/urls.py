@@ -90,6 +90,8 @@ urlpatterns = [
 
 
     path('distributor_products',views.distributor_products),
+    path('customer_view_products',views.customer_view_products),
+
 
     path('view_product',views.view_product),
     path('add_product',views.add_product),

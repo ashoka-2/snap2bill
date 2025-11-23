@@ -1,230 +1,13 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:snap2bill/Distributordirectory/profile_page.dart';
-//
-//
-//
-//
-// class edit_distributor_profile_sub extends StatefulWidget {
-//     final id;
-//   final name;
-//   final email;
-//   final phone;
-//   final bio;
-//   final address;
-//   final pincode;
-//   final place;
-//   final post;
-//   final latitude;
-//   final longitude;
-//   const edit_distributor_profile_sub({required this.id,required this.name,required this.email,required this.phone,required this.bio,required this.address,required this.place,required this.pincode, required this.post,required this.latitude,required this.longitude,}) : super();
-//
-//
-//   @override
-//   State<edit_distributor_profile_sub> createState() => _edit_distributor_profile_subState();
-// }
-//
-// class _edit_distributor_profile_subState extends State<edit_distributor_profile_sub> {
-//   final name=new TextEditingController();
-//   final email=new TextEditingController();
-//   final phone=new TextEditingController();
-//   final address=new TextEditingController();
-//   final pincode=new TextEditingController();
-//   final place=new TextEditingController();
-//   final post=new TextEditingController();
-//   final bio=new TextEditingController();
-//   final latitude=new TextEditingController();
-//   final longitude=new TextEditingController();
-//
-//
-//
-//
-//   @override
-//   void initState(){
-//     name.text=widget.name;
-//     email.text=widget.email;
-//     phone.text=widget.phone;
-//     address.text=widget.address;
-//     pincode.text=widget.pincode;
-//     place.text=widget.place;
-//     post.text=widget.post;
-//     bio.text=widget.bio;
-//     latitude.text=widget.latitude;
-//     longitude.text=widget.longitude;
-//
-//
-//
-//   }
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(title: Text("Hello world") ,),
-//       // backgroundColor: Colors.cyan,
-//       body: SingleChildScrollView(child: Center(child: SizedBox(
-//
-//
-//
-//         child: Padding(
-//           padding: EdgeInsets.all(10),
-//           child: Container(
-//             width:400 ,
-//             // height: 1000,
-//             decoration: BoxDecoration(
-//                 color: Colors.green.shade100,
-//                 borderRadius: BorderRadius.circular(21)
-//             ),
-//             child: Padding(
-//               padding: const EdgeInsets.only(left: 10, top: 20,right: 10,bottom: 15),
-//               child: Column(children: [
-//
-//                 TextField(controller: name,
-//                   decoration: InputDecoration(
-//                     hintText:'Enter your name ',
-//                     labelText: 'Name',
-//                     prefixIcon: Icon(Icons.abc_rounded),
-//                     filled: true,
-//                     fillColor: Colors.white70,
-//                     border: OutlineInputBorder(
-//
-//                     ),
-//
-//                   ),
-//                 ),SizedBox(height: 10,),
-//
-//                 TextField(controller: email,enabled: false,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your Email',
-//                       labelText: 'Email',
-//                       prefixIcon: Icon(Icons.email_outlined),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//
-//                 TextField(controller: phone,
-//                   keyboardType: TextInputType.number,
-//                   decoration: InputDecoration(
-//                     hintText: 'Enter your number',
-//                     labelText: 'Phone Number',
-//                     prefixIcon: Icon(Icons.phone_android),
-//                     border: OutlineInputBorder(),
-//
-//                   ),),SizedBox(height: 10,),
-//
-//
-//                 TextField(controller: address,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your Address',
-//                       labelText: 'Address',
-//                       prefixIcon: Icon(Icons.location_city),
-//                       border: OutlineInputBorder()
-//                   ),
-//                 ),SizedBox(height: 10,),
-//                 TextField(controller: pincode,
-//                   keyboardType: TextInputType.number,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your pincode',
-//                       labelText: 'Pincode',
-//                       prefixIcon: Icon(Icons.location_on_sharp),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 TextField(controller: place,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your Place',
-//                       labelText: 'Place',
-//                       prefixIcon: Icon(Icons.place),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 TextField(controller: post,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your post',
-//                       labelText: 'Post',
-//                       prefixIcon: Icon(Icons.place_sharp),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 TextField(controller: bio,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter description',
-//                       labelText: 'Bio',
-//                       prefixIcon: Icon(Icons.abc_sharp),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 TextField(controller: latitude,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your Latitude',
-//                       labelText: 'Latitude',
-//                       prefixIcon: Icon(Icons.abc_sharp),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 TextField(controller: longitude,
-//                   decoration: InputDecoration(
-//                       hintText: 'Enter your Longitude',
-//                       labelText: 'Longitude',
-//                       prefixIcon: Icon(Icons.abc_sharp),
-//                       border: OutlineInputBorder()
-//                   ),),SizedBox(height: 10,),
-//                 ElevatedButton(onPressed: () async {
-//                   print(name.text);
-//                   print(email.text);
-//                   print(phone.text);
-//
-//                   print(address.text);
-//                   print(pincode.text);
-//                   print(place.text);
-//                   print(post.text);
-//                   print(bio.text);
-//                   print(latitude.text);
-//                   print(longitude.text);
-//
-//                   SharedPreferences sh=await SharedPreferences.getInstance();
-//                   // var data = await http.post(Uri.parse('http://192.168.29.3:1234/distributor_register'),
-//                   var data = await http.post(Uri.parse('${sh.getString("ip")}/edit_distributor_profile'),
-//                       body: {
-//                         'name':name.text,
-//                         'phone':phone.text,
-//                         'address':address.text,
-//                         'pincode':pincode.text,
-//                         'place':place.text,
-//                         'post':post.text,
-//                         'bio':bio.text,
-//                         'latitude':latitude.text,
-//                         'longitude':longitude.text,
-//                         'uid':sh.getString("uid").toString()
-//                       }
-//                   );
-//
-//
-//                   var decodeddata = json.decode(data.body);
-//                   if(decodeddata['status'] == 'ok'){
-//                     showDialog(context: context, builder: (context)=>AlertDialog(
-//                       title: Text("UPDATE PROFILE"),content: Text("Updated"),
-//                       actions: [TextButton(onPressed: (){
-//                         Navigator.push(context, MaterialPageRoute(builder: (context)=>profile_page()));
-//
-//                       }, child: Text("OK"))],
-//                     ));
-//                   }
-//
-//
-//
-//                 }, child: Text("Update profile")),
-//
-//
-//
-//
-//               ],),
-//             ),
-//           ),
-//         ),),),),);
-//   }
-// }
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:snap2bill/Distributordirectory/home_page.dart';
 import 'package:snap2bill/Distributordirectory/profile_page.dart';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart'; // kIsWeb
+import 'dart:typed_data';
 
 class edit_distributor_profile_sub extends StatefulWidget {
   final id;
@@ -271,6 +54,16 @@ class _edit_distributor_profile_subState
   final latitude = TextEditingController();
   final longitude = TextEditingController();
 
+  PlatformFile? _selectedFile;
+  Uint8List? _webFileBytes;
+  String? _result;
+  bool _isLoading = false;
+
+  PlatformFile? _selectedFile1;
+  Uint8List? _webFileBytes1;
+  String? _result1;
+  bool _isLoading1 = false;
+
   @override
   void initState() {
     super.initState();
@@ -284,6 +77,45 @@ class _edit_distributor_profile_subState
     bio.text = widget.bio;
     latitude.text = widget.latitude;
     longitude.text = widget.longitude;
+  }
+
+  // =====================================================
+  // 📸 PICK FILE FUNCTIONS
+  // =====================================================
+  Future<void> _pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.any,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFile = result.files.first;
+        _result = null;
+      });
+
+      if (kIsWeb) {
+        _webFileBytes = result.files.first.bytes;
+      }
+    }
+  }
+
+  Future<void> _pickFile1() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowMultiple: false,
+      type: FileType.any,
+    );
+
+    if (result != null) {
+      setState(() {
+        _selectedFile1 = result.files.first;
+        _result1 = null;
+      });
+
+      if (kIsWeb) {
+        _webFileBytes1 = result.files.first.bytes;
+      }
+    }
   }
 
   @override
@@ -345,10 +177,31 @@ class _edit_distributor_profile_subState
                   const SizedBox(height: 12),
                   buildTextField("Latitude", latitude, Icons.explore),
                   const SizedBox(height: 12),
-                  buildTextField("Longitude", longitude, Icons.explore_outlined),
+                  buildTextField(
+                      "Longitude", longitude, Icons.explore_outlined),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Select File"),
+                    onPressed: _pickFile,
+                  ),
+                  if (_selectedFile != null) ...[
+                    const SizedBox(height: 10),
+                    Text("Selected: ${_selectedFile!.name}"),
+                  ],
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Select File"),
+                    onPressed: _pickFile1,
+                  ),
+                  if (_selectedFile1 != null) ...[
+                    const SizedBox(height: 10),
+                    Text("Selected: ${_selectedFile1!.name}"),
+                  ],
                   const SizedBox(height: 25),
 
-                  // ✅ Update button (no loading)
+                  // ✅ Update button (no try-catch)
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -360,58 +213,146 @@ class _edit_distributor_profile_subState
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       onPressed: () async {
+
+
                         SharedPreferences sh =
                         await SharedPreferences.getInstance();
-                        var data = await http.post(
-                          Uri.parse(
-                              '${sh.getString("ip")}/edit_distributor_profile'),
-                          body: {
-                            'name': name.text,
-                            'phone': phone.text,
-                            'address': address.text,
-                            'pincode': pincode.text,
-                            'place': place.text,
-                            'post': post.text,
-                            'bio': bio.text,
-                            'latitude': latitude.text,
-                            'longitude': longitude.text,
-                            'uid': sh.getString("uid").toString()
-                          },
-                        );
+                        final String? ip = sh.getString("ip");
 
-                        var decodeddata = json.decode(data.body);
-                        if (decodeddata['status'] == 'ok') {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(15),
+
+
+                        Uri uri = Uri.parse('${ip}/edit_distributor_profile');
+
+
+                        var request = http.MultipartRequest('POST', uri);
+
+
+                        request.fields['name'] = name.text;
+                        request.fields['email'] = email.text;
+                        request.fields['phone'] = phone.text;
+
+                        request.fields['address'] = address.text;
+                        request.fields['pincode'] = pincode.text;
+                        request.fields['place'] = place.text;
+                        request.fields['post'] = post.text;
+                        request.fields['bio'] = bio.text;
+                        request.fields['latitude'] = latitude.text;
+                        request.fields['longitude'] = longitude.text;
+                        request.fields['uid']=sh.getString("uid").toString();
+
+
+                        if (_selectedFile != null) {
+                          if (kIsWeb) {
+                            if (_webFileBytes == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('First file bytes are empty (web).')),
+                              );
+                              setState(() {
+                                _isLoading = false;
+                                _isLoading1 = false;
+                              });
+                              return;
+                            }
+                            request.files.add(
+                              http.MultipartFile.fromBytes(
+                                'file',
+                                _webFileBytes!,
+                                filename: _selectedFile!.name,
                               ),
-                              title: const Text("Profile Updated",
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold)),
-                              content: const Text(
-                                  "Your profile has been successfully updated."),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                          const home_page()),
-                                    );
-                                  },
-                                  child: const Text(
-                                    "OK",
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
+                            );
+                          } else {
+                            if (_selectedFile?.path == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('First file path empty.')),
+                              );
+
+                              return;
+                            }
+                            request.files.add(await http.MultipartFile.fromPath(
+                              'file',
+                              _selectedFile!.path!,
+                            ));
+                          }
                         }
+
+
+                        if (_selectedFile1 != null) {
+                          if (kIsWeb) {
+                            if (_webFileBytes1 == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Second file bytes empty (web).')),
+                              );
+
+                              return;
+                            }
+                            request.files.add(
+                              http.MultipartFile.fromBytes(
+                                'file1',
+                                _webFileBytes1!,
+                                filename: _selectedFile1!.name,
+                              ),
+                            );
+                          } else {
+                            if (_selectedFile1?.path == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Second file path empty.')),
+                              );
+
+                              return;
+                            }
+                            request.files.add(await http.MultipartFile.fromPath(
+                              'file1',
+                              _selectedFile1!.path!,
+                            ));
+                          }
+                        }
+
+                        // ========== SEND REQUEST ==========
+                        var streamedResponse = await request.send();
+                        var response = await http.Response.fromStream(streamedResponse);
+
+
+                          var decodeddata = json.decode(response.body);
+
+                          if (decodeddata['status'] == 'ok') {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                title: const Text("Profile Updated",
+                                    style: TextStyle(
+                                        color: Colors.blue,
+                                        fontWeight: FontWeight.bold)),
+                                content: const Text(
+                                    "Your profile has been successfully updated."),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                            const home_page()),
+                                      );
+                                    },
+                                    child: const Text(
+                                      "OK",
+                                      style: TextStyle(color: Colors.blue),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                           Navigator.push(context, MaterialPageRoute(builder: (context)=>home_page()));
+                          }
+
+                        setState(() {
+                          _isLoading = false;
+                          _isLoading1 = false;
+                        });
                       },
                       child: const Text(
                         "Update Profile",
