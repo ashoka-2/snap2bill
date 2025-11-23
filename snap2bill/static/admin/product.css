@@ -1,0 +1,532 @@
+
+.admin-right-main-content {
+    margin-left: 17rem;
+    width: calc(100% - 17rem);
+    min-height: 100vh;
+    padding: 2rem;
+    background: var(--bg-body);
+}
+
+/* Header Area */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.header-title h1 {
+    font-size: 1.8rem;
+    color: var(--text-main);
+    margin-bottom: 0.2rem;
+}
+.header-title span {
+    color: var(--text-soft);
+    font-size: 0.9rem;
+}
+
+/* Header Actions Wrapper */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* --- FILTER DROPDOWN --- */
+.filter-box select {
+    padding: 0.8rem 1rem;
+    padding-right: 2rem; /* space for arrow */
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    color: var(--text-main);
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%238c9aa9%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7rem top 50%;
+    background-size: .65rem auto;
+    min-width: 150px;
+}
+.filter-box select:focus {
+    border-color: var(--primary);
+}
+
+/* --- SEARCH BOX --- */
+.search-box {
+    position: relative;
+    width: 250px;
+}
+.search-box input {
+    width: 100%;
+    padding: 0.8rem 1rem 0.8rem 2.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background-color: var(--surface);
+    color: var(--text-main);
+    outline: none;
+    transition: 0.3s;
+}
+.search-box input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.1);
+}
+.search-box i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-soft);
+}
+
+/* Add Button */
+.btn-add {
+    background-color: var(--primary);
+    color: #fff;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(21, 101, 192, 0.2);
+}
+.btn-add:hover {
+    transform: translateY(-2px);
+}
+
+/* Table Card */
+.table-container {
+    background-color: var(--surface);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    overflow: hidden;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.styled-table th {
+    text-align: left;
+    padding: 1.2rem 1rem;
+    color: var(--text-soft);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--line);
+}
+
+.styled-table td {
+    padding: 1rem;
+    color: var(--text-main);
+    vertical-align: middle;
+    border-bottom: 1px solid var(--line);
+}
+
+.styled-table tr:last-child td {
+    border-bottom: none;
+}
+
+.styled-table tr:hover td {
+    background-color: rgba(140, 154, 169, 0.08); /* Hover effect */
+}
+
+/* Product Info */
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.product-thumb {
+    width: 45px;
+    height: 45px;
+    border-radius: 8px;
+    object-fit: cover;
+    background: var(--bg-body);
+    border: 1px solid var(--line);
+}
+
+/* Qty Badge */
+.qty-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(14, 165, 233, 0.1);
+    color: var(--accent);
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* Actions */
+.action-btns {
+    display: flex;
+    gap: 8px;
+}
+.btn-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: 0.2s;
+}
+.btn-edit {
+    background: rgba(21, 101, 192, 0.1);
+    color: var(--primary);
+}
+.btn-edit:hover { background: var(--primary); color: #fff; }
+
+.btn-delete {
+    background: rgb(239, 61, 39,0.1);
+    color: var(--danger);
+    cursor: pointer;
+}
+.btn-delete:hover {
+    color: var(--text-main);
+        background: var(--danger);
+
+
+}
+
+/* =========================================
+   4. DELETE CONFIRMATION MODAL STYLES
+   ========================================= */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Dim backdrop */
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-card {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+    padding: 2rem;
+    border-radius: 1.5rem;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transform: translateY(20px);
+    animation: slideUp 0.3s ease forwards;
+}
+
+.modal-icon {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-size: 2rem;
+}
+
+.modal-card h3 {
+    color: var(--text-main);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-card p {
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 0.8rem 1.5rem;
+    border-radius: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+    flex: 1;
+    font-size: 1rem;
+}
+
+.btn-cancel {
+    background-color: transparent;
+    border: 1px solid var(--line);
+    color: var(--text-main);
+}
+.btn-cancel:hover {
+    background-color: var(--text-soft);
+    color: white;
+}
+
+.btn-confirm {
+    background-color: var(--danger);
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-confirm:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   5. FORM & ADD PRODUCT STYLES
+   ========================================= */
+
+/* Back Button */
+.btn-back {
+    text-decoration: none;
+    color: var(--text-soft);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: 0.2s;
+}
+.btn-back:hover {
+    color: var(--primary);
+}
+
+/* Form Card Container */
+.form-card {
+    background-color: var(--surface);
+    border-radius: 1rem;
+    padding: 2.5rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    max-width: 900px; /* Limits width on huge screens */
+}
+
+/* Form Grid System */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 Columns */
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Full width for Description */
+.full-width {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr; /* Stack on mobile */
+    }
+    .full-width {
+        grid-column: span 1;
+    }
+}
+
+/* Form Inputs & Labels */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.9rem;
+    color: var(--text-soft);
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background-color: var(--bg-body);
+    border: 1px solid var(--line);
+    color: var(--text-main);
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.3s ease;
+    width: 100%;
+    font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.1);
+}
+
+/* Custom styling for File Input */
+.file-input {
+    padding: 0.6rem;
+    background: var(--bg-body);
+}
+.file-input::-webkit-file-upload-button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 0.5rem;
+    margin-right: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* Submit Button Area */
+.form-actions {
+    display: flex;
+    justify-content: flex-end; /* Pushes button to right */
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+}
+
+.btn-submit {
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: var(--radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(21, 101, 192, 0.2);
+}
+
+.btn-submit:hover {
+    background-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(21, 101, 192, 0.3);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ... Previous CSS from Add Product ... */
+
+/* --- Specific Styles for Edit Page --- */
+
+.image-edit-container {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background-color: var(--bg-body);
+    padding: 0.5rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+}
+
+.current-image {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+}
+
+.current-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+}
+
+.current-image span {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    color: var(--text-soft);
+    white-space: nowrap;
+}
+
+.image-edit-container .file-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+}

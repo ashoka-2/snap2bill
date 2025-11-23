@@ -1,16 +1,161 @@
+{#{% load static %}#}
+{##}
+{##}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Admin Home</title>#}
+{# <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{#<link#}
+{#  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
+{#  rel="stylesheet"#}
+{#/>#}
+{##}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{##}
+{#      <div id="navbar-section">#}
+{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars "><i class="ri-home-4-line"></i><span>Home</span></div></a>#}
+{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>#}
+{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>#}
+{#          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>#}
+{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>#}
+{#         <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>#}
+{#           <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>#}
+{##}
+{#      </div>#}
+{#            </div>#}
+{#            <hr>#}
+{# <div class="admin-bottom-left-content">#}
+{#      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>#}
+{#        <div class="setting-dropdown">#}
+{#          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>#}
+{#          <!-- ✅ Theme toggle with Remix Icon -->#}
+{#          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">#}
+{#            <i id="themeIcon" class="ri-sun-line"></i> Switch theme#}
+{#          </a>#}
+{#          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>#}
+{#        </div>#}
+{#      </div>#}
+{#    </div>    </div>#}
+{##}
+{#        </div>#}
+{#        <div class="admin-right-main-content">#}
+{##}
+{##}
+{#        <h1><a href="/add_product">ADD PRODUCT</a></h1>#}
+{##}
+{#     <div class="fb-table-wrap">#}
+{#      <table class="fb-table" id="feedbackTable">#}
+{#        <thead>#}
+{#          <tr>#}
+{#            <th>Serial No.</th>#}
+{#              <th>Product Image</th>#}
+{#            <th>Product name</th>#}
+{##}
+{#            <th>price</th>#}
+{#            <th>quantity</th>#}
+{#            <th>Description</th>#}
+{#            <th>Category</th>#}
+{#             <th>Action</th>#}
+{#          </tr>#}
+{#        </thead>#}
+{#        <tbody>#}
+{#          {% for i in productdata %}#}
+{#          <tr>#}
+{#            <td>{{ forloop.counter }}</td>#}
+{#            <td><img src="{{i.image}}" height="100" ></td>#}
+{#            <td>{{ i.product_name }}</td>#}
+{#            <td>{{ i.price }}</td>#}
+{#            <td>{{ i.quantity }}</td>#}
+{#            <td>{{ i.description }}</td>#}
+{#            <td>{{ i.CATEGORY.category_name }}</td>#}
+{#            <td><a href="/edit_product/{{ i.id }}">Edit</a><br><a href="/delete_product/{{ i.id }}">delete</a></td>#}
+{#          </tr>#}
+{#          {% empty %}#}
+{#          <tr><td colspan="5" style="text-align:center; color:var(--text-soft); padding:2rem;">No feedbacks yet.</td></tr>#}
+{#          {% endfor %}#}
+{#        </tbody>#}
+{#      </table>#}
+{#    </div>#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#<script>#}
+{#    const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{##}
+{#    let body = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function () {#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    // Optional: close dropdown if clicked outside#}
+{#    body.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{##}
+{##}
+{##}
+{#    const root = document.documentElement;#}
+{#  const themeBtn = document.getElementById('themeToggle');#}
+{#  const themeIcon = document.getElementById('themeIcon');#}
+{##}
+{#  const savedTheme = localStorage.getItem('theme') || 'light';#}
+{#  root.setAttribute('data-theme', savedTheme);#}
+{#  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
+{##}
+{#  themeBtn.addEventListener('click', () => {#}
+{#    const current = root.getAttribute('data-theme');#}
+{#    const next = current === 'dark' ? 'light' : 'dark';#}
+{#    root.setAttribute('data-theme', next);#}
+{#    localStorage.setItem('theme', next);#}
+{#    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
+{#  });#}
+{#</script>#}
+{##}
+{##}
+{##}
+{#</body>#}
+{#</html>#}
+{##}
+{##}
+{##}
 {% load static %}
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Admin Home</title>
- <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-<link
-  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
-  rel="stylesheet"
-/>
+     <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+     <link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
 
 </head>
 
@@ -20,129 +165,255 @@
         <div class="admin-left-main-content">
             <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
             <div class="admin-mid-left-content">
-
-      <div id="navbar-section">
-        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars "><i class="ri-home-4-line"></i><span>Home</span></div></a>
-        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
-        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
-        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
-          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
-        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-         <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
-           <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
-
-      </div>
+                <div id="navbar-section">
+                    <a class="nav-links" href="/admin_home"><div class="mid-left-navbars "><i class="ri-home-4-line"></i><span>Home</span></div></a>
+                    <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+                    <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+                    <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+                    <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+                    <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+                    <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>
+                    <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
+                </div>
             </div>
             <hr>
- <div class="admin-bottom-left-content">
-      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
-        <div class="setting-dropdown">
-          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
-          <!-- ✅ Theme toggle with Remix Icon -->
-          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
-            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
-          </a>
-          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+            <div class="admin-bottom-left-content">
+                <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+                    <div class="setting-dropdown">
+                        <a href="#" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
+                        <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+                            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+                        </a>
+                        <a href="/logout" class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>    </div>
 
-        </div>
         <div class="admin-right-main-content">
 
+            <div class="dashboard-header">
+                <div class="header-title">
+                    <h1>Product Management</h1>
+                    <span>Overview of your inventory</span>
+                </div>
 
-        <h1><a href="/add_product">ADD PRODUCT</a></h1>
+                <div class="header-actions">
+                    <div class="filter-box">
+                        <select id="categoryFilter" onchange="filterTable()">
+                            <option value="ALL">All Categories</option>
+                        </select>
+                    </div>
 
-     <div class="fb-table-wrap">
-      <table class="fb-table" id="feedbackTable">
-        <thead>
-          <tr>
-            <th>Serial No.</th>
-              <th>Product Image</th>
-            <th>Product name</th>
+                    <div class="search-box">
+                        <i class="ri-search-line"></i>
+                        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterTable()">
+                    </div>
 
-{#            <th>price</th>#}
-            <th>quantity</th>
-            <th>Description</th>
-            <th>Category</th>
-             <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for i in productdata %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td><img src="{{i.image}}" height="100" ></td>
-            <td>{{ i.product_name }}</td>
-{#            <td>{{ i.price }}</td>#}
-            <td>{{ i.quantity }}</td>
-            <td>{{ i.description }}</td>
-            <td>{{ i.CATEGORY.category_name }}</td>
-            <td><a href="/edit_product/{{ i.id }}">Edit</a><br><a href="/delete_product/{{ i.id }}">delete</a></td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="5" style="text-align:center; color:var(--text-soft); padding:2rem;">No feedbacks yet.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                    <a href="/add_product" class="btn-add">
+                        <i class="ri-add-line"></i> Add Product
+                    </a>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <div class="table-wrapper">
+                    <table class="styled-table" id="productTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product Details</th>
+                                <th>Category</th>
+                                <th>Qty</th>
+                                <th width="35%">Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in productdata %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div class="product-info">
+                                        <img src="{{i.image}}" class="product-thumb" alt="img">
+                                        <span>{{ i.product_name }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ i.CATEGORY.category_name }}</td>
+                                <td><span class="qty-badge">{{ i.quantity }}</span></td>
+                                <td style="color: var(--text-soft);">{{ i.description|truncatechars:60 }}</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <a href="/edit_product/{{ i.id }}" class="btn-icon btn-edit" title="Edit">
+                                            <i class="ri-pencil-line"></i>
+                                        </a>
+                                        <a href="javascript:void(0)"
+                                           class="btn-icon btn-delete"
+                                           title="Delete"
+                                           onclick="openDeleteModal('/delete_product/{{ i.id }}')">
+                                            <i class="ri-delete-bin-line"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-soft);">
+                                    <i class="ri-inbox-2-line" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+                                    No products found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div id="noResults" style="display:none; text-align:center; padding:2rem; color:var(--text-soft);">
+                        No matching products found.
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <div id="deleteModal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">
+                <i class="ri-alert-line"></i>
+            </div>
+            <h3>Delete Product?</h3>
+            <p>Are you sure you want to delete this product? <br> This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="modal-btn btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+                <a href="#" id="confirmDeleteBtn" class="modal-btn btn-confirm">Yes, Delete</a>
+            </div>
+        </div>
+    </div>
 
 <script>
+    // --- 1. Dropdown Logic ---
     const moreBtn = document.querySelector(".more-section");
     const dropdown = document.querySelector(".setting-dropdown");
+    const body = document.querySelector("body");
 
-    let body = document.querySelector("body");
-
-    moreBtn.addEventListener("click", function () {
+    moreBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     });
 
-    // Optional: close dropdown if clicked outside
     body.addEventListener("click", function (event) {
         if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {
             dropdown.style.display = "none";
         }
     });
 
-
-
+    // --- 2. Theme Toggle Logic ---
     const root = document.documentElement;
-  const themeBtn = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const savedTheme = localStorage.getItem('theme') || 'light';
 
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  root.setAttribute('data-theme', savedTheme);
-  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+    root.setAttribute('data-theme', savedTheme);
+    themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
 
-  themeBtn.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-  });
+    themeBtn.addEventListener('click', () => {
+        const current = root.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        root.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+    });
+
+    // --- 3. Auto-Populate Categories ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const table = document.getElementById("productTable");
+        const tr = table.getElementsByTagName("tr");
+        const filterSelect = document.getElementById("categoryFilter");
+        let uniqueCategories = new Set();
+
+        for (let i = 1; i < tr.length; i++) {
+            const tdCat = tr[i].getElementsByTagName("td")[2];
+            if (tdCat) {
+                const catText = tdCat.textContent || tdCat.innerText;
+                if(catText.trim() !== "") {
+                    uniqueCategories.add(catText.trim());
+                }
+            }
+        }
+        uniqueCategories.forEach(cat => {
+            let option = document.createElement("option");
+            option.value = cat;
+            option.text = cat;
+            filterSelect.appendChild(option);
+        });
+    });
+
+    // --- 4. Search + Filter Logic ---
+    function filterTable() {
+        const searchInput = document.getElementById("searchInput").value.toUpperCase();
+        const categoryFilter = document.getElementById("categoryFilter").value.toUpperCase();
+        const table = document.getElementById("productTable");
+        const tr = table.getElementsByTagName("tr");
+        let hasVisibleRow = false;
+
+        for (let i = 1; i < tr.length; i++) {
+            const tdName = tr[i].getElementsByTagName("td")[1];
+            const tdCat = tr[i].getElementsByTagName("td")[2];
+            const tdDesc = tr[i].getElementsByTagName("td")[4];
+
+            if (tdName && tdCat) {
+                const txtName = tdName.textContent || tdName.innerText;
+                const txtCat = tdCat.textContent || tdCat.innerText;
+                const txtDesc = tdDesc.textContent || tdDesc.innerText;
+
+                const matchesSearch = (txtName.toUpperCase().indexOf(searchInput) > -1) ||
+                                      (txtCat.toUpperCase().indexOf(searchInput) > -1) ||
+                                      (txtDesc.toUpperCase().indexOf(searchInput) > -1);
+                const matchesCategory = (categoryFilter === "ALL") || (txtCat.toUpperCase() === categoryFilter);
+
+                if (matchesSearch && matchesCategory) {
+                    tr[i].style.display = "";
+                    hasVisibleRow = true;
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+        const noResultsMsg = document.getElementById("noResults");
+        if (!hasVisibleRow && tr.length > 1) {
+            noResultsMsg.style.display = "block";
+            table.style.display = "none";
+        } else {
+            noResultsMsg.style.display = "none";
+            table.style.display = "table";
+        }
+    }
+
+    // --- 5. DELETE MODAL LOGIC (NEW) ---
+    function openDeleteModal(deleteUrl) {
+        const modal = document.getElementById('deleteModal');
+        const confirmBtn = document.getElementById('confirmDeleteBtn');
+
+        // Update the 'Yes, Delete' button href to the specific product ID URL
+        confirmBtn.href = deleteUrl;
+
+        // Show Modal
+        modal.style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        modal.style.display = 'none';
+    }
+
+    // Close modal if user clicks outside the card
+    window.onclick = function(event) {
+        const modal = document.getElementById('deleteModal');
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
 </script>
-
-
 
 </body>
 </html>
-
-
-

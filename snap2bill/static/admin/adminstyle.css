@@ -39,11 +39,13 @@ body::-webkit-scrollbar {
     --text-main:#0a0a0a;
     --text-soft: #8c9aa9;
     --surface:#ffffff;
+    --bg-body: #f4f7fe;
     --line:#e5e7eb;
     --radius:.8rem;
     --shadow:0 1.2rem 3rem rgba(2,6,23,.08);
     --gap: clamp(2rem, 2.5vw, 3rem);
     --pill--border:rgba(14,165,233,.3);
+    --danger: #ff0700;
 
   }
 
@@ -53,11 +55,15 @@ body::-webkit-scrollbar {
     --text-main: #ffffff;
     --text-soft:#9ca3af;
     --surface:#000000;
+      --bg-body: #000000;
     --line:rgba(255,255,255,0.15);
     --shadow:0 1rem 2rem rgba(0,0,0,0.4);
-          --pill--border: rgba(10, 104, 233, 0.3);
+      --pill--border: rgba(10, 104, 233, 0.3);
 
   }
+
+
+
 
   body {
     background: var(--surface);
