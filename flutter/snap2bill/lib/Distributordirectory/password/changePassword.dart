@@ -12,7 +12,7 @@ class changePassword extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: changePasswordSub(),);
+    return const changePasswordSub();
   }
 }
 
@@ -30,7 +30,21 @@ class _changePasswordSubState extends State<changePasswordSub> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("change password"),),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          onPressed: () {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          "Change Password",
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
+      ),
 
       body: Padding(
         padding: const EdgeInsets.all(8.0),

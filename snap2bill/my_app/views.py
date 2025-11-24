@@ -206,25 +206,14 @@ def view_review(request):
 
     return JsonResponse({'status': 'ok', 'data': ar})
 
-# def admin_category(request):
-#     data=category.objects.all()
-#     return render(request,'admin/admin_category.html',{'data':data})
-#
-#
-#
-# def admin_add_category(request):
-#     return render(request,'admin/add_category.html')
-#
+
+
 # def add_category_post(request):
 #     category_name = request.POST['Category']
 #     obj=category()
 #     obj.category_name=category_name
 #     obj.save()
 #     return HttpResponse("<script>alert(' Category Added successfully');window.location='/admin_category'</script>")
-#
-# def edit_category(request,id):
-#     data=category.objects.get(id=id)
-#     return render(request,'admin/edit_category.html',{'data':data})
 #
 # def edit_category_post(request,id):
 #     cat=request.POST['Category']
@@ -262,7 +251,7 @@ def edit_category_post(request, id):
 
 # @require_POST
 def delete_category(request, id):
-    obj = get_object_or_404(category, id=id)
+    obj=category.objects.get(id=id)
     name = obj.category_name
     obj.delete()
     messages.error(request, f"Category '{name}' deleted.")

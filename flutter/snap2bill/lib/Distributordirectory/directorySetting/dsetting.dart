@@ -11,7 +11,7 @@ class dsetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: dsetting_sub(),);
+    return const dsetting_sub();
   }
 }
 
@@ -27,7 +27,24 @@ class _dsetting_subState extends State<dsetting_sub> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
+
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          onPressed: () {
+            if (Navigator.canPop(context)) Navigator.pop(context);
+          },
+        ),
+        title: const Text(
+          "Settings",
+          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        ),
+      ),
+
+
       body: Center(child: Text("Distributor Setting"),),
       
       

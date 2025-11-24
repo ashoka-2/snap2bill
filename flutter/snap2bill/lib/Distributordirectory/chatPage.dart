@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main(){
-  runApp(chatPage());
-}
+
 
 class chatPage extends StatelessWidget {
   const chatPage({Key? key}) : super(key: key);
