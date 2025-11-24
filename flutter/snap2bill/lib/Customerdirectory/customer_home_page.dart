@@ -107,10 +107,6 @@ class _CustomerHomePageState extends State<customer_home_page> {
             }, child: Text("Send feedback")),
             SizedBox(height: 10,),
             ElevatedButton(onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context)=>view_review()));
-            }, child: Text("view review")),
-            SizedBox(height: 10,),
-            ElevatedButton(onPressed: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>view_feedback()));
             }, child: Text("view feedback")),
             ElevatedButton(onPressed: (){

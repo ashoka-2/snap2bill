@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 
 
@@ -99,13 +100,17 @@ class _customer_page_subState extends State<customer_page_sub> {
                             _buildRow("Email:", i.email.toString()),
                             _buildRow("Phone:", i.phone.toString()),
                             SizedBox(height: 10,),
+                            Row(
+                              children: [
+                                ElevatedButton(onPressed: (){
 
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>myProducts()));
 
-                            // Row(children: [
-                            //   ElevatedButton(onPressed: (){
-                            //
-                            //   }, child: Text("Send Revieew"))
-                            // ],)
+                                }, child: Text("Add bill")),
+                                SizedBox(width: 10,),
+                                ElevatedButton(onPressed: (){}, child: Text("view bills")),
+                              ],
+                            )
 
                           ],
                         ),

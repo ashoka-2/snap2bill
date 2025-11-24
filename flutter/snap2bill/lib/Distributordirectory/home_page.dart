@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:snap2bill/Distributordirectory/addfolder/add_product.dart';
+import 'package:snap2bill/Distributordirectory/addfolder/addOrder.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/send_feedback.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';

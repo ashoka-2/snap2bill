@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 
 
 
@@ -105,7 +106,21 @@ class _view_reviewState extends State<view_review> {
                             _buildRow("Review:", i.reviews.toString()),
                             _buildRow("Rating:", i.rating.toString()),
                             _buildRow("Date:", i.review_date.toString()),
+                            SizedBox(height: 10,),
+                        ElevatedButton(
+                              onPressed: () async {
+                                SharedPreferences prefs = await SharedPreferences.getInstance();
+                                var data = await http.post(
+                                    Uri.parse(prefs.getString("ip").toString()+"/delete_review/${i.id}"),
+                                    body: {
+                                      'id': prefs.getString("id").toString(),
+                                    }
+                                );
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>distributor_page()));
+                              },
 
+                              child: const Text("Delete review"),
+                            ),
                           ],
                         ),
                       ),

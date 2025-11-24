@@ -176,6 +176,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Customerdirectory/Customersends/addToCart.dart';
 
 class view_product extends StatelessWidget {
   const view_product({Key? key}) : super(key: key);
@@ -405,31 +406,9 @@ class _view_product_subState extends State<view_product_sub> {
                               overflow: TextOverflow.ellipsis,
                             ),
                             const SizedBox(height: 20),
+                            ElevatedButton(onPressed: () async {
 
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton.icon(
-                                onPressed: () {
-                                  // Your add to cart logic here
-                                },
-                                icon: const Icon(Icons.shopping_cart_outlined, size: 20),
-                                label: const Text(
-                                  "ADD TO CART",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5),
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.indigo,
-                                  foregroundColor: Colors.white,
-                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  elevation: 2,
-                                ),
-                              ),
-                            ),
+                            }, child: Text("Add product"))
                           ],
                         ),
                       ),

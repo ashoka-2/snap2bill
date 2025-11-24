@@ -37,9 +37,13 @@ urlpatterns = [
     path('admin_verify', views.admin_verify),
     path('admin_verified', views.admin_verified),
     path('admin_viewcustomer', views.admin_viewcustomer),
+
+
+
     path('admin_review',views.admin_review),
     path('send_review',views.send_review),
     path('view_review',views.view_review),
+    path('delete_review/<id>',views.delete_review),
 
 
     path('admin_category',views.admin_category),
@@ -104,6 +108,11 @@ urlpatterns = [
     path('add_stock',views.add_stock),
     path('edit_stock', views.edit_stock),
     path('delete_distributor_product/<id>', views.delete_distributor_product),
+
+
+
+
+    path('addproduct',views.addproduct)
 
 ]
 

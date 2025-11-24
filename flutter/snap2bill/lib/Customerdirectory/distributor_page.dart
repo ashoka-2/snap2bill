@@ -5,6 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_review.dart';
 
+import 'custviews/view_review.dart';
+
 
 
 class distributor_page extends StatelessWidget {
@@ -112,7 +114,14 @@ class _distributor_page_subState extends State<distributor_page_sub> {
                                 SharedPreferences sh =await SharedPreferences.getInstance();
                                 sh.setString("uid",i.id.toString());
                                 Navigator.push(context, MaterialPageRoute(builder: (context)=> send_review()));
-                              }, child: Text("Send Review"))
+                              }, child: Text("Send Review")),
+                              SizedBox(width: 10,),
+
+                              ElevatedButton(onPressed: () async {
+                                SharedPreferences sh =await SharedPreferences.getInstance();
+                                sh.setString("uid",i.id.toString());
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>view_review()));
+                              }, child: Text("view review")),
                             ],)
 
                           ],

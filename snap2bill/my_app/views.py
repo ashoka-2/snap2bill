@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 # Create your views here
-from my_app.models import category, distributor, review, feedback, customer, product, stock
+from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, orders
 
 print(make_password("password"))
 
@@ -190,9 +190,7 @@ def send_review(request):
 def view_review(request):
     cid = request.POST.get('cid')
     uid = request.POST.get('uid')
-    if not cid or not uid:
-        return JsonResponse({'status': 'error', 'message': 'Missing cid or uid'})
-    data = review.objects.filter(USER_id=cid, DISTRIBUTOR_id=uid).order_by('-review_date')
+    data = review.objects.filter(USER_id=cid, DISTRIBUTOR_id=uid)
     ar = []
     for i in data:
         ar.append({
@@ -200,13 +198,16 @@ def view_review(request):
             'reviews': i.reviews,
             'rating': i.rating,
             'review_date': i.review_date,
-            'username': i.USER.name if i.USER else None,
-            'distributor': i.DISTRIBUTOR.name if i.DISTRIBUTOR else None,
+            'username': i.USER.name ,
+            'distributor': i.DISTRIBUTOR.name
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+def delete_review(request,id):
+    review.objects.filter(id=id).delete()
+    return JsonResponse({'status':'ok'})
 
 # def add_category_post(request):
 #     category_name = request.POST['Category']
@@ -580,10 +581,11 @@ def login_page(request):
             print(request.user.id)
             if data.groups.filter(name="distributor").exists():
                 print("Distributor")
-                uid = distributor.objects.get(LOGIN=request.user.id).id
-
-                print(uid)
-                return JsonResponse({'status':'distok','uid':str(uid)}, status=200)
+                if distributor.objects.filter(LOGIN=request.user.id,status="approve").exists():
+                    uid = distributor.objects.get(LOGIN=request.user.id).id
+                    return JsonResponse({'status':'distok','uid':str(uid)}, status=200)
+                else:
+                    return JsonResponse({'status': 'invalid credentials'}, status=400)
 
             elif data.groups.filter(name="customer").exists():
                 print("Customer")
@@ -883,3 +885,34 @@ def customer_view_distributor(request):
                    'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,'latitude':i.latitude,'longitude':i.longitude,'proof':i.proof})
 
     return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+
+def addproduct(request):
+
+
+    cid = request.POST['cid']
+    uid = request.POST['uid']
+    obj1=orders()
+    obj1.orders = orders
+    obj1.payment_status = 'pending'
+    obj1.payment_date = datetime.datetime.now().date()
+    obj1.date = datetime.datetime.now().date()
+    obj1.USER_id = cid
+    obj1.DISTRIBUTOR_id = uid
+    obj1.save()
+
+    quantity=request.POST['quantity']
+    pid = request.POST['pid']
+    oid = request.POST['oid']
+    obj=order_sub()
+    obj.quantity=quantity
+    obj.PRODUCT_id=pid
+    obj.ORDER_id=oid
+    obj.save()
+
+
+
+    return JsonResponse({'status':'ok'})
+
