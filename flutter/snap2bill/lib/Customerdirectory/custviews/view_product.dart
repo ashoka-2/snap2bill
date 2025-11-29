@@ -177,6 +177,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/addToCart.dart';
+import 'package:snap2bill/Distributordirectory/addfolder/addOrder.dart';
 
 class view_product extends StatelessWidget {
   const view_product({Key? key}) : super(key: key);
@@ -407,7 +408,7 @@ class _view_product_subState extends State<view_product_sub> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(onPressed: () async {
-
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=>addOrder()));
                             }, child: Text("Add product"))
                           ],
                         ),

@@ -1,5 +1,6 @@
 import datetime
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
@@ -41,7 +42,7 @@ def login_post(request):
     # return redirect('/')
 
 
-
+@login_required(login_url='')
 def change_password(request):
     return render(request, 'changePassword.html')
 
@@ -111,9 +112,6 @@ def forget_password_post(request):
     if data.exists():
         request.session['fid'] = data[0].id
         return redirect('/forget_password_set')
-
-
-
     return HttpResponse("<script>alert('invalid');window.location='/'</script>")
 
 
@@ -296,7 +294,7 @@ def send_feedback(request):
 
         obj = feedback()
         obj.feedbacks = feedbacks
-        obj.feedback_date = datetime.datetime.now()
+        obj.feedback_date = datetime.datetime.now().date()
 
         # Identify sender type
         if cid:
@@ -315,9 +313,14 @@ def send_feedback(request):
 
 
 # ========== ADMIN: VIEW ALL FEEDBACKS ==========
-def admin_feedback(request):
-    feeddata = feedback.objects.all().order_by('-feedback_date')
+def customer_feedbacks(request):
+    feeddata = feedback.objects.filter(type="user").order_by('-feedback_date')
     return render(request, 'admin/admin_feedback.html', {'feeddata': feeddata})
+
+
+def distributor_feedbacks(request):
+    feeddata = feedback.objects.filter(type="distributor").order_by('-feedback_date')
+    return render(request, 'admin/viewDistributorFeedbacks.html', {'feeddata': feeddata})
 
 
 # ========== API: GET FEEDBACKS (For Flutter / Mobile) ==========
@@ -620,6 +623,36 @@ def customer_change_password(request):
     return JsonResponse({'status':'ok'})
 
 
+#
+# def emailVerify(request):
+#     username = request.POST['username']
+#     data = User.objects.filter(username=username)
+#
+#
+#     return JsonResponse({'status':'ok'})
+#
+#
+# def forgotPasswordDistributor(request):
+#     newpass = request.POST['newpassword']
+#     confirmpass = request.POST['confirmpassword']
+#     if newpass == confirmpass:
+#         obj = User.objects.get(id=uid)
+#         obj.set_password(newpass)
+#         obj.save()
+#     return JsonResponse({'status':'ok'})
+#
+#
+
+
+
+
+
+
+
+
+
+
+
 
 
 def distributor_view_product(request):
@@ -915,4 +948,10 @@ def addproduct(request):
 
 
     return JsonResponse({'status':'ok'})
+
+
+
+
+
+
 

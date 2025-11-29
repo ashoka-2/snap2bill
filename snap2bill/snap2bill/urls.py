@@ -55,9 +55,14 @@ urlpatterns = [
 
 
 
-    path('admin_feedback',views.admin_feedback),
+    path('customer_feedbacks',views.customer_feedbacks),
+    path('distributor_feedbacks', views.distributor_feedbacks),
+
     path('send_feedback',views.send_feedback),
     path('view_feedback',views.view_feedback),
+
+
+
     path('distributor_registration',views.distributor_registration),
     path('customer_registration',views.customer_registration),
     path('accept_distributor/<id>',views.accept_distributor),

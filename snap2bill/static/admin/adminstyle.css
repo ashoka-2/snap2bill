@@ -357,7 +357,8 @@ display: flex;
 
 
  .admin-right-main-content{
-    width:100%; min-height:100vh;
+    width:100%;
+     min-height:100vh;
     background:
       radial-gradient(80vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),
       radial-gradient(60vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),
@@ -365,6 +366,9 @@ display: flex;
     padding:clamp(1rem,2.5vw,2rem);
     box-sizing:border-box;
      overflow:auto;
+     display: flex;
+     flex-direction: column;
+
   }
 
 
