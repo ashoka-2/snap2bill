@@ -34,6 +34,7 @@ urlpatterns = [
     path('forget_password_set_post', views.forget_password_set_post),
 
     path('admin_home',views.admin_home),
+    path('admin_setting',views.admin_setting),
     path('admin_verify', views.admin_verify),
     path('admin_verified', views.admin_verified),
     path('admin_viewcustomer', views.admin_viewcustomer),

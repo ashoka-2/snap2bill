@@ -115,6 +115,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script src="{% static 'scripts/setting.js' %}"></script>
+
 <title>Edit Category</title>
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'admin/category.css' %}">
@@ -144,9 +146,9 @@
     </div>
     <hr>
  <div class="admin-bottom-left-content">
-      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+      <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
         <div class="setting-dropdown">
-          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+          <a href="admin_setting"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
           <!-- ✅ Theme toggle with Remix Icon -->
           <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
             <i id="themeIcon" class="ri-sun-line"></i> Switch theme

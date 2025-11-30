@@ -1,162 +1,3 @@
-{#{% load static %}#}
-{##}
-{##}
-{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#<html xmlns="http://www.w3.org/1999/xhtml">#}
-{#<head>#}
-{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#<title>Admin Home</title>#}
-{# <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#<link#}
-{#  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
-{#  rel="stylesheet"#}
-{#/>#}
-{##}
-{#</head>#}
-{##}
-{#<body>#}
-{##}
-{#    <div class="main-content">#}
-{#        <div class="admin-left-main-content">#}
-{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
-{#            <div class="admin-mid-left-content">#}
-{##}
-{#      <div id="navbar-section">#}
-{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars active"><i class="ri-home-4-line"></i><span>Home</span></div></a>#}
-{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>#}
-{#          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>#}
-{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>#}
-{#         <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Feedback</span></div></a>#}
-{#           <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>#}
-{#      </div>#}
-{#            </div>#}
-{#            <hr>#}
-{# <div class="admin-bottom-left-content">#}
-{#      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>#}
-{#        <div class="setting-dropdown">#}
-{#          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>#}
-{#          <!-- ✅ Theme toggle with Remix Icon -->#}
-{#          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">#}
-{#            <i id="themeIcon" class="ri-sun-line"></i> Switch theme#}
-{#          </a>#}
-{#          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>    </div>#}
-{##}
-{#        </div>#}
-{#        <div class="admin-right-main-content">#}
-{##}
-{##}
-{#<form action="/edit_product_post/{{ data.id }}" method="post" enctype="multipart/form-data">#}
-{#<label for="image">Product Image URL:</label>#}
-{#        <input type="file" id="image" name="image"><br><br>#}
-{##}
-{#        <label for="product_name">Product Name:</label>#}
-{#        <input type="text" id="product_name" name="product_name" value="{{ data.product_name }}"><br><br>#}
-{##}
-{##}
-{#        <label for="price">Price:</label>#}
-{#        <input type="number" id="price" name="price" step="0.01" value="{{ data.price }}"><br><br>#}
-{##}
-{#        <label for="category">Category:</label>#}
-{#        <select id="category" name="category">#}
-{#             {% for i in categorydata %}#}
-{##}
-{#                <option value="{{ i.id }}" {% if data.CATEGORY.id == i.id%}selected{% endif %}>{{ i.category_name }}</option>#}
-{#             {% endfor %}#}
-{#        </select><br><br>#}
-{##}
-{#        <label for="quantity">Stock Quantity:</label>#}
-{#        <input type="number" id="quantity" name="quantity" value="{{ data.quantity }}"><br><br>#}
-{##}
-{#        <label for="description">Description:</label>#}
-{#        <textarea id="description" name="description" >{{ data.description }}</textarea><br><br>#}
-{##}
-{##}
-{#        <input type="submit" value="Edit Product">#}
-{##}
-{##}
-{#    </form>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#              <!-- Toast Message Display -->#}
-{#{% if messages %}#}
-{#<div id="toast-container">#}
-{#  {% for message in messages %}#}
-{#  <div class="toast {{ message.tags }}">#}
-{#    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}#}
-{#    {{ message }}#}
-{#  </div>#}
-{#  {% endfor %}#}
-{#</div>#}
-{#{% endif %}#}
-{##}
-{##}
-{#        </div>#}
-{#    </div>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#<script>#}
-{#    const moreBtn = document.querySelector(".more-section");#}
-{#    const dropdown = document.querySelector(".setting-dropdown");#}
-{##}
-{#    let body = document.querySelector("body");#}
-{##}
-{#    moreBtn.addEventListener("click", function () {#}
-{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
-{#    });#}
-{##}
-{#    // Optional: close dropdown if clicked outside#}
-{#    body.addEventListener("click", function (event) {#}
-{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
-{#            dropdown.style.display = "none";#}
-{#        }#}
-{#    });#}
-{##}
-{##}
-{##}
-{#    const root = document.documentElement;#}
-{#  const themeBtn = document.getElementById('themeToggle');#}
-{#  const themeIcon = document.getElementById('themeIcon');#}
-{##}
-{#  const savedTheme = localStorage.getItem('theme') || 'light';#}
-{#  root.setAttribute('data-theme', savedTheme);#}
-{#  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{##}
-{#  themeBtn.addEventListener('click', () => {#}
-{#    const current = root.getAttribute('data-theme');#}
-{#    const next = current === 'dark' ? 'light' : 'dark';#}
-{#    root.setAttribute('data-theme', next);#}
-{#    localStorage.setItem('theme', next);#}
-{#    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{#  });#}
-{#</script>#}
-{##}
-{##}
-{##}
-{#</body>#}
-{#</html>#}
-{##}
-{##}
-{##}
-
-
 {% load static %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -164,8 +5,51 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Edit Product</title>
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+    <script src="{% static 'scripts/setting.js' %}"></script>
+
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
+
+<style>
+    /* Styles for the Cancel button layout */
+    .form-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-cancel {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background-color: #fff;
+        color: #64748b; /* Muted text color */
+        border: 1px solid #cbd5e1;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        cursor: pointer;
+    }
+
+    .btn-cancel:hover {
+        background-color: #f1f5f9;
+        color: #0f172a;
+        border-color: #94a3b8;
+    }
+
+    /* Ensure the submit button matches the height/alignment */
+    .btn-submit {
+        /* Usually defined in product.css, but adding flex properties ensures alignment */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+</style>
 
 </head>
 
@@ -182,16 +66,16 @@
                     <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
                     <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
                     <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-<a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
-         <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
+                    <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
+                    <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
                     <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
                 </div>
             </div>
             <hr>
             <div class="admin-bottom-left-content">
-                <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+                <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
                     <div class="setting-dropdown">
-                        <a href="#" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
+                        <a href="admin_setting" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
                         <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
                             <i id="themeIcon" class="ri-sun-line"></i> Switch theme
                         </a>
@@ -214,7 +98,8 @@
             </div>
 
             <div class="form-card">
-                <form action="/edit_product_post/{{ data.id }}" method="post" enctype="multipart/form-data">
+                <!-- Added id="editProductForm" and novalidate -->
+                <form action="/edit_product_post/{{ data.id }}" method="post" enctype="multipart/form-data" id="editProductForm" novalidate>
                     {% csrf_token %}
 
                     <div class="form-grid">
@@ -251,7 +136,8 @@
                                     <span>Current</span>
                                 </div>
                                 {% endif %}
-                                <input type="file" id="image" name="image" class="file-input">
+                                <!-- Added accept attribute -->
+                                <input type="file" id="image" name="image" class="file-input" accept="image/*">
                             </div>
                         </div>
 
@@ -263,6 +149,9 @@
                     </div>
 
                     <div class="form-actions">
+                        <a href="/view_product" class="btn-cancel">
+                            <i class="ri-close-circle-line"></i> Cancel
+                        </a>
                         <button type="submit" class="btn-submit">
                             <i class="ri-save-line"></i> Update Product
                         </button>
@@ -271,16 +160,17 @@
                 </form>
             </div>
 
-            {% if messages %}
+            <!-- Toast Container -->
             <div id="toast-container">
-                {% for message in messages %}
-                <div class="toast {{ message.tags }}">
-                    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
-                    {{ message }}
-                </div>
-                {% endfor %}
+                {% if messages %}
+                    {% for message in messages %}
+                    <div class="toast {{ message.tags }}">
+                        {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                {% endif %}
             </div>
-            {% endif %}
 
         </div>
     </div>
@@ -318,7 +208,249 @@
         localStorage.setItem('theme', next);
         themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
     });
+
+    /* --- Form Validation Logic (Edit Product) --- */
+    const form = document.getElementById('editProductForm');
+
+    form.addEventListener('submit', function(e) {
+        let hasError = false;
+
+        // Helper to show error
+        const showError = (msg) => {
+            showToast(msg, 'error');
+            hasError = true;
+        };
+
+        // 1. Validate Product Name
+        // Requirements: At least 3 chars, allows letters, numbers, spaces
+        const name = document.getElementById('product_name').value.trim();
+        const nameRegex = /^[a-zA-Z0-9 ]+$/;
+
+        if (name.length < 3) {
+            showError("Product Name must be at least 3 characters long.");
+        } else if (!nameRegex.test(name)) {
+            showError("Product Name can only contain letters, numbers, and spaces.");
+        }
+
+        // 2. Validate Category
+        const category = document.getElementById('category').value;
+        if (!category) {
+            showError("Please select a valid Category.");
+        }
+
+        // 3. Validate Quantity
+        const quantity = document.getElementById('quantity').value;
+        if (!quantity || quantity <= 0) {
+            showError("Quantity must be a positive number.");
+        }
+
+        // 4. Validate Image (Optional on Edit)
+        // If user selects a file, it's validated by the 'accept' attribute mostly,
+        // but we assume if they picked one, they want to update it. No 'required' check here.
+
+        // 5. Validate Description
+        const desc = document.getElementById('description').value.trim();
+        if (desc.length < 5) {
+            showError("Description must be at least 5 characters long.");
+        }
+
+        if (hasError) {
+            e.preventDefault(); // Stop form submission
+        }
+    });
+
+    /* Helper: Show Toast Message via JS */
+    function showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+
+        toast.className = `toast ${type}`;
+
+        const icon = type === 'success' ? '✅' : '⚠️';
+        toast.innerHTML = `${icon} ${message}`;
+
+        container.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 4000);
+    }
+
+    // Auto-remove server-side messages
+    setTimeout(()=> {
+        const serverToasts = document.querySelectorAll('.toast');
+        serverToasts.forEach(t => t.remove());
+    }, 6000);
+
 </script>
 
 </body>
 </html>
+
+{##}
+{##}
+{#{% load static %}#}
+{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
+{#<html xmlns="http://www.w3.org/1999/xhtml">#}
+{#<head>#}
+{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
+{#<title>Edit Product</title>#}
+{#<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>#}
+{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
+{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">#}
+{##}
+{#</head>#}
+{##}
+{#<body>#}
+{##}
+{#    <div class="main-content">#}
+{#        <div class="admin-left-main-content">#}
+{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
+{#            <div class="admin-mid-left-content">#}
+{#                <div id="navbar-section">#}
+{#                    <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>#}
+{#                    <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>#}
+{#                    <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>#}
+{#                    <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>#}
+{#                    <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>#}
+{#                    <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>#}
+{#<a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>#}
+{#         <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>#}
+{#                    <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>#}
+{#                </div>#}
+{#            </div>#}
+{#            <hr>#}
+{#            <div class="admin-bottom-left-content">#}
+{#                <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>#}
+{#                    <div class="setting-dropdown">#}
+{#                        <a href="#" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>#}
+{#                        <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">#}
+{#                            <i id="themeIcon" class="ri-sun-line"></i> Switch theme#}
+{#                        </a>#}
+{#                        <a href="/logout" class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</a>#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{##}
+{#        <div class="admin-right-main-content">#}
+{##}
+{#            <div class="dashboard-header">#}
+{#                <div class="header-title">#}
+{#                    <h1>Edit Product</h1>#}
+{#                    <span>Update details for <strong>{{ data.product_name }}</strong></span>#}
+{#                </div>#}
+{#                <a href="/view_product" class="btn-back">#}
+{#                    <i class="ri-arrow-left-line"></i> Back to List#}
+{#                </a>#}
+{#            </div>#}
+{##}
+{#            <div class="form-card">#}
+{#                <form action="/edit_product_post/{{ data.id }}" method="post" enctype="multipart/form-data">#}
+{#                    {% csrf_token %}#}
+{##}
+{#                    <div class="form-grid">#}
+{##}
+{#                        <div class="form-group">#}
+{#                            <label for="product_name">Product Name</label>#}
+{#                            <input type="text" id="product_name" name="product_name" value="{{ data.product_name }}" required>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            <label for="category">Category</label>#}
+{#                            <div class="select-wrapper">#}
+{#                                <select id="category" name="category" required>#}
+{#                                    {% for i in categorydata %}#}
+{#                                        <option value="{{ i.id }}" {% if data.CATEGORY.id == i.id %}selected{% endif %}>#}
+{#                                            {{ i.category_name }}#}
+{#                                        </option>#}
+{#                                    {% endfor %}#}
+{#                                </select>#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            <label for="quantity">Stock Quantity</label>#}
+{#                            <input type="number" id="quantity" name="quantity" value="{{ data.quantity }}" required>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group">#}
+{#                            <label for="image">Product Image</label>#}
+{#                            <div class="image-edit-container">#}
+{#                                {% if data.image %}#}
+{#                                <div class="current-image">#}
+{#                                    <img src="{{ data.image }}" alt="Current Product">#}
+{#                                    <span>Current</span>#}
+{#                                </div>#}
+{#                                {% endif %}#}
+{#                                <input type="file" id="image" name="image" class="file-input">#}
+{#                            </div>#}
+{#                        </div>#}
+{##}
+{#                        <div class="form-group full-width">#}
+{#                            <label for="description">Description</label>#}
+{#                            <textarea id="description" name="description" rows="4">{{ data.description }}</textarea>#}
+{#                        </div>#}
+{##}
+{#                    </div>#}
+{##}
+{#                    <div class="form-actions">#}
+{#                        <button type="submit" class="btn-submit">#}
+{#                            <i class="ri-save-line"></i> Update Product#}
+{#                        </button>#}
+{#                    </div>#}
+{##}
+{#                </form>#}
+{#            </div>#}
+{##}
+{#            {% if messages %}#}
+{#            <div id="toast-container">#}
+{#                {% for message in messages %}#}
+{#                <div class="toast {{ message.tags }}">#}
+{#                    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}#}
+{#                    {{ message }}#}
+{#                </div>#}
+{#                {% endfor %}#}
+{#            </div>#}
+{#            {% endif %}#}
+{##}
+{#        </div>#}
+{#    </div>#}
+{##}
+{#<script>#}
+{#    /* Dropdown Logic */#}
+{#    const moreBtn = document.querySelector(".more-section");#}
+{#    const dropdown = document.querySelector(".setting-dropdown");#}
+{#    let bodyEl = document.querySelector("body");#}
+{##}
+{#    moreBtn.addEventListener("click", function (e) {#}
+{#        e.stopPropagation();#}
+{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
+{#    });#}
+{##}
+{#    bodyEl.addEventListener("click", function (event) {#}
+{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
+{#            dropdown.style.display = "none";#}
+{#        }#}
+{#    });#}
+{##}
+{#    /* Theme Toggle Logic */#}
+{#    const root = document.documentElement;#}
+{#    const themeBtn = document.getElementById('themeToggle');#}
+{#    const themeIcon = document.getElementById('themeIcon');#}
+{#    const savedTheme = localStorage.getItem('theme') || 'light';#}
+{##}
+{#    root.setAttribute('data-theme', savedTheme);#}
+{#    themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
+{##}
+{#    themeBtn.addEventListener('click', () => {#}
+{#        const current = root.getAttribute('data-theme');#}
+{#        const next = current === 'dark' ? 'light' : 'dark';#}
+{#        root.setAttribute('data-theme', next);#}
+{#        localStorage.setItem('theme', next);#}
+{#        themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
+{#    });#}
+{#</script>#}
+{##}
+{#</body>#}
+{#</html>#}

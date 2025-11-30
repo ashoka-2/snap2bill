@@ -1,17 +1,155 @@
 {% load static %}
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Admin Home</title>
- <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-<link
-  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
-  rel="stylesheet"
-/>
 
+<link rel="icon" type="image/png" id="dynamic-favicon" href="{% static 'images/favicon.png' %}">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<script src="{% static 'scripts/setting.js' %}"></script>
+
+<style>
+    /* =============================
+       📊 DASHBOARD SPECIFIC STYLES
+       ============================= */
+
+    .dashboard-container {
+        padding: 2rem;
+        width: 100%;
+    }
+
+    .welcome-banner {
+        margin-bottom: 2rem;
+    }
+    .welcome-banner h1 {
+        font-size: 1.8rem;
+        color: var(--text-main);
+        margin-bottom: 0.5rem;
+    }
+    .welcome-banner p {
+        color: var(--text-soft);
+    }
+
+    /* --- Stats Grid --- */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background-color: var(--surface);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        border: 1px solid var(--line);
+        display: flex;
+        align-items: center;
+        gap: 1.2rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 2rem rgba(0,0,0,0.1);
+    }
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        flex-shrink: 0;
+    }
+
+    .stat-info h3 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-main);
+        line-height: 1.2;
+    }
+    .stat-info p {
+        color: var(--text-soft);
+        font-size: 0.9rem;
+        margin-top: 0.2rem;
+    }
+
+    /* --- Card Color Variations --- */
+
+    /* Blue (Customers) */
+    .card-blue .icon-box { background: rgba(21, 101, 192, 0.1); color: #1565c0; }
+
+    /* Orange (Pending) */
+    .card-orange .icon-box { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
+
+    /* Green (Verified) */
+    .card-green .icon-box { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
+
+    /* Purple (Products) */
+    .card-purple .icon-box { background: rgba(156, 39, 176, 0.1); color: #9c27b0; }
+
+    /* Red (Distributor Feedback) */
+    .card-red .icon-box { background: rgba(244, 67, 54, 0.1); color: #f44336; }
+
+    /* Teal (Customer Feedback) */
+    .card-teal .icon-box { background: rgba(0, 150, 136, 0.1); color: #009688; }
+
+    /* Yellow/Gold (Reviews) */
+    .card-yellow .icon-box { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
+
+    /* Indigo (Categories) */
+    .card-indigo .icon-box { background: rgba(63, 81, 181, 0.1); color: #3f51b5; }
+
+
+    /* --- Quick Actions Section --- */
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    .section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--text-main);
+    }
+
+    .quick-actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .action-btn {
+        background-color: var(--surface);
+        border: 1px dashed var(--primary);
+        color: var(--primary);
+        padding: 1rem;
+        border-radius: var(--radius);
+        text-align: center;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .action-btn i { font-size: 1.5rem; }
+    .action-btn:hover {
+        background-color: var(--primary);
+        color: #fff;
+        border-style: solid;
+    }
+</style>
 </head>
 
 <body>
@@ -20,487 +158,184 @@
         <div class="admin-left-main-content">
             <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
             <div class="admin-mid-left-content">
-
-      <div id="navbar-section">
-        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars active"><i class="ri-home-4-line"></i><span>Home</span></div></a>
-        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
-        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
-        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
-          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
-        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-         <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
-         <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
-
-           <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
-      </div>
+                <div id="navbar-section">
+                    <a class="nav-links" href="/admin_home"><div class="mid-left-navbars active"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+                    <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+                    <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+                    <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+                    <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+                    <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+                    <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
+                    <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
+                    <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
+                </div>
             </div>
             <hr>
- <div class="admin-bottom-left-content">
-      <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
-        <div class="setting-dropdown">
-          <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
-          <!-- ✅ Theme toggle with Remix Icon -->
-          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
-            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
-          </a>
-          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+            <div class="admin-bottom-left-content">
+                <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
+                    <div class="setting-dropdown">
+                        <a href="/admin_setting"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
+                        <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
+                            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
+                        </a>
+                        <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>    </div>
 
-        </div>
         <div class="admin-right-main-content">
 
+            <div class="dashboard-container">
 
+                <div class="welcome-banner">
+                    <h1>Dashboard Overview</h1>
+                    <p>Welcome back, Admin. Here's what's happening today.</p>
+                </div>
 
+                <div class="stats-grid">
 
+                    <div class="stat-card card-blue">
+                        <div class="icon-box"><i class="ri-user-3-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ customer_count|default:"0" }}</h3>
+                            <p>Total Customers</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-orange">
+                        <div class="icon-box"><i class="ri-time-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ pending_count|default:"0" }}</h3>
+                            <p>Pending Verifications</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-green">
+                        <div class="icon-box"><i class="ri-shield-check-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ verified_count|default:"0" }}</h3>
+                            <p>Verified Distributors</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-purple">
+                        <div class="icon-box"><i class="ri-shopping-bag-3-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ product_count|default:"0" }}</h3>
+                            <p>Total Products</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-red">
+                        <div class="icon-box"><i class="ri-customer-service-2-line"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ feedback_count|default:"0" }}</h3>
+                            <p>Distributor Feedbacks</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-teal">
+                        <div class="icon-box"><i class="ri-message-2-line"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ cust_feedback_count|default:"0" }}</h3>
+                            <p>Customer Feedbacks</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-yellow">
+                        <div class="icon-box"><i class="ri-star-smile-line"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ review_count|default:"0" }}</h3>
+                            <p>Total Reviews</p>
+                        </div>
+                    </div>
 
+                    <div class="stat-card card-indigo">
+                        <div class="icon-box"><i class="ri-apps-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ category_count|default:"0" }}</h3>
+                            <p>Total Categories</p>
+                        </div>
+                    </div>
 
+                </div>
 
-              <!-- Toast Message Display -->
-{% if messages %}
-<div id="toast-container">
-  {% for message in messages %}
-  <div class="toast {{ message.tags }}">
-    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
-    {{ message }}
-  </div>
-  {% endfor %}
-</div>
-{% endif %}
+                <div class="section-header">
+                    <div class="section-title">Quick Actions</div>
+                </div>
+                <div class="quick-actions-grid">
+                    <a href="/admin_verify" class="action-btn">
+                        <i class="ri-user-search-line"></i>
+                        Verify New Users
+                    </a>
+                    <a href="/admin_category" class="action-btn">
+                        <i class="ri-layout-masonry-line"></i>
+                        Add Category
+                    </a>
+                    <a href="/view_product" class="action-btn">
+                        <i class="ri-box-3-line"></i>
+                        Manage Products
+                    </a>
+                    <a href="/admin_review" class="action-btn">
+                        <i class="ri-star-half-line"></i>
+                        Check Reviews
+                    </a>
+                </div>
 
+            </div>
+
+            {% if messages %}
+            <div id="toast-container">
+                {% for message in messages %}
+                <div class="toast {{ message.tags }}">
+                    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
 
         </div>
     </div>
 
-
-
-
-
-
-
 <script>
+    // Sidebar Dropdown Logic
     const moreBtn = document.querySelector(".more-section");
     const dropdown = document.querySelector(".setting-dropdown");
-
     let body = document.querySelector("body");
 
     moreBtn.addEventListener("click", function () {
         dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     });
 
-    // Optional: close dropdown if clicked outside
     body.addEventListener("click", function (event) {
         if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {
             dropdown.style.display = "none";
         }
     });
 
-
-
+    // Theme Toggle Logic
     const root = document.documentElement;
-  const themeBtn = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
 
-  const savedTheme = localStorage.getItem('theme') || 'light';
-  root.setAttribute('data-theme', savedTheme);
-  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+    // Load initial state
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if(themeIcon) themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
 
-  themeBtn.addEventListener('click', () => {
-    const current = root.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    localStorage.setItem('theme', next);
-    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-  });
+    if(themeBtn) {
+        themeBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+
+            if(themeIcon) themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+        });
+    }
 </script>
-
-
 
 </body>
 </html>
-
-
-
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#{% load static %}#}
-{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"#}
-{#  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#<html xmlns="http://www.w3.org/1999/xhtml">#}
-{#<head>#}
-{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#<title>Admin Home</title>#}
-{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>#}
-{##}
-{#<style>#}
-{#  :root{#}
-{#    --primary:#1565c0; --accent:#0ea5e9; --text:#0a0a0a; --muted:#4b5563;#}
-{#    --surface:#ffffff; --line:#e5e7eb; --shadow:0 1.2rem 3rem rgba(2,6,23,.08);#}
-{#    --radius:.9rem;#}
-{#  }#}
-{##}
-{#  .admin-right-main-content{#}
-{#    width:100%; min-height:100vh;#}
-{#    background:#}
-{#      radial-gradient(80vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),#}
-{#      radial-gradient(60vw 30vh at 100% 110%, rgba(14,165,233,.08), transparent 60%),#}
-{#      var(--surface);#}
-{#    color:var(--text);#}
-{#    padding: clamp(1rem, 2.5vw, 2rem);#}
-{#    box-sizing:border-box; overflow:auto;#}
-{#  }#}
-{##}
-{#  .dash-head{#}
-{#    display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap;#}
-{#    margin-bottom:1rem;#}
-{#  }#}
-{#  .dash-title{ font-size:clamp(1.3rem,2.2vw,1.9rem); font-weight:800; color:#0b1324; }#}
-{##}
-{#  .kpi-grid{#}
-{#    display:grid; gap:clamp(.9rem,2vw,1.2rem);#}
-{#    grid-template-columns: repeat(4, minmax(12rem, 1fr));#}
-{#    margin-bottom:1rem;#}
-{#  }#}
-{#  @media (max-width: 70rem){ .kpi-grid{ grid-template-columns: repeat(2, 1fr);} }#}
-{#  @media (max-width: 40rem){ .kpi-grid{ grid-template-columns: 1fr; } }#}
-{##}
-{#  .kpi{#}
-{#    background:#fff; border:.0625rem solid var(--line); border-radius:var(--radius);#}
-{#    box-shadow: var(--shadow);#}
-{#    padding:1rem 1.2rem;#}
-{#  }#}
-{#  .kpi .kpi-title{ font-weight:800; color:#0b1324; }#}
-{#  .kpi small{ color:var(--muted); }#}
-{#  .kpi .kpi-value{ font-size:1.6rem; font-weight:900; margin-top:.35rem; }#}
-{#  .kpi .kpi-note{ color:var(--muted); font-size:.92rem; margin-top:.25rem; }#}
-{##}
-{#  .panel{#}
-{#    background:#fff; border:.0625rem solid var(--line); border-radius:var(--radius);#}
-{#    box-shadow: var(--shadow);#}
-{#    padding: clamp(1rem, 2.2vw, 1.4rem);#}
-{#  }#}
-{##}
-{#  .charts-grid{#}
-{#    display:grid; gap:clamp(1rem,2.5vw,1.4rem);#}
-{#    grid-template-columns: 2fr 1fr;#}
-{#    align-items:start;#}
-{#  }#}
-{#  @media (max-width: 72rem){ .charts-grid{ grid-template-columns: 1fr; } }#}
-{##}
-{#  .toolbar{#}
-{#    display:flex; gap:.5rem; flex-wrap:wrap; align-items:center; margin-bottom:.6rem;#}
-{#  }#}
-{#  .seg{ display:flex; border:.075rem solid rgba(21,101,192,.35); border-radius:9999px; overflow:hidden; }#}
-{#  .seg button{#}
-{#    padding:.55rem 1rem; border:0; background:transparent; font-weight:800; color:#0b1324; cursor:pointer;#}
-{#  }#}
-{#  .seg button.active{ background:rgba(21,101,192,.1); color:var(--primary); }#}
-{##}
-{#  .legend{#}
-{#    display:flex; gap:.75rem; align-items:center; flex-wrap:wrap; font-weight:700;#}
-{#  }#}
-{#  .dot{#}
-{#    width:.8rem; height:.8rem; border-radius:9999px; display:inline-block; background:var(--primary);#}
-{#  }#}
-{#  .dot.alt{ background:var(--accent); }#}
-{##}
-{#  /* Toasts bottom-right (keep your style) */#}
-{#  #toast-container{#}
-{#    position: fixed; bottom: 2rem; right: 2rem;#}
-{#    display:flex; flex-direction:column; gap:1rem; z-index:9999;#}
-{#  }#}
-{#  .toast{#}
-{#    background-color:#1565c0; color:white; padding:1rem 1.5rem; border-radius:.5rem;#}
-{#    box-shadow:0 .5rem 1rem rgba(0,0,0,.1); opacity:0; animation:fadeInOut 3.5s ease forwards;#}
-{#    font-size:.95rem; display:flex; align-items:center; gap:.5rem;#}
-{#  }#}
-{#  .toast.error{ background:#d32f2f; } .toast.success{ background:#2e7d32; }#}
-{#  @keyframes fadeInOut{#}
-{#    0% { opacity:0; transform:translateY(1rem) }#}
-{#    10%{ opacity:1; transform:translateY(0) }#}
-{#    90%{ opacity:1 }#}
-{#    100%{ opacity:0; transform:translateY(1rem) }#}
-{#  }#}
-{#</style>#}
-{#</head>#}
-{##}
-{#<body>#}
-{#<div class="main-content">#}
-{#  <div class="admin-left-main-content">#}
-{#    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
-{#    <div class="admin-mid-left-content">#}
-{#      <div id="navbar-section">#}
-{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars active"><span>Home</span></div></a>#}
-{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
-{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
-{#        <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
-{#        <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
-{#      </div>#}
-{#    </div>#}
-{#    <hr>#}
-{#    <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
-{#      <div class="setting-dropdown">#}
-{#        <a href="/change_password"><div class="setting-menu-dropdown">Setting</div></a>#}
-{#        <a href="#"><div class="setting-menu-dropdown">Switch theme</div></a>#}
-{#        <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
-{#      </div>#}
-{#    </div></div>#}
-{#  </div>#}
-{##}
-{#  <div class="admin-right-main-content">#}
-{##}
-{#    {% if messages %}#}
-{#      <div id="toast-container">#}
-{#        {% for message in messages %}#}
-{#          <div class="toast {{ message.tags }}">#}
-{#            {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}#}
-{#            {{ message }}#}
-{#          </div>#}
-{#        {% endfor %}#}
-{#      </div>#}
-{#    {% endif %}#}
-{##}
-{#    <!-- HEADER -->#}
-{#    <div class="dash-head">#}
-{#      <div class="dash-title">Dashboard Overview</div>#}
-{#      <div class="legend">#}
-{#        <span class="dot"></span> Customers#}
-{#        <span class="dot alt"></span> Distributors#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <!-- KPIs -->#}
-{#    <div class="kpi-grid">#}
-{#      <div class="kpi">#}
-{#        <div class="kpi-title">Customers</div>#}
-{#        <small>Today</small>#}
-{#        <div class="kpi-value" id="kpiCustToday">0</div>#}
-{#        <div class="kpi-note">This Month: <span id="kpiCustMonth">0</span> • This Year: <span id="kpiCustYear">0</span> • Total: <span id="kpiCustTotal">0</span></div>#}
-{#      </div>#}
-{#      <div class="kpi">#}
-{#        <div class="kpi-title">Distributors</div>#}
-{#        <small>Today</small>#}
-{#        <div class="kpi-value" id="kpiDistToday">0</div>#}
-{#        <div class="kpi-note">This Month: <span id="kpiDistMonth">0</span> • This Year: <span id="kpiDistYear">0</span> • Total: <span id="kpiDistTotal">0</span></div>#}
-{#      </div>#}
-{#      <div class="kpi">#}
-{#        <div class="kpi-title">Topline (Daily)</div>#}
-{#        <small>Last 30 days</small>#}
-{#        <div class="kpi-value" id="kpiDailyTotal">0</div>#}
-{#        <div class="kpi-note">Customers + Distributors (sum)</div>#}
-{#      </div>#}
-{#      <div class="kpi">#}
-{#        <div class="kpi-title">Topline (Monthly)</div>#}
-{#        <small>Last 12 months</small>#}
-{#        <div class="kpi-value" id="kpiMonthlyAvg">0</div>#}
-{#        <div class="kpi-note">Avg per month (C + D)</div>#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <!-- CONTROLS + CHARTS -->#}
-{#    <div class="panel" style="margin-bottom:1rem;">#}
-{#      <div class="toolbar">#}
-{#        <div class="seg" id="segDataset">#}
-{#          <button data-set="customers" class="active">Customers</button>#}
-{#          <button data-set="distributors">Distributors</button>#}
-{#          <button data-set="both">Both</button>#}
-{#        </div>#}
-{#        <div class="seg" id="segGran">#}
-{#          <button data-g="daily" class="active">Daily</button>#}
-{#          <button data-g="monthly">Monthly</button>#}
-{#          <button data-g="yearly">Yearly</button>#}
-{#        </div>#}
-{#      </div>#}
-{#      <canvas id="mainChart" height="120"></canvas>#}
-{#    </div>#}
-{##}
-{#    <div class="charts-grid">#}
-{#      <div class="panel">#}
-{#        <div class="toolbar"><strong>Daily (last 30 days)</strong></div>#}
-{#        <canvas id="miniDaily" height="130"></canvas>#}
-{#      </div>#}
-{#      <div class="panel">#}
-{#        <div class="toolbar"><strong>Mix (Today / Month / Year)</strong></div>#}
-{#        <canvas id="mixDonut" height="130"></canvas>#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <!-- DATA -->#}
-{#    <script id="analytics-data" type="application/json">#}
-{#      {{ analytics_json|safe }}#}
-{#    </script>#}
-{#  </div>#}
-{#</div>#}
-{##}
-{#<script>#}
-{#  // Sidebar dropdown#}
-{#  const moreBtn = document.querySelector(".more-section");#}
-{#  const dropdown = document.querySelector(".setting-dropdown");#}
-{#  document.body.addEventListener("click", (e)=>{#}
-{#    if (moreBtn && moreBtn.contains(e.target)){#}
-{#      e.stopPropagation();#}
-{#      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
-{#    } else if (dropdown && !dropdown.contains(e.target)){#}
-{#      dropdown.style.display = "none";#}
-{#    }#}
-{#  });#}
-{##}
-{#  // Get data#}
-{#  const RAW = JSON.parse(document.getElementById('analytics-data').textContent);#}
-{##}
-{#  // Fill KPIs#}
-{#  function setText(id, val){ const el=document.getElementById(id); if(el) el.textContent = val; }#}
-{#  setText('kpiCustToday',  RAW.quick.customers.today);#}
-{#  setText('kpiCustMonth',  RAW.quick.customers.month);#}
-{#  setText('kpiCustYear',   RAW.quick.customers.year);#}
-{#  setText('kpiCustTotal',  RAW.quick.customers.total);#}
-{#  setText('kpiDistToday',  RAW.quick.distributors.today);#}
-{#  setText('kpiDistMonth',  RAW.quick.distributors.month);#}
-{#  setText('kpiDistYear',   RAW.quick.distributors.year);#}
-{#  setText('kpiDistTotal',  RAW.quick.distributors.total);#}
-{##}
-{#  const dailySum = RAW.customers.daily.reduce((a,b)=>a+b,0) + RAW.distributors.daily.reduce((a,b)=>a+b,0);#}
-{#  setText('kpiDailyTotal', dailySum);#}
-{#  const monthlyAvg = Math.round((#}
-{#    RAW.customers.monthly.reduce((a,b)=>a+b,0) + RAW.distributors.monthly.reduce((a,b)=>a+b,0)#}
-{#  ) / (RAW.labels.monthly.length || 1));#}
-{#  setText('kpiMonthlyAvg', monthlyAvg);#}
-{##}
-{#  // Chart helpers (Chart.js will auto-pick colors, but we keep consistent labels)#}
-{#  const COLORS = {#}
-{#    customers: '#1565c0',#}
-{#    distributors: '#0ea5e9'#}
-{#  };#}
-{##}
-{#  // Main chart (switchable)#}
-{#  const ctxMain = document.getElementById('mainChart').getContext('2d');#}
-{#  let mainChart = null;#}
-{##}
-{#  function makeMainConfig(gran='daily', dataset='customers'){#}
-{#    const labels = RAW.labels[gran];#}
-{##}
-{#    const ds = [];#}
-{#    if (dataset === 'customers' || dataset === 'both'){#}
-{#      ds.push({#}
-{#        label: 'Customers',#}
-{#        data: RAW.customers[gran],#}
-{#        borderColor: COLORS.customers,#}
-{#        backgroundColor: 'rgba(21,101,192,0.08)',#}
-{#        fill: true,#}
-{#        tension: .35#}
-{#      });#}
-{#    }#}
-{#    if (dataset === 'distributors' || dataset === 'both'){#}
-{#      ds.push({#}
-{#        label: 'Distributors',#}
-{#        data: RAW.distributors[gran],#}
-{#        borderColor: COLORS.distributors,#}
-{#        backgroundColor: 'rgba(14,165,233,0.08)',#}
-{#        fill: true,#}
-{#        tension: .35#}
-{#      });#}
-{#    }#}
-{##}
-{#    return {#}
-{#      type: 'line',#}
-{#      data: { labels, datasets: ds },#}
-{#      options: {#}
-{#        responsive: true,#}
-{#        maintainAspectRatio: false,#}
-{#        plugins: { legend: { position: 'top' } },#}
-{#        scales: {#}
-{#          x: { grid: { display:false } },#}
-{#          y: { beginAtZero:true, ticks: { precision:0 } }#}
-{#        }#}
-{#      }#}
-{#    };#}
-{#  }#}
-{##}
-{#  function renderMain(gran, dataset){#}
-{#    if (mainChart) mainChart.destroy();#}
-{#    mainChart = new Chart(ctxMain, makeMainConfig(gran, dataset));#}
-{#  }#}
-{##}
-{#  // Mini daily chart (bars)#}
-{#  const ctxDaily = document.getElementById('miniDaily').getContext('2d');#}
-{#  const miniDaily = new Chart(ctxDaily, {#}
-{#    type: 'bar',#}
-{#    data: {#}
-{#      labels: RAW.labels.daily,#}
-{#      datasets: [#}
-{#        { label: 'Customers', data: RAW.customers.daily, backgroundColor: 'rgba(21,101,192,0.35)' },#}
-{#        { label: 'Distributors', data: RAW.distributors.daily, backgroundColor: 'rgba(14,165,233,0.35)' }#}
-{#      ]#}
-{#    },#}
-{#    options: {#}
-{#      responsive:true, maintainAspectRatio:false,#}
-{#      plugins:{ legend:{ position:'top' } },#}
-{#      scales:{ x:{ grid:{ display:false }}, y:{ beginAtZero:true, ticks:{ precision:0 }}}#}
-{#    }#}
-{#  });#}
-{##}
-{#  // Mix donut (today / month / year comparison)#}
-{#  const ctxMix = document.getElementById('mixDonut').getContext('2d');#}
-{#  const mixDonut = new Chart(ctxMix, {#}
-{#    type: 'doughnut',#}
-{#    data: {#}
-{#      labels: ['Customers Today','Distributors Today','Customers Month','Distributors Month','Customers Year','Distributors Year'],#}
-{#      datasets: [{#}
-{#        data: [#}
-{#          RAW.quick.customers.today, RAW.quick.distributors.today,#}
-{#          RAW.quick.customers.month, RAW.quick.distributors.month,#}
-{#          RAW.quick.customers.year,  RAW.quick.distributors.year#}
-{#        ]#}
-{#      }]#}
-{#    },#}
-{#    options:{#}
-{#      responsive:true, maintainAspectRatio:false,#}
-{#      plugins:{ legend:{ position:'top' } },#}
-{#      cutout: '60%'#}
-{#    }#}
-{#  });#}
-{##}
-{#  // Segmented controls#}
-{#  const segDataset = document.getElementById('segDataset');#}
-{#  const segGran    = document.getElementById('segGran');#}
-{##}
-{#  function activateGroup(groupEl, targetBtn){#}
-{#    groupEl.querySelectorAll('button').forEach(b=>b.classList.remove('active'));#}
-{#    targetBtn.classList.add('active');#}
-{#  }#}
-{##}
-{#  let currentGran = 'daily';#}
-{#  let currentSet  = 'customers';#}
-{#  renderMain(currentGran, currentSet);#}
-{##}
-{#  segDataset.addEventListener('click', (e)=>{#}
-{#    if(e.target.tagName !== 'BUTTON') return;#}
-{#    activateGroup(segDataset, e.target);#}
-{#    currentSet = e.target.dataset.set;#}
-{#    renderMain(currentGran, currentSet);#}
-{#  });#}
-{##}
-{#  segGran.addEventListener('click', (e)=>{#}
-{#    if(e.target.tagName !== 'BUTTON') return;#}
-{#    activateGroup(segGran, e.target);#}
-{#    currentGran = e.target.dataset.g;#}
-{#    renderMain(currentGran, currentSet);#}
-{#  });#}
-{#</script>#}
-{##}
-{#</body>#}
-{#</html>#}

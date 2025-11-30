@@ -76,7 +76,9 @@
     background:rgba(21,101,192,.18);
   }
   select.btn-chip{
-    appearance:none; -webkit-appearance:none; }
+    appearance:none;
+      -webkit-appearance:none;
+  }
 
 
 
@@ -90,41 +92,25 @@
       flex-wrap:wrap;
       gap:1rem;
   }
-  .card{
+
+.card{
     box-sizing:border-box;
-    min-width: 18rem;                  /* keep readable at smaller widths */
+    min-width: 18rem;
+    flex: 1 1 300px;
+    max-width: 400px;
     background:var(--surface);
     border:.0625rem solid var(--text-soft);
     border-radius:calc(var(--radius) + .2rem);
     box-shadow:var(--shadow);
     padding: clamp(.9rem, 1.8vw, 1.2rem);
-    display:flex;
-      flex-direction:column;
-      gap:.75rem;
-    transition: transform .15s, box-shadow .2s, border-color .2s, background .2s;
-  }
+    display:flex; flex-direction:column; gap:.75rem;
+    transition: transform .15s, box-shadow .2s;
+}
 
   .card:hover{
     transform:translateY(-.12rem);
     box-shadow:0 1.4rem 2.2rem rgba(21,101,192,.16);
   }
-
-  /*!* breakpoints: 3 / 2 / 1 *!*/
-  /*@media (max-width: 75rem){*/
-      /*.card{*/
-          /*flex-basis: calc(33.333% - var(--gap));*/
-      /*}*/
-  /*}*/
-  /*@media (max-width: 56rem){*/
-      /*.card{*/
-          /*flex-basis: calc(50% - var(--gap));*/
-      /*}*/
-  /*}*/
-  /*@media (max-width: 36rem){*/
-      /*.card{*/
-          /*flex-basis: 100%;*/
-      /*}*/
-  /*}*/
 
 
   .card-head{
@@ -139,7 +125,8 @@
       width:4.2rem;
       height:4.2rem;
       border-radius:9999px;
-      overflow:hidden; border:.12rem solid rgba(21,101,192,.15);
+      overflow:hidden;
+      border:.12rem solid rgba(21,101,192,.15);
       background:#f3f7ff;
       display:flex;
       align-items:center;
@@ -186,19 +173,17 @@
   .pill.mail{
       background:rgba(14,165,233,.12);
       border-color:var(--pill--border);
-      color:#0b6bcb;
+      color:var(--primary);
   }
 
-  .details{
-      display:grid;
-      gap:.3rem;
-      margin-top:.1rem;
-  }
-  .details strong{
-      color:var(--text-main);
-  }
-
-
+ .details{
+     display:grid;
+    gap:.3rem;
+    margin-top:.1rem;
+    font-size: 0.95rem;
+    color: var(--text-soft);
+}
+.details strong{ color:var(--text-main); }
 
 
 
@@ -222,7 +207,9 @@
   .quick-row{ display:flex; gap:.5rem; flex-wrap:wrap; }
   .quick{ padding:.45rem .7rem; border-radius:9999px; border:.075rem solid rgba(21,101,192,.35); background:rgba(21,101,192,.08); color:var(--primary); font-weight:700; cursor:pointer; }
   .fp-actions{ display:flex; justify-content:flex-end; gap:.6rem; margin-top:.6rem; }
-  .btn{ border:0; border-radius:9999px; padding:.7rem 1rem; font-weight:800; cursor:pointer; }
+  .btn{        text-decoration: none;
+
+      border:0; border-radius:9999px; padding:.7rem 1rem; font-weight:800; cursor:pointer; }
   .btn-ghost{ background:rgba(21,101,192,.1); color:var(--primary); border:.075rem solid rgba(21,101,192,.3); }
   .btn-ghost:hover{ background:rgba(21,101,192,.18); }
   .btn-primary{ background:var(--primary); color:#fff; }
@@ -241,15 +228,15 @@
     border-radius:9999px;
     font-weight:800;
     text-decoration:none;
-  color:#0b6bcb;
-  background: color-mix(in oklab, #0b6bcb 12%, white);
-  border:.075rem solid color-mix(in oklab, #0b6bcb 45%, transparent);
+  color:var(--primary);
+  background: color-mix(in oklab, var(--primary) 12%, white);
+  border:.075rem solid color-mix(in oklab, var(--primary) 45%, transparent);
   transition: transform .15s, background .2s, border-color .2s;
   backdrop-filter: blur(2px);
 }
 .btn-map:hover{
     transform:translateY(-.08rem);
-    background: color-mix(in oklab, #0b6bcb 20%, white);
+    background: color-mix(in oklab, var(--primary) 20%, white);
 }
 .btn-map[aria-disabled="true"]{
   opacity:.5; pointer-events:none;
@@ -309,6 +296,17 @@
   }
 
 
+
+
+
+
+/* No Data Message */
+#noDataMessage {
+  width: 100%; text-align: center; margin-top: 3rem; color: var(--text-soft);
+  display: none; flex-direction: column; align-items: center;
+}
+#noDataMessage i { font-size: 4rem; margin-bottom: 1rem; color: var(--text-soft); opacity: 0.5; }
+#noDataMessage h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
 
 
 

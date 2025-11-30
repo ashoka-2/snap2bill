@@ -152,6 +152,8 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Admin Home</title>
+    <script src="{% static 'scripts/setting.js' %}"></script>
+
      <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
      <link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
 
@@ -179,9 +181,9 @@
             </div>
             <hr>
             <div class="admin-bottom-left-content">
-                <div class="more-section"><span><i class="ri-settings-3-line"></i> More</span>
+                <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
                     <div class="setting-dropdown">
-                        <a href="#" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
+                        <a href="admin_setting" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
                         <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
                             <i id="themeIcon" class="ri-sun-line"></i> Switch theme
                         </a>

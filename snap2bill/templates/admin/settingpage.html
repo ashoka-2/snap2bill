@@ -1,0 +1,490 @@
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Admin Settings</title>
+
+<!-- Dynamic Favicon Link -->
+<link rel="icon" type="image/png" id="dynamic-favicon" href="{% static 'images/favicon.png' %}">
+
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
+
+<!-- Global Settings Script: Applies themes/colors immediately on load -->
+<!-- This handles the logic you moved to setting.js -->
+<script src="{% static 'scripts/setting.js' %}"></script>
+
+<style>
+    /* =============================
+       🎨 LOCAL STYLES FOR SETTINGS
+       ============================= */
+
+    .settings-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    @media (min-width: 1024px) {
+        .settings-grid { grid-template-columns: 2fr 1fr; }
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 1rem;
+        display: flex; align-items: center; gap: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--line);
+    }
+    .section-title i { color: var(--primary); }
+
+    /* Switch Toggles */
+    .toggle-row {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0.8rem 0; border-bottom: 1px solid var(--line);
+    }
+    .toggle-row:last-child { border-bottom: none; }
+    .toggle-label h4 { font-size: 0.95rem; margin-bottom: 0.2rem; color: var(--text-main); }
+    .toggle-label p { font-size: 0.85rem; color: var(--text-soft); margin: 0; }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
+    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--primary); }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    /* Buttons */
+    .btn-password {
+        display: inline-flex; width: 100%; justify-content: space-between; align-items: center;
+        padding: 1rem; background: var(--bg-body); border: 1px solid var(--line);
+        border-radius: var(--radius); color: var(--text-main); text-decoration: none;
+        font-weight: 600; transition: 0.2s;
+    }
+    .btn-password:hover { border-color: var(--primary); color: var(--primary); }
+
+    .btn-submit {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: var(--radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.9; }
+
+    /* Color Picker Grid */
+    .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 1rem;
+    }
+
+    .color-picker-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: var(--bg-body);
+        padding: 0.5rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+    }
+
+    .color-info {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+    .color-info label {
+        font-size: 0.8rem;
+        color: var(--text-soft);
+        margin-bottom: 2px;
+    }
+    .color-hex {
+        font-family: monospace;
+        color: var(--text-main);
+        font-size: 0.85rem;
+        font-weight: bold;
+    }
+
+    input[type="color"] {
+        -webkit-appearance: none;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        overflow: hidden;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+        flex-shrink: 0;
+    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; border: 1px solid rgba(0,0,0,0.1); }
+
+    /* File Input */
+    .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: inline-block;
+        width: 100%;
+    }
+    .file-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px dashed var(--line);
+        border-radius: var(--radius);
+        background: var(--bg-body);
+        color: var(--text-main);
+    }
+
+    /* Form Card Container */
+    .form-card {
+        background: var(--surface);
+        padding: 1.5rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow);
+    }
+
+    /* Toast */
+    #toast-container {
+        position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+    }
+    .toast {
+        min-width: 250px; margin-top: 10px; padding: 12px 16px;
+        border-radius: 4px; color: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        animation: fadeIn 0.3s, fadeOut 0.3s 2.7s;
+    }
+    @keyframes fadeIn { from {opacity: 0; transform: translateY(10px);} to {opacity: 1; transform: translateY(0);} }
+    @keyframes fadeOut { from {opacity: 1; transform: translateY(0);} to {opacity: 0; transform: translateY(10px);} }
+</style>
+</head>
+
+<body>
+
+<div class="main-content">
+    <!-- Sidebar -->
+    <div class="admin-left-main-content">
+        <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
+        <div class="admin-mid-left-content">
+            <div id="navbar-section">
+                <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
+                <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
+                <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
+                <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
+                <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
+                <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
+                <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
+                <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
+                <a class="nav-links" href="/view_product"><div class="mid-left-navbars"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
+            </div>
+        </div>
+        <hr>
+        <div class="admin-bottom-left-content">
+            <div class="more-section active"><span><i class="ri-settings-3-line"></i> Setting</span>
+                <div class="setting-dropdown" style="display:block;">
+                    <a href="/admin_setting" class="setting-menu-dropdown active"><i class="ri-tools-line"></i> Settings</a>
+                    <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn"><i id="themeIcon" class="ri-sun-line"></i> Switch theme</a>
+                    <a href="/logout" class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="admin-right-main-content">
+        <div class="dashboard-header">
+            <div class="header-title">
+                <h1>Settings</h1>
+                <span>Customize the look and feel of your admin dashboard.</span>
+            </div>
+        </div>
+
+        <div class="settings-grid">
+
+            <!-- Left Column: Branding & Colors -->
+            <div class="left-col">
+
+                <!-- Branding Card -->
+                <div class="form-card" style="margin-bottom: 2rem;">
+                    <div class="section-title"><i class="ri-image-edit-line"></i> Branding</div>
+                    <form id="brandingForm" enctype="multipart/form-data">
+                        <div class="form-group" style="margin-bottom: 1rem;">
+                            <label style="font-weight: 600; font-size: 0.9rem; color: var(--text-main);">Upload Favicon</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="siteFavicon" accept="image/x-icon, image/png" class="file-input">
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-soft); margin-top: 5px;">Recommended: 32x32px .png or .ico</p>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn-submit" onclick="saveBranding()">Save Branding</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Color Theme Card -->
+                <div class="form-card">
+                    <div class="section-title"><i class="ri-palette-line"></i> Global Colors</div>
+                    <p style="color:var(--text-soft); font-size:0.9rem; margin-bottom:1.5rem;">Override the default theme colors. Changes are saved automatically.</p>
+
+                    <div class="color-grid">
+
+                        <!-- Primary -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorPrimary" oninput="updateColor('--primary', this.value, 'hexPrimary')">
+                            <div class="color-info">
+                                <label>Primary</label>
+                                <span class="color-hex" id="hexPrimary">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Accent -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorAccent" oninput="updateColor('--accent', this.value, 'hexAccent')">
+                            <div class="color-info">
+                                <label>Accent</label>
+                                <span class="color-hex" id="hexAccent">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Text Main -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorTextMain" oninput="updateColor('--text-main', this.value, 'hexTextMain')">
+                            <div class="color-info">
+                                <label>Text Main</label>
+                                <span class="color-hex" id="hexTextMain">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Text Soft -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorTextSoft" oninput="updateColor('--text-soft', this.value, 'hexTextSoft')">
+                            <div class="color-info">
+                                <label>Text Soft</label>
+                                <span class="color-hex" id="hexTextSoft">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Background Body -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorBg" oninput="updateColor('--bg-body', this.value, 'hexBg')">
+                            <div class="color-info">
+                                <label>Background</label>
+                                <span class="color-hex" id="hexBg">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Surface (Card) -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorSurface" oninput="updateColor('--surface', this.value, 'hexSurface')">
+                            <div class="color-info">
+                                <label>Surface</label>
+                                <span class="color-hex" id="hexSurface">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Line/Border -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorLine" oninput="updateColor('--line', this.value, 'hexLine')">
+                            <div class="color-info">
+                                <label>Borders</label>
+                                <span class="color-hex" id="hexLine">...</span>
+                            </div>
+                        </div>
+
+                        <!-- Danger -->
+                        <div class="color-picker-wrapper">
+                            <input type="color" id="colorDanger" oninput="updateColor('--danger', this.value, 'hexDanger')">
+                            <div class="color-info">
+                                <label>Danger</label>
+                                <span class="color-hex" id="hexDanger">...</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="form-actions" style="margin-top:2rem; border-top: 1px solid var(--line); padding-top: 1rem;">
+                        <button type="button" class="btn-submit" style="background:var(--text-soft);" onclick="resetThemeDefaults()">Reset to Defaults</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Security & Display Mode -->
+            <div class="right-col">
+
+                <!-- Dark Mode -->
+                <div class="form-card" style="margin-bottom: 2rem;">
+                    <div class="section-title"><i class="ri-moon-line"></i> Display Mode</div>
+                    <div class="toggle-row">
+                        <div class="toggle-label">
+                            <h4>Dark Mode</h4>
+                            <p>Switch between light and dark themes.</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="settingsThemeToggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="form-card">
+                    <div class="section-title"><i class="ri-shield-keyhole-line"></i> Security</div>
+                    <p style="color:var(--text-soft); font-size:0.9rem; margin-bottom:1rem;">Secure your account.</p>
+                    <a href="/change_password" class="btn-password">
+                        <span>Change Password</span><i class="ri-arrow-right-s-line"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Toast Container for JS Messages -->
+        <div id="toast-container"></div>
+    </div>
+</div>
+
+<script>
+    /* --- Settings Page Specific Logic (Editor) --- */
+    /* Note: Global application of settings happens in setting.js */
+
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const settingsToggle = document.getElementById('settingsThemeToggle');
+    const faviconLink = document.getElementById('dynamic-favicon');
+
+    // Configuration for binding inputs
+    const colorVars = [
+        { css: '--primary',    id: 'colorPrimary',    label: 'hexPrimary',    default: '#1565c0' },
+        { css: '--accent',     id: 'colorAccent',     label: 'hexAccent',     default: '#0ea5e9' },
+        { css: '--text-main',  id: 'colorTextMain',   label: 'hexTextMain',   default: '#0a0a0a' },
+        { css: '--text-soft',  id: 'colorTextSoft',   label: 'hexTextSoft',   default: '#8c9aa9' },
+        { css: '--bg-body',    id: 'colorBg',         label: 'hexBg',         default: '#f4f7fe' },
+        { css: '--surface',    id: 'colorSurface',    label: 'hexSurface',    default: '#ffffff' },
+        { css: '--line',       id: 'colorLine',       label: 'hexLine',       default: '#e5e7eb' },
+        { css: '--danger',     id: 'colorDanger',     label: 'hexDanger',     default: '#ff0700' }
+    ];
+
+    // 1. Sync Inputs with Current State (Visuals only)
+    function syncSettingsUI() {
+        // Sync Theme Toggle
+        const currentTheme = root.getAttribute('data-theme');
+        if(currentTheme === 'dark') {
+            if(themeIcon) themeIcon.className = 'ri-moon-line';
+            if(settingsToggle) settingsToggle.checked = true;
+        } else {
+            if(themeIcon) themeIcon.className = 'ri-sun-line';
+            if(settingsToggle) settingsToggle.checked = false;
+        }
+
+        // Sync Color Inputs
+        colorVars.forEach(item => {
+            // Get currently applied style (whether from JS or CSS)
+            const currentColor = getComputedStyle(root).getPropertyValue(item.css).trim();
+            const inputEl = document.getElementById(item.id);
+            const labelEl = document.getElementById(item.label);
+
+            if(inputEl) inputEl.value = currentColor || item.default;
+            if(labelEl) labelEl.innerText = currentColor || item.default;
+        });
+    }
+
+    // Initialize UI inputs
+    syncSettingsUI();
+
+    // 2. Event Handlers
+
+    // Theme Toggle
+    function toggleTheme() {
+        const current = root.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+
+        // Update DOM
+        root.setAttribute('data-theme', next);
+        // Save
+        localStorage.setItem('theme', next);
+
+        // Update UI
+        if(themeIcon) themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
+        if(settingsToggle) settingsToggle.checked = (next === 'dark');
+    }
+
+    if(themeBtn) themeBtn.addEventListener('click', toggleTheme);
+    if(settingsToggle) settingsToggle.addEventListener('change', toggleTheme);
+
+    // Color Update (Live Preview)
+    function updateColor(variable, value, labelId) {
+        root.style.setProperty(variable, value);
+        localStorage.setItem(variable, value);
+        const label = document.getElementById(labelId);
+        if(label) label.innerText = value;
+    }
+
+    // Reset Defaults
+    function resetThemeDefaults() {
+        colorVars.forEach(item => {
+            root.style.removeProperty(item.css);
+            localStorage.removeItem(item.css);
+
+            // Reset Input UI to default
+            const inputEl = document.getElementById(item.id);
+            const labelEl = document.getElementById(item.label);
+            if(inputEl) inputEl.value = item.default;
+            if(labelEl) labelEl.innerText = item.default;
+        });
+        showToast('↺ Theme colors reset to default', 'success');
+    }
+
+    // Branding Save
+    function saveBranding() {
+        const faviconInput = document.getElementById('siteFavicon');
+        if (faviconInput.files && faviconInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result;
+                localStorage.setItem('siteFavicon', base64String);
+                if(faviconLink) faviconLink.href = base64String;
+                showToast('✅ Favicon updated and saved!', 'success');
+            }
+            reader.readAsDataURL(faviconInput.files[0]);
+        } else {
+            showToast('⚠️ Please select a favicon file.', 'error');
+        }
+    }
+
+    // Toast Notification
+    function showToast(message, type) {
+        const container = document.getElementById('toast-container');
+        if(!container) return;
+        const toast = document.createElement('div');
+        const bgClass = type === 'error' ? 'error' : 'success';
+        toast.className = `toast ${bgClass}`;
+        toast.style.backgroundColor = type === 'error' ? '#d32f2f' : '#2e7d32';
+        toast.innerText = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Sidebar Dropdown (if present)
+    const moreBtn = document.querySelector(".more-section");
+    const dropdown = document.querySelector(".setting-dropdown");
+    if(moreBtn && dropdown) {
+        document.body.addEventListener("click", function (event) {
+            if (moreBtn.contains(event.target)) {
+                dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            } else if (!dropdown.contains(event.target)) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+</script>
+</body>
+</html>

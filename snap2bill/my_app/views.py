@@ -120,27 +120,85 @@ def forget_password_set(request):
 
 
 
+# def forget_password_set_post(request):
+#     newpass = request.POST['newpassword']
+#     confirmpass = request.POST['confirmpassword']
+#     if newpass == confirmpass:
+#         obj = User.objects.get(id=request.session['fid'])
+#         obj.set_password(newpass)
+#         obj.save()
+#         return HttpResponse("<script>alert('Update');window.location='/'</script>")
+#
+#     return HttpResponse("<script>alert('Update');window.location='/'</script>")
+
+
 def forget_password_set_post(request):
-    newpass = request.POST['newpassword']
-    confirmpass = request.POST['confirmpassword']
-    if newpass == confirmpass:
-        obj = User.objects.get(id=request.session['fid'])
-        obj.set_password(newpass)
-        obj.save()
-        return HttpResponse("<script>alert('Update');window.location='/'</script>")
+    if request.method == "POST":
+        newpass = request.POST.get('newpassword')
+        confirmpass = request.POST.get('confirmpassword')
 
-    return HttpResponse("<script>alert('Update');window.location='/'</script>")
+        # 1. Server-Side Validation: Check if passwords match
+        if newpass != confirmpass:
+            # Send error message to be caught by the Snackbar
+            messages.error(request, "Passwords do not match!")
+            # Redirect back to the change password page (replace 'change_password_page' with your actual URL name)
+            return redirect('change_password_page')
+
+            # 2. Update Password Logic
+        try:
+            # Check if session ID exists
+            if 'fid' in request.session:
+                obj = User.objects.get(id=request.session['fid'])
+                obj.set_password(newpass)
+                obj.save()
+
+                # Optional: Clear the session variable so they can't change it again
+                del request.session['fid']
+
+                messages.success(request, "Password updated successfully!")
+                return redirect('/')  # Redirect to Login
+            else:
+                messages.error(request, "Session expired. Please try again.")
+                return redirect('/')
+
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+            return redirect('/')
+
+    return redirect('/')
 
 
-
-
-
-
-
+from django.shortcuts import render
+# Import your models here.
+# Make sure the dot (.) represents the current directory or adjust app name accordingly
+from .models import customer, distributor, product, feedback
 
 
 def admin_home(request):
-    return render(request,'admin/admin_home.html')
+    customer_count = customer.objects.count()
+    pending_count = distributor.objects.filter(status='pending').count()
+    verified_count = distributor.objects.filter(status='approve').count()
+    product_count = product.objects.count()
+    feedback_count = feedback.objects.filter(type="distributor").count()
+    cust_feedback_count = feedback.objects.filter(type="user").count()
+    review_count = review.objects.count()
+    category_count = category.objects.count()
+
+
+    context = {
+        'customer_count': customer_count,
+        'pending_count': pending_count,
+        'verified_count': verified_count,
+        'product_count': product_count,
+        'feedback_count': feedback_count,
+        'cust_feedback_count': cust_feedback_count,
+        'review_count':review_count,
+        'category_count': category_count,
+    }
+    return render(request, 'admin/admin_home.html', context)
+
+def admin_setting(request):
+    return render(request,'admin/settingpage.html')
 
 def admin_verify(request):
     distributordata = distributor.objects.filter(status='pending')
