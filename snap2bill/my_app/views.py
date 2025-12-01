@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 # Create your views here
-from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, orders
+from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order
 
 print(make_password("password"))
 
@@ -980,33 +980,45 @@ def customer_view_distributor(request):
 
 
 
-def addproduct(request):
+# def addproduct(request):
+#     cid = request.POST['cid']
+#     uid = request.POST['uid']
+#     obj1=order()
+#     obj1.orders = order
+#     obj1.payment_status = 'pending'
+#     obj1.payment_date = datetime.datetime.now().date()
+#     obj1.date = datetime.datetime.now().date()
+#     obj1.USER_id = cid
+#     obj1.DISTRIBUTOR_id = uid
+#     obj1.save()
+#     quantity=request.POST['quantity']
+#     pid = request.POST['pid']
+#     oid = request.POST['oid']
+#     obj=order_sub()
+#     obj.quantity=quantity
+#     obj.PRODUCT_id=pid
+#     obj.ORDER_id=oid
+#     obj.save()
+#     return JsonResponse({'status':'ok'})
+#
 
 
-    cid = request.POST['cid']
-    uid = request.POST['uid']
-    obj1=orders()
-    obj1.orders = orders
-    obj1.payment_status = 'pending'
-    obj1.payment_date = datetime.datetime.now().date()
-    obj1.date = datetime.datetime.now().date()
-    obj1.USER_id = cid
-    obj1.DISTRIBUTOR_id = uid
-    obj1.save()
 
-    quantity=request.POST['quantity']
-    pid = request.POST['pid']
-    oid = request.POST['oid']
-    obj=order_sub()
-    obj.quantity=quantity
-    obj.PRODUCT_id=pid
-    obj.ORDER_id=oid
-    obj.save()
+def view_orders(request):
+    data = order.objects.all()
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'payment_status': i.payment_status,
+            'payment_date': i.payment_date,
+            'date': i.date,
+            'amount': i.amount,
+            'username': i.USER.name ,
+            'distributor': i.DISTRIBUTOR.name
+        })
 
-
-
-    return JsonResponse({'status':'ok'})
-
+    return JsonResponse({'status': 'ok', 'data': ar})
 
 
 

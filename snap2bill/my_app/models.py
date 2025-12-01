@@ -117,11 +117,11 @@ class feedback(models.Model):
 
 
 
-# class payment(models.Model):
-#     amount = models.CharField(max_length=100)
-#     amount_date = models.CharField(max_length=100)
-#     status= models.CharField(max_length=100)
-#     USER=models.ForeignKey(user,models.CASCADE)
+class payment(models.Model):
+    amount = models.CharField(max_length=100)
+    amount_date = models.CharField(max_length=100)
+    status= models.CharField(max_length=100)
+    USER=models.ForeignKey(customer,models.CASCADE)
 
 
 
@@ -135,28 +135,25 @@ class stock(models.Model):
 
 
 
-class orders(models.Model):
-    orders = models.CharField(max_length=100)
+class order(models.Model):
     payment_status = models.CharField(max_length=100)
     payment_date = models.CharField(max_length=100)
     date = models.CharField(max_length=100)
     USER = models.ForeignKey(customer,models.CASCADE)
+    amount = models.CharField(max_length=100)
+
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
 
 class order_sub(models.Model):
-    PRODUCT = models.ForeignKey(product,models.CASCADE)
-    ORDER= models.ForeignKey(orders,models.CASCADE)
+    ORDER= models.ForeignKey(order,models.CASCADE)
     quantity= models.CharField(max_length=100)
-
     STOCK = models.ForeignKey(stock,models.CASCADE)
 
 
 class cart(models.Model):
     PRODUCT = models.ForeignKey(product,models.CASCADE)
-    ORDER= models.ForeignKey(orders,models.CASCADE)
+    ORDER= models.ForeignKey(order,models.CASCADE)
     quantity= models.CharField(max_length=100)
-
-
 
 
 

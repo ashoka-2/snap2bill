@@ -118,7 +118,8 @@ urlpatterns = [
 
 
 
-    path('addproduct',views.addproduct)
+    # path('addproduct',views.addproduct),
+    path('view_orders',views.view_orders),
 
 ]
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:snap2bill/Distributordirectory/addfolder/addOrder.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/send_feedback.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
 import 'package:snap2bill/Distributordirectory/view/view_product.dart';
@@ -134,6 +135,10 @@ class _home_page_subState extends State<home_page_sub> {
             },),
             ListTile(leading: Icon(Icons.password),title:Text("Change password"),onTap: (){
               Navigator.push(context, MaterialPageRoute(builder: (context)=>changePassword()));
+              // Navigator.pop(context);
+            },),
+            ListTile(leading: Icon(Icons.list),title:Text("View orders"),onTap: (){
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>viewOrder()));
               // Navigator.pop(context);
             },)
 
