@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../payment/RazorpayScreen.dart';
+
 
 
 class viewOrder extends StatelessWidget {
@@ -30,7 +32,8 @@ class _viewOrderSubState extends State<viewOrderSub> {
     String foodimage="";
     var data =
     await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_orders"),
-        body: {"id":b}
+        body: {"cid":prefs.getString("cid").toString()}
+        // body: {"cid":prefs.getString("cid").toString(),"uid":prefs.getString("uid").toString()}
     );
 
     var jsonData = json.decode(data.body);
@@ -102,12 +105,20 @@ class _viewOrderSubState extends State<viewOrderSub> {
                           children: [
 
                             SizedBox(height: 10),
+                            _buildRow("ID", i.id.toString()),
+
                             _buildRow("Distributor Name", i.distributor.toString()),
                             _buildRow("Payment Status:", i.payment_status.toString()),
                             _buildRow("Payment Date:", i.payment_date.toString()),
                             _buildRow("Date:", i.date.toString()),
                             _buildRow("Amount:", i.amount.toString()),
-                            ElevatedButton(onPressed: (){
+                            ElevatedButton(onPressed: ()async{
+                              SharedPreferences sh=await SharedPreferences.getInstance();
+                              sh.setString("amount",i.amount.toString());
+                              sh.setString("id",i.id.toString());
+
+
+                              Navigator.push(context,MaterialPageRoute(builder: (context)=>RazorpayScreen()));
 
                             }, child: Text("Make payment"))
                           ],

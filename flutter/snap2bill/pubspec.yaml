@@ -45,6 +45,10 @@ dependencies:
   http: ^0.13.5
   file_picker:
   url_launcher: ^6.3.2
+  razorpay_flutter: ^1.4.0
+  #  razorpay_web: ^1.0.0
+  #  js: ^0.6.7
+  #  web: ^0.1.4-beta
 
 dev_dependencies:
   flutter_test:

@@ -120,6 +120,8 @@ urlpatterns = [
 
     # path('addproduct',views.addproduct),
     path('view_orders',views.view_orders),
+    path('view_distributor_orders',views.view_distributor_orders),
+    path('make_payment',views.make_payment),
 
 ]
 

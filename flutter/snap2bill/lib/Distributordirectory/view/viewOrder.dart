@@ -29,8 +29,8 @@ class _viewOrderSubState extends State<viewOrderSub> {
     String b = prefs.getString("lid").toString();
     String foodimage="";
     var data =
-    await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_orders"),
-        body: {"id":b}
+    await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_distributor_orders"),
+        body: {"uid":prefs.getString("uid").toString()}
     );
 
     var jsonData = json.decode(data.body);
@@ -102,6 +102,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
                           children: [
 
                             SizedBox(height: 10),
+                            _buildRow("ID", i.id.toString()),
                             _buildRow("Customer Name", i.username.toString()),
                             _buildRow("Payment Status:", i.payment_status.toString()),
                             _buildRow("Payment Date:", i.payment_date.toString()),

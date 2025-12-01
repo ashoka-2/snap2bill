@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 # Create your views here
-from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order
+from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment
 
 print(make_password("password"))
 
@@ -1005,7 +1005,10 @@ def customer_view_distributor(request):
 
 
 def view_orders(request):
-    data = order.objects.all()
+    cid = request.POST['cid']
+    # uid = request.POST['uid']
+    data = order.objects.filter(USER_id=cid)
+    # data = order.objects.filter(USER_id=cid,DISTRIBUTOR_id=uid)
     ar = []
     for i in data:
         ar.append({
@@ -1021,6 +1024,36 @@ def view_orders(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+def view_distributor_orders(request):
+    # cid = request.POST['cid']
+    uid = request.POST['uid']
+    data = order.objects.filter(DISTRIBUTOR_id=uid)
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'payment_status': i.payment_status,
+            'payment_date': i.payment_date,
+            'date': i.date,
+            'amount': i.amount,
+            'username': i.USER.name ,
+            'distributor': i.DISTRIBUTOR.name
+        })
+
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+def make_payment(requst):
+    cid = requst.POST['cid']
+    amount = requst.POST['amount']
+    obj = payment()
+    obj.amount = amount
+    obj.status = "paid"
+    obj.amount_date =datetime.datetime.now().date(),datetime.datetime.now().strftime("%H:%M")
+    obj.USER_id = cid
+    obj.save()
+    return JsonResponse({'status':'ok',})
 
 
 
