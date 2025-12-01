@@ -548,17 +548,9 @@ def customer_search_page(request):
     return JsonResponse({'status':'ok'})
 
 
-def customer_follow(request):
-    return JsonResponse({'status':'ok'})
 
-def customer_unfollow(request):
-    return JsonResponse({'status':'ok'})
 
-def customer_like(request):
-    return JsonResponse({'status':'ok'})
 
-def customer_comment(request):
-    return JsonResponse({'status':'ok'})
 
 def customer_share(request):
     return JsonResponse({'status':'ok'})
@@ -567,8 +559,12 @@ def customer_save(request):
     return JsonResponse({'status':'ok'})
 
 
+
 def customer_view_notifications(request):
     return JsonResponse({'status':'ok'})
+
+
+
 
 def customer_view_bill(request):
     return JsonResponse({'status':'ok'})
@@ -1006,9 +1002,7 @@ def customer_view_distributor(request):
 
 def view_orders(request):
     cid = request.POST['cid']
-    # uid = request.POST['uid']
     data = order.objects.filter(USER_id=cid)
-    # data = order.objects.filter(USER_id=cid,DISTRIBUTOR_id=uid)
     ar = []
     for i in data:
         ar.append({
@@ -1025,7 +1019,6 @@ def view_orders(request):
 
 
 def view_distributor_orders(request):
-    # cid = request.POST['cid']
     uid = request.POST['uid']
     data = order.objects.filter(DISTRIBUTOR_id=uid)
     ar = []

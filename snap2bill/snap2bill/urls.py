@@ -75,10 +75,8 @@ urlpatterns = [
     path('customer_search_page',views.customer_search_page),
     path('customer_view_distributor', views.customer_view_distributor),
     path('edit_customer_profile', views.edit_customer_profile),
-    path('customer_follow', views.customer_follow),
-    path('customer_unfollow', views.customer_unfollow),
-    path('customer_like', views.customer_like),
-    path('customer_comment', views.customer_comment),
+    
+  
     path('customer_share', views.customer_share),
     path('customer_save', views.customer_save),
     path('customer_view_notifications', views.customer_view_notifications),

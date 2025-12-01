@@ -139,9 +139,8 @@ class order(models.Model):
     payment_status = models.CharField(max_length=100)
     payment_date = models.CharField(max_length=100)
     date = models.CharField(max_length=100)
-    USER = models.ForeignKey(customer,models.CASCADE)
     amount = models.CharField(max_length=100)
-
+    USER = models.ForeignKey(customer,models.CASCADE)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
 
 class order_sub(models.Model):
