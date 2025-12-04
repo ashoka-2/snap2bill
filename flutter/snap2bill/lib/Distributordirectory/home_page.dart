@@ -17,7 +17,9 @@ import '../Distributordirectory/profile_page.dart';
 
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-
+import 'dart:ui'; // Required for ImageFilter
+import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:line_icons/line_icons.dart';
 
 
 void main(){
@@ -37,6 +39,7 @@ class home_page extends StatelessWidget {
 
 
 class home_page_sub extends StatefulWidget {
+
   const home_page_sub({Key? key}) : super(key: key);
 
   @override
@@ -44,7 +47,7 @@ class home_page_sub extends StatefulWidget {
 }
 
 class _home_page_subState extends State<home_page_sub> {
-  int _pageIndex = 0;
+  int _selectedIndex = 0;
   late final List<Widget> _pages;
 
   @override
@@ -61,7 +64,13 @@ class _home_page_subState extends State<home_page_sub> {
       profile_page(),
     ];
   }
-
+  final Set<Color> tabColors = {
+    Colors.purple,
+    Colors.yellow,
+    Colors.blue,
+    Colors.green,
+    Colors.red,
+  };
 
 
   @override
@@ -69,35 +78,61 @@ class _home_page_subState extends State<home_page_sub> {
     return MaterialApp(
       // debugShowCheckedModeBanner: false,
       home: Scaffold(
+        extendBody: true,
+
         body: IndexedStack(
-          index: _pageIndex,
+          index: _selectedIndex,
           children: _pages,
         ),
-        bottomNavigationBar: CurvedNavigationBar(
-          index: _pageIndex,
-          items: const [
-            Icon(Icons.home_filled, size: 30),
-            Icon(Icons.search, size: 30),
-            Icon(Icons.add, size: 30),
-            Icon(Icons.people, size: 30),
-            Icon(Icons.perm_identity, size: 30),
-          ],
-          color: Colors.white,
-          buttonBackgroundColor: Colors.white,
-          backgroundColor: Colors.transparent,
-          animationCurve: Curves.easeInOut,
-          onTap: (index) {
-            setState(() {
-              _pageIndex = index;
-              print([
-                "Home Page clicked",
-                "Search Page clicked",
-                "Upload Page clicked",
-                "Customers Page clicked",
-                "Profile Page clicked"
-              ][index]);
-            });
-          },
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.all(5.0),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(50),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(50),
+                  border: Border.all(
+                    color: Colors.black.withOpacity(0.2),
+                    width: 1.5,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+                    child: GNav(
+                      rippleColor:Colors.white.withOpacity(0.1),
+                      hoverColor: Colors.white.withOpacity(0.1),
+                      gap: 5,
+                      activeColor: tabColors.elementAt(_selectedIndex),
+                      iconSize: 24,
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      duration: Duration(milliseconds: 400),
+                      tabBackgroundColor:
+                      tabColors.elementAt(_selectedIndex).withOpacity(0.1),
+                      color: Colors.black,
+                      tabs: [
+                        GButton(icon: LineIcons.home, text: 'Home'),
+                        GButton(icon: LineIcons.search, text: 'Search'),
+                        GButton(icon: LineIcons.plus, text: 'Add'),
+                        GButton(icon: LineIcons.users, text: 'Customers'),
+                        GButton(icon: LineIcons.user, text: 'Profile'),
+                      ],
+                      selectedIndex: _selectedIndex,
+                      onTabChange: (index) {
+                        setState(() {
+                          _selectedIndex = index;
+                        });
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -148,6 +183,7 @@ class _home_page_subState extends State<home_page_sub> {
     );
   }
 }
+
 
 
 
