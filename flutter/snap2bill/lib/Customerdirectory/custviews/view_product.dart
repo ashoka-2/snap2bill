@@ -1,182 +1,9 @@
-// import 'dart:convert';
-//
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-//
-//
-// class view_product extends StatelessWidget {
-//   const view_product({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(home: view_product_sub(),);
-//   }
-// }
-//
-// class view_product_sub extends StatefulWidget {
-//   const view_product_sub({Key? key}) : super(key: key);
-//
-//   @override
-//   State<view_product_sub> createState() => _view_product_subState();
-// }
-//
-// class _view_product_subState extends State<view_product_sub> {
-//
-//   Future<List<Joke>> _getJokes() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String b = prefs.getString("lid").toString();
-//     String foodimage="";
-//     var data =
-//     await http.post(Uri.parse(prefs.getString("ip").toString()+"/customer_view_products"),
-//         body: {"id":b}
-//     );
-//
-//     var jsonData = json.decode(data.body);
-// //    print(jsonData);
-//     List<Joke> jokes = [];
-//     for (var joke in jsonData["data"]) {
-//       print(joke);
-//       Joke newJoke = Joke(
-//           joke["id"].toString(),
-//           joke["product_name"],
-//           joke["price"].toString(),
-//           prefs.getString("ip").toString()+joke["image"].toString(),
-//
-//           joke["description"].toString(),
-//           joke["quantity"].toString(),
-//           (joke["CATEGORY"] ?? "").toString(),
-//           (joke["CATEGORY_NAME"] ?? "").toString(),
-//           joke["distributor_name"].toString()
-//       );
-//       jokes.add(newJoke);
-//     }
-//     return jokes;
-//   }
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body:      Container(
-//
-//         child:
-//         FutureBuilder(
-//           future: _getJokes(),
-//           builder: (BuildContext context, AsyncSnapshot snapshot) {
-// //              print("snapshot"+snapshot.toString());
-//             if (snapshot.data == null) {
-//               return Container(
-//                 child: Center(
-//                   child: Text("Loading..."),
-//                 ),
-//               );
-//             } else {
-//               return ListView.builder(
-//                 itemCount: snapshot.data.length,
-//                 itemBuilder: (BuildContext context, int index) {
-//                   var i = snapshot.data![index];
-//                   return Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Card(
-//                       elevation: 3,
-//                       shape: RoundedRectangleBorder(
-//                         borderRadius: BorderRadius.circular(10),
-//                         side: BorderSide(color: Colors.grey.shade300),
-//                       ),
-//                       child: Padding(
-//                         padding: const EdgeInsets.all(16.0),
-//                         child: Column(
-//                           crossAxisAlignment: CrossAxisAlignment.start,
-//                           children: [
-//
-//                             SizedBox(height: 10),
-//                             Image.network(i.image.toString(),height: 100,width: 100,),
-//                             _buildRow("Distributor Name:", i.distributor_name.toString()),
-//                             _buildRow("Name:", i.product_name.toString()),
-//                             _buildRow("Price:", i.price.toString()),
-//                             _buildRow("Description:", i.description.toString()),
-//                             _buildRow("Quantity:", i.quantity.toString()),
-//                             _buildRow("Category:", i.CATEGORY_NAME.toString()),
-//
-//                             SizedBox(height: 10,),
-//                             ElevatedButton(onPressed: (){
-//
-//                             }, child: Text("add to cart"))
-//
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                   );
-//                 },
-//               );
-//
-//
-//             }
-//           },
-//
-//
-//         ),
-//
-//
-//
-//
-//
-//       ),
-//
-//
-//
-//     );
-//   }
-//   Widget _buildRow(String label, String value) {
-//     return Padding(
-//       padding: const EdgeInsets.symmetric(vertical: 4),
-//       child: Row(
-//         children: [
-//           SizedBox(
-//             width: 100,
-//             child: Text(
-//               label,
-//               style: TextStyle(
-//                 fontWeight: FontWeight.bold,
-//               ),
-//             ),
-//           ),
-//           SizedBox(width: 5),
-//           Flexible(
-//             child: Text(
-//               value,
-//               style: TextStyle(
-//                 color: Colors.grey.shade800,
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-// }
-//
-// class Joke {
-//   final String id;
-//   final String product_name;
-//   final String price;
-//   final String image;
-//   final String description;
-//   final String quantity;
-//   final String CATEGORY;
-//   final String CATEGORY_NAME;
-//   final String distributor_name;
-//   Joke(this.id, this.product_name, this.price, this.image, this.description,
-//       this.quantity, this.CATEGORY, this.CATEGORY_NAME, this.distributor_name);
-// }
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snap2bill/Customerdirectory/Customersends/addToCart.dart';
+import 'package:readmore/readmore.dart';
+
 import 'package:snap2bill/Distributordirectory/addfolder/addOrder.dart';
 
 class view_product extends StatelessWidget {
@@ -184,8 +11,6 @@ class view_product extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // FIX: Removed MaterialApp here.
-    // This allows the page to use the navigation history of your main app.
     return const view_product_sub();
   }
 }
@@ -198,60 +23,81 @@ class view_product_sub extends StatefulWidget {
 }
 
 class _view_product_subState extends State<view_product_sub> {
+
+  // --- Helper to fix URLs ---
+  String _joinUrl(String base, String path) {
+    if (path.isEmpty || path == "null") return "";
+    if (base.endsWith("/") && path.startsWith("/")) return base + path.substring(1);
+    if (!base.endsWith("/") && !path.startsWith("/")) return "$base/$path";
+    return base + path;
+  }
+
   Future<List<Joke>> _getJokes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String b = prefs.getString("lid").toString();
-
-    // Safety check for null IP
     String ip = prefs.getString("ip") ?? "";
+
     if (ip.isEmpty) return [];
 
-    var data = await http.post(
-        Uri.parse(ip + "/customer_view_products"),
-        body: {"id": b});
+    try {
+      var data = await http.post(
+          Uri.parse("$ip/customer_view_products"),
+          body: {"id": b});
 
-    var jsonData = json.decode(data.body);
-    List<Joke> jokes = [];
-    for (var joke in jsonData["data"]) {
-      Joke newJoke = Joke(
-          joke["id"].toString(),
-          joke["product_name"],
-          joke["price"].toString(),
-          ip + joke["image"].toString(),
-          joke["description"].toString(),
-          joke["quantity"].toString(),
-          (joke["CATEGORY"] ?? "").toString(),
-          (joke["CATEGORY_NAME"] ?? "").toString(),
-          joke["distributor_name"].toString());
-      jokes.add(newJoke);
+      if (data.statusCode != 200) return [];
+
+      var jsonData = json.decode(data.body);
+      List<Joke> jokes = [];
+
+      if (jsonData["data"] != null) {
+        for (var joke in jsonData["data"]) {
+          Joke newJoke = Joke(
+            joke["id"].toString(),
+            joke["product_name"] ?? "Unknown",
+            joke["price"].toString(),
+            _joinUrl(ip, joke["image"].toString()),
+            joke["description"].toString(),
+            joke["quantity"].toString(),
+            (joke["CATEGORY"] ?? "").toString(),
+            (joke["CATEGORY_NAME"] ?? "").toString(),
+            (joke["distributor_name"] ?? "Seller").toString(),
+            _joinUrl(ip, (joke["distributor_image"] ?? "").toString()),
+            (joke["distributor_phone"] ?? "").toString(),
+          );
+          jokes.add(newJoke);
+        }
+      }
+      return jokes;
+    } catch (e) {
+      debugPrint("Error fetching data: $e");
+      return [];
     }
-    return jokes;
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7),
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
-        // --- BACK BUTTON (Fixed) ---
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
-          onPressed: () {
-            // Simply pop the current page off the stack
-            Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
+          onPressed: () => Navigator.pop(context),
         ),
-        // ---------------------------
-        title: const Text(
-          "Our Products",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        title: Text(
+          "Feed",
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.black87),
+            icon: Icon(Icons.shopping_bag_outlined, color: textColor),
             onPressed: () {},
           )
         ],
@@ -260,166 +106,229 @@ class _view_product_subState extends State<view_product_sub> {
         future: _getJokes(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(color: Colors.indigo),
-            );
+            return Center(child: CircularProgressIndicator(color: theme.primaryColor));
           } else if (snapshot.data == null || snapshot.data.isEmpty) {
-            return Center(child: Text("No products found"));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.inventory_2_outlined, size: 60, color: theme.disabledColor),
+                  const SizedBox(height: 10),
+                  Text("No products found", style: TextStyle(color: theme.disabledColor)),
+                ],
+              ),
+            );
           } else {
             return ListView.builder(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(bottom: 20),
               itemCount: snapshot.data.length,
               itemBuilder: (BuildContext context, int index) {
                 var i = snapshot.data![index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.1),
-                        spreadRadius: 2,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // --- Image Section ---
-                      Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20)),
-                            child: Image.network(
-                              i.image.toString(),
-                              height: 200,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
-                                  height: 200,
-                                  color: Colors.grey[200],
-                                  child: const Center(
-                                      child: Icon(Icons.image_not_supported,
-                                          color: Colors.grey, size: 50)),
-                                );
-                              },
-                            ),
-                          ),
-                          // Category Chip
-                          Positioned(
-                            top: 15,
-                            left: 15,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(30),
-                              ),
-                              child: Text(
-                                i.CATEGORY_NAME.toString().toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // --- Details Section ---
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    "Seller: ${i.distributor_name}",
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: Colors.green[50],
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.green.shade100),
-                                  ),
-                                  child: Text(
-                                    "${i.quantity} Left",
-                                    style: TextStyle(
-                                      color: Colors.green[700],
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-
-                            Text(
-                              i.product_name.toString(),
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-
-                            Text(
-                              "₹${i.price}",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.indigo[700],
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-
-                            Text(
-                              i.description.toString(),
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                                height: 1.5,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(onPressed: () async {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=>addOrder()));
-                            }, child: Text("Add product"))
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
+                return _buildInstagramPost(context, i, theme, textColor, subTextColor);
               },
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildInstagramPost(BuildContext context, Joke i, ThemeData theme, Color textColor, Color subTextColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 15),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        border: Border(
+          top: BorderSide(color: theme.dividerColor, width: 0.5),
+          bottom: BorderSide(color: theme.dividerColor, width: 0.5),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. HEADER
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: theme.dividerColor,
+                  radius: 18,
+                  child: ClipOval(
+                    child: SizedBox(
+                      width: 36,
+                      height: 36,
+                      child: (i.distributor_image.isNotEmpty)
+                          ? Image.network(
+                        i.distributor_image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Icon(Icons.person, size: 20, color: subTextColor);
+                        },
+                      )
+                          : Icon(Icons.person, size: 20, color: subTextColor),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        i.distributor_name,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: textColor),
+                      ),
+                      // VISIBLE CATEGORY IN HEADER
+                      Text(
+                        i.distributor_phone.isNotEmpty
+                            ? "${i.CATEGORY_NAME} • ${i.distributor_phone}"
+                            : i.CATEGORY_NAME,
+                        style: TextStyle(color: subTextColor, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                // 3-DOT MENU
+                PopupMenuButton<String>(
+                  icon: Icon(Icons.more_horiz, color: textColor),
+                  color: theme.cardColor,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  onSelected: (value) {
+                    if (value == 'cart') {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => addOrder()));
+                    } else if (value == 'wishlist') {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: theme.primaryColor,
+                          content: const Text("Added to Wishlist")));
+                    } else if (value == 'share') {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          backgroundColor: theme.primaryColor,
+                          content: const Text("Sharing Product...")));
+                    }
+                  },
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                    PopupMenuItem<String>(
+                      value: 'cart',
+                      child: Row(
+                        children: [
+                          Icon(Icons.shopping_cart_outlined, color: textColor, size: 20),
+                          const SizedBox(width: 10),
+                          Text('Add to Cart', style: TextStyle(color: textColor)),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'wishlist',
+                      child: Row(
+                        children: [
+                          Icon(Icons.favorite_border, color: textColor, size: 20),
+                          const SizedBox(width: 10),
+                          Text('Add to Wishlist', style: TextStyle(color: textColor)),
+                        ],
+                      ),
+                    ),
+                    PopupMenuItem<String>(
+                      value: 'share',
+                      child: Row(
+                        children: [
+                          Icon(Icons.share_outlined, color: textColor, size: 20),
+                          const SizedBox(width: 10),
+                          Text('Share Product', style: TextStyle(color: textColor)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          // 2. IMAGE
+          Container(
+            height: 400,
+            width: double.infinity,
+            color: theme.brightness == Brightness.dark ? Colors.black26 : Colors.grey.shade100,
+            child: Image.network(
+              i.image,
+              fit: BoxFit.cover,
+              errorBuilder: (c, o, s) => Center(child: Icon(Icons.broken_image, color: subTextColor)),
+            ),
+          ),
+
+          // 3. ACTION BAR
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
+            child: Row(
+              children: [
+                Icon(Icons.favorite_border, color: textColor, size: 28),
+                const SizedBox(width: 16),
+                Icon(Icons.share_outlined, color: textColor, size: 28),
+                const Spacer(),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>addOrder()));
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue.shade600,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    elevation: 0,
+                  ),
+                  icon: const Icon(Icons.shopping_cart_outlined, size: 18),
+                  label: const Text("Add to Cart", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+          ),
+
+          // 4. DETAILS & DESCRIPTION
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      i.product_name,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
+                    ),
+                    const Spacer(),
+                    Text(
+                      "₹${i.price}",
+                      style: TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: theme.primaryColor),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+
+                ReadMoreText(
+                  i.description,
+                  trimLines: 2,
+                  colorClickableText: Colors.grey,
+                  trimMode: TrimMode.Line,
+                  trimCollapsedText: ' read more',
+                  trimExpandedText: ' show less',
+                  style: TextStyle(color: textColor, fontSize: 14, height: 1.4),
+                  moreStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+                  lessStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+                ),
+
+                const SizedBox(height: 8),
+
+                // VISIBLE CATEGORY HASHTAG
+                Text(
+                  "#${i.CATEGORY_NAME.replaceAll(' ', '')}",
+                  style: TextStyle(color: Colors.blue.shade400, fontSize: 13, fontWeight: FontWeight.w500),
+                ),
+
+                const SizedBox(height: 15),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -435,10 +344,20 @@ class Joke {
   final String CATEGORY;
   final String CATEGORY_NAME;
   final String distributor_name;
-  Joke(this.id, this.product_name, this.price, this.image, this.description,
-      this.quantity, this.CATEGORY, this.CATEGORY_NAME, this.distributor_name);
+  final String distributor_image;
+  final String distributor_phone;
+
+  Joke(
+      this.id,
+      this.product_name,
+      this.price,
+      this.image,
+      this.description,
+      this.quantity,
+      this.CATEGORY,
+      this.CATEGORY_NAME,
+      this.distributor_name,
+      this.distributor_image,
+      this.distributor_phone
+      );
 }
-
-
-
-
