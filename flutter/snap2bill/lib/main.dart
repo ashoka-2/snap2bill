@@ -137,6 +137,7 @@ class _MyApp_subState extends State<MyApp_sub> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       //extend the body to be visible in the back of appbar
       extendBodyBehindAppBar: true,
 
@@ -201,7 +202,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.backgroundLight.withOpacity(0.5),
+                        color: theme.shadowColor.withOpacity(0.5),
                         blurRadius: 10,
                         offset: const Offset(0, 0),
                       ),

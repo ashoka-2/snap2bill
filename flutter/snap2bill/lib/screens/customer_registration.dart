@@ -768,6 +768,9 @@ class _customer_registrationState extends State<customer_registration> {
     final theme = Theme.of(context);
 
     return Scaffold(
+
+
+
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [

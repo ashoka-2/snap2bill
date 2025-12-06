@@ -7,6 +7,7 @@ final ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: AppColors.primaryLight,
   scaffoldBackgroundColor: AppColors.backgroundLight,
+  shadowColor: AppColors.backgroundDark,
   fontFamily: 'Roboto',
   colorScheme: const ColorScheme.light(primary: AppColors.primaryLight),
   cardColor: AppColors.cardLight,
@@ -24,6 +25,8 @@ final ThemeData lightTheme = ThemeData(
 final ThemeData darkTheme = ThemeData(
   brightness: Brightness.dark,
   primaryColor: AppColors.primaryDark,
+  shadowColor: AppColors.backgroundLight,
+
   scaffoldBackgroundColor: AppColors.backgroundDark,
   fontFamily: 'Roboto',
   colorScheme: const ColorScheme.dark(primary: AppColors.primaryDark),

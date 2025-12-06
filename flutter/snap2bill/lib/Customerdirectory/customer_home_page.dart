@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:readmore/readmore.dart';
 import 'package:shimmer/shimmer.dart';
 
-// --- YOUR PAGE IMPORTS ---
+// --- IMPORTS ---
 import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_review.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewOrder.dart';
@@ -37,18 +37,15 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   // --- API LOGIC ---
   Future<void> _loadAllData() async {
     if (!mounted) return;
-
     setState(() => isLoading = true);
 
-    // CHANGE 1: Pehle categories & products parallel load
+    // 3 Second Delay to visualize Shimmer Effect
+    await Future.delayed(const Duration(seconds: 3));
+
     await Future.wait([
       _fetchCategories(),
       _fetchProducts(),
     ]);
-
-    // CHANGE 2: Force 3 second shimmer delay
-    await Future.delayed(const Duration(seconds: 3));
-
     if (mounted) setState(() => isLoading = false);
   }
 
@@ -56,10 +53,9 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String ip = prefs.getString("ip") ?? "";
-
       List<CategoryData> tempCats = [CategoryData(id: "All", name: "All")];
 
-      if (ip.isNotEmpty) {
+      if(ip.isNotEmpty) {
         var url = Uri.parse("$ip/view_category");
         var response = await http.post(url, body: {});
 
@@ -87,7 +83,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
       String lid = prefs.getString("lid") ?? "";
       String ip = prefs.getString("ip") ?? "";
 
-      if (ip.isNotEmpty) {
+      if(ip.isNotEmpty) {
         var url = Uri.parse("$ip/customer_view_products");
         var response = await http.post(url, body: {"id": lid});
 
@@ -104,10 +100,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                 description: item["description"].toString(),
                 categoryName: (item["CATEGORY_NAME"] ?? "General").toString(),
                 categoryId: (item["CATEGORY"] ?? "").toString(),
-                distributorName:
-                (item["distributor_name"] ?? "Seller").toString(),
-                distributorImage: _joinUrl(
-                    ip, (item["distributor_image"] ?? "").toString()),
+                distributorName: (item["distributor_name"] ?? "Seller").toString(),
+                distributorImage: _joinUrl(ip, (item["distributor_image"] ?? "").toString()),
                 distributorPhone: (item["distributor_phone"] ?? "").toString(),
               ));
             }
@@ -122,9 +116,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
 
   String _joinUrl(String base, String path) {
     if (path.isEmpty || path == "null") return "";
-    if (base.endsWith("/") && path.startsWith("/")) {
-      return base + path.substring(1);
-    }
+    if (base.endsWith("/") && path.startsWith("/")) return base + path.substring(1);
     if (!base.endsWith("/") && !path.startsWith("/")) return "$base/$path";
     return base + path;
   }
@@ -132,14 +124,15 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   // --- UI ---
   @override
   Widget build(BuildContext context) {
+    // 1. ACCESS GLOBAL THEME (Provided by main.dart)
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final Color textColor =
-    isDark ? Colors.white : const Color(0xFF1A1D1E);
-    final Color subTextColor =
-    isDark ? Colors.grey.shade400 : const Color(0xFF6A6C7B);
+    // 2. DEFINE LOCAL TEXT COLORS
+    final textColor = isDark ? Colors.white : Colors.black;
+    final subTextColor = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
 
+    // Filter Logic
     List<ProductData> displayedProducts = selectedCategoryId == "All"
         ? allProducts
         : allProducts.where((p) => p.categoryName == selectedCategoryId).toList();
@@ -149,13 +142,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
 
       // --- APP BAR ---
       appBar: AppBar(
-        title: Text(
-          "Home",
-          style: TextStyle(
-            color: textColor,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        title: Text("Home", style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
@@ -168,8 +155,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => addOrder()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => addOrder()));
             },
           ),
         ],
@@ -186,24 +172,15 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
               accountEmail: const Text("Welcome Back"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: theme.cardColor,
-                child: Icon(
-                  Icons.person,
-                  size: 40,
-                  color: theme.primaryColor,
-                ),
+                child: Icon(Icons.person, size: 40, color: theme.primaryColor),
               ),
             ),
-            _buildDrawerItem(
-                Icons.rate_review, "View Products", const view_product(), textColor),
-            _buildDrawerItem(
-                Icons.feedback, "Send Feedback", const send_feedback(), textColor),
-            _buildDrawerItem(
-                Icons.forum, "View Feedback", const view_feedback(), textColor),
+            _buildDrawerItem(Icons.rate_review, "View Products", const view_product(), textColor),
+            _buildDrawerItem(Icons.feedback, "Send Feedback", const send_feedback(), textColor),
+            _buildDrawerItem(Icons.forum, "View Feedback", const view_feedback(), textColor),
             const Divider(),
-            _buildDrawerItem(
-                Icons.lock, "Change Password", const changePassword(), textColor),
-            _buildDrawerItem(
-                Icons.shopping_bag, "View Orders", const viewOrder(), textColor),
+            _buildDrawerItem(Icons.lock, "Change Password", const changePassword(), textColor),
+            _buildDrawerItem(Icons.shopping_bag, "View Orders", const viewOrder(), textColor),
           ],
         ),
       ),
@@ -238,15 +215,10 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                     selectedColor: theme.primaryColor,
                     labelStyle: TextStyle(
                       color: isSelected ? Colors.white : textColor,
-                      fontWeight: isSelected
-                          ? FontWeight.bold
-                          : FontWeight.normal,
+                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                     ),
-                    backgroundColor:
-                    isDark ? Colors.grey[800] : Colors.grey[200],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                    backgroundColor: isDark ? Colors.grey[800] : Colors.grey[200],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     side: BorderSide.none,
                   ),
                 );
@@ -257,22 +229,15 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           // B. PRODUCTS LIST
           Expanded(
             child: isLoading
-                ? _buildProductShimmer(theme)
+                ? _buildProductShimmer(theme) // SHIMMER
                 : displayedProducts.isEmpty
                 ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.inventory_2_outlined,
-                    size: 48,
-                    color: subTextColor,
-                  ),
+                  Icon(Icons.inventory_2_outlined, size: 48, color: subTextColor),
                   const SizedBox(height: 8),
-                  Text(
-                    "No products found",
-                    style: TextStyle(color: subTextColor),
-                  ),
+                  Text("No products found", style: TextStyle(color: subTextColor)),
                 ],
               ),
             )
@@ -281,11 +246,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
               itemCount: displayedProducts.length,
               itemBuilder: (context, index) {
                 return _buildProductCard(
-                  displayedProducts[index],
-                  theme,
-                  textColor,
-                  subTextColor,
-                );
+                    displayedProducts[index], theme, textColor, subTextColor);
               },
             ),
           ),
@@ -295,31 +256,21 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   }
 
   // --- DRAWER HELPER ---
-  Widget _buildDrawerItem(
-      IconData icon, String title, Widget page, Color color) {
+  Widget _buildDrawerItem(IconData icon, String title, Widget page, Color color) {
     return ListTile(
       leading: Icon(icon, color: color),
-      title: Text(
-        title,
-        style: TextStyle(color: color),
-      ),
+      title: Text(title, style: TextStyle(color: color)),
       onTap: () {
         Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
+        Navigator.push(context, MaterialPageRoute(builder: (context) => page));
       },
     );
   }
 
   // --- PRODUCT CARD WIDGET ---
-  Widget _buildProductCard(
-      ProductData item,
-      ThemeData theme,
-      Color textColor,
-      Color subTextColor,
-      ) {
+  Widget _buildProductCard(ProductData item, ThemeData theme, Color textColor, Color subTextColor) {
+    final isDark = theme.brightness == Brightness.dark;
+
     return Card(
       color: theme.cardColor,
       margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
@@ -338,8 +289,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   backgroundImage: item.distributorImage.isNotEmpty
                       ? NetworkImage(item.distributorImage)
                       : null,
-                  backgroundColor:
-                  theme.brightness == Brightness.dark ? Colors.grey[700] : Colors.grey[300],
+                  backgroundColor: isDark ? Colors.grey[700] : Colors.grey[300],
                   child: item.distributorImage.isEmpty
                       ? const Icon(Icons.person, color: Colors.grey)
                       : null,
@@ -351,83 +301,42 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                     children: [
                       Text(
                         item.distributorName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold, color: textColor),
                       ),
                       if (item.distributorPhone.isNotEmpty)
                         Text(
                           item.distributorPhone,
-                          style: TextStyle(
-                            color: subTextColor,
-                            fontSize: 12,
-                          ),
+                          style: TextStyle(color: subTextColor, fontSize: 12),
                         ),
                     ],
                   ),
                 ),
 
+                // --- 3-DOTS MENU ---
                 PopupMenuButton<String>(
                   icon: Icon(Icons.more_vert, color: textColor),
                   color: theme.cardColor,
                   onSelected: (value) {
                     if (value == 'cart') {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => addOrder()),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => addOrder()));
                     } else if (value == 'share') {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content:
-                          Text("Sharing ${item.productName}..."),
-                        ),
+                          SnackBar(content: Text("Sharing ${item.productName}..."))
                       );
                     }
                   },
                   itemBuilder: (context) => [
                     PopupMenuItem(
-                      value: 'cart',
-                      child: Row(
-                        children: [
-                          Icon(Icons.shopping_cart,
-                              size: 18, color: textColor),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Add to Cart',
-                            style: TextStyle(color: textColor),
-                          ),
-                        ],
-                      ),
+                        value: 'cart',
+                        child: Row(children: [Icon(Icons.shopping_cart, size: 18, color: textColor), SizedBox(width:8), Text('Add to Cart', style: TextStyle(color: textColor))])
                     ),
                     PopupMenuItem(
-                      value: 'wishlist',
-                      child: Row(
-                        children: [
-                          Icon(Icons.favorite,
-                              size: 18, color: textColor),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Add to Wishlist',
-                            style: TextStyle(color: textColor),
-                          ),
-                        ],
-                      ),
+                        value: 'wishlist',
+                        child: Row(children: [Icon(Icons.favorite, size: 18, color: textColor), SizedBox(width:8), Text('Add to Wishlist', style: TextStyle(color: textColor))])
                     ),
                     PopupMenuItem(
-                      value: 'share',
-                      child: Row(
-                        children: [
-                          Icon(Icons.share,
-                              size: 18, color: textColor),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Share Product',
-                            style: TextStyle(color: textColor),
-                          ),
-                        ],
-                      ),
+                        value: 'share',
+                        child: Row(children: [Icon(Icons.share, size: 18, color: textColor), SizedBox(width:8), Text('Share Product', style: TextStyle(color: textColor))])
                     ),
                   ],
                 ),
@@ -439,24 +348,18 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           Container(
             height: 300,
             width: double.infinity,
-            color: theme.brightness == Brightness.dark
-                ? Colors.black26
-                : Colors.grey[200],
+            color: isDark ? Colors.black26 : Colors.grey[200],
             child: Image.network(
               item.image,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Icon(
-                Icons.broken_image,
-                size: 50,
-                color: subTextColor,
-              ),
+              errorBuilder: (context, error, stackTrace) =>
+                  Icon(Icons.broken_image, size: 50, color: subTextColor),
             ),
           ),
 
           // 3. ACTION BAR
           Padding(
-            padding:
-            const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
             child: Row(
               children: [
                 Icon(Icons.favorite_border, color: textColor),
@@ -465,13 +368,9 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                 const Spacer(),
                 FilledButton.icon(
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => addOrder()),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => addOrder()));
                   },
-                  icon: const Icon(Icons
-                      .shopping_cart_outlined, size: 18),
+                  icon: const Icon(Icons.shopping_cart_outlined, size: 18),
                   label: const Text("Add to Cart"),
                   style: FilledButton.styleFrom(
                     backgroundColor: theme.primaryColor,
@@ -499,17 +398,12 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                 ),
                 const SizedBox(height: 4),
                 Row(
-                  mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
                       child: Text(
                         item.productName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: textColor,
-                        ),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor),
                       ),
                     ),
                     Text(
@@ -530,11 +424,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   trimCollapsedText: ' read more',
                   trimExpandedText: ' show less',
                   style: TextStyle(color: textColor),
-                  moreStyle: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: theme.primaryColor,
-                  ),
+                  moreStyle: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: theme.primaryColor),
                 ),
               ],
             ),
@@ -544,15 +434,13 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     );
   }
 
-  // --- SHIMMER LOADING WIDGETS (SKELETON) ---
+  // --- SHIMMER LOADING WIDGETS ---
 
   Widget _buildCategoryShimmer(ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
-
     return Shimmer.fromColors(
       baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
-      highlightColor:
-      isDark ? Colors.grey[700]! : Colors.grey[100]!,
+      highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: 6,
@@ -560,9 +448,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         itemBuilder: (_, __) => Container(
           width: 80,
           margin: const EdgeInsets.only(right: 8),
-          // CHANGE 3: theme.cardColor instead of fixed white
           decoration: BoxDecoration(
-            color: theme.cardColor,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(20),
           ),
         ),
@@ -573,8 +460,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   Widget _buildProductShimmer(ThemeData theme) {
     final isDark = theme.brightness == Brightness.dark;
     final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final highlightColor =
-    isDark ? Colors.grey[700]! : Colors.grey[100]!;
+    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
 
     return ListView.builder(
       itemCount: 3,
@@ -586,68 +472,38 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           child: Container(
             margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
             height: 400,
-            // CHANGE 4: theme.cardColor instead of Colors.white
             decoration: BoxDecoration(
-              color: theme.cardColor,
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Skeleton
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Row(
                     children: [
-                      // CHANGE 5: CircleAvatar uses theme.cardColor
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: theme.cardColor,
-                      ),
+                      const CircleAvatar(radius: 18, backgroundColor: Colors.white),
                       const SizedBox(width: 10),
                       Column(
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // CHANGE 6: skeleton stripes use cardColor
-                          Container(
-                            width: 100,
-                            height: 10,
-                            color: theme.cardColor,
-                          ),
+                          Container(width: 100, height: 10, color: Colors.white),
                           const SizedBox(height: 5),
-                          Container(
-                            width: 60,
-                            height: 8,
-                            color: theme.cardColor,
-                          ),
+                          Container(width: 60, height: 8, color: Colors.white),
                         ],
                       ),
                     ],
                   ),
                 ),
-                // Image Skeleton
-                Container(
-                  height: 250,
-                  // CHANGE 7: theme.cardColor instead of white
-                  color: theme.cardColor,
-                ),
-                // Footer Skeleton
+                Container(height: 250, color: Colors.white),
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Column(
                     children: [
-                      Container(
-                        width: double.infinity,
-                        height: 12,
-                        color: theme.cardColor,
-                      ),
+                      Container(width: double.infinity, height: 12, color: Colors.white),
                       const SizedBox(height: 8),
-                      Container(
-                        width: 150,
-                        height: 12,
-                        color: theme.cardColor,
-                      ),
+                      Container(width: 150, height: 12, color: Colors.white),
                     ],
                   ),
                 )
