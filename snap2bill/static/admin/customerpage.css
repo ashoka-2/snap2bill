@@ -130,12 +130,15 @@
       background:#f3f7ff;
       display:flex;
       align-items:center;
-      justify-content:center; }
+      justify-content:center;
+  }
+
   .avatar img{
       width:100%;
       height:100%;
       object-fit:cover;
   }
+
   .primary-info{
       display:grid;
       gap:.25rem;

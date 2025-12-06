@@ -67,6 +67,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
+import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 class send_feedback extends StatefulWidget {
   const send_feedback({Key? key}) : super(key: key);
@@ -104,7 +105,7 @@ class _send_feedbackState extends State<send_feedback> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const customer_home_page()),
+          MaterialPageRoute(builder: (context) => const CustomerNavigationBar()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

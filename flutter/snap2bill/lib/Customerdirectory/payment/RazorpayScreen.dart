@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
+import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 import 'mobile_razorpay_helper.dart'
 if (dart.library.js) 'web_razorpay_helper.dart' as razorpay_helper;
 import 'package:razorpay_flutter/razorpay_flutter.dart' as razorpay_flutter;
@@ -105,7 +106,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
         "mode": _paymentMode,
       },
     );
-    Navigator.push(context, MaterialPageRoute(builder: (context) => customer_home_page()));
+    Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNavigationBar()));
   }
 
   @override

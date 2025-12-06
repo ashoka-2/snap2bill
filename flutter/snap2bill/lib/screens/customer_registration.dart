@@ -587,40 +587,18 @@
 // //
 //
 //
+// File: lib/screens/customer_registration.dart
 import 'dart:convert';
-import 'dart:math' as math;
-import 'dart:typed_data';
-
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
+import 'package:snap2bill/screens/Login_page.dart';
 
-import 'package:snap2bill/Login_page.dart';
-
-// --- 1. DESIGN CONSTANTS (Matching Distributor Page) ---
-class AppColors {
-  // Light Mode Colors
-  static const Color primaryLight = Color(0xFF4A69FF);
-  static const Color backgroundLight = Color(0xFFF0F4F8);
-  static const Color cardLight = Colors.white;
-  static const Color textMainLight = Color(0xFF1A1D1E);
-  static const Color textSubLight = Color(0xFF6A6C7B);
-  static const Color inputFillLight = Color(0xFFF5F6FA);
-
-  // Dark Mode Colors
-  static const Color primaryDark = Color(0xFF5C7AE6);
-  static const Color backgroundDark = Color(0xFF121212);
-  static const Color cardDark = Color(0xFF1E1E1E);
-  static const Color textMainDark = Color(0xFFFFFFFF);
-  static const Color textSubDark = Color(0xFFAAAAAA);
-  static const Color inputFillDark = Color(0xFF2C2C2C);
-
-  // Gradients for the background blobs
-  static const List<Color> blobGradient1 = [Color(0xFF4A69FF), Color(0xFF2E3F8F)];
-  static const List<Color> blobGradient2 = [Color(0xFF6E85FF), Color(0xFF4A69FF)];
-}
+// Import shared resources
+import '../theme/colors.dart';
+import '../widgets/app_button.dart';
 
 class customer_registration extends StatefulWidget {
   const customer_registration({Key? key}) : super(key: key);
@@ -630,72 +608,10 @@ class customer_registration extends StatefulWidget {
 }
 
 class _customer_registrationState extends State<customer_registration> {
-  // Theme State
-  ThemeMode _themeMode = ThemeMode.light;
+  // Global Key for Form Validation
+  final _formKey = GlobalKey<FormState>();
 
-  @override
-  void initState() {
-    super.initState();
-    _loadTheme();
-  }
-
-  // Load theme from SharedPreferences
-  Future<void> _loadTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _themeMode = (prefs.getBool('isDarkMode') ?? false) ? ThemeMode.dark : ThemeMode.light;
-    });
-  }
-
-  // Toggle and save theme
-  Future<void> toggleTheme() async {
-    final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    });
-    await prefs.setBool('isDarkMode', _themeMode == ThemeMode.dark);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      themeMode: _themeMode,
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: AppColors.primaryLight,
-        scaffoldBackgroundColor: AppColors.backgroundLight,
-        fontFamily: 'Roboto',
-      ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: AppColors.primaryDark,
-        scaffoldBackgroundColor: AppColors.backgroundDark,
-      ),
-      home: customer_registration_sub(
-        onThemeChanged: toggleTheme,
-        isDarkMode: _themeMode == ThemeMode.dark,
-      ),
-    );
-  }
-}
-
-class customer_registration_sub extends StatefulWidget {
-  final VoidCallback? onThemeChanged;
-  final bool isDarkMode;
-
-  const customer_registration_sub({
-    Key? key,
-    this.onThemeChanged,
-    this.isDarkMode = false,
-  }) : super(key: key);
-
-  @override
-  State<customer_registration_sub> createState() => _customer_registration_subState();
-}
-
-class _customer_registration_subState extends State<customer_registration_sub> {
-  // --- CONTROLLERS ---
+  // Controllers
   final name = TextEditingController();
   final email = TextEditingController();
   final phone = TextEditingController();
@@ -707,157 +623,152 @@ class _customer_registration_subState extends State<customer_registration_sub> {
   final post = TextEditingController();
   final bio = TextEditingController();
 
-  // --- FORM KEYS ---
-  final _formKeyStep1 = GlobalKey<FormState>();
-  final _formKeyStep2 = GlobalKey<FormState>();
-
-  // --- STATE VARIABLES ---
-  int _currentStep = 0; // 0 for Basic Info, 1 for Address
+  // State
   bool _isLoading = false;
   bool _obscurePass = true;
   bool _obscureConfirm = true;
 
-  // --- FILE VARS ---
+  // File Picker State
   PlatformFile? _selectedFile;
   Uint8List? _webFileBytes;
-  String? _result;
 
-  // --- FILE PICKER LOGIC ---
+  @override
+  void dispose() {
+    name.dispose();
+    email.dispose();
+    phone.dispose();
+    password.dispose();
+    confirmpassword.dispose();
+    address.dispose();
+    pincode.dispose();
+    place.dispose();
+    post.dispose();
+    bio.dispose();
+    super.dispose();
+  }
+
   Future<void> _pickFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowMultiple: false,
-      type: FileType.any, // Allow any as per original code, usually images for profile
-    );
+    try {
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        allowMultiple: false,
+        type: FileType.any,
+      );
 
-    if (result != null) {
-      setState(() {
-        _selectedFile = result.files.first;
-        _result = null;
-      });
-
-      if (kIsWeb) {
-        _webFileBytes = result.files.first.bytes;
+      if (result != null) {
+        setState(() {
+          _selectedFile = result.files.first;
+          if (kIsWeb) {
+            _webFileBytes = result.files.first.bytes;
+          }
+        });
       }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking file: $e')),
+      );
     }
   }
 
-  // --- NAVIGATION LOGIC ---
-  void _nextStep() {
-    if (_formKeyStep1.currentState!.validate()) {
-      setState(() {
-        _currentStep = 1;
-      });
+  Future<void> _register() async {
+    // 1. TRIGGER FORM VALIDATION
+    if (!_formKey.currentState!.validate()) {
+      // If validation fails, fields will turn red and show errors automatically.
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fix the errors in the form')),
+      );
+      return;
     }
-  }
 
-  void _previousStep() {
-    setState(() {
-      _currentStep = 0;
-    });
-  }
-
-  // --- SUBMIT LOGIC ---
-  Future<void> _submitRegistration() async {
-    // Validate Step 2 Form
-    if (!_formKeyStep2.currentState!.validate()) {
+    // 2. EXTRA CHECKS
+    if (password.text != confirmpassword.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Passwords do not match')),
+      );
       return;
     }
 
     if (_selectedFile == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a profile file/image first')),
+        const SnackBar(content: Text('Please select a file')),
       );
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString('ip');
+      String ip = sh.getString("ip") ?? "http://10.0.2.2:8000";
 
       var uri = Uri.parse('$ip/customer_registration');
       var request = http.MultipartRequest('POST', uri);
 
       // Add Fields
-      request.fields['name'] = name.text;
-      request.fields['email'] = email.text;
-      request.fields['phone'] = phone.text;
-      request.fields['password'] = password.text;
-      request.fields['confirmpassword'] = confirmpassword.text;
-      request.fields['address'] = address.text;
-      request.fields['pincode'] = pincode.text;
-      request.fields['place'] = place.text;
-      request.fields['post'] = post.text;
-      request.fields['bio'] = bio.text;
-
-      // Usually registration creates an ID, but keeping your logic if needed
+      request.fields['name'] = name.text.trim();
+      request.fields['email'] = email.text.trim();
+      request.fields['phone'] = phone.text.trim();
+      request.fields['password'] = password.text.trim();
+      request.fields['confirmpassword'] = confirmpassword.text.trim();
+      request.fields['address'] = address.text.trim();
+      request.fields['pincode'] = pincode.text.trim();
+      request.fields['place'] = place.text.trim();
+      request.fields['post'] = post.text.trim();
+      request.fields['bio'] = bio.text.trim();
       request.fields['cid'] = sh.getString('cid')?.toString() ?? '';
 
       // Add File
-      if (_selectedFile != null) {
-        if (kIsWeb) {
-          if (_webFileBytes != null) {
-            request.files.add(http.MultipartFile.fromBytes(
-              'file',
-              _webFileBytes!,
-              filename: _selectedFile!.name,
-            ));
-          }
-        } else {
-          if (_selectedFile?.path != null) {
-            request.files.add(await http.MultipartFile.fromPath(
-              'file',
-              _selectedFile!.path!,
-            ));
-          }
-        }
+      if (kIsWeb && _webFileBytes != null) {
+        request.files.add(http.MultipartFile.fromBytes(
+          'file',
+          _webFileBytes!,
+          filename: _selectedFile!.name,
+        ));
+      } else if (_selectedFile?.path != null) {
+        request.files.add(await http.MultipartFile.fromPath(
+          'file',
+          _selectedFile!.path!,
+        ));
       }
 
       var streamedResponse = await request.send();
       var responseString = await streamedResponse.stream.bytesToString();
-      var decoded = json.decode(responseString);
 
-      if (decoded['status'] == 'ok') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration successful!')),
-        );
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => login_page()),
-        );
+      if (!mounted) return;
+
+      if (streamedResponse.statusCode == 200) {
+        var decoded = json.decode(responseString);
+        if (decoded['status'] == 'ok') {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration successful!')),
+          );
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>login_page()));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Registration Failed')),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Registration Failed')),
+          SnackBar(content: Text('Server Error: ${streamedResponse.statusCode}')),
         );
-        // Uncomment if you want to redirect anyway on failure
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => login_page()));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Theme Colors
-    final isDark = widget.isDarkMode;
-    final bgColor = isDark ? AppColors.backgroundDark : AppColors.backgroundLight;
-    final cardColor = isDark ? AppColors.cardDark : AppColors.cardLight;
-    final textColor = isDark ? AppColors.textMainDark : AppColors.textMainLight;
-    final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
-    final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
+    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           // 1. ABSTRACT BACKGROUND BLOBS
@@ -872,26 +783,14 @@ class _customer_registration_subState extends State<customer_registration_sub> {
             child: _buildBlob(200, AppColors.blobGradient2),
           ),
 
-          // 2. TOP BAR (Back Button & Theme Toggle)
+          // 2. TOP BAR
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   InkWell(
-                    onTap: () {
-                      if (_currentStep == 1) {
-                        _previousStep();
-                      } else {
-                        if (Navigator.canPop(context)) {
-                          Navigator.pop(context);
-                        } else {
-                          // Fallback
-                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => login_page()));
-                        }
-                      }
-                    },
+                    onTap: () => Navigator.pop(context),
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
@@ -901,58 +800,198 @@ class _customer_registration_subState extends State<customer_registration_sub> {
                       child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
                     ),
                   ),
-                  InkWell(
-                    onTap: widget.onThemeChanged,
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isDark ? Icons.light_mode : Icons.dark_mode,
-                        color: Colors.white,
-                        size: 24,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),
           ),
 
-          // 3. MAIN CONTENT SHEET
+          // 3. MAIN CONTENT
           Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
               Expanded(
-                child: Container(
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: cardColor,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, -5),
-                      ),
-                    ],
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
                   ),
-                  child: SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-                    child: AnimatedSwitcher(
-                      duration: const Duration(milliseconds: 300),
-                      transitionBuilder: (child, animation) {
-                        return FadeTransition(opacity: animation, child: child);
-                      },
-                      child: _currentStep == 0
-                          ? _buildStep1(textColor, subTextColor, inputFill)
-                          : _buildStep2(textColor, subTextColor, inputFill),
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(40),
+                        topRight: Radius.circular(40),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
+                    ),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      padding: const EdgeInsets.all(24),
+                      child: Form( // WRAPPED IN FORM
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Center(
+                              child: Text(
+                                "Customer Registration",
+                                style: theme.textTheme.headlineSmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+
+                            // File Picker
+                            Center(
+                              child: GestureDetector(
+                                onTap: _pickFile,
+                                child: Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    color: theme.inputDecorationTheme.fillColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: theme.primaryColor.withOpacity(0.5)),
+                                  ),
+                                  child: _selectedFile == null
+                                      ? Icon(Icons.upload_file, size: 40, color: theme.disabledColor)
+                                      : Icon(Icons.check_circle, size: 40, color: theme.primaryColor),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Center(
+                              child: Text(
+                                _selectedFile != null ? _selectedFile!.name : "Tap to upload file",
+                                style: theme.textTheme.bodySmall,
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            const SizedBox(height: 30),
+
+                            // --- FORM FIELDS WITH VALIDATION ---
+
+                            // Name: At least 3 chars
+                            _buildTextField(
+                                name, "Name", Icons.abc, theme,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return "Name is required";
+                                  if (value.trim().length < 3) return "Name must be at least 3 characters";
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Email
+                            _buildTextField(
+                                email, "Email", Icons.email_outlined, theme,
+                                keyboardType: TextInputType.emailAddress,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return "Email is required";
+                                  if (!value.contains('@') || !value.contains('.')) return "Enter a valid email";
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Phone: EXACTLY 10 digits
+                            _buildTextField(
+                                phone, "Phone Number", Icons.phone_android, theme,
+                                isNumber: true,
+                                maxLength: 10,
+                                validator: (value) {
+                                  if (value == null || value.trim().isEmpty) return "Phone number is required";
+                                  if (value.length != 10) return "Phone number must be exactly 10 digits";
+                                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) return "Only numbers allowed";
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Password: Upper, Lower, Number
+                            _buildPasswordField(
+                                password, "Password", theme, false,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) return "Password is required";
+                                  if (!value.contains(RegExp(r'[A-Z]'))) return "Must contain uppercase letter";
+                                  if (!value.contains(RegExp(r'[a-z]'))) return "Must contain lowercase letter";
+                                  if (!value.contains(RegExp(r'[0-9]'))) return "Must contain a number";
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Confirm Password
+                            _buildPasswordField(
+                                confirmpassword, "Confirm Password", theme, true,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) return "Confirm your password";
+                                  if (value != password.text) return "Passwords do not match";
+                                  return null;
+                                }
+                            ),
+
+                            const SizedBox(height: 25),
+                            const Divider(),
+                            const SizedBox(height: 15),
+
+                            _buildTextField(
+                                address, "Address", Icons.location_city, theme,
+                                validator: (val) => (val == null || val.trim().isEmpty) ? "Address is required" : null
+                            ),
+                            const SizedBox(height: 15),
+
+                            // Pincode: Number only, usually 6 digits for India
+                            _buildTextField(
+                                pincode, "Pincode", Icons.pin_drop, theme,
+                                isNumber: true,
+                                maxLength: 6,
+                                validator: (val) {
+                                  if (val == null || val.trim().isEmpty) return "Pincode is required";
+                                  if (!RegExp(r'^[0-9]+$').hasMatch(val)) return "Only numbers allowed";
+                                  if (val.length != 6) return "Pincode must be 6 digits";
+                                  return null;
+                                }
+                            ),
+                            const SizedBox(height: 15),
+
+                            _buildTextField(
+                                place, "Place", Icons.place, theme,
+                                validator: (val) => (val == null || val.trim().isEmpty) ? "Place is required" : null
+                            ),
+                            const SizedBox(height: 15),
+
+                            _buildTextField(
+                                post, "Post", Icons.local_post_office, theme,
+                                validator: (val) => (val == null || val.trim().isEmpty) ? "Post office is required" : null
+                            ),
+                            const SizedBox(height: 15),
+
+                            _buildTextField(
+                                bio, "Bio", Icons.description, theme,
+                                maxLines: 3,
+                                validator: (val) => (val == null || val.trim().isEmpty) ? "Bio is required" : null
+                            ),
+
+                            const SizedBox(height: 40),
+
+                            AppButton(
+                              text: "Register",
+                              isLoading: _isLoading,
+                              onPressed: _register,
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -960,308 +999,6 @@ class _customer_registration_subState extends State<customer_registration_sub> {
             ],
           ),
         ],
-      ),
-    );
-  }
-
-  // --- STEP 1: PERSONAL DETAILS ---
-  Widget _buildStep1(Color textColor, Color subTextColor, Color inputFill) {
-    return Form(
-      key: _formKeyStep1,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              "Customer Registration",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5),
-          Center(
-            child: Text(
-              "Join us today!",
-              style: TextStyle(color: subTextColor, fontSize: 14),
-            ),
-          ),
-          const SizedBox(height: 30),
-
-          // --- PROFILE PHOTO PICKER ---
-          Center(
-            child: GestureDetector(
-              onTap: _pickFile,
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: inputFill,
-                    backgroundImage: _webFileBytes != null
-                        ? MemoryImage(_webFileBytes!)
-                        : (_selectedFile?.path != null
-                        ? AssetImage("assets/placeholder.png")
-                        : null) as ImageProvider?,
-                    child: _selectedFile == null && _webFileBytes == null
-                        ? Icon(Icons.person_add_rounded, size: 40, color: subTextColor)
-                        : null,
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryLight,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          if (_selectedFile != null)
-            Center(child: Text("File: ${_selectedFile!.name}", style: TextStyle(color: subTextColor, fontSize: 12))),
-
-          const SizedBox(height: 30),
-
-          // --- FORM FIELDS ---
-          _buildInputField(
-            name,
-            "Full Name",
-            Icons.person_outline,
-            false, inputFill, textColor, subTextColor,
-            validator: (val) => val == null || val.isEmpty ? "Name is required" : null,
-          ),
-          const SizedBox(height: 15),
-          _buildInputField(
-            email,
-            "Email Address",
-            Icons.email_outlined,
-            false, inputFill, textColor, subTextColor,
-            validator: (val) {
-              if (val == null || val.isEmpty) return "Email is required";
-              if (!val.contains('@') || !val.contains('.')) return "Invalid email";
-              return null;
-            },
-          ),
-          const SizedBox(height: 15),
-          _buildInputField(
-              phone,
-              "Phone Number",
-              Icons.phone_android_rounded,
-              false, inputFill, textColor, subTextColor,
-              keyboardType: TextInputType.phone,
-              validator: (val) {
-                if (val == null || val.isEmpty) return "Phone is required";
-                if (val.length < 10) return "Invalid phone number";
-                return null;
-              }
-          ),
-
-          const SizedBox(height: 15),
-          _buildInputField(
-            password,
-            "Password",
-            Icons.lock_outline,
-            true, inputFill, textColor, subTextColor,
-            isPass: true,
-            validator: (val) {
-              if (val == null || val.isEmpty) return "Password is required";
-              if (val.length <= 8) return "Must be more than 8 characters";
-              if (!val.contains(RegExp(r'[A-Z]'))) return "Must have an uppercase letter";
-              if (!val.contains(RegExp(r'[a-z]'))) return "Must have a lowercase letter";
-              if (!val.contains(RegExp(r'[0-9]'))) return "Must have a number";
-              return null;
-            },
-          ),
-          const SizedBox(height: 15),
-          _buildInputField(
-            confirmpassword,
-            "Confirm Password",
-            Icons.lock_outline,
-            true, inputFill, textColor, subTextColor,
-            isPass: true,
-            isConfirm: true,
-            validator: (val) => val != password.text ? "Passwords do not match" : null,
-          ),
-
-          const SizedBox(height: 40),
-
-          // --- NEXT BUTTON ---
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 5,
-                shadowColor: AppColors.primaryLight.withOpacity(0.4),
-              ),
-              onPressed: _nextStep,
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Next Step",
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Icon(Icons.arrow_forward_rounded, color: Colors.white),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  // --- STEP 2: ADDRESS & SUBMIT ---
-  Widget _buildStep2(Color textColor, Color subTextColor, Color inputFill) {
-    return Form(
-      key: _formKeyStep2,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Center(
-            child: Text(
-              "Address Details",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-          ),
-          const SizedBox(height: 5),
-          Center(
-            child: Text(
-              "Tell us where you are",
-              style: TextStyle(color: subTextColor, fontSize: 14),
-            ),
-          ),
-          const SizedBox(height: 30),
-
-          // --- ADDRESS FIELDS ---
-          _buildInputField(address, "Address", Icons.home_outlined, false, inputFill, textColor, subTextColor, validator: (v) => v!.isEmpty ? "Required" : null),
-          const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(child: _buildInputField(pincode, "Pincode", Icons.pin_drop_outlined, false, inputFill, textColor, subTextColor, keyboardType: TextInputType.number, validator: (v) => v!.length < 4 ? "Invalid" : null)),
-              const SizedBox(width: 15),
-              Expanded(child: _buildInputField(post, "Post", Icons.local_post_office_outlined, false, inputFill, textColor, subTextColor, validator: (v) => v!.isEmpty ? "Required" : null)),
-            ],
-          ),
-          const SizedBox(height: 15),
-          _buildInputField(place, "Place", Icons.map_outlined, false, inputFill, textColor, subTextColor, validator: (v) => v!.isEmpty ? "Required" : null),
-
-          const SizedBox(height: 25),
-          _buildInputField(bio, "Bio / Description", Icons.description_outlined, false, inputFill, textColor, subTextColor, maxLines: 3),
-
-          const SizedBox(height: 40),
-
-          // --- SUBMIT BUTTON ---
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryLight,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                elevation: 5,
-                shadowColor: AppColors.primaryLight.withOpacity(0.4),
-              ),
-              onPressed: _isLoading ? null : _submitRegistration,
-              child: _isLoading
-                  ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text(
-                "Complete Registration",
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-        ],
-      ),
-    );
-  }
-
-  // --- HELPER WIDGETS ---
-
-  Widget _buildInputField(
-      TextEditingController controller,
-      String label,
-      IconData icon,
-      bool isObscure,
-      Color fillColor,
-      Color textColor,
-      Color hintColor, {
-        bool isPass = false,
-        bool isConfirm = false,
-        int maxLines = 1,
-        TextInputType keyboardType = TextInputType.text,
-        String? Function(String?)? validator,
-      }) {
-    return Container(
-      decoration: BoxDecoration(
-        color: fillColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: TextFormField(
-        controller: controller,
-        obscureText: isPass
-            ? (isConfirm ? _obscureConfirm : _obscurePass)
-            : false,
-        keyboardType: keyboardType,
-        maxLines: maxLines,
-        style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
-        validator: validator,
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: TextStyle(color: hintColor, fontSize: 14),
-          prefixIcon: Icon(icon, color: AppColors.primaryLight, size: 22),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          suffixIcon: isPass
-              ? IconButton(
-            icon: Icon(
-              (isConfirm ? _obscureConfirm : _obscurePass)
-                  ? Icons.visibility_off
-                  : Icons.visibility,
-              color: hintColor,
-            ),
-            onPressed: () {
-              setState(() {
-                if (isConfirm) {
-                  _obscureConfirm = !_obscureConfirm;
-                } else {
-                  _obscurePass = !_obscurePass;
-                }
-              });
-            },
-          )
-              : null,
-        ),
       ),
     );
   }
@@ -1276,6 +1013,67 @@ class _customer_registration_subState extends State<customer_registration_sub> {
           colors: colors,
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
+        ),
+      ),
+    );
+  }
+
+  // UPDATED: Now returns TextFormField for validation
+  Widget _buildTextField(
+      TextEditingController ctrl,
+      String label,
+      IconData icon,
+      ThemeData theme,
+      {
+        bool isNumber = false,
+        int maxLines = 1,
+        int? maxLength,
+        TextInputType? keyboardType,
+        String? Function(String?)? validator
+      }) {
+    return TextFormField(
+      controller: ctrl,
+      // Priority: Specific keyboardType passed -> isNumber check -> Default Text
+      keyboardType: keyboardType ?? (isNumber ? TextInputType.number : TextInputType.text),
+      maxLines: maxLines,
+      maxLength: maxLength,
+      validator: validator,
+      // Auto-validate only when user interacts? or on submit. Kept default (on submit)
+      decoration: InputDecoration(
+        labelText: label,
+        counterText: "", // Hides the tiny 0/10 character counter
+        prefixIcon: Icon(icon, color: AppColors.IconColor, size: 22),
+        // Style is inherited from Theme.of(context).inputDecorationTheme
+      ),
+    );
+  }
+
+  // UPDATED: Now returns TextFormField for validation
+  Widget _buildPasswordField(
+      TextEditingController ctrl,
+      String label,
+      ThemeData theme,
+      bool isConfirm,
+      {String? Function(String?)? validator}
+      ) {
+    return TextFormField(
+      controller: ctrl,
+      obscureText: isConfirm ? _obscureConfirm : _obscurePass,
+      validator: validator,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(Icons.lock_outline, color: AppColors.IconColor, size: 22),
+        suffixIcon: IconButton(
+          icon: Icon(
+            (isConfirm ? _obscureConfirm : _obscurePass) ? Icons.visibility_off : Icons.visibility,
+            color: theme.hintColor,
+          ),
+          onPressed: () {
+            setState(() {
+              if (isConfirm) _obscureConfirm = !_obscureConfirm;
+              else _obscurePass = !_obscurePass;
+            });
+          },
         ),
       ),
     );

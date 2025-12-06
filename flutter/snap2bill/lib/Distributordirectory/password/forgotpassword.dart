@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/home_page.dart';
-import 'package:snap2bill/Login_page.dart';
+
+import '../../screens/Login_page.dart';
 
 
 

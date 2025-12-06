@@ -106,7 +106,7 @@ class _send_feedbackState extends State<send_feedback> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const home_page()),
+          MaterialPageRoute(builder: (context) => const Home_page()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
