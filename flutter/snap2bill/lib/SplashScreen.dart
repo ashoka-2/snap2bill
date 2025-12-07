@@ -11,7 +11,6 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -26,17 +25,17 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 👇 yahan se current theme check kar rahe hain
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bgColor = isDark
-        ? AppColors.backgroundDark   // dark theme color
+        ? AppColors
+              .backgroundDark // dark theme color
         : AppColors.backgroundLight; // light theme color
 
     return Scaffold(
       backgroundColor: bgColor,
       body: Center(
         child: SvgPicture.asset(
-          "assets/images/logo.svg",
+          "assets/images/snap2bill_logo.svg",
           width: 150,
           height: 200,
         ),

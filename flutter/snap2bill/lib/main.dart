@@ -157,7 +157,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                 ThemeService.instance.isDarkMode
                     ? Icons.light_mode
                     : Icons.dark_mode,
-                color: AppColors.IconColor,
+                color: AppColors.iconColor,
               ),
               onPressed: () {
                 MyApp.changeTheme(context);
@@ -169,22 +169,18 @@ class _MyApp_subState extends State<MyApp_sub> {
       body: Stack(
         children: [
           Positioned(
-            top: -100,
+            top: -70,
             left: -50,
             child: _buildBlob(250, _blobGradient1),
           ),
           Positioned(
-            top: 50,
+            top: 150,
             right: -80,
             child: _buildBlob(180, _blobGradient2),
           ),
+
           Positioned(
-            bottom: -100,
-            right: -50,
-            child: _buildBlob(250, _blobGradient1),
-          ),
-          Positioned(
-            bottom: 50,
+            bottom: 180,
             left: -80,
             child: _buildBlob(180, _blobGradient2),
           ),
@@ -235,7 +231,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                           decoration: const InputDecoration(
                             labelText: 'IP Address',
                             prefixIcon: Icon(Icons.wifi),
-                            prefixIconColor: AppColors.IconColor,
+                            prefixIconColor: AppColors.iconColor,
 
                           ),
                         ),

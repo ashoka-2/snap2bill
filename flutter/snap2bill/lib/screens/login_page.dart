@@ -1095,7 +1095,7 @@ import 'package:http/http.dart' as http;
 
 // Use package imports to avoid duplicate canonical names
 import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
-import 'package:snap2bill/Distributordirectory/home_page.dart' ; // using home_page class for distributor
+import 'package:snap2bill/Distributordirectory/home_page.dart'; // using home_page class for distributor
 import 'package:snap2bill/screens/customer_registration.dart';
 import 'package:snap2bill/screens/distributor_registration.dart';
 
@@ -1117,10 +1117,15 @@ class login_page extends StatefulWidget {
   State<login_page> createState() => _login_pageState();
 }
 
-class _login_pageState extends State<login_page> with SingleTickerProviderStateMixin {
+class _login_pageState extends State<login_page>
+    with SingleTickerProviderStateMixin {
   // Controllers with example default values so you can test quickly
-  final TextEditingController username = TextEditingController(text: "ashoka@gmail.com");
-  final TextEditingController password = TextEditingController(text: "password");
+  final TextEditingController username = TextEditingController(
+    text: "ashoka@gmail.com",
+  );
+  final TextEditingController password = TextEditingController(
+    text: "password",
+  );
 
   // UI state
   bool _obscureText = true;
@@ -1175,7 +1180,9 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
     try {
       // Read IP saved earlier in SharedPreferences (if not present, fallback)
       SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip = sh.getString("ip") ?? "http://10.0.2.2:8000"; // emulator-friendly default
+      String ip =
+          sh.getString("ip") ??
+          "http://10.0.2.2:8000"; // emulator-friendly default
 
       // Make HTTP POST to the login endpoint (server must accept form fields)
       final response = await http.post(
@@ -1196,19 +1203,29 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
           await sh.setString("pwd", password.text);
 
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login successful')));
 
           // Navigate to customer home
-          Navigator.push(context, MaterialPageRoute(builder: (context) => CustomerNavigationBar()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CustomerNavigationBar()),
+          );
         } else if (decoded['status'] == 'distok') {
           // Distributor login success: save uid and navigate to distributor home
           await sh.setString("uid", decoded['uid'].toString());
           await sh.setString("pwd1", password.text);
 
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Login successful')));
 
-          Navigator.push(context, MaterialPageRoute(builder: (context) => DistributorNavigationBar()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => DistributorNavigationBar()),
+          );
         } else {
           // Invalid credentials
           setState(() {
@@ -1238,20 +1255,32 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     // Get theme colors via Theme.of(context) and shared AppColors
     final theme = Theme.of(context);
-    final isDark = false; // We don't manage theme here; main.dart does that.
+    final isDark = theme.brightness == Brightness.dark;
     final bgColor = theme.scaffoldBackgroundColor;
     final cardColor = theme.cardColor;
     final textColor = isDark ? AppColors.textMainDark : AppColors.textMainLight;
-    final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
-    final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
+    final subTextColor = isDark
+        ? AppColors.textSubDark
+        : AppColors.textSubLight;
+    final inputFill = isDark
+        ? AppColors.inputFillDark
+        : AppColors.inputFillLight;
 
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(
         children: [
           // Background decorative blobs
-          Positioned(top: -100, left: -50, child: _buildBlob(250, _blobGradient1)),
-          Positioned(top: 50, right: -80, child: _buildBlob(180, _blobGradient2)),
+          Positioned(
+            top: -100,
+            left: -50,
+            child: _buildBlob(250, _blobGradient1),
+          ),
+          Positioned(
+            top: 50,
+            right: -80,
+            child: _buildBlob(180, _blobGradient2),
+          ),
 
           Column(
             children: [
@@ -1262,9 +1291,9 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
               Expanded(
                 child: ClipRRect(
                   borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(40),
-                  topRight: Radius.circular(40),
-                ),
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
@@ -1273,16 +1302,33 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
                         topLeft: Radius.circular(40),
                         topRight: Radius.circular(40),
                       ),
-                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, -5))],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, -5),
+                        ),
+                      ],
                     ),
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 40),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 40,
+                      ),
                       child: AnimatedBuilder(
                         animation: _shakeAnim,
                         builder: (context, child) {
-                          final offsetX = (_usernameError || _passwordError || _invalidError != null) ? math.sin(_shakeAnim.value) * 10 : 0.0;
-                          return Transform.translate(offset: Offset(offsetX, 0), child: child);
+                          final offsetX =
+                              (_usernameError ||
+                                  _passwordError ||
+                                  _invalidError != null)
+                              ? math.sin(_shakeAnim.value) * 10
+                              : 0.0;
+                          return Transform.translate(
+                            offset: Offset(offsetX, 0),
+                            child: child,
+                          );
                         },
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1291,14 +1337,28 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
                             Center(
                               child: Column(
                                 children: [
-                                  Text("Welcome Back!", style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textColor)),
+                                  Text(
+                                    "Welcome Back!",
+                                    style: TextStyle(
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      color: textColor,
+                                    ),
+                                  ),
                                   const SizedBox(height: 10),
-                                  Text("Enter your details to access your account", style: TextStyle(fontSize: 14, color: subTextColor), textAlign: TextAlign.center),
+                                  Text(
+                                    "Enter your details to access your account",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: subTextColor,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
                                 ],
                               ),
                             ),
                             const SizedBox(height: 40),
-                  
+
                             // Username field
                             _buildInputField(
                               controller: username,
@@ -1308,10 +1368,10 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
                               fillColor: inputFill,
                               textColor: textColor,
                               hintColor: subTextColor,
-                              themePrimary: AppColors.IconColor,
+                              themePrimary: AppColors.iconColor,
                             ),
                             const SizedBox(height: 20),
-                  
+
                             // Password field
                             _buildInputField(
                               controller: password,
@@ -1322,57 +1382,130 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
                               fillColor: inputFill,
                               textColor: textColor,
                               hintColor: subTextColor,
-                              themePrimary: AppColors.IconColor,
+                              themePrimary: AppColors.iconColor,
                             ),
-                  
+
                             // Error message if login failed
                             if (_invalidError != null) ...[
                               const SizedBox(height: 15),
-                              Center(child: Text(_invalidError!, style: const TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600))),
+                              Center(
+                                child: Text(
+                                  _invalidError!,
+                                  style: const TextStyle(
+                                    color: Colors.redAccent,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ],
                             const SizedBox(height: 10),
-                  
+
                             // Forgot password
                             Align(
                               alignment: Alignment.centerRight,
-                              child: TextButton(onPressed: () {}, child: Text("Forgot password?", style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.w600))),
+                              child: TextButton(
+                                onPressed: () {},
+                                child: Text(
+                                  "Forgot password?",
+                                  style: TextStyle(
+                                    color: theme.primaryColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 30),
-                  
+
                             // Sign in button (uses shared AppButton)
-                            AppButton(text: "Sign in", isLoading: _isLoading, onPressed: _login),
+                            AppButton(
+                              text: "Sign in",
+                              isLoading: _isLoading,
+                              onPressed: _login,
+                            ),
                             const SizedBox(height: 40),
-                  
+
                             // Sign in with social (visual only)
                             Row(
                               children: [
-                                Expanded(child: Divider(color: subTextColor.withOpacity(0.3))),
-                                Padding(padding: const EdgeInsets.symmetric(horizontal: 10), child: Text("Sign in with", style: TextStyle(color: subTextColor, fontSize: 12))),
-                                Expanded(child: Divider(color: subTextColor.withOpacity(0.3))),
+                                Expanded(
+                                  child: Divider(
+                                    color: subTextColor.withOpacity(0.3),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                  ),
+                                  child: Text(
+                                    "Sign in with",
+                                    style: TextStyle(
+                                      color: subTextColor,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    color: subTextColor.withOpacity(0.3),
+                                  ),
+                                ),
                               ],
                             ),
                             const SizedBox(height: 20),
-                            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                              _buildSocialBtn(Icons.facebook, Colors.blue[800]!),
-                              const SizedBox(width: 20),
-                              _buildSocialBtn(Icons.g_mobiledata, Colors.red[600]!),
-                              const SizedBox(width: 20),
-                              _buildSocialBtn(Icons.apple, Colors.black),
-                            ]),
-                  
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildSocialBtn(
+                                  Icons.facebook,
+                                  Colors.blue[800]!,
+                                ),
+                                const SizedBox(width: 20),
+                                _buildSocialBtn(
+                                  Icons.g_mobiledata,
+                                  Colors.red[600]!,
+                                ),
+                                const SizedBox(width: 20),
+                                _buildSocialBtn(Icons.apple, Colors.black),
+                              ],
+                            ),
+
                             const SizedBox(height: 30),
-                  
+
                             // Register links
                             Center(
-                              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                                _buildRegisterLink("Register Distributor", () {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const distributor_registration()));
-                                }, theme.primaryColor),
-                                const Padding(padding: EdgeInsets.symmetric(horizontal: 1), child: Text("|")),
-                                _buildRegisterLink("Register Customer", () {
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const customer_registration()));
-                                }, theme.primaryColor),
-                              ]),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _buildRegisterLink(
+                                    "Register Distributor",
+                                    () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const distributor_registration(),
+                                        ),
+                                      );
+                                    },
+                                    theme.primaryColor,
+                                  ),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1,
+                                    ),
+                                    child: Text("|"),
+                                  ),
+                                  _buildRegisterLink("Register Customer", () {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const customer_registration(),
+                                      ),
+                                    );
+                                  }, theme.primaryColor),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -1394,7 +1527,14 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(shape: BoxShape.circle, gradient: LinearGradient(colors: colors, begin: Alignment.topLeft, end: Alignment.bottomRight)),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(
+          colors: colors,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
     );
   }
 
@@ -1410,15 +1550,27 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
     required Color themePrimary,
   }) {
     return Column(
-
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(color: hintColor, fontWeight: FontWeight.w500, fontSize: 13)),
+        Text(
+          label,
+          style: TextStyle(
+            color: hintColor,
+            fontWeight: FontWeight.w500,
+            fontSize: 13,
+          ),
+        ),
         const SizedBox(height: 8),
         ClipRRect(
           borderRadius: BorderRadius.circular(12),
           child: Container(
-            decoration: BoxDecoration(color: fillColor, borderRadius: BorderRadius.circular(12), border: isError ? Border.all(color: Colors.red, width: 1.5) : null),
+            decoration: BoxDecoration(
+              color: fillColor,
+              borderRadius: BorderRadius.circular(12),
+              border: isError
+                  ? Border.all(color: Colors.red, width: 1.5)
+                  : null,
+            ),
             child: TextField(
               controller: controller,
               obscureText: isObscure ? _obscureText : false,
@@ -1434,13 +1586,22 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
               },
               decoration: InputDecoration(
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 prefixIcon: Icon(icon, color: themePrimary),
                 suffixIcon: isObscure
                     ? IconButton(
-                  icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility, color: hintColor),
-                  onPressed: () => setState(() => _obscureText = !_obscureText),
-                )
+                        icon: Icon(
+                          _obscureText
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                          color: hintColor,
+                        ),
+                        onPressed: () =>
+                            setState(() => _obscureText = !_obscureText),
+                      )
                     : null,
               ),
             ),
@@ -1456,16 +1617,30 @@ class _login_pageState extends State<login_page> with SingleTickerProviderStateM
       child: Container(
         width: 50,
         height: 50,
-        decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), shape: BoxShape.circle),
+        decoration: BoxDecoration(
+          color: Colors.grey.withOpacity(0.1),
+          shape: BoxShape.circle,
+        ),
         child: Icon(icon, color: color, size: 28),
       ),
     );
   }
 
-  Widget _buildRegisterLink(String text, VoidCallback onTap, Color primaryColor) {
+  Widget _buildRegisterLink(
+    String text,
+    VoidCallback onTap,
+    Color primaryColor,
+  ) {
     return TextButton(
       onPressed: onTap,
-      child: Text(text, style: TextStyle(color: primaryColor, fontWeight: FontWeight.w600, fontSize: 14)),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: primaryColor,
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+        ),
+      ),
     );
   }
 }

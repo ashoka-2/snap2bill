@@ -545,7 +545,7 @@ class _distributor_registrationState extends State<distributor_registration> {
       return;
     }
 
-    // Require Document (File 2) - Optional check, but usually recommended for distributors
+    // Require Document (File 2)
     if (_selectedFile1 == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please upload a proof document')));
       return;
@@ -620,9 +620,34 @@ class _distributor_registrationState extends State<distributor_registration> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
+      // 1. Extend Body so AppBar floats over blobs
+      extendBodyBehindAppBar: true,
+
+      // 2. AppBar with Back Button
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () {
+              // Move back to login page
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => login_page()));
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18),
+            ),
+          ),
+        ),
+      ),
+
       body: Stack(
         children: [
-          // 1. ABSTRACT BLOBS
+          // 3. ABSTRACT BLOBS
           Positioned(
             top: -80,
             right: -50,
@@ -634,29 +659,7 @@ class _distributor_registrationState extends State<distributor_registration> {
             child: _buildBlob(200, AppColors.blobGradient2),
           ),
 
-          // 2. TOP BAR
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // 3. MAIN FORM
+          // 4. MAIN FORM
           Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
@@ -685,7 +688,7 @@ class _distributor_registrationState extends State<distributor_registration> {
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.all(24),
-                      child: Form( // Wrapped in FORM
+                      child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -941,20 +944,18 @@ class _distributor_registrationState extends State<distributor_registration> {
       }) {
     return TextFormField(
       controller: ctrl,
-      // Logic for keyboard type: if specific passed use it, else if isNumber use number, else text
       keyboardType: keyboardType ?? (isNumber ? TextInputType.number : TextInputType.text),
       maxLines: maxLines,
       maxLength: maxLength,
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        counterText: "", // Hides the 0/10 counter
-        prefixIcon: Icon(icon, color: AppColors.IconColor, size: 22),
+        counterText: "",
+        prefixIcon: Icon(icon, color: AppColors.iconColor, size: 22),
       ),
     );
   }
 
-  // UPDATED: Password Field with Validator
   Widget _buildPasswordField(
       TextEditingController ctrl,
       String label,
@@ -968,7 +969,7 @@ class _distributor_registrationState extends State<distributor_registration> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.lock_outline, color: AppColors.IconColor, size: 22),
+        prefixIcon: Icon(Icons.lock_outline, color: AppColors.iconColor, size: 22),
         suffixIcon: IconButton(
           icon: Icon(
             (isConfirm ? _obscureConfirm : _obscurePass) ? Icons.visibility_off : Icons.visibility,

@@ -589,11 +589,12 @@
 //
 // File: lib/screens/customer_registration.dart
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/Login_page.dart';
 
 // Import shared resources
@@ -663,16 +664,15 @@ class _customer_registrationState extends State<customer_registration> {
         });
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error picking file: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
     }
   }
 
   Future<void> _register() async {
     // 1. TRIGGER FORM VALIDATION
     if (!_formKey.currentState!.validate()) {
-      // If validation fails, fields will turn red and show errors automatically.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fix the errors in the form')),
       );
@@ -681,16 +681,16 @@ class _customer_registrationState extends State<customer_registration> {
 
     // 2. EXTRA CHECKS
     if (password.text != confirmpassword.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
       return;
     }
 
     if (_selectedFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a file')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a file')));
       return;
     }
 
@@ -718,16 +718,17 @@ class _customer_registrationState extends State<customer_registration> {
 
       // Add File
       if (kIsWeb && _webFileBytes != null) {
-        request.files.add(http.MultipartFile.fromBytes(
-          'file',
-          _webFileBytes!,
-          filename: _selectedFile!.name,
-        ));
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'file',
+            _webFileBytes!,
+            filename: _selectedFile!.name,
+          ),
+        );
       } else if (_selectedFile?.path != null) {
-        request.files.add(await http.MultipartFile.fromPath(
-          'file',
-          _selectedFile!.path!,
-        ));
+        request.files.add(
+          await http.MultipartFile.fromPath('file', _selectedFile!.path!),
+        );
       }
 
       var streamedResponse = await request.send();
@@ -741,22 +742,27 @@ class _customer_registrationState extends State<customer_registration> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Registration successful!')),
           );
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>login_page()));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Registration Failed')),
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => login_page()),
           );
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Registration Failed')));
         }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Server Error: ${streamedResponse.statusCode}')),
+          SnackBar(
+            content: Text('Server Error: ${streamedResponse.statusCode}'),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -768,13 +774,41 @@ class _customer_registrationState extends State<customer_registration> {
     final theme = Theme.of(context);
 
     return Scaffold(
-
-
-
       backgroundColor: theme.scaffoldBackgroundColor,
+      // 1. EXTEND BODY BEHIND APP BAR
+      extendBodyBehindAppBar: true,
+
+      // 2. APP BAR WITH BACK BUTTON
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 15, top: 8, bottom: 8),
+          child: InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => login_page()),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.arrow_back_ios_new,
+                color: Colors.white,
+                size: 18,
+              ),
+            ),
+          ),
+        ),
+      ),
+
       body: Stack(
         children: [
-          // 1. ABSTRACT BACKGROUND BLOBS
+          // 3. BACKGROUND BLOBS
           Positioned(
             top: -80,
             right: -50,
@@ -786,29 +820,7 @@ class _customer_registrationState extends State<customer_registration> {
             child: _buildBlob(200, AppColors.blobGradient2),
           ),
 
-          // 2. TOP BAR
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Row(
-                children: [
-                  InkWell(
-                    onTap: () => Navigator.pop(context),
-                    child: Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // 3. MAIN CONTENT
+          // 4. MAIN FORM CONTENT
           Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height * 0.15),
@@ -837,7 +849,7 @@ class _customer_registrationState extends State<customer_registration> {
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       padding: const EdgeInsets.all(24),
-                      child: Form( // WRAPPED IN FORM
+                      child: Form(
                         key: _formKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -862,84 +874,121 @@ class _customer_registrationState extends State<customer_registration> {
                                   decoration: BoxDecoration(
                                     color: theme.inputDecorationTheme.fillColor,
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: theme.primaryColor.withOpacity(0.5)),
+                                    border: Border.all(
+                                      color: theme.primaryColor.withOpacity(
+                                        0.5,
+                                      ),
+                                    ),
                                   ),
                                   child: _selectedFile == null
-                                      ? Icon(Icons.upload_file, size: 40, color: theme.disabledColor)
-                                      : Icon(Icons.check_circle, size: 40, color: theme.primaryColor),
+                                      ? Icon(
+                                          Icons.upload_file,
+                                          size: 40,
+                                          color: theme.disabledColor,
+                                        )
+                                      : Icon(
+                                          Icons.check_circle,
+                                          size: 40,
+                                          color: theme.primaryColor,
+                                        ),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 10),
                             Center(
                               child: Text(
-                                _selectedFile != null ? _selectedFile!.name : "Tap to upload file",
+                                _selectedFile != null
+                                    ? _selectedFile!.name
+                                    : "Tap to upload file",
                                 style: theme.textTheme.bodySmall,
                                 textAlign: TextAlign.center,
                               ),
                             ),
                             const SizedBox(height: 30),
 
-                            // --- FORM FIELDS WITH VALIDATION ---
-
-                            // Name: At least 3 chars
+                            // --- FIELDS ---
                             _buildTextField(
-                                name, "Name", Icons.abc, theme,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return "Name is required";
-                                  if (value.trim().length < 3) return "Name must be at least 3 characters";
-                                  return null;
-                                }
+                              name,
+                              "Name",
+                              Icons.abc,
+                              theme,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty)
+                                  return "Name is required";
+                                if (value.trim().length < 3)
+                                  return "Min 3 characters";
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
 
-                            // Email
                             _buildTextField(
-                                email, "Email", Icons.email_outlined, theme,
-                                keyboardType: TextInputType.emailAddress,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return "Email is required";
-                                  if (!value.contains('@') || !value.contains('.')) return "Enter a valid email";
-                                  return null;
-                                }
+                              email,
+                              "Email",
+                              Icons.email_outlined,
+                              theme,
+                              keyboardType: TextInputType.emailAddress,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty)
+                                  return "Email is required";
+                                if (!value.contains('@') ||
+                                    !value.contains('.'))
+                                  return "Enter valid email";
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
 
-                            // Phone: EXACTLY 10 digits
                             _buildTextField(
-                                phone, "Phone Number", Icons.phone_android, theme,
-                                isNumber: true,
-                                maxLength: 10,
-                                validator: (value) {
-                                  if (value == null || value.trim().isEmpty) return "Phone number is required";
-                                  if (value.length != 10) return "Phone number must be exactly 10 digits";
-                                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) return "Only numbers allowed";
-                                  return null;
-                                }
+                              phone,
+                              "Phone Number",
+                              Icons.phone_android,
+                              theme,
+                              isNumber: true,
+                              maxLength: 10,
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty)
+                                  return "Phone is required";
+                                if (value.length != 10)
+                                  return "Must be 10 digits";
+                                if (!RegExp(r'^[0-9]+$').hasMatch(value))
+                                  return "Numbers only";
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
 
-                            // Password: Upper, Lower, Number
                             _buildPasswordField(
-                                password, "Password", theme, false,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) return "Password is required";
-                                  if (!value.contains(RegExp(r'[A-Z]'))) return "Must contain uppercase letter";
-                                  if (!value.contains(RegExp(r'[a-z]'))) return "Must contain lowercase letter";
-                                  if (!value.contains(RegExp(r'[0-9]'))) return "Must contain a number";
-                                  return null;
-                                }
+                              password,
+                              "Password",
+                              theme,
+                              false,
+                              validator: (value) {
+                                if (value == null || value.isEmpty)
+                                  return "Required";
+                                if (!value.contains(RegExp(r'[A-Z]')))
+                                  return "Need Uppercase";
+                                if (!value.contains(RegExp(r'[a-z]')))
+                                  return "Need Lowercase";
+                                if (!value.contains(RegExp(r'[0-9]')))
+                                  return "Need Number";
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
 
-                            // Confirm Password
                             _buildPasswordField(
-                                confirmpassword, "Confirm Password", theme, true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) return "Confirm your password";
-                                  if (value != password.text) return "Passwords do not match";
-                                  return null;
-                                }
+                              confirmpassword,
+                              "Confirm Password",
+                              theme,
+                              true,
+                              validator: (value) {
+                                if (value == null || value.isEmpty)
+                                  return "Confirm password";
+                                if (value != password.text)
+                                  return "Passwords mismatch";
+                                return null;
+                              },
                             ),
 
                             const SizedBox(height: 25),
@@ -947,41 +996,67 @@ class _customer_registrationState extends State<customer_registration> {
                             const SizedBox(height: 15),
 
                             _buildTextField(
-                                address, "Address", Icons.location_city, theme,
-                                validator: (val) => (val == null || val.trim().isEmpty) ? "Address is required" : null
-                            ),
-                            const SizedBox(height: 15),
-
-                            // Pincode: Number only, usually 6 digits for India
-                            _buildTextField(
-                                pincode, "Pincode", Icons.pin_drop, theme,
-                                isNumber: true,
-                                maxLength: 6,
-                                validator: (val) {
-                                  if (val == null || val.trim().isEmpty) return "Pincode is required";
-                                  if (!RegExp(r'^[0-9]+$').hasMatch(val)) return "Only numbers allowed";
-                                  if (val.length != 6) return "Pincode must be 6 digits";
-                                  return null;
-                                }
+                              address,
+                              "Address",
+                              Icons.location_city,
+                              theme,
+                              validator: (val) =>
+                                  (val == null || val.trim().isEmpty)
+                                  ? "Required"
+                                  : null,
                             ),
                             const SizedBox(height: 15),
 
                             _buildTextField(
-                                place, "Place", Icons.place, theme,
-                                validator: (val) => (val == null || val.trim().isEmpty) ? "Place is required" : null
+                              pincode,
+                              "Pincode",
+                              Icons.pin_drop,
+                              theme,
+                              isNumber: true,
+                              maxLength: 6,
+                              validator: (val) {
+                                if (val == null || val.trim().isEmpty)
+                                  return "Required";
+                                if (val.length != 6) return "Must be 6 digits";
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 15),
 
                             _buildTextField(
-                                post, "Post", Icons.local_post_office, theme,
-                                validator: (val) => (val == null || val.trim().isEmpty) ? "Post office is required" : null
+                              place,
+                              "Place",
+                              Icons.place,
+                              theme,
+                              validator: (val) =>
+                                  (val == null || val.trim().isEmpty)
+                                  ? "Required"
+                                  : null,
                             ),
                             const SizedBox(height: 15),
 
                             _buildTextField(
-                                bio, "Bio", Icons.description, theme,
-                                maxLines: 3,
-                                validator: (val) => (val == null || val.trim().isEmpty) ? "Bio is required" : null
+                              post,
+                              "Post",
+                              Icons.local_post_office,
+                              theme,
+                              validator: (val) =>
+                                  (val == null || val.trim().isEmpty)
+                                  ? "Required"
+                                  : null,
+                            ),
+                            const SizedBox(height: 15),
+
+                            _buildTextField(
+                              bio,
+                              "Bio",
+                              Icons.description,
+                              theme,
+                              maxLines: 3,
+                              validator: (val) =>
+                                  (val == null || val.trim().isEmpty)
+                                  ? "Required"
+                                  : null,
                             ),
 
                             const SizedBox(height: 40),
@@ -1021,60 +1096,64 @@ class _customer_registrationState extends State<customer_registration> {
     );
   }
 
-  // UPDATED: Now returns TextFormField for validation
   Widget _buildTextField(
-      TextEditingController ctrl,
-      String label,
-      IconData icon,
-      ThemeData theme,
-      {
-        bool isNumber = false,
-        int maxLines = 1,
-        int? maxLength,
-        TextInputType? keyboardType,
-        String? Function(String?)? validator
-      }) {
+    TextEditingController ctrl,
+    String label,
+    IconData icon,
+    ThemeData theme, {
+    bool isNumber = false,
+    int maxLines = 1,
+    int? maxLength,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       controller: ctrl,
-      // Priority: Specific keyboardType passed -> isNumber check -> Default Text
-      keyboardType: keyboardType ?? (isNumber ? TextInputType.number : TextInputType.text),
+      keyboardType:
+          keyboardType ??
+          (isNumber ? TextInputType.number : TextInputType.text),
       maxLines: maxLines,
       maxLength: maxLength,
       validator: validator,
-      // Auto-validate only when user interacts? or on submit. Kept default (on submit)
       decoration: InputDecoration(
         labelText: label,
-        counterText: "", // Hides the tiny 0/10 character counter
-        prefixIcon: Icon(icon, color: AppColors.IconColor, size: 22),
-        // Style is inherited from Theme.of(context).inputDecorationTheme
+        counterText: "",
+        prefixIcon: Icon(icon, color: AppColors.iconColor, size: 22),
       ),
     );
   }
 
-  // UPDATED: Now returns TextFormField for validation
   Widget _buildPasswordField(
-      TextEditingController ctrl,
-      String label,
-      ThemeData theme,
-      bool isConfirm,
-      {String? Function(String?)? validator}
-      ) {
+    TextEditingController ctrl,
+    String label,
+    ThemeData theme,
+    bool isConfirm, {
+    String? Function(String?)? validator,
+  }) {
     return TextFormField(
       controller: ctrl,
       obscureText: isConfirm ? _obscureConfirm : _obscurePass,
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(Icons.lock_outline, color: AppColors.IconColor, size: 22),
+        prefixIcon: Icon(
+          Icons.lock_outline,
+          color: AppColors.iconColor,
+          size: 22,
+        ),
         suffixIcon: IconButton(
           icon: Icon(
-            (isConfirm ? _obscureConfirm : _obscurePass) ? Icons.visibility_off : Icons.visibility,
+            (isConfirm ? _obscureConfirm : _obscurePass)
+                ? Icons.visibility_off
+                : Icons.visibility,
             color: theme.hintColor,
           ),
           onPressed: () {
             setState(() {
-              if (isConfirm) _obscureConfirm = !_obscureConfirm;
-              else _obscurePass = !_obscurePass;
+              if (isConfirm)
+                _obscureConfirm = !_obscureConfirm;
+              else
+                _obscurePass = !_obscurePass;
             });
           },
         ),
