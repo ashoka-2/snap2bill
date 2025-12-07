@@ -66,12 +66,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snap2bill/SplashScreen.dart';
-
 import 'package:snap2bill/screens/login_page.dart';
-import 'theme/theme.dart';
-import 'theme/colors.dart';
 
+import 'theme/colors.dart';
+import 'theme/theme.dart';
 // 1. IMPORT YOUR CUSTOM WIDGET HERE
 import 'widgets/app_button.dart';
 
@@ -117,7 +115,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _mode,
-      home: const SplashScreen(),
+      home: const MyApp_sub(),
     );
   }
 }
@@ -214,11 +212,17 @@ class _MyApp_subState extends State<MyApp_sub> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
-                            width: double.infinity,
-                            height: 100,
-                            child: Center(child:
-                            Text("Enter Your IP Address",
-                            style: GoogleFonts.montserrat(color: AppColors.primaryLight,fontSize: 25,),))
+                          width: double.infinity,
+                          height: 100,
+                          child: Center(
+                            child: Text(
+                              "Enter Your IP Address",
+                              style: GoogleFonts.montserrat(
+                                color: AppColors.primaryLight,
+                                fontSize: 25,
+                              ),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 20),
                         TextFormField(
@@ -232,7 +236,6 @@ class _MyApp_subState extends State<MyApp_sub> {
                             labelText: 'IP Address',
                             prefixIcon: Icon(Icons.wifi),
                             prefixIconColor: AppColors.iconColor,
-
                           ),
                         ),
 
