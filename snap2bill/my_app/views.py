@@ -709,26 +709,6 @@ def customer_change_password(request):
 
 
 
-def distributor_view_product(request):
-    # uid = request.POST['uid']
-    # if not uid:
-    #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
-    data = product.objects.all()
-    ar = []
-    for i in data:
-        ar.append({
-            'id': i.id,
-            'product_name': i.product_name,
-            # 'price': i.price,
-            'image': i.image,
-            'description': i.description,
-            'quantity': i.quantity,
-            'CATEGORY': i.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.CATEGORY, 'category_name', ''),
-        })
-    return JsonResponse({'status': 'ok', 'data': ar})
-
-
 
 
 def view_product(request):
@@ -794,6 +774,27 @@ def delete_product(request, id):
 
 
 
+def distributor_view_product(request):
+    # uid = request.POST['uid']
+    # if not uid:
+    #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
+    data = product.objects.all()
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'product_name': i.product_name,
+            # 'price': i.price,
+            'image': i.image,
+            'description': i.description,
+            'quantity': i.quantity,
+            'CATEGORY': i.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.CATEGORY, 'category_name', ''),
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
 
 
 
@@ -841,24 +842,19 @@ def edit_stock(request):
     price = request.POST['price']
 
     stock.objects.filter(id = pid).update(price = price, quantity = quantity)
-    return JsonResponse({'ststus':'ok'})
-
-
+    return JsonResponse({'status':'ok'})
 
 
 
 def delete_distributor_product(request,id):
     stock.objects.filter(id=id).delete()
-    return JsonResponse({'ststus':'ok'})
+    return JsonResponse({'status':'ok'})
 
 
 
 
 
 def customer_view_products(request):
-
-
-
     data = stock.objects.all()
     ar = []
     for i in data:
@@ -978,46 +974,61 @@ def customer_view_distributor(request):
 
 
 
-# def addproduct(request):
-#     cid = request.POST['cid']
-#     uid = request.POST['uid']
-#     obj1=order()
-#     obj1.orders = order
-#     obj1.payment_status = 'pending'
-#     obj1.payment_date = datetime.datetime.now().date()
-#     obj1.date = datetime.datetime.now().date()
-#     obj1.USER_id = cid
-#     obj1.DISTRIBUTOR_id = uid
-#     obj1.save()
-#     quantity=request.POST['quantity']
-#     pid = request.POST['pid']
-#     oid = request.POST['oid']
-#     obj=order_sub()
-#     obj.quantity=quantity
-#     obj.PRODUCT_id=pid
-#     obj.ORDER_id=oid
-#     obj.save()
-#     return JsonResponse({'status':'ok'})
-#
+def addorder(request):
+    cid = request.POST['cid']
+    uid = request.POST['uid']
+
+    id=request.POST['id']
+
+    obj1=order()
+    obj1.orders = order
+    obj1.payment_status = 'pending'
+    obj1.payment_date = datetime.datetime.now().date()
+    obj1.date = datetime.datetime.now().date()
+    obj1.USER_id = cid
+    obj1.DISTRIBUTOR_id = uid
+    obj1.save()
+
+    quantity = request.POST['quantity']
+    obj=order_sub()
+    obj.quantity=quantity
+    obj.ORDER_id=obj1.id
+    obj.STOCK_id=id
+    obj.save()
+    return JsonResponse({'status':'ok'})
+
 
 
 
 def view_orders(request):
-    cid = request.POST['cid']
-    data = order.objects.filter(USER_id=cid)
+    id = request.POST['orderid']
+    data = order_sub.objects.filter()
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
-            'payment_status': i.payment_status,
-            'payment_date': i.payment_date,
-            'date': i.date,
-            'amount': i.amount,
-            'username': i.USER.name ,
-            'distributor': i.DISTRIBUTOR.name
+            'payment_status': i.ORDER.payment_status,
+            'payment_date': i.ORDER.payment_date,
+            'date': i.ORDER.date,
+            'amount': i.ORDER.amount,
+            'username': i.ORDER.USER.name ,
+            'distributor': i.ORDER.DISTRIBUTOR.name,
+            'orderid':i.ORDER.id,
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
+
+
+def edit_order(request):
+    id=request.POST['id']
+    quantity=request.POST['quantity']
+    order_sub.objects.filter(id=id).update(quantity=quantity)
+    return JsonResponse({"status":"ok"})
+
+def delete_order(request):
+    id=request.POST['orderid']
+    order_sub.objects.filter(id=id).delete()
+    return JsonResponse({"status": "ok"})
 
 
 def view_distributor_orders(request):
@@ -1045,7 +1056,7 @@ def make_payment(requst):
     obj = payment()
     obj.amount = amount
     obj.status = "paid"
-    obj.amount_date =datetime.datetime.now().date(),datetime.datetime.now().strftime("%H:%M")
+    obj.amount_date = datetime.datetime.now()
     obj.USER_id = cid
     obj.save()
     return JsonResponse({'status':'ok',})

@@ -108,15 +108,15 @@ urlpatterns = [
     path('edit_product_post/<id>', views.edit_product_post),
     path('delete_product/<id>',views.delete_product),
 
-
     path('add_stock',views.add_stock),
     path('edit_stock', views.edit_stock),
     path('delete_distributor_product/<id>', views.delete_distributor_product),
 
 
+    path('delete_order',views.delete_order),
+    path('edit_order', views.edit_order),
 
-
-    # path('addproduct',views.addproduct),
+    path('addorder',views.addorder),
     path('view_orders',views.view_orders),
     path('view_distributor_orders',views.view_distributor_orders),
     path('make_payment',views.make_payment),

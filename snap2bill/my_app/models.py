@@ -145,6 +145,7 @@ class order(models.Model):
 
 class order_sub(models.Model):
     ORDER= models.ForeignKey(order,models.CASCADE)
+
     quantity= models.CharField(max_length=100)
     STOCK = models.ForeignKey(stock,models.CASCADE)
 

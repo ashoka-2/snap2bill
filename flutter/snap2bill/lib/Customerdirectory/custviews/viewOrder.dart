@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Edits/editOrder.dart';
 import '../payment/RazorpayScreen.dart';
-
-
 
 class viewOrder extends StatelessWidget {
   const viewOrder({Key? key}) : super(key: key);
@@ -25,19 +24,18 @@ class viewOrderSub extends StatefulWidget {
 }
 
 class _viewOrderSubState extends State<viewOrderSub> {
-
   Future<List<Joke>> _getJokes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String b = prefs.getString("lid").toString();
-    String foodimage="";
-    var data =
-    await http.post(Uri.parse(prefs.getString("ip").toString()+"/view_orders"),
-        body: {"cid":prefs.getString("cid").toString()}
-        // body: {"cid":prefs.getString("cid").toString(),"uid":prefs.getString("uid").toString()}
+    String foodimage = "";
+    var data = await http.post(
+      Uri.parse(prefs.getString("ip").toString() + "/view_orders"),
+      body: {"orderid": prefs.getString("orderid").toString()},
+      // body: {"cid":prefs.getString("cid").toString(),"uid":prefs.getString("uid").toString()}
     );
 
     var jsonData = json.decode(data.body);
-//    print(jsonData);
+    //    print(jsonData);
     List<Joke> jokes = [];
     for (var joke in jsonData["data"]) {
       print(joke);
@@ -49,6 +47,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
         joke["amount"].toString(),
         joke["username"].toString(),
         joke["distributor"].toString(),
+        joke["orderid"].toString(),
       );
       jokes.add(newJoke);
     }
@@ -63,7 +62,11 @@ class _viewOrderSubState extends State<viewOrderSub> {
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black87,
+            size: 20,
+          ),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
@@ -73,18 +76,13 @@ class _viewOrderSubState extends State<viewOrderSub> {
           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
         ),
       ),
-      body:Container(
-        child:
-        FutureBuilder(
+      body: Container(
+        child: FutureBuilder(
           future: _getJokes(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-//              print("snapshot"+snapshot.toString());
+            //              print("snapshot"+snapshot.toString());
             if (snapshot.data == null) {
-              return Container(
-                child: Center(
-                  child: Text("Loading..."),
-                ),
-              );
+              return Container(child: Center(child: Text("Loading...")));
             } else {
               return ListView.builder(
                 itemCount: snapshot.data.length,
@@ -103,24 +101,81 @@ class _viewOrderSubState extends State<viewOrderSub> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-
                             SizedBox(height: 10),
                             _buildRow("ID", i.id.toString()),
 
-                            _buildRow("Distributor Name", i.distributor.toString()),
-                            _buildRow("Payment Status:", i.payment_status.toString()),
-                            _buildRow("Payment Date:", i.payment_date.toString()),
+                            _buildRow(
+                              "Distributor Name",
+                              i.distributor.toString(),
+                            ),
+                            _buildRow(
+                              "Payment Status:",
+                              i.payment_status.toString(),
+                            ),
+                            _buildRow(
+                              "Payment Date:",
+                              i.payment_date.toString(),
+                            ),
                             _buildRow("Date:", i.date.toString()),
                             _buildRow("Amount:", i.amount.toString()),
-                            ElevatedButton(onPressed: ()async{
-                              SharedPreferences sh=await SharedPreferences.getInstance();
-                              sh.setString("amount",i.amount.toString());
-                              sh.setString("id",i.id.toString());
 
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    SharedPreferences sh =
+                                        await SharedPreferences.getInstance();
+                                    sh.setString("amount", i.amount.toString());
+                                    sh.setString("id", i.id.toString());
 
-                              Navigator.push(context,MaterialPageRoute(builder: (context)=>RazorpayScreen()));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RazorpayScreen(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text("Make payment"),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    SharedPreferences sh =
+                                        await SharedPreferences.getInstance();
+                                    sh.setString("id", i.id.toString());
+                                    var data = await http.post(
+                                      Uri.parse(
+                                        sh.getString("ip").toString() + "/edit_order",),
+                                      body: {'id': sh.getString("id")},
+                                    );
 
-                            }, child: Text("Make payment"))
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => editOrder(),
+                                      ),
+                                    );
+                                  },
+                                  child: Text("Edit Order"),
+                                ),
+
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    SharedPreferences sh =
+                                        await SharedPreferences.getInstance();
+
+                                    var data = await http.post(
+                                      Uri.parse(
+                                        sh.getString("ip").toString() + "/delete_order",),
+                                      body: {
+                                        "id": i.orderid.toString(),
+                                      },
+                                    );
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>viewOrderSub()));
+                                  },
+                                  child: Text("Delete Order"),
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -128,24 +183,12 @@ class _viewOrderSubState extends State<viewOrderSub> {
                   );
                 },
               );
-
-
             }
           },
-
-
         ),
-
-
-
-
-
       ),
-
     );
   }
-
-
 
   Widget _buildRow(String label, String value) {
     return Padding(
@@ -154,33 +197,17 @@ class _viewOrderSubState extends State<viewOrderSub> {
         children: [
           SizedBox(
             width: 100,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            child: Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           SizedBox(width: 5),
           Flexible(
-            child: Text(
-              value,
-              style: TextStyle(
-                color: Colors.grey.shade800,
-              ),
-            ),
+            child: Text(value, style: TextStyle(color: Colors.grey.shade800)),
           ),
         ],
       ),
     );
   }
 }
-
-
-
-
-
-
 
 class Joke {
   final String id;
@@ -190,14 +217,15 @@ class Joke {
   final String amount;
   final String username;
   final String distributor;
+  final String orderid;
 
   Joke(
-      this.id,
-      this.payment_status,
-      this.payment_date,
-      this.date,
-      this.amount,
-      this.username,
-      this.distributor,
-      );
+    this.id,
+    this.payment_status,
+    this.payment_date,
+    this.date,
+    this.amount,
+    this.username,
+    this.distributor, this.orderid,
+  );
 }
