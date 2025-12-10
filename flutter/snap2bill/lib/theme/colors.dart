@@ -12,7 +12,9 @@ class AppColors {
   static const Color inputFillLight = Color(0xFFF5F6FA);
   static const Color buttonColor = Color(0xA1196FE0);
   static const Color greyButton = Color(0xA1676767);
-  static const Color iconColor = Color(0xFF28BDEA);
+  static const Color iconColor = Color(0xFF144AFD);
+  static const Color borderColor = Color(0xc7c7c7);
+  static const Color pillColor = Color(0xff0022ff);
 
   // Dark Mode
   static const Color primaryDark = Color(0xFF5C7AE6);
@@ -23,11 +25,11 @@ class AppColors {
   static const Color inputFillDark = Color(0xFF2C2C2C);
 
   static const List<Color> blobGradient1 = [
-    Color(0xFF4A69FF),
+    Color(0xFF1138F5),
     Color(0xFF2E3F8F),
   ];
   static const List<Color> blobGradient2 = [
     Color(0xFF6E85FF),
-    Color(0xFF4A69FF),
+    Color(0xFF0D34F1),
   ];
 }

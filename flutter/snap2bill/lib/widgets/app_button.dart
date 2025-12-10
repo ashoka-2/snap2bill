@@ -19,7 +19,7 @@ class AppButton extends StatelessWidget {
     super.key,
     required this.text,
     required this.onPressed,
-    this.icon, // No longer required
+    this.icon,
     this.color = AppColors.buttonColor,
     this.textColor = Colors.white,
     this.isTrailingIcon = false,

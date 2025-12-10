@@ -1090,14 +1090,12 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart' as lottie;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
 // Use package imports to avoid duplicate canonical names
-import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
-import 'package:snap2bill/Distributordirectory/home_page.dart'; // using home_page class for distributor
-import 'package:snap2bill/screens/customer_registration.dart';
-import 'package:snap2bill/screens/distributor_registration.dart';
+import 'package:snap2bill/screens/registration_page.dart';
 
 // Shared resources (colors and button widget)
 import 'package:snap2bill/theme/colors.dart';
@@ -1337,14 +1335,15 @@ class _login_pageState extends State<login_page>
                             Center(
                               child: Column(
                                 children: [
-                                  Text(
-                                    "Welcome Back!",
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: textColor,
-                                    ),
-                                  ),
+                                  // Text(
+                                  //   "Welcome Back!",
+                                  //   style: TextStyle(
+                                  //     fontSize: 28,
+                                  //     fontWeight: FontWeight.bold,
+                                  //     color: textColor,
+                                  //   ),
+                                  // ),
+                                  lottie.Lottie.asset('assets/lotties/Welcome.json'),
                                   const SizedBox(height: 10),
                                   Text(
                                     "Enter your details to access your account",
@@ -1452,24 +1451,24 @@ class _login_pageState extends State<login_page>
                               ],
                             ),
                             const SizedBox(height: 20),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _buildSocialBtn(
-                                  Icons.facebook,
-                                  Colors.blue[800]!,
-                                ),
-                                const SizedBox(width: 20),
-                                _buildSocialBtn(
-                                  Icons.g_mobiledata,
-                                  Colors.red[600]!,
-                                ),
-                                const SizedBox(width: 20),
-                                _buildSocialBtn(Icons.apple, Colors.black),
-                              ],
-                            ),
+                            // Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     _buildSocialBtn(
+                            //       Icons.facebook,
+                            //       Colors.blue[800]!,
+                            //     ),
+                            //     const SizedBox(width: 20),
+                            //     _buildSocialBtn(
+                            //       Icons.g_mobiledata,
+                            //       Colors.red[600]!,
+                            //     ),
+                            //     const SizedBox(width: 20),
+                            //     _buildSocialBtn(Icons.apple, Colors.black),
+                            //   ],
+                            // ),
 
-                            const SizedBox(height: 30),
+                            // const SizedBox(height: 30),
 
                             // Register links
                             Center(
@@ -1479,11 +1478,11 @@ class _login_pageState extends State<login_page>
                                   _buildRegisterLink(
                                     "Register Distributor",
                                     () {
-                                      Navigator.pushReplacement(
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const distributor_registration(),
+                                              const RegistrationPage(isDistributor: true),
                                         ),
                                       );
                                     },
@@ -1496,11 +1495,11 @@ class _login_pageState extends State<login_page>
                                     child: Text("|"),
                                   ),
                                   _buildRegisterLink("Register Customer", () {
-                                    Navigator.pushReplacement(
+                                    Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const customer_registration(),
+                                            const RegistrationPage(isDistributor: false),
                                       ),
                                     );
                                   }, theme.primaryColor),

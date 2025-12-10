@@ -67,6 +67,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/login_page.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import 'theme/colors.dart';
 import 'theme/theme.dart';
@@ -128,8 +129,8 @@ class MyApp_sub extends StatefulWidget {
 }
 
 class _MyApp_subState extends State<MyApp_sub> {
-  // TextEditingController ip = TextEditingController(text: "10.223.211.28");
-  TextEditingController ip = TextEditingController(text: "192.168.29.5");
+  TextEditingController ip = TextEditingController(text: "10.223.211.28");
+  // TextEditingController ip = TextEditingController(text: "192.168.29.5");
 
   @override
   Widget build(BuildContext context) {
@@ -165,116 +166,107 @@ class _MyApp_subState extends State<MyApp_sub> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Positioned(
-            top: -70,
-            left: -50,
-            child: _buildBlob(250, _blobGradient1),
-          ),
-          Positioned(
-            top: 150,
-            right: -80,
-            child: _buildBlob(180, _blobGradient2),
-          ),
+      body: SingleChildScrollView(
+        child: Stack(
+          children: [
+            Positioned(
+              top: -70,
+              left: -50,
+              child: _buildBlob(250, _blobGradient1),
+            ),
+            Positioned(
+              top: 150,
+              right: -80,
+              child: _buildBlob(180, _blobGradient2),
+            ),
+        
+         
+            Column(
+              
+              children: [
+                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
 
-          Positioned(
-            bottom: 180,
-            left: -80,
-            child: _buildBlob(180, _blobGradient2),
-          ),
+                Center(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(20),
 
-          Column(
-            children: [
-              SizedBox(height: MediaQuery.of(context).size.height * 0.25),
-
-              Center(
-                child: Container(
-                  width: 400,
-                  // height: 400,
-                  decoration: BoxDecoration(
-                    color: theme.cardColor,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: [
-                      BoxShadow(
-                        color: theme.shadowColor.withOpacity(0.5),
-                        blurRadius: 10,
-                        offset: const Offset(0, 0),
-                      ),
-                    ],
-                  ),
-                  margin: const EdgeInsets.all(10),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 20,
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 100,
-                          child: Center(
-                            child: Text(
-                              "Enter Your IP Address",
-                              style: GoogleFonts.montserrat(
-                                color: AppColors.primaryLight,
-                                fontSize: 25,
-                              ),
+                    margin: const EdgeInsets.all(20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 40,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                              radius: 60,
+                              backgroundColor: Colors.black,
+                              child: SvgPicture.asset('assets/images/snap2bill_logo.svg',height:100,)),
+                          SizedBox(height: 10,),
+                          Text(
+                            "Enter Your IP Address",
+                            style: GoogleFonts.montserrat(
+                              color: AppColors.primaryLight,
+                              fontSize: 25,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 20),
-                        TextFormField(
-                          controller: ip,
-                          style: TextStyle(
-                            color: ThemeService.instance.isDarkMode
-                                ? Colors.white
-                                : Colors.black,
+
+                          const SizedBox(height: 20),
+                          TextFormField(
+                            controller: ip,
+                            style: TextStyle(
+                              color: ThemeService.instance.isDarkMode
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                            decoration: const InputDecoration(
+                              labelText: 'IP Address',
+                              prefixIcon: Icon(Icons.wifi),
+                              prefixIconColor: AppColors.iconColor,
+                            ),
                           ),
-                          decoration: const InputDecoration(
-                            labelText: 'IP Address',
-                            prefixIcon: Icon(Icons.wifi),
-                            prefixIconColor: AppColors.iconColor,
+
+                          const SizedBox(height: 20),
+
+                          // ------------------------------------------------
+                          // 2. HERE IS YOUR NEW CUSTOM BUTTON
+                          // ------------------------------------------------
+                          AppButton(
+                            text: "Submit",
+                            borderColor: AppColors.borderColor,
+                            // icon: Icons.upload,
+                            // isTrailingIcon: true,
+                            onPressed: () async {
+                              SharedPreferences sh =
+                                  await SharedPreferences.getInstance();
+                              sh.setString("ip", "http://${ip.text}:8000");
+
+                              if (context.mounted) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => login_page(),
+                                  ),
+                                );
+                              }
+                            },
                           ),
-                        ),
 
-                        const SizedBox(height: 20),
-
-                        // ------------------------------------------------
-                        // 2. HERE IS YOUR NEW CUSTOM BUTTON
-                        // ------------------------------------------------
-                        AppButton(
-                          text: "Submit",
-                          borderColor: Colors.white,
-                          // icon: Icons.upload,
-                          // isTrailingIcon: true,
-                          onPressed: () async {
-                            SharedPreferences sh =
-                                await SharedPreferences.getInstance();
-                            sh.setString("ip", "http://${ip.text}:8000");
-
-                            if (context.mounted) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => login_page(),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-
-                        // ------------------------------------------------
-                      ],
+                          // ------------------------------------------------
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
