@@ -1,14 +1,14 @@
 import 'dart:convert';
-import 'dart:io'; // Required for FileImage
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // REQUIRED FOR INPUT FORMATTERS
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:snap2bill/Distributordirectory/home_page.dart';
-
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/foundation.dart'; // kIsWeb
+import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 
+import 'package:snap2bill/Distributordirectory/home_page.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 class edit_distributor_profile_sub extends StatefulWidget {
@@ -45,6 +45,8 @@ class edit_distributor_profile_sub extends StatefulWidget {
 
 class _edit_distributor_profile_subState
     extends State<edit_distributor_profile_sub> {
+
+  // Controllers
   final name = TextEditingController();
   final email = TextEditingController();
   final phone = TextEditingController();
@@ -67,16 +69,16 @@ class _edit_distributor_profile_subState
   @override
   void initState() {
     super.initState();
-    name.text = widget.name;
-    email.text = widget.email;
-    phone.text = widget.phone;
-    address.text = widget.address;
-    pincode.text = widget.pincode;
-    place.text = widget.place;
-    post.text = widget.post;
-    bio.text = widget.bio;
-    latitude.text = widget.latitude;
-    longitude.text = widget.longitude;
+    name.text = widget.name.toString();
+    email.text = widget.email.toString();
+    phone.text = widget.phone.toString();
+    address.text = widget.address.toString();
+    pincode.text = widget.pincode.toString();
+    place.text = widget.place.toString();
+    post.text = widget.post.toString();
+    bio.text = widget.bio.toString();
+    latitude.text = widget.latitude.toString();
+    longitude.text = widget.longitude.toString();
   }
 
   // --- FILE PICKERS ---
@@ -112,22 +114,51 @@ class _edit_distributor_profile_subState
     }
   }
 
+  // --- VALIDATION LOGIC ---
+  bool _validateForm() {
+    // 1. Phone: 10 Digits
+    if (phone.text.length != 10) {
+      _showError("Phone number must be exactly 10 digits.");
+      return false;
+    }
+
+    // 2. Pincode: 6 Digits
+    if (pincode.text.length != 6) {
+      _showError("Pincode must be exactly 6 digits.");
+      return false;
+    }
+
+    // 3. Lat/Long: Valid Float
+    try {
+      if (latitude.text.isNotEmpty) double.parse(latitude.text);
+      if (longitude.text.isNotEmpty) double.parse(longitude.text);
+    } catch (e) {
+      _showError("Latitude and Longitude must be valid decimal numbers (e.g. 12.3456)");
+      return false;
+    }
+
+    return true;
+  }
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(msg), backgroundColor: Colors.red),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // 1. GET THEME DATA
     final theme = Theme.of(context);
-
-    // Determine text colors based on brightness (handled by theme usually, but good for custom widgets)
     final bool isDark = theme.brightness == Brightness.dark;
     final Color textColor = isDark ? Colors.white : Colors.black;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor, // Matches background
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.close, color: textColor), // "X" looks more like Instagram edit
+          icon: Icon(Icons.close, color: textColor),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
@@ -138,131 +169,194 @@ class _edit_distributor_profile_subState
               color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
         ),
         actions: [
-          // Instagram Style: "Done" button in AppBar is also common, but we will keep bottom button as requested
+          // Save Button (Icon style)
           IconButton(
-            icon: Icon(Icons.check, color: theme.primaryColor),
+            icon: Icon(Icons.check, color: Colors.blueAccent),
             onPressed: _isLoading ? null : _updateProfile,
           )
         ],
       ),
-      body: Column(
+      body: Stack(
         children: [
-          // --- SCROLLABLE FORM ---
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(bottom: 50),
+          // MAIN FORM
+          SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 20),
 
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-
-                    // PROFILE PHOTO
-                    Center(
-                      child: Column(
-                        children: [
-                          GestureDetector(
-                            onTap: _pickFile,
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: theme.cardColor,
-                              backgroundImage: _getProfileImage(),
-                              child: (_selectedFile == null && _webFileBytes == null)
-                                  ? Icon(Icons.person, size: 50, color: theme.disabledColor)
-                                  : null,
-                            ),
+                // PROFILE PHOTO
+                Center(
+                  child: Column(
+                    children: [
+                      GestureDetector(
+                        onTap: _pickFile,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: theme.cardColor,
+                          backgroundImage: _getProfileImage(),
+                          child: (_selectedFile == null && _webFileBytes == null)
+                              ? Icon(Icons.person, size: 50, color: theme.disabledColor)
+                              : null,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: _pickFile,
+                        child: const Text(
+                          "Change Profile Photo",
+                          style: TextStyle(
+                            color: Colors.blueAccent,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
-                          TextButton(
-                            onPressed: _pickFile,
-                            child: Text(
-                              "Change Profile Photo",
-                              style: TextStyle(
-                                color: theme.primaryColor,
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    const Divider(),
-                    const SizedBox(height: 10),
-
-                    // FIELDS
-                    _buildThemeField("Name", name, Icons.person, theme),
-                    _buildThemeField("Bio", bio, Icons.info_outline, theme),
-
-                    const SizedBox(height: 20),
-                    Text("Private Information", style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                    const SizedBox(height: 15),
-
-                    _buildThemeField("Email", email, Icons.email, theme, enabled: false),
-                    _buildThemeField("Phone", phone, Icons.phone_android, theme, keyboardType: TextInputType.phone),
-
-                    _buildThemeField("Address", address, Icons.home, theme),
-
-                    Row(
-                      children: [
-                        Expanded(child: _buildThemeField("Pincode", pincode, Icons.pin_drop, theme, keyboardType: TextInputType.number)),
-                        const SizedBox(width: 10),
-                        Expanded(child: _buildThemeField("Post", post, Icons.local_post_office, theme)),
-                      ],
-                    ),
-
-                    _buildThemeField("Place", place, Icons.place, theme),
-
-                    Row(
-                      children: [
-                        Expanded(child: _buildThemeField("Latitude", latitude, Icons.explore, theme, keyboardType: TextInputType.number)),
-                        const SizedBox(width: 10),
-                        Expanded(child: _buildThemeField("Longitude", longitude, Icons.explore, theme, keyboardType: TextInputType.number)),
-                      ],
-                    ),
-
-                    const SizedBox(height: 10),
-
-                    // DOCUMENT UPLOAD BOX
-                    GestureDetector(
-                      onTap: _pickFile1,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-                        decoration: BoxDecoration(
-                          color: theme.inputDecorationTheme.fillColor, // Use theme fill
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: theme.dividerColor),
                         ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.description, color: theme.primaryColor),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(
-                                _selectedFile1 != null ? _selectedFile1!.name : "Update Proof Document",
-                                style: TextStyle(
-                                  color: _selectedFile1 != null ? textColor : theme.hintColor,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                      )
+                    ],
+                  ),
+                ),
+                const Divider(),
+                const SizedBox(height: 10),
 
-                    const SizedBox(height: 30), // Space for bottom scrolling
+                // BASIC INFO
+                _buildThemeField(
+                    "Name", name, Icons.person, theme,
+                    textColor: textColor
+                ),
+                _buildThemeField(
+                    "Bio", bio, Icons.info_outline, theme,
+                    textColor: textColor
+                ),
+
+                const SizedBox(height: 20),
+                Text("Contact Information", style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 15),
+
+                // EMAIL (Read Only usually)
+                _buildThemeField(
+                    "Email", email, Icons.email, theme,
+                    textColor: textColor, enabled: false
+                ),
+
+                // PHONE (10 Digits Validation)
+                _buildThemeField(
+                    "Phone", phone, Icons.phone_android, theme,
+                    textColor: textColor,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10), // Limit to 10
+                    ]
+                ),
+
+                // ADDRESS
+                _buildThemeField(
+                    "Address", address, Icons.home, theme,
+                    textColor: textColor
+                ),
+
+                // PINCODE (6 Digits) & POST
+                Row(
+                  children: [
+                    Expanded(
+                        child: _buildThemeField(
+                            "Pincode", pincode, Icons.pin_drop, theme,
+                            textColor: textColor,
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(6), // Limit to 6
+                            ]
+                        )
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: _buildThemeField(
+                            "Post", post, Icons.local_post_office, theme,
+                            textColor: textColor
+                        )
+                    ),
                   ],
                 ),
-              ),
+
+                _buildThemeField(
+                    "Place", place, Icons.place, theme,
+                    textColor: textColor
+                ),
+
+                // LATITUDE & LONGITUDE (Double)
+                Row(
+                  children: [
+                    Expanded(
+                        child: _buildThemeField(
+                          "Latitude", latitude, Icons.explore, theme,
+                          textColor: textColor,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          // Allows digits and decimal point only
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                          ],
+                        )
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                        child: _buildThemeField(
+                          "Longitude", longitude, Icons.explore, theme,
+                          textColor: textColor,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                          ],
+                        )
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // DOCUMENT UPLOAD
+                GestureDetector(
+                  onTap: _pickFile1,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF2C2C2C) : Colors.grey.shade100,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: isDark ? Colors.white12 : Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.file_copy_outlined, color: Colors.blueAccent),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            _selectedFile1 != null ? _selectedFile1!.name : "Update Proof Document",
+                            style: TextStyle(
+                              color: _selectedFile1 != null ? textColor : Colors.grey,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 50),
+              ],
             ),
           ),
 
-          // --- STICKY BOTTOM BUTTON ---
-          // SafeArea ensures this sits ABOVE the system navigation bar
+          // LOADING OVERLAY
+          if (_isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              ),
+            ),
         ],
       ),
     );
@@ -270,6 +364,9 @@ class _edit_distributor_profile_subState
 
   // --- LOGIC ---
   Future<void> _updateProfile() async {
+    // 1. Run Validation
+    if (!_validateForm()) return;
+
     setState(() => _isLoading = true);
 
     try {
@@ -291,6 +388,7 @@ class _edit_distributor_profile_subState
       request.fields['longitude'] = longitude.text;
       request.fields['uid'] = sh.getString("uid").toString();
 
+      // File Logic
       if (_selectedFile != null) {
         if (kIsWeb) {
           request.files.add(http.MultipartFile.fromBytes('file', _webFileBytes!, filename: _selectedFile!.name));
@@ -315,9 +413,7 @@ class _edit_distributor_profile_subState
         if (!mounted) return;
         _showSuccessDialog();
       } else {
-        if (!mounted) return;
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const Home_page()));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to update profile')));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -330,41 +426,77 @@ class _edit_distributor_profile_subState
   ImageProvider? _getProfileImage() {
     if (kIsWeb && _webFileBytes != null) return MemoryImage(_webFileBytes!);
     if (_selectedFile != null && _selectedFile!.path != null) return FileImage(File(_selectedFile!.path!));
+    // If you have a default online image or local asset, you can return it here
     return null;
   }
 
   void _showSuccessDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text("Success"),
-        content: const Text("Profile Updated Successfully"),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Column(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green, size: 50),
+            SizedBox(height: 10),
+            Text("Updated!"),
+          ],
+        ),
+        content: const Text("Your profile has been updated successfully.", textAlign: TextAlign.center),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const DistributorNavigationBar()));
+              // Navigate to Profile Tab (Index 4 usually)
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  DistributorNavigationBar(initialIndex: 4,)));
             },
-            child: const Text("OK"),
+            child: const Text("OK", style: TextStyle(fontWeight: FontWeight.bold)),
           )
         ],
       ),
     );
   }
 
-  // Uses Theme.of(context).inputDecorationTheme automatically
-  Widget _buildThemeField(String label, TextEditingController controller, IconData icon, ThemeData theme,
-      {bool enabled = true, TextInputType keyboardType = TextInputType.text}) {
+  Widget _buildThemeField(
+      String label,
+      TextEditingController controller,
+      IconData icon,
+      ThemeData theme,
+      {
+        bool enabled = true,
+        TextInputType keyboardType = TextInputType.text,
+        List<TextInputFormatter>? inputFormatters,
+        required Color textColor
+      }) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0),
-      child: TextField(
-        controller: controller,
-        enabled: enabled,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: Icon(icon, color: theme.primaryColor),
-          // Filled color and borders are handled by theme.dart
-        ),
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 13, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 5),
+          TextField(
+            controller: controller,
+            enabled: enabled,
+            keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+            style: TextStyle(color: textColor),
+            decoration: InputDecoration(
+              prefixIcon: Icon(icon, color: theme.primaryColor, size: 20),
+              filled: true,
+              fillColor: theme.brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.grey.shade100,
+              contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

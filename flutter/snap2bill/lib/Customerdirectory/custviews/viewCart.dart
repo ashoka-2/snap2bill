@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class viewCArt extends StatefulWidget {
-  const viewCArt({Key? key}) : super(key: key);
+class viewCart extends StatefulWidget {
+  const viewCart({Key? key}) : super(key: key);
 
   @override
-  State<viewCArt> createState() => _viewCArtState();
+  State<viewCart> createState() => _viewCartState();
 }
 
-class _viewCArtState extends State<viewCArt> {
+class _viewCartState extends State<viewCart> {
   @override
   Widget build(BuildContext context) {
     return Scaffold();

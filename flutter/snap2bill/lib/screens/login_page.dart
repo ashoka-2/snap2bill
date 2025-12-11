@@ -1086,8 +1086,9 @@
 // }
 
 // File: lib/screens/login_page.dart
-
 import 'dart:convert';
+import 'dart:io'; // Import for SocketException
+import 'dart:async'; // Import for TimeoutException
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart' as lottie;
@@ -1103,8 +1104,6 @@ import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 import 'package:snap2bill/widgets/app_button.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
-// If you also had theme_service in theme.dart, we DO NOT use it here (no theme toggles here)
-
 const List<Color> _blobGradient1 = AppColors.blobGradient1;
 const List<Color> _blobGradient2 = AppColors.blobGradient2;
 
@@ -1117,13 +1116,9 @@ class login_page extends StatefulWidget {
 
 class _login_pageState extends State<login_page>
     with SingleTickerProviderStateMixin {
-  // Controllers with example default values so you can test quickly
-  final TextEditingController username = TextEditingController(
-    text: "ashoka@gmail.com",
-  );
-  final TextEditingController password = TextEditingController(
-    text: "password",
-  );
+
+  final TextEditingController username = TextEditingController(text: "ashoka@gmail.com");
+  final TextEditingController password = TextEditingController(text: "Password1");
 
   // UI state
   bool _obscureText = true;
@@ -1157,10 +1152,9 @@ class _login_pageState extends State<login_page>
     super.dispose();
   }
 
-  /// The login function: validates inputs, reads saved IP, makes POST call,
-  /// handles response and navigates to either customer or distributor home pages.
+  /// The login function with specific error handling
   Future<void> _login() async {
-    // Validate
+    // 1. Reset Errors
     setState(() {
       _usernameError = username.text.trim().isEmpty;
       _passwordError = password.text.trim().isEmpty;
@@ -1168,7 +1162,6 @@ class _login_pageState extends State<login_page>
     });
 
     if (_usernameError || _passwordError) {
-      // play shake to indicate missing fields
       _shakeController.forward(from: 0);
       return;
     }
@@ -1176,73 +1169,87 @@ class _login_pageState extends State<login_page>
     setState(() => _isLoading = true);
 
     try {
-      // Read IP saved earlier in SharedPreferences (if not present, fallback)
       SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip =
-          sh.getString("ip") ??
-          "http://10.0.2.2:8000"; // emulator-friendly default
+      String ip = sh.getString("ip") ?? "";
 
-      // Make HTTP POST to the login endpoint (server must accept form fields)
+      // Check if IP is set
+      if (ip.isEmpty) {
+        throw const SocketException("IP not found");
+      }
+
+      // 2. Network Request with Timeout
       final response = await http.post(
         Uri.parse('$ip/login_page'),
         body: {
           'username': username.text.trim(),
           'password': password.text.trim(),
         },
-      );
+      ).timeout(const Duration(seconds: 5)); // 5s timeout
 
+      // 3. Handle Status Code 200 (Server Reached)
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
+        String status = decoded['status'] ?? "";
 
-        // Your backend returns status strings: 'custok' or 'distok'
-        if (decoded['status'] == 'custok') {
-          // Save customer id locally and password if required (not recommended to save plain password)
+        // --- SUCCESS LOGIC ---
+        if (status == 'custok') {
           await sh.setString("cid", decoded['cid'].toString());
-          await sh.setString("pwd", password.text);
+          await sh.setString("pwd", password.text); // Note: Saving plain text password is insecure
 
           if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Login successful')));
-
-          // Navigate to customer home
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CustomerNavigationBar()),
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login successful'), backgroundColor: Colors.green)
           );
-        } else if (decoded['status'] == 'distok') {
-          // Distributor login success: save uid and navigate to distributor home
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CustomerNavigationBar(initialIndex: 0,)),
+          );
+        } else if (status == 'distok') {
           await sh.setString("uid", decoded['uid'].toString());
           await sh.setString("pwd1", password.text);
 
           if (!mounted) return;
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Login successful')));
-
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => DistributorNavigationBar()),
+          ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login successful'), backgroundColor: Colors.green)
           );
-        } else {
-          // Invalid credentials
-          setState(() {
-            _invalidError = "Invalid username or password!";
-          });
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => DistributorNavigationBar(initialIndex: 0,)),
+          );
+        }
+
+        // --- FAILURE LOGIC (Specific Messages) ---
+        else {
+          String msg = decoded['message']?.toString().toLowerCase() ?? "";
+
+          // Check backend message to show specific user error
+          if (msg.contains("password")) {
+            setState(() => _invalidError = "Password is wrong");
+          } else if (msg.contains("email") || msg.contains("user") || msg.contains("account")) {
+            setState(() => _invalidError = "Email is wrong");
+          } else {
+            setState(() => _invalidError = "Invalid credentials");
+          }
           _shakeController.forward(from: 0);
         }
       } else {
-        // Non-200 server response
-        setState(() {
-          _invalidError = "Server Error: ${response.statusCode}";
-        });
+        // Handle non-200 status codes gracefully
+        setState(() => _invalidError = "Server Error (${response.statusCode})");
         _shakeController.forward(from: 0);
       }
+    } on SocketException {
+      // This catches "IP is wrong" or "Server Down"
+      setState(() => _invalidError = "Connection error");
+      _shakeController.forward(from: 0);
+    } on TimeoutException {
+      // This catches slow connection/wrong IP
+      setState(() => _invalidError = "Connection timed out");
+      _shakeController.forward(from: 0);
     } catch (e) {
-      // Network / parsing error
-      setState(() {
-        _invalidError = "Connection error. Check IP or network.";
-      });
+      // Fallback for other errors (e.g., JSON parsing)
+      setState(() => _invalidError = "An unexpected error occurred");
       _shakeController.forward(from: 0);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -1251,18 +1258,13 @@ class _login_pageState extends State<login_page>
 
   @override
   Widget build(BuildContext context) {
-    // Get theme colors via Theme.of(context) and shared AppColors
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = theme.scaffoldBackgroundColor;
     final cardColor = theme.cardColor;
     final textColor = isDark ? AppColors.textMainDark : AppColors.textMainLight;
-    final subTextColor = isDark
-        ? AppColors.textSubDark
-        : AppColors.textSubLight;
-    final inputFill = isDark
-        ? AppColors.inputFillDark
-        : AppColors.inputFillLight;
+    final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
+    final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -1283,7 +1285,7 @@ class _login_pageState extends State<login_page>
           Column(
             children: [
               // leave space on top for blob area
-              SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+              SizedBox(height: MediaQuery.of(context).size.height * 0.22),
 
               // Main card sheet
               Expanded(
@@ -1317,10 +1319,8 @@ class _login_pageState extends State<login_page>
                       child: AnimatedBuilder(
                         animation: _shakeAnim,
                         builder: (context, child) {
-                          final offsetX =
-                              (_usernameError ||
-                                  _passwordError ||
-                                  _invalidError != null)
+                          // Only shake if there is an error
+                          final offsetX = (_usernameError || _passwordError || _invalidError != null)
                               ? math.sin(_shakeAnim.value) * 10
                               : 0.0;
                           return Transform.translate(
@@ -1335,15 +1335,10 @@ class _login_pageState extends State<login_page>
                             Center(
                               child: Column(
                                 children: [
-                                  // Text(
-                                  //   "Welcome Back!",
-                                  //   style: TextStyle(
-                                  //     fontSize: 28,
-                                  //     fontWeight: FontWeight.bold,
-                                  //     color: textColor,
-                                  //   ),
-                                  // ),
-                                  lottie.Lottie.asset('assets/lotties/Welcome.json'),
+                                  lottie.Lottie.asset(
+                                      'assets/lotties/Welcome.json',
+                                      height: 150
+                                  ),
                                   const SizedBox(height: 10),
                                   Text(
                                     "Enter your details to access your account",
@@ -1384,16 +1379,31 @@ class _login_pageState extends State<login_page>
                               themePrimary: AppColors.iconColor,
                             ),
 
-                            // Error message if login failed
+                            // SPECIFIC ERROR MESSAGE DISPLAY
                             if (_invalidError != null) ...[
                               const SizedBox(height: 15),
-                              Center(
-                                child: Text(
-                                  _invalidError!,
-                                  style: const TextStyle(
-                                    color: Colors.redAccent,
-                                    fontWeight: FontWeight.w600,
-                                  ),
+                              Container(
+                                width: double.infinity,
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                    color: Colors.redAccent.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Colors.redAccent.withOpacity(0.5))
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.error_outline, color: Colors.redAccent, size: 18),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      _invalidError!,
+                                      style: const TextStyle(
+                                          color: Colors.redAccent,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 13
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -1415,7 +1425,7 @@ class _login_pageState extends State<login_page>
                             ),
                             const SizedBox(height: 30),
 
-                            // Sign in button (uses shared AppButton)
+                            // Sign in button
                             AppButton(
                               text: "Sign in",
                               isLoading: _isLoading,
@@ -1423,7 +1433,7 @@ class _login_pageState extends State<login_page>
                             ),
                             const SizedBox(height: 40),
 
-                            // Sign in with social (visual only)
+                            // Divider
                             Row(
                               children: [
                                 Expanded(
@@ -1436,10 +1446,11 @@ class _login_pageState extends State<login_page>
                                     horizontal: 10,
                                   ),
                                   child: Text(
-                                    "Sign in with",
+                                    "OR",
                                     style: TextStyle(
-                                      color: subTextColor,
-                                      fontSize: 12,
+                                        color: subTextColor,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold
                                     ),
                                   ),
                                 ),
@@ -1450,25 +1461,7 @@ class _login_pageState extends State<login_page>
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 20),
-                            // Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: [
-                            //     _buildSocialBtn(
-                            //       Icons.facebook,
-                            //       Colors.blue[800]!,
-                            //     ),
-                            //     const SizedBox(width: 20),
-                            //     _buildSocialBtn(
-                            //       Icons.g_mobiledata,
-                            //       Colors.red[600]!,
-                            //     ),
-                            //     const SizedBox(width: 20),
-                            //     _buildSocialBtn(Icons.apple, Colors.black),
-                            //   ],
-                            // ),
-
-                            // const SizedBox(height: 30),
+                            const SizedBox(height: 30),
 
                             // Register links
                             Center(
@@ -1477,35 +1470,36 @@ class _login_pageState extends State<login_page>
                                 children: [
                                   _buildRegisterLink(
                                     "Register Distributor",
-                                    () {
+                                        () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              const RegistrationPage(isDistributor: true),
+                                          const RegistrationPage(isDistributor: true),
                                         ),
                                       );
                                     },
                                     theme.primaryColor,
                                   ),
-                                  const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 1,
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
                                     ),
-                                    child: Text("|"),
+                                    child: Text("|", style: TextStyle(color: subTextColor)),
                                   ),
                                   _buildRegisterLink("Register Customer", () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            const RegistrationPage(isDistributor: false),
+                                        const RegistrationPage(isDistributor: false),
                                       ),
                                     );
                                   }, theme.primaryColor),
                                 ],
                               ),
                             ),
+                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -1520,7 +1514,7 @@ class _login_pageState extends State<login_page>
     );
   }
 
-  // --- Helper widgets below (kept simple and readable) ---
+  // --- Helper widgets ---
 
   Widget _buildBlob(double size, List<Color> colors) {
     return Container(
@@ -1592,15 +1586,15 @@ class _login_pageState extends State<login_page>
                 prefixIcon: Icon(icon, color: themePrimary),
                 suffixIcon: isObscure
                     ? IconButton(
-                        icon: Icon(
-                          _obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                          color: hintColor,
-                        ),
-                        onPressed: () =>
-                            setState(() => _obscureText = !_obscureText),
-                      )
+                  icon: Icon(
+                    _obscureText
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                    color: hintColor,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureText = !_obscureText),
+                )
                     : null,
               ),
             ),
@@ -1610,34 +1604,19 @@ class _login_pageState extends State<login_page>
     );
   }
 
-  Widget _buildSocialBtn(IconData icon, Color color) {
-    return InkWell(
-      onTap: () {},
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: Colors.grey.withOpacity(0.1),
-          shape: BoxShape.circle,
-        ),
-        child: Icon(icon, color: color, size: 28),
-      ),
-    );
-  }
-
   Widget _buildRegisterLink(
-    String text,
-    VoidCallback onTap,
-    Color primaryColor,
-  ) {
-    return TextButton(
-      onPressed: onTap,
+      String text,
+      VoidCallback onTap,
+      Color primaryColor,
+      ) {
+    return GestureDetector(
+      onTap: onTap,
       child: Text(
         text,
         style: TextStyle(
           color: primaryColor,
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
+          fontWeight: FontWeight.bold,
+          fontSize: 13,
         ),
       ),
     );

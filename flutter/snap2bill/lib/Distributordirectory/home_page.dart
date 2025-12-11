@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+import 'package:snap2bill/Distributordirectory/view/view_feedback.dart';
 import 'package:snap2bill/Distributordirectory/view/view_product.dart';
-import 'package:snap2bill/Distributordirectory/distributorsends/send_feedback.dart';
 import 'package:snap2bill/Distributordirectory/password/changePassword.dart';
 import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 
@@ -71,7 +71,7 @@ class Home_page extends StatelessWidget {
               title: const Text("Feedback"),
               onTap: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => send_feedback()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => view_feedback()));
               },
             ),
             ListTile(

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+// ADD THIS IMPORT
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 // Import your addStock page
 import '../addfolder/addStock.dart';
@@ -23,7 +25,7 @@ class view_product_sub extends StatefulWidget {
 }
 
 class _view_product_subState extends State<view_product_sub> {
-  // --- API LOGIC ---
+  // --- API LOGIC (Unchanged) ---
   Future<List<Joke>> _getProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final base = prefs.getString("ip") ?? "";
@@ -71,23 +73,24 @@ class _view_product_subState extends State<view_product_sub> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF9F9F9);
+    final titleColor = isDark ? Colors.white : Colors.black;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: titleColor, size: 20),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
         ),
         title: Text(
           "All Products",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(color: titleColor, fontWeight: FontWeight.bold, fontSize: 20),
         ),
       ),
       body: FutureBuilder<List<Joke>>(
@@ -113,18 +116,15 @@ class _view_product_subState extends State<view_product_sub> {
             );
           }
 
-          // 2-COLUMN GRID
-          return GridView.builder(
+          // --- PINTEREST (MASONRY) LAYOUT ---
+          return MasonryGridView.count(
             padding: const EdgeInsets.all(12),
+            crossAxisCount: 2,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
             itemCount: items.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Two items per row
-              childAspectRatio: 0.75, // Taller cards (Instagram reel/story ratio)
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-            ),
             itemBuilder: (context, index) {
-              return _buildGridCard(items[index], theme);
+              return _buildPinterestCard(items[index], isDark);
             },
           );
         },
@@ -132,136 +132,182 @@ class _view_product_subState extends State<view_product_sub> {
     );
   }
 
-  Widget _buildGridCard(Joke i, ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Stack(
+  // Two-Container Style + Masonry Sizing
+  Widget _buildPinterestCard(Joke i, bool isDark) {
+    final topContainerColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF3E5D8); // Peach/Dark
+    final bottomContainerColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black;
+
+    return InkWell(
+      onTap: () {
+        _navigateToAddStock(i);
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: bottomContainerColor,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min, // Essential for Masonry
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // 1. IMAGE BACKGROUND
-            Positioned.fill(
-              child: i.image.isEmpty
-                  ? Container(
-                color: theme.dividerColor,
-                child: Icon(Icons.image, color: theme.disabledColor),
-              )
-                  : Image.network(
-                i.image,
-                fit: BoxFit.cover,
-                errorBuilder: (c, o, s) => Container(
-                  color: theme.dividerColor,
-                  child: Icon(Icons.broken_image, color: theme.disabledColor),
+
+            // 1. IMAGE CONTAINER (Top)
+            Container(
+              decoration: BoxDecoration(
+                color: topContainerColor,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
               ),
-            ),
-
-            // 2. GRADIENT OVERLAY (For text readability)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 100,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.transparent,
-                      Colors.black.withOpacity(0.8),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
-            // 3. TEXT DETAILS (Bottom Left)
-            Positioned(
-              bottom: 12,
-              left: 12,
-              right: 12,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Stack(
                 children: [
-                  Text(
-                    i.product_name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                  // Image with variable height
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(16),
+                      topRight: Radius.circular(16),
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    child: i.image.isEmpty
+                        ? Container(
+                      height: 120,
+                      child: Icon(Icons.image_not_supported, color: Colors.grey.shade400, size: 40),
+                    )
+                        : Image.network(
+                      i.image,
+                      fit: BoxFit.fitWidth, // Allows height to adjust naturally
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          height: 120,
+                          alignment: Alignment.center,
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (c, o, s) => Container(
+                        height: 120,
+                        child: Icon(Icons.broken_image, color: Colors.grey.shade400),
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      "Qty: ${i.quantity}",
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
+
+                  // 3-DOT MENU (Floating)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.white.withOpacity(0.6),
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
+                        onSelected: (value) {
+                          if (value == 'add') {
+                            _navigateToAddStock(i);
+                          } else if (value == 'details') {
+                            _showProductDetails(i, isDark);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                          const PopupMenuItem<String>(
+                            value: 'add',
+                            child: Row(
+                              children: [
+                                Icon(Icons.add_circle_outline, color: Colors.blue, size: 18),
+                                SizedBox(width: 8),
+                                Text('Add Stock'),
+                              ],
+                            ),
+                          ),
+                          const PopupMenuItem<String>(
+                            value: 'details',
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline, color: Colors.grey, size: 18),
+                                SizedBox(width: 8),
+                                Text('Details'),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
 
-            // 4. THREE DOT MENU (Top Right)
-            Positioned(
-              top: 5,
-              right: 5,
-              child: PopupMenuButton<String>(
-                icon: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.more_vert, color: Colors.white, size: 18),
-                ),
-                color: theme.cardColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                onSelected: (value) {
-                  if (value == 'add') {
-                    _navigateToAddStock(i);
-                  } else if (value == 'details') {
-                    _showProductDetails(i, theme);
-                  }
-                },
-                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                  const PopupMenuItem<String>(
-                    value: 'add',
-                    child: Row(
-                      children: [
-                        Icon(Icons.add_circle_outline, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text('Add Stock'),
-                      ],
+            // 2. DETAILS CONTAINER (Bottom)
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    i.product_name,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: textColor,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
                     ),
                   ),
-                  const PopupMenuItem<String>(
-                    value: 'details',
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline, color: Colors.grey),
-                        SizedBox(width: 8),
-                        Text('View Details'),
-                      ],
-                    ),
+                  const SizedBox(height: 4),
+                  Text(
+                    i.CATEGORY_NAME,
+                    style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Footer Row: Quantity & Add Button
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Replaced Price with Quantity since Price isn't in this model
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          "Qty: ${i.quantity}",
+                          style: TextStyle(
+                            color: textColor.withOpacity(0.8),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+
+                      // Add Button
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white : Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: isDark ? Colors.black : Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -279,14 +325,15 @@ class _view_product_subState extends State<view_product_sub> {
     Navigator.push(context, MaterialPageRoute(builder: (context) => addStock()));
   }
 
-  void _showProductDetails(Joke i, ThemeData theme) {
+  void _showProductDetails(Joke i, bool isDark) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final textColor = isDark ? Colors.white : Colors.black;
         return Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -295,12 +342,12 @@ class _view_product_subState extends State<view_product_sub> {
             children: [
               Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
               const SizedBox(height: 20),
-              Text(i.product_name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color)),
+              Text(i.product_name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor)),
               const SizedBox(height: 10),
-              Text("Category: ${i.CATEGORY_NAME}", style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+              Text("Category: ${i.CATEGORY_NAME}", style: TextStyle(color: Colors.grey)),
               const SizedBox(height: 10),
-              Text("Description:", style: TextStyle(fontWeight: FontWeight.bold, color: theme.textTheme.bodyLarge?.color)),
-              Text(i.description, style: TextStyle(color: theme.textTheme.bodyMedium?.color)),
+              Text("Description:", style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+              Text(i.description, style: TextStyle(color: textColor.withOpacity(0.8))),
               const SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
@@ -309,6 +356,12 @@ class _view_product_subState extends State<view_product_sub> {
                     Navigator.pop(context);
                     _navigateToAddStock(i);
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isDark ? Colors.white : Colors.black,
+                    foregroundColor: isDark ? Colors.black : Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
                   child: const Text("Add Stock Now"),
                 ),
               )

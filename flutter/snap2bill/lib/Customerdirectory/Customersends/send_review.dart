@@ -1,85 +1,13 @@
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:snap2bill/Customerdirectory/distributor_page.dart';
-//
-//
-//
-//
-//
-//
-// class send_review extends StatefulWidget {
-//   const send_review({Key? key}) : super(key: key);
-//
-//   @override
-//   State<send_review> createState() => _send_reviewState();
-// }
-//
-// class _send_reviewState extends State<send_review> {
-//   final reviews = new TextEditingController();
-//   final rating = new TextEditingController();
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Padding(
-//           padding: const EdgeInsets.all(8.0),
-//           child: Container(
-//             height: 200,
-//             width: 500,
-//
-//             child: Column(
-//               children: [
-//                 TextFormField(controller: reviews,
-//                   decoration: InputDecoration(
-//                       labelText: "Review",
-//                       hintText: 'Enter your review',
-//                       prefixIcon: Icon(Icons.reviews),
-//                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-//                   ),
-//                 ),
-//                 SizedBox(height: 10,),
-//                 TextFormField(controller: rating,
-//                   decoration: InputDecoration(
-//                       labelText: "Rating",
-//                       hintText: 'Rate your distributor',
-//                       prefixIcon: Icon(Icons.reviews),
-//                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10))
-//                   ),
-//                 ),
-//                 SizedBox(height: 10,),
-//                 ElevatedButton(onPressed: () async {
-//                   SharedPreferences sh=await SharedPreferences.getInstance();
-//                   var data = await http.post(Uri.parse('${sh.getString("ip")}/send_review'),
-//               body: {
-//                 'reviews':reviews.text,
-//                 'rating':rating.text,
-//                 'cid':sh.getString('cid'),
-//                 'uid':sh.getString('uid'),
-//
-//               }
-//               );
-//               Navigator.push(context, MaterialPageRoute(builder: (context)=>distributor_page()));
-//                 }, child: Text("Send"))
-//               ],
-//             ),
-//
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
+
+// Make sure these point to your actual file locations
+import '../../theme/colors.dart';
+import '../../widgets/app_button.dart';
 
 class send_review extends StatefulWidget {
   const send_review({Key? key}) : super(key: key);
@@ -93,11 +21,13 @@ class _send_reviewState extends State<send_review> {
   double rating = 0.0;
   bool isLoading = false;
 
+  // --- API Logic ---
   Future<void> submitReview() async {
+    // 1. Validation
     if (reviews.text.isEmpty || rating == 0.0) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter a review and select a rating.'),
+          content: Text('Please select a rating and write a review'),
           backgroundColor: Colors.redAccent,
         ),
       );
@@ -106,168 +36,261 @@ class _send_reviewState extends State<send_review> {
 
     setState(() => isLoading = true);
 
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    String? ip = sh.getString('ip');
-    String? cid = sh.getString('cid');
-    String? uid = sh.getString('uid');
-
     try {
+      SharedPreferences sh = await SharedPreferences.getInstance();
+      String? ip = sh.getString('ip');
+      String? cid = sh.getString('cid');
+      String? uid = sh.getString('uid'); // Distributor ID
+
+      if (ip == null) {
+        throw Exception("IP address not found in storage");
+      }
+
+      final uri = Uri.parse("$ip/send_review");
+
+      // DEBUG: Print what we are sending
+      print("Sending to: $uri");
+      print("Params: cid=$cid, uid=$uid, rating=$rating");
+
       var response = await http.post(
-        Uri.parse("$ip/send_review"),
+        uri,
         body: {
           'reviews': reviews.text,
           'rating': rating.toString(),
-          'cid': cid,
-          'uid': uid,
+          'cid': cid ?? "",
+          'uid': uid ?? "",
         },
       );
+
+      // DEBUG: Print exactly what the server replied
+      print("Response Status: ${response.statusCode}");
+      print("Response Body: ${response.body}");
+
+      // 2. Check for Server Errors (404, 500, etc)
+      if (response.statusCode != 200) {
+        throw Exception("Server Error: ${response.statusCode}");
+      }
+
+      // 3. Check for HTML response (The cause of your error)
+      if (response.body.trim().startsWith("<") || response.body.isEmpty) {
+        throw Exception("Server returned HTML/Empty instead of JSON. Check your PHP script.");
+      }
 
       var jsonResponse = json.decode(response.body);
 
       if (jsonResponse['status'] == 'ok') {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('✅ Review sent successfully!'),
+            content: Text('Review sent successfully!'),
             backgroundColor: Colors.green,
           ),
         );
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => distributor_page()),
+          MaterialPageRoute(builder: (context) => const distributor_page()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('⚠️ Failed to send review. Try again.'),
-            backgroundColor: Colors.redAccent,
-          ),
+          const SnackBar(content: Text('Failed to send review')),
         );
       }
     } catch (e) {
+      print("CRITICAL ERROR: $e"); // View this in your Run tab
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.redAccent,
-        ),
+        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
       );
     } finally {
-      setState(() => isLoading = false);
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // --- Theme Handling ---
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Design Colors
+    final bgColor = theme.scaffoldBackgroundColor;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final cardColor = theme.cardColor;
+    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
+    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+
+    // Button Colors
+    final buttonColor = isDark ? Colors.white : Colors.black;
+    final buttonTextColor = isDark ? Colors.black : Colors.white;
+
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
         ),
-        title: const Text(
-          "Send Review",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        title: Text(
+          "Write Review",
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Container(
-            width: 500,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                    color: Colors.grey.withOpacity(0.3),
-                    blurRadius: 10,
-                    spreadRadius: 2)
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Share Your Experience",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blueAccent),
-                ),
-                const SizedBox(height: 20),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
 
-                // ⭐ Rating Bar
-                RatingBar.builder(
-                  initialRating: rating,
-                  minRating: 1,
-                  direction: Axis.horizontal,
-                  allowHalfRating: false,
-                  itemCount: 5,
-                  itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  itemBuilder: (context, _) =>
-                  const Icon(Icons.star, color: Colors.amber),
-                  onRatingUpdate: (value) {
-                    setState(() {
-                      rating = value;
-                    });
-                  },
+              // --- Header Icon ---
+              Container(
+                height: 100,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF2C2C2C) : Colors.amber.shade50,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  "Rating: ${rating.toInt()} Star${rating > 1 ? 's' : ''}",
-                  style: const TextStyle(fontWeight: FontWeight.w500),
+                child: Icon(
+                    Icons.star_rounded,
+                    size: 55,
+                    color: isDark ? Colors.amber.shade200 : Colors.amber.shade600
                 ),
-                const SizedBox(height: 20),
+              ),
+              const SizedBox(height: 30),
 
-                // 📝 Review Field
-                TextFormField(
-                  controller: reviews,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: "Review",
-                    hintText: 'Write your feedback here...',
-                    prefixIcon: const Icon(Icons.reviews),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10)),
-                  ),
+              // --- Instruction Text ---
+              Text(
+                "Rate your experience",
+                style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: textColor
                 ),
-                const SizedBox(height: 20),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "How was your experience with this distributor?",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: hintColor),
+              ),
+              const SizedBox(height: 30),
 
-                // 📨 Submit Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    icon: isLoading
-                        ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
+              // --- Review Form Card ---
+              Container(
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    // Rating Bar
+                    RatingBar.builder(
+                      initialRating: rating,
+                      minRating: 1,
+                      direction: Axis.horizontal,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star_rounded,
+                        color: Colors.amber,
                       ),
-                    )
-                        : const Icon(Icons.send),
-                    label: Text(
-                      isLoading ? "Sending..." : "Send Review",
-                      style: const TextStyle(fontSize: 16),
+                      onRatingUpdate: (value) {
+                        setState(() {
+                          rating = value;
+                        });
+                      },
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                    const SizedBox(height: 10),
+                    Text(
+                      "${rating.toString()} / 5.0",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.amber.shade700,
+                          fontSize: 16
+                      ),
                     ),
-                    onPressed: isLoading ? null : submitReview,
-                  ),
+
+                    const SizedBox(height: 25),
+                    const Divider(),
+                    const SizedBox(height: 25),
+
+                    // Review Text Field
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                          "Your Review",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: textColor.withOpacity(0.7)
+                          )
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextField(
+                      controller: reviews,
+                      maxLines: 4,
+                      style: TextStyle(color: textColor, fontSize: 16),
+                      decoration: InputDecoration(
+                        hintText: "Share your thoughts here...",
+                        hintStyle: TextStyle(color: hintColor, fontSize: 14),
+                        contentPadding: const EdgeInsets.all(16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: borderColor),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: borderColor),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: textColor, width: 1),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: 40),
+
+              // --- App Button ---
+              AppButton(
+                text: "Submit Review",
+                onPressed: submitReview,
+                isLoading: isLoading,
+
+                // Theme Adaptation
+                color: buttonColor,
+                textColor: buttonTextColor,
+
+                // Icon Styling
+                icon: Icons.check_circle_outline,
+                isTrailingIcon: true,
+              ),
+            ],
           ),
         ),
       ),

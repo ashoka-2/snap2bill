@@ -71,16 +71,20 @@
 //
 //
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // REQUIRED FOR INPUT FORMATTERS
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+
+// Make sure these point to your actual file locations
+import '../../theme/colors.dart';
+import '../../widgets/app_button.dart';
 
 class addStock extends StatelessWidget {
   const addStock({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // FIX: Removed MaterialApp so navigation history is preserved
     return const addStockSub();
   }
 }
@@ -95,170 +99,198 @@ class addStockSub extends StatefulWidget {
 class _addStockSubState extends State<addStockSub> {
   TextEditingController stock = TextEditingController();
   TextEditingController price = TextEditingController();
-  bool _isLoading = false; // To show loading spinner
+  bool _isLoading = false;
+
+  // --- API Logic ---
+  Future<void> _submitStock() async {
+    // Basic Validation
+    if (stock.text.isEmpty || price.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Please fill all fields")),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString("ip");
+      String? pid = prefs.getString("pid");
+      String? uid = prefs.getString("uid");
+
+      if (ip != null) {
+        final uri = Uri.parse("$ip/add_stock");
+
+        final body = {
+          'pid': pid ?? "",
+          'uid': uid ?? "",
+          'quantity': stock.text,
+          'price': price.text,
+        };
+
+        var response = await http.post(uri, body: body);
+
+        if (response.statusCode == 200) {
+          if (!mounted) return;
+          // Success: Navigate back to products
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const myProducts())
+          );
+        } else {
+          throw Exception("Server returned error");
+        }
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    // --- Theme Handling ---
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    // Design Colors
+    final bgColor = theme.scaffoldBackgroundColor;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final cardColor = theme.cardColor;
+    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
+    final inputFillColor = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
+    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+
+    // Button Colors
+    final buttonColor = isDark ? Colors.white : Colors.black;
+    final buttonTextColor = isDark ? Colors.black : Colors.white;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F7), // Light grey background
+      backgroundColor: bgColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
           onPressed: () {
             if (Navigator.canPop(context)) Navigator.pop(context);
           },
         ),
-        title: const Text(
+        title: Text(
           "Update Inventory",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              // --- Header Image/Icon ---
+              const SizedBox(height: 10),
+
+              // --- Header Icon ---
               Container(
-                height: 120,
-                width: 120,
+                height: 100,
+                width: 100,
                 decoration: BoxDecoration(
-                  color: Colors.indigo.shade50,
+                  color: isDark ? const Color(0xFF2C2C2C) : Colors.blue.shade50,
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 15,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
                 ),
-                child: Icon(Icons.add_business_outlined, size: 60, color: Colors.indigo.shade400),
+                child: Icon(
+                    Icons.add_business_outlined,
+                    size: 45,
+                    color: isDark ? Colors.white : Colors.blue.shade700
+                ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
 
               // --- Form Card ---
               Container(
+                padding: const EdgeInsets.all(25),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
+                  color: cardColor,
+                  borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 2,
-                      blurRadius: 10,
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
                   ],
                 ),
-                padding: const EdgeInsets.all(25),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Stock Details",
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black87),
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: textColor
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
-                      "Enter the new quantity and price to update.",
-                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                      "Enter the new quantity and price to add.",
+                      style: TextStyle(fontSize: 14, color: hintColor),
                     ),
                     const SizedBox(height: 25),
 
-                    // Quantity Field
-                    _buildTextField(
+                    // Quantity Field (Digits Only)
+                    _buildThemeTextField(
                       controller: stock,
                       label: "Quantity",
                       hint: "Ex: 50",
                       icon: Icons.inventory_2_outlined,
                       isNumber: true,
+                      textColor: textColor,
+                      hintColor: hintColor!,
+                      borderColor: borderColor,
+                      // Validation: Allow digits only
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                     const SizedBox(height: 20),
 
-                    // Price Field
-                    _buildTextField(
+                    // Price Field (Digits Only)
+                    _buildThemeTextField(
                       controller: price,
                       label: "Price per Unit",
                       hint: "Ex: 1200",
-                      icon: Icons.currency_rupee, // Or Icons.attach_money
+                      icon: Icons.currency_rupee,
                       isNumber: true,
+                      textColor: textColor,
+                      hintColor: hintColor,
+                      borderColor: borderColor,
+                      // Validation: Allow digits only (add '.' to regex if you need decimals)
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
 
-              // --- Add Button ---
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : () async {
-                    // Basic Validation
-                    if (stock.text.isEmpty || price.text.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Please fill all fields")),
-                      );
-                      return;
-                    }
-
-                    setState(() {
-                      _isLoading = true;
-                    });
-
-                    try {
-                      SharedPreferences prefs = await SharedPreferences.getInstance();
-                      String? ip = prefs.getString("ip");
-                      String? pid = prefs.getString("pid");
-                      String? uid = prefs.getString("uid");
-
-                      if (ip != null) {
-                        var data = await http.post(
-                          Uri.parse("$ip/add_stock"),
-                          body: {
-                            'pid': pid ?? "",
-                            'uid': uid ?? "",
-                            'quantity': stock.text,
-                            'price': price.text,
-                          },
-                        );
-
-                        // Use pushReplacement to avoid back-button loop
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => const myProducts())
-                        );
-                      }
-                    } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("Error: $e")),
-                      );
-                    } finally {
-                      setState(() {
-                        _isLoading = false;
-                      });
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
-                    elevation: 5,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                      : const Text(
-                    "Update Stock",
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+              // --- APP BUTTON ---
+              AppButton(
+                text: "Add Stock",
+                onPressed: _submitStock,
+                isLoading: _isLoading,
+                color: buttonColor,
+                textColor: buttonTextColor,
+                icon: Icons.add_shopping_cart,
+                isTrailingIcon: false,
               ),
             ],
           ),
@@ -267,40 +299,54 @@ class _addStockSubState extends State<addStockSub> {
     );
   }
 
-  // Helper Widget for TextFields
-  Widget _buildTextField({
+  // --- Helper for Beautiful TextFields ---
+  Widget _buildThemeTextField({
     required TextEditingController controller,
     required String label,
     required String hint,
     required IconData icon,
+    required Color textColor,
+    required Color hintColor,
+    required Color borderColor,
     bool isNumber = false,
+    List<TextInputFormatter>? inputFormatters, // ADDED THIS PARAMETER
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
+        Text(
+            label,
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+                color: textColor.withOpacity(0.7)
+            )
+        ),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
+          // If isNumber is true, bring up number pad
           keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          // Apply the validation formatters here
+          inputFormatters: inputFormatters,
+          style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
-            prefixIcon: Icon(icon, color: Colors.indigo.shade300),
+            hintStyle: TextStyle(color: hintColor, fontSize: 14),
+            prefixIcon: Icon(icon, color: textColor.withOpacity(0.5), size: 20),
             filled: true,
-            fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade200),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: borderColor),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.indigo, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide(color: textColor, width: 1),
             ),
           ),
         ),

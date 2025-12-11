@@ -168,10 +168,6 @@ def forget_password_set_post(request):
     return redirect('/')
 
 
-from django.shortcuts import render
-# Import your models here.
-# Make sure the dot (.) represents the current directory or adjust app name accordingly
-from .models import customer, distributor, product, feedback
 
 
 def admin_home(request):
@@ -237,7 +233,7 @@ def send_review(request):
     obj.USER_id = cid
     obj.DISTRIBUTOR_id = uid
     obj.reviews = reviews
-    obj.rating = int(rating)
+    obj.rating = float  (rating)
     obj.review_date = datetime.datetime.now().date()
     obj.save()
 

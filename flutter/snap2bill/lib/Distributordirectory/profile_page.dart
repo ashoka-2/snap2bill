@@ -170,6 +170,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
+        leading: Icon(Icons.lock),
         backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,

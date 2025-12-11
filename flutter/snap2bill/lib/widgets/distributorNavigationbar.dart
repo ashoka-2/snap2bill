@@ -1,19 +1,29 @@
-// lib/Distributordirectory/home_page.dart
+// lib/widgets/distributorNavigationbar.dart
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
-import '../Distributordirectory/customer_page.dart';
-// Ensure these imports are correct for your project structure
+// Import your distributor pages (adjust paths if needed)
 import '../Distributordirectory/home_page.dart';
-import '../Distributordirectory/profile_page.dart';
 import '../Distributordirectory/search_page.dart';
 import '../Distributordirectory/upload_page.dart';
+import '../Distributordirectory/customer_page.dart';
+import '../Distributordirectory/profile_page.dart';
 
 class DistributorNavigationBar extends StatefulWidget {
-  const DistributorNavigationBar({super.key});
+  /// Allows selecting which tab is active when opening the navbar
+  final int initialIndex;
+
+  /// GlobalKey to access the nav state if it's mounted
+  static final GlobalKey<_DistributorNavigationBarState> navKey =
+  GlobalKey<_DistributorNavigationBarState>();
+
+  /// NOTE: constructor is intentionally NOT const because it uses a runtime key
+  DistributorNavigationBar({
+    Key? key,
+    this.initialIndex = 0,
+  }) : super(key: key);
 
   @override
   State<DistributorNavigationBar> createState() =>
@@ -21,16 +31,8 @@ class DistributorNavigationBar extends StatefulWidget {
 }
 
 class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
-  int _selectedIndex = 0;
-
-  // Define pages here
-  final List<Widget> _pages = [
-    const Home_page(),
-    search_page(),
-    upload_page(),
-    customer_page(),
-    distributor_profile_page(),
-  ];
+  late int _selectedIndex;
+  late final List<Widget> _pages;
 
   final List<Color> tabColors = [
     Colors.purple,
@@ -41,24 +43,35 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initialIndex.clamp(0, 4);
+    _pages = const [
+      Home_page(),
+      search_page(),
+      upload_page(),
+      customer_page(),
+      distributor_profile_page(),
+    ];
+  }
+
+  /// Programmatically change tab when mounted
+  void openTab(int index) {
+    if (!mounted) return;
+    if (index < 0 || index >= _pages.length) return;
+    setState(() => _selectedIndex = index);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 1. Detect Theme Brightness
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    // 2. Define Dynamic Colors
-    // Inactive Icon Color: White if dark mode, Black if light mode
     final inactiveIconColor = isDark ? Colors.white : Colors.black;
-
-    // Border Color: Lighter border for visibility in dark mode
-    final borderColor = isDark
-        ? Colors.white.withOpacity(0.2)
-        : Colors.black.withOpacity(0.2);
-
-    // Container Background: Use dark tint for dark mode, light tint for light mode
-    final glassColor = isDark
-        ? Colors.black.withOpacity(0.4)
-        : Colors.white.withOpacity(0.1);
+    final borderColor =
+    isDark ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.2);
+    final glassColor =
+    isDark ? Colors.black.withOpacity(0.4) : Colors.white.withOpacity(0.1);
 
     return Scaffold(
       extendBody: true,
@@ -68,22 +81,17 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(50),
           child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8.0, sigmaY: 8.0),
+            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: Container(
               decoration: BoxDecoration(
-                color: glassColor, // Updated dynamic background
+                color: glassColor,
                 borderRadius: BorderRadius.circular(50),
-                border: Border.all(
-                  color: borderColor, // Updated dynamic border
-                  width: 1.5,
-                ),
+                border: Border.all(color: borderColor, width: 1.5),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10.0,
-                    vertical: 8,
-                  ),
+                  padding:
+                  const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
                   child: GNav(
                     rippleColor: isDark
                         ? Colors.white.withOpacity(0.1)
@@ -95,17 +103,11 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
                     activeColor: tabColors[_selectedIndex],
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 10,
-                    ),
+                        horizontal: 12, vertical: 10),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor: tabColors[_selectedIndex].withOpacity(
-                      0.15,
-                    ),
-
-                    // --- THE FIX IS HERE ---
-                    color: inactiveIconColor, // Switches between White/Black
-                    // -----------------------
+                    tabBackgroundColor:
+                    tabColors[_selectedIndex].withOpacity(0.15),
+                    color: inactiveIconColor,
                     tabs: const [
                       GButton(icon: LineIcons.home, text: 'Home'),
                       GButton(icon: LineIcons.search, text: 'Search'),
@@ -115,9 +117,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
                     ],
                     selectedIndex: _selectedIndex,
                     onTabChange: (index) {
-                      setState(() {
-                        _selectedIndex = index;
-                      });
+                      setState(() => _selectedIndex = index);
                     },
                   ),
                 ),
