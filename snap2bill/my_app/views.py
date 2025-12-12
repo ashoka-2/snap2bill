@@ -634,7 +634,7 @@ def login_page(request):
             print(request.user.id)
             if data.groups.filter(name="distributor").exists():
                 print("Distributor")
-                if distributor.objects.filter(LOGIN=request.user.id,status="approve").exists():
+                if distributor.objects.filter(LOGIN=request.user.id, status__in=['approve', 'pending']).exists():
                     uid = distributor.objects.get(LOGIN=request.user.id).id
                     return JsonResponse({'status':'distok','uid':str(uid)}, status=200)
                 else:
@@ -968,52 +968,55 @@ def customer_view_distributor(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+import datetime
+from django.http import JsonResponse
 
+
+# Import your models: order, order_sub
 
 def addorder(request):
-    cid = request.POST['cid']
-    uid = request.POST['uid']
+    cid = request.POST['cid']  # Customer ID
+    distributor_id = request.POST['uid']  # Distributor ID (passed from App)
+    product_stock_id = request.POST['id']  # Stock/Product ID
+    quantity = request.POST['quantity']
 
-    id=request.POST['id']
-
-    obj1=order()
-    obj1.orders = order
+    # 1. Create the Main Order Header
+    obj1 = order()
     obj1.payment_status = 'pending'
     obj1.payment_date = datetime.datetime.now().date()
     obj1.date = datetime.datetime.now().date()
     obj1.USER_id = cid
-    obj1.DISTRIBUTOR_id = uid
+    obj1.DISTRIBUTOR_id = distributor_id
+    # Calculate amount logic should be here, e.g., price * quantity
+    # obj1.amount = ...
     obj1.save()
 
-    quantity = request.POST['quantity']
-    obj=order_sub()
-    obj.quantity=quantity
-    obj.ORDER_id=obj1.id
-    obj.STOCK_id=id
+    # 2. Create the Sub Order (Item Details)
+    obj = order_sub()
+    obj.quantity = quantity
+    obj.ORDER_id = obj1.id
+    obj.STOCK_id = product_stock_id
     obj.save()
-    return JsonResponse({'status':'ok'})
 
-
+    return JsonResponse({'status': 'ok'})
 
 
 def view_orders(request):
-    id = request.POST['orderid']
-    data = order_sub.objects.filter()
+    cid = request.POST.get('cid')
+    data = order_sub.objects.filter(ORDER__USER__id=cid)
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
             'payment_status': i.ORDER.payment_status,
-            'payment_date': i.ORDER.payment_date,
-            'date': i.ORDER.date,
+            'payment_date': str(i.ORDER.payment_date),
+            'date': str(i.ORDER.date),
             'amount': i.ORDER.amount,
-            'username': i.ORDER.USER.name ,
+            'username': i.ORDER.USER.name,
             'distributor': i.ORDER.DISTRIBUTOR.name,
-            'orderid':i.ORDER.id,
+            'orderid': i.ORDER.id,
         })
-
     return JsonResponse({'status': 'ok', 'data': ar})
-
 
 def edit_order(request):
     id=request.POST['id']
@@ -1028,26 +1031,23 @@ def delete_order(request):
     return JsonResponse({"status": "ok"})
 
 
-
 def view_distributor_orders(request):
     uid = request.POST['uid']
-    data = order.objects.filter(DISTRIBUTOR_id=uid)
+    data = order_sub.objects.filter(ORDER__DISTRIBUTOR__id=uid)
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
-            'payment_status': i.payment_status,
-            'payment_date': i.payment_date,
-            'date': i.date,
-            'amount': i.amount,
-            'username': i.USER.name ,
-            'distributor': i.DISTRIBUTOR.name
+            'payment_status': i.ORDER.payment_status,
+            'payment_date': str(i.ORDER.payment_date) if i.ORDER.payment_date else "Pending",
+            'date': str(i.ORDER.date),
+            'amount': i.ORDER.amount,
+            'username': i.ORDER.USER.name,
+            'distributor': i.ORDER.DISTRIBUTOR.name,
+            
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
-
-
-
 def make_payment(requst):
     cid = requst.POST['cid']
     amount = requst.POST['amount']

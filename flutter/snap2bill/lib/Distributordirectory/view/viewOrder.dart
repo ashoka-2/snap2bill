@@ -240,7 +240,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
         Joke newOrder = Joke(
           item["id"].toString(),
           item["payment_status"].toString(),
-          item["payment_date"].toString(),
+          item["payment_date"] == null || item["payment_date"] == "null" ? "Pending" : item["payment_date"].toString(),
           item["date"].toString(),
           item["amount"].toString(),
           item["username"].toString(),

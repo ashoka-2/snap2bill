@@ -248,6 +248,8 @@ class _view_distributorsState extends State<view_distributors> {
   Future<List<Joke>> _getDistributors() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? ip = prefs.getString("ip");
+    // 1. Capture the current user's ID here for sorting
+    String? currentUid = prefs.getString("uid");
 
     if (ip == null) return [];
 
@@ -255,7 +257,7 @@ class _view_distributorsState extends State<view_distributors> {
       var data = await http.post(
           Uri.parse("$ip/distributor_view_distributor"),
           body: {
-            "uid": prefs.getString("uid") ?? ""
+            "uid": currentUid ?? ""
           }
       );
 
@@ -287,13 +289,24 @@ class _view_distributorsState extends State<view_distributors> {
         );
         distributors.add(newDistributor);
       }
+
+      // --- ADDED: SORTING LOGIC ---
+      // This moves the user with 'currentUid' to the front (index 0)
+      if (currentUid != null) {
+        distributors.sort((a, b) {
+          if (a.id == currentUid) return -1; // 'a' moves up
+          if (b.id == currentUid) return 1;  // 'b' moves up
+          return 0; // Keep others in original order
+        });
+      }
+      // ----------------------------
+
       return distributors;
     } catch (e) {
       debugPrint("Error: $e");
       return [];
     }
   }
-
   String _joinUrl(String base, String path) {
     if (path.isEmpty || path == "null") return "";
     if (base.endsWith("/") && path.startsWith("/")) return base + path.substring(1);
