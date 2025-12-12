@@ -8,7 +8,6 @@ import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 import 'package:snap2bill/Distributordirectory/view/view_feedback.dart';
 import 'package:snap2bill/Distributordirectory/view/view_product.dart';
 import 'package:snap2bill/Distributordirectory/password/changePassword.dart';
-import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 
 class Home_page extends StatelessWidget {
   const Home_page({super.key});
@@ -80,14 +79,6 @@ class Home_page extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) => changePassword()));
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.list),
-              title: const Text("View orders"),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (context) => viewOrder()));
               },
             ),
           ],
