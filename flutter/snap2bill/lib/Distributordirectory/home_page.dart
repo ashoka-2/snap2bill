@@ -1,5 +1,6 @@
 // lib/Distributordirectory/home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 
 // Imports for your navigation
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
@@ -79,6 +80,14 @@ class Home_page extends StatelessWidget {
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(context, MaterialPageRoute(builder: (context) => changePassword()));
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.list),
+              title: const Text("View orders"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(context, MaterialPageRoute(builder: (context) => viewOrder()));
               },
             ),
           ],

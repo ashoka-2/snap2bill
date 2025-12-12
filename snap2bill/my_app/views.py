@@ -1021,10 +1021,12 @@ def edit_order(request):
     order_sub.objects.filter(id=id).update(quantity=quantity)
     return JsonResponse({"status":"ok"})
 
+
 def delete_order(request):
-    id=request.POST['orderid']
-    order_sub.objects.filter(id=id).delete()
+    id = request.POST.get('id')
+    order.objects.filter(id=id).delete()
     return JsonResponse({"status": "ok"})
+
 
 
 def view_distributor_orders(request):
