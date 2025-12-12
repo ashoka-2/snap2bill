@@ -1,5 +1,5 @@
 import datetime
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login , logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
@@ -13,6 +13,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 # Create your views here
+from django.views.decorators.csrf import csrf_exempt
+
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment
 
 print(make_password("password"))
@@ -23,6 +25,17 @@ def log(request):
 
 def logout(request):
     return render(request, 'login.html')
+
+@csrf_exempt
+def logout_view(request):
+    try:
+        logout(request)
+        return JsonResponse({'status': 'ok', 'message': 'Logged out successfully'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
 
 def login_post(request):
     un = request.POST['username']
@@ -622,7 +635,7 @@ def view_category(request):
 
 
 
-
+@csrf_exempt
 def login_page(request):
     un = request.POST['username']
     psw = request.POST['password']
@@ -790,10 +803,31 @@ def distributor_view_product(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+def view_other_products(request):
+    uid = request.POST.get('uid')
 
+    # 1. Validation (Optional but good practice)
+    if not uid:
+        return JsonResponse({'status': 'error', 'message': 'UID is missing'})
 
+    # 2. Logic: Get stocks NOT belonging to this distributor
+    data = stock.objects.exclude(DISTRIBUTOR__id=uid)
 
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            # FIXED: Access details via the PRODUCT relationship
+            'name': i.PRODUCT.product_name,
+            'price': i.price,  # Price is usually specific to the stock/distributor
+            'description': i.PRODUCT.description,
+            'image': str(i.PRODUCT.image),
 
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_id': i.DISTRIBUTOR.id,
+        })
+
+    return JsonResponse({'status': 'ok', 'data': ar})
 
 
 def distributor_products(request):
@@ -1044,7 +1078,7 @@ def view_distributor_orders(request):
             'amount': i.ORDER.amount,
             'username': i.ORDER.USER.name,
             'distributor': i.ORDER.DISTRIBUTOR.name,
-            
+
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
