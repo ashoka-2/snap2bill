@@ -259,12 +259,17 @@ class _Home_pageState extends State<Home_page> {
   Widget _buildDrawer(BuildContext context, bool isDark, Color textColor) {
     return Drawer(
       backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+      // backgroundColor: Colors.transparent,
       child: ListView(
-        padding: EdgeInsets.zero,
+        // padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-
-            decoration: BoxDecoration( color: isDark ? const Color(0xFF2C2C2C) : Colors.brown),
+            margin: EdgeInsets.zero,
+            // padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
+            decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF2C2C2C) : Colors.grey.shade200,
+              // color: Colors.transparent,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
@@ -273,9 +278,9 @@ class _Home_pageState extends State<Home_page> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(children: [
-                      const Icon(Icons.storefront, color: Colors.white, size: 40),
+                      Icon(Icons.storefront, color:isDark?Colors.white:Colors.black.withValues(alpha: 0.7), size: 40),
                       const SizedBox(width: 10),
-                      const Text("Menu", style: TextStyle(color: Colors.white, fontSize: 24)),
+                       Text("Menu", style: TextStyle(color:isDark?Colors.white:Colors.black.withValues(alpha: 0.7), fontSize: 24)),
                     ],),
 
                     Column(
@@ -283,13 +288,14 @@ class _Home_pageState extends State<Home_page> {
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(50),
-                            color: Colors.grey,
+                            color: Colors.grey.withValues(alpha: 0.5),
+                            border: Border.all(width: 1,color: Colors.grey)
 
                           ),
                           child: IconButton(
                             icon:  Icon(
                               ThemeService.instance.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-                              color: textColor,
+                              color: Colors.white,
 
                             ),
 
@@ -308,80 +314,89 @@ class _Home_pageState extends State<Home_page> {
               ],
             ),
           ),
+        // SizedBox(height: 100,),
+        SingleChildScrollView(
+          child: Container(
+            margin: EdgeInsets.only(bottom: 100),
+            padding: EdgeInsets.all(20),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(30),
+              child: Column(children: [
+                _drawerItem(context,isDark, Icons.people_alt_outlined, "Distributors", () => view_distributors(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context,isDark ,  Icons.inventory_2_outlined, "My Products", () => myProducts(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context, isDark , Icons.shopping_bag_outlined, "All Products", () => view_product(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context, isDark , Icons.list_alt, "Orders", () => viewOrder(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context,isDark ,  Icons.category_outlined, "Category", () => view_category(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context,isDark ,  Icons.feedback_outlined, "Feedback", () => view_feedback(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context,isDark,  Icons.lock_outline, "Change Password", () => changePassword(), textColor),
+                SizedBox(height: 3,),
+                _drawerItem(context,isDark ,  Icons.logout, "Logout", () async {
+                  Navigator.pop(context);
 
-          _drawerItem(context, Icons.category, "Category", () => view_category(), textColor),
-          _drawerItem(context, Icons.people, "Distributors", () => view_distributors(), textColor),
-          _drawerItem(context, Icons.inventory, "My Products", () => myProducts(), textColor),
-          _drawerItem(context, Icons.shopping_bag, "All Products", () => view_product(), textColor),
-          _drawerItem(context, Icons.list_alt, "Orders", () => viewOrder(), textColor),
-          const Divider(),
-          _drawerItem(context, Icons.feedback, "Feedback", () => view_feedback(), textColor),
-          _drawerItem(context, Icons.lock, "Change Password", () => changePassword(), textColor),
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  String? savedIp = prefs.getString("ip");
 
-          // --- THEME TOGGLE BUTTON ---
-          ListTile(
-            leading: Icon(
-              // Logic: If Dark mode is ON, show Sun icon. If Light, show Moon.
-              ThemeService.instance.isDarkMode ? Icons.light_mode : Icons.dark_mode,
-              color: textColor,
+                  if (savedIp != null) {
+                    try {
+                      await http.get(Uri.parse("$savedIp/logout_view"));
+                    } catch (e) {
+                      debugPrint("Server logout failed (ignoring): $e");
+                    }
+                  }
+
+                  await prefs.clear();
+
+                  if (savedIp != null) {
+                    await prefs.setString("ip", savedIp);
+                  }
+
+                  if (!context.mounted) return;
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const login_page()),
+                        (route) => false,
+                  );
+                }, Colors.red),
+
+              ],),
             ),
-            title: Text(
-              ThemeService.instance.isDarkMode ? "Light Mode" : "Dark Mode",
-              style: TextStyle(color: textColor),
-            ),
-            onTap: () {
-              // 1. Close the drawer
-              Navigator.pop(context);
-              // 2. Call the static method in MyApp (main.dart)
-              MyApp.changeTheme(context);
-            },
           ),
-
-          // --- LOGOUT BUTTON ---
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.redAccent),
-            title: const Text("Logout", style: TextStyle(color: Colors.redAccent)),
-            onTap: () async {
-              Navigator.pop(context);
-
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              String? savedIp = prefs.getString("ip");
-
-              if (savedIp != null) {
-                try {
-                  await http.get(Uri.parse("$savedIp/logout_view"));
-                } catch (e) {
-                  debugPrint("Server logout failed (ignoring): $e");
-                }
-              }
-
-              await prefs.clear();
-
-              if (savedIp != null) {
-                await prefs.setString("ip", savedIp);
-              }
-
-              if (!context.mounted) return;
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => const login_page()),
-                    (route) => false,
-              );
-            },
-          ),
+        )
         ],
       ),
     );
   }
 
-  Widget _drawerItem(BuildContext context, IconData icon, String title, Function() onTap, Color color) {
-    return ListTile(
-      leading: Icon(icon, color: color),
-      title: Text(title, style: TextStyle(color: color)),
-      onTap: () {
-        Navigator.pop(context);
-        Navigator.push(context, MaterialPageRoute(builder: (context) => onTap()));
-      },
+  Widget _drawerItem(BuildContext context, isDark ,IconData icon, String title, Function() onTap, Color color) {
+    return InkWell(
+        onTap: () {
+          Navigator.pop(context);
+          Navigator.push(context, MaterialPageRoute(builder: (context) => onTap()));
+        },
+      child: Container(
+        padding: EdgeInsets.only(top: 20,bottom: 20,left: 20,right: 20),
+        // padding: EdgeInsets.all(20),
+        decoration: BoxDecoration(
+
+        color: isDark ? Colors.grey.shade800:Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(5)
+        ),
+
+          child: Row(
+              children: [
+                Icon(icon,color:color),
+                SizedBox(width: 10,),
+                Text(title,style: TextStyle(color: color),)
+
+              ],
+          ),
+        ),
     );
   }
 }
