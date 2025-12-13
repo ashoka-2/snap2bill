@@ -895,6 +895,7 @@ def customer_view_products(request):
     ar = []
     for i in data:
         ar.append({
+            'distributor_id':i.DISTRIBUTOR.id,
             'distributor_name':i.DISTRIBUTOR.name,
             'distributor_image':i.DISTRIBUTOR.profile_image,
             'distributor_phone':i.DISTRIBUTOR.phone,

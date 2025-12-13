@@ -973,6 +973,8 @@ class _Home_pageState extends State<Home_page> {
     );
   }
 
+
+
   // --- DRAWER WITH THEME TOGGLE (EXACTLY AS PROVIDED BY USER) ---
   Widget _buildDrawer(BuildContext context, bool isDark, Color textColor) {
     return Drawer(
@@ -1115,7 +1117,12 @@ class _Home_pageState extends State<Home_page> {
       ),
     );
   }
+
+
 }
+
+
+
 
 // --- CATEGORY MODEL ---
 class CategoryModel {
