@@ -32,11 +32,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="16548">
-                  <caret line="805" column="17" lean-forward="false" selection-start-line="805" selection-start-column="17" selection-end-line="805" selection-end-column="17" />
+                <state relative-caret-position="84">
+                  <caret line="805" column="0" lean-forward="false" selection-start-line="805" selection-start-column="0" selection-end-line="836" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -44,10 +44,10 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="215">
+                <state relative-caret-position="26">
                   <caret line="28" column="42" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
                   <folding />
                 </state>
@@ -61,8 +61,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="294">
-                  <caret line="29" column="15" lean-forward="false" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="15" />
+                <state relative-caret-position="367">
+                  <caret line="905" column="0" lean-forward="false" selection-start-line="905" selection-start-column="0" selection-end-line="906" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#15#0" expanded="true" />
                   </folding>
@@ -163,8 +163,8 @@
         <option value="$PROJECT_DIR$/templates/admin/admin_home.html" />
         <option value="$PROJECT_DIR$/static/admin/customerpage.css" />
         <option value="$PROJECT_DIR$/my_app/models.py" />
-        <option value="$PROJECT_DIR$/my_app/views.py" />
         <option value="$PROJECT_DIR$/snap2bill/urls.py" />
+        <option value="$PROJECT_DIR$/my_app/views.py" />
       </list>
     </option>
   </component>
@@ -566,7 +566,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27147767" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.27147767" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28064147" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18743287" sideWeight="0.13974799" order="2" side_tool="true" content_ui="tabs" />
@@ -950,21 +950,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/views.py">
+    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="29" column="15" lean-forward="false" selection-start-line="29" selection-start-column="4" selection-end-line="29" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="26">
+          <caret line="28" column="42" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
+    <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="28" column="42" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="29" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="84">
+          <caret line="805" column="0" lean-forward="false" selection-start-line="805" selection-start-column="0" selection-end-line="836" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

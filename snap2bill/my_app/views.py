@@ -825,6 +825,12 @@ def view_other_products(request):
 
             'distributor_name': i.DISTRIBUTOR.name,
             'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_image':i.DISTRIBUTOR.profile_image,
+            'phone': i.DISTRIBUTOR.phone,
+            'quantity': i.quantity,
+
+            'CATEGORY': i.PRODUCT.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
