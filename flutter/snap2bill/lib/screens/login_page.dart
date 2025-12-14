@@ -1266,6 +1266,7 @@ class _login_pageState extends State<login_page>
     final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
     final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
     final iconColor = isDark?AppColors.iconColorDark:AppColors.iconColorLight;
+    final primaryColor = isDark?AppColors.primaryLight:AppColors.primaryDark;
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(
@@ -1376,7 +1377,7 @@ class _login_pageState extends State<login_page>
                               fillColor: inputFill,
                               textColor: textColor,
                               hintColor: subTextColor,
-                              themePrimary: AppColors.iconColorDark,
+                              themePrimary:iconColor,
                             ),
 
                             // SPECIFIC ERROR MESSAGE DISPLAY
@@ -1417,7 +1418,7 @@ class _login_pageState extends State<login_page>
                                 child: Text(
                                   "Forgot password?",
                                   style: TextStyle(
-                                    color: theme.primaryColor,
+                                    color: primaryColor,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -1479,7 +1480,7 @@ class _login_pageState extends State<login_page>
                                         ),
                                       );
                                     },
-                                    theme.primaryColor,
+                                    primaryColor,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -1495,7 +1496,7 @@ class _login_pageState extends State<login_page>
                                         const RegistrationPage(isDistributor: false),
                                       ),
                                     );
-                                  }, theme.primaryColor),
+                                  }, primaryColor),
                                 ],
                               ),
                             ),

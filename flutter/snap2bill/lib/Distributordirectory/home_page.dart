@@ -24,7 +24,9 @@ import 'package:snap2bill/widgets/product_card.dart';
 import '../data/category_service.dart';
 import '../data/product_service.dart';
 // NEW IMPORT
-import 'package:snap2bill/widgets/custom_drawer.dart'; // Import CustomDrawer (which includes DrawerItemModel)
+import 'package:snap2bill/widgets/custom_drawer.dart';
+
+import '../widgets/product_feed.dart'; // Import CustomDrawer (which includes DrawerItemModel)
 
 class Home_page extends StatefulWidget {
   const Home_page({Key? key}) : super(key: key);
@@ -184,20 +186,15 @@ class _Home_pageState extends State<Home_page> {
 
               /// PRODUCT FEED
               Expanded(
-                child: filteredProducts.isEmpty
-                    ? const Center(child: Text("No products found"))
-                    : ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    return ProductCard(
-                      product: filteredProducts[index],
-                      showAddToCart: false, // DISTRIBUTOR VIEW
-                    );
-                  },
+                child: ProductFeedWidget(
+                  // Pass the calculated list
+                  filteredProducts: filteredProducts,
+                  // Distributor does NOT see 'Add to Cart'
+                  showAddToCart: false,
+                  // Pass loading state
+                  isLoading: _isLoading,
                 ),
-              ),
-            ],
+              ),            ],
           ),
         ),
       ),

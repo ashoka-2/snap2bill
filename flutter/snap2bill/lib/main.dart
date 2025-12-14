@@ -208,14 +208,15 @@ class _MyApp_subState extends State<MyApp_sub> {
                         children: [
                           CircleAvatar(
                               radius: 60,
-                              backgroundColor: Colors.black,
+                              backgroundColor: Colors.transparent,
                               child: SvgPicture.asset('assets/images/snap2bill_logo.svg',height:100,)),
                           SizedBox(height: 10,),
                           Text(
                             "Enter Your IP Address",
+
                             style: GoogleFonts.montserrat(
                               color: AppColors.primaryLight,
-                              fontSize: 25,
+                              fontSize: 20,
                             ),
                           ),
 

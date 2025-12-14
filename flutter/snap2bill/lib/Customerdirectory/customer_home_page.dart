@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
 
 // Import all required navigation classes
+import '../widgets/product_feed.dart';
 import 'Customersends/addOrder.dart';
 import 'custviews/viewOrder.dart';
 import 'custviews/view_product.dart';
@@ -176,20 +177,15 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
 
               /// PRODUCT FEED
               Expanded(
-                child: filteredProducts.isEmpty
-                    ? const Center(child: Text("No products found"))
-                    : ListView.builder(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    return ProductCard(
-                      product: filteredProducts[index],
-                      showAddToCart: true,
-                    );
-                  },
+                child: ProductFeedWidget(
+                  // Pass the calculated list
+                  filteredProducts: filteredProducts,
+                  // Customer sees 'Add to Cart'
+                  showAddToCart: true,
+                  // Pass loading state
+                  isLoading: _isLoading,
                 ),
-              ),
-            ],
+              ),            ],
           ),
         ),
       ),

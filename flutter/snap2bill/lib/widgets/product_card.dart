@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// NOTE: ReadMoreText must be available in your project dependencies.
 import 'package:readmore/readmore.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 import '../data/dataModels.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
 import '../Distributordirectory/view/ViewDistributorProfile.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final ProductData product;
-
-  /// true  -> Customer (show Add to Cart button/menu item)
-  /// false -> Distributor (hide Add to Cart button/menu item)
   final bool showAddToCart;
 
   const ProductCard({
@@ -20,32 +17,81 @@ class ProductCard extends StatelessWidget {
     required this.showAddToCart,
   }) : super(key: key);
 
-  // Helper function for UI feedback on action bar taps
-  void _showSnackBar(BuildContext context, String message, Color color) {
+  @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  bool isLiked = false;
+  bool showCenterHeart = false;
+
+  // ---------- Snackbar ----------
+  void _showSnackBar(String message, Color color) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: color,
-        duration: const Duration(seconds: 1),
+        duration: const Duration(milliseconds: 800),
       ),
     );
   }
 
-  // Function to show the three-dot options menu
-  void _showOptionsMenu(BuildContext context, Color textColor, Color cardColor, Color primaryColor) {
+  // ---------- Wishlist Toggle (Single Source of Truth) ----------
+  void _toggleWishlist({bool fromDoubleTap = false}) {
+    if (!isLiked) {
+      setState(() {
+        isLiked = true;
+        if (fromDoubleTap) showCenterHeart = true;
+      });
+
+      if (fromDoubleTap) {
+        Future.delayed(const Duration(milliseconds: 700), () {
+          if (mounted) setState(() => showCenterHeart = false);
+        });
+      }
+
+      _showSnackBar(
+        "Added ${widget.product.productName} to Wishlist",
+        AppColors.dangerColor,
+      );
+    } else {
+      setState(() => isLiked = false);
+      _showSnackBar(
+        "Removed ${widget.product.productName} from Wishlist",
+        Colors.grey,
+      );
+    }
+  }
+
+  // ---------- Distributor Profile ----------
+  void _viewDistributorProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ViewDistributorProfile(
+          distributorId: widget.product.distributorId,
+          distributorName: widget.product.distributorName,
+        ),
+      ),
+    );
+  }
+
+  // ---------- Popup Menu ----------
+  void _showOptionsMenu(
+      BuildContext context, Color textColor, Color cardColor) {
     final RenderBox button = context.findRenderObject() as RenderBox;
-    final Offset buttonPosition = button.localToGlobal(Offset.zero);
+    final Offset pos = button.localToGlobal(Offset.zero);
 
     showMenu<String>(
       context: context,
       position: RelativeRect.fromRect(
-        buttonPosition & button.size,
+        pos & button.size,
         Offset.zero & MediaQuery.of(context).size,
-      ).shift(const Offset(-10, 0)),
-
+      ),
+      color: cardColor,
       items: [
-        PopupMenuItem<String>(
-          value: 'view_profile',
+        PopupMenuItem(
+          value: 'profile',
           child: Row(
             children: [
               Icon(Icons.person_outline, color: textColor),
@@ -54,78 +100,60 @@ class ProductCard extends StatelessWidget {
             ],
           ),
         ),
-        // Add to Cart for Customer
-        if (showAddToCart)
-          PopupMenuItem<String>(
+        if (widget.showAddToCart)
+          PopupMenuItem(
             value: 'cart',
             child: Row(
               children: [
-                Icon(Icons.shopping_cart, size: 18, color: textColor),
+                Icon(Icons.shopping_cart, color: textColor),
                 const SizedBox(width: 8),
                 Text('Add to Cart', style: TextStyle(color: textColor)),
               ],
             ),
           ),
-
-        // Wishlist for both
-        PopupMenuItem<String>(
+        PopupMenuItem(
           value: 'wishlist',
           child: Row(
             children: [
-              Icon(Icons.favorite_border, size: 18, color: textColor),
+              Icon(
+                isLiked ? Icons.favorite : Icons.favorite_border,
+                color: isLiked ? Colors.red : textColor,
+              ),
               const SizedBox(width: 8),
-              Text('Add to Wishlist', style: TextStyle(color: textColor)),
+              Text(
+                isLiked ? 'Remove from Wishlist' : 'Add to Wishlist',
+                style: TextStyle(color: textColor),
+              ),
             ],
           ),
         ),
-
-        // Share for both
-        PopupMenuItem<String>(
+        PopupMenuItem(
           value: 'share',
           child: Row(
             children: [
-              Icon(Icons.share, size: 18, color: textColor),
+              Icon(Icons.share, color: textColor),
               const SizedBox(width: 8),
-              Text('Share Product', style: TextStyle(color: textColor)),
+              Text('Share', style: TextStyle(color: textColor)),
             ],
           ),
         ),
       ],
-      elevation: 8.0,
-      color: cardColor,
     ).then((value) async {
-      if (value == 'view_profile') {
-        _viewDistributorProfile(context);
+      if (value == 'profile') {
+        _viewDistributorProfile();
       } else if (value == 'cart') {
         final prefs = await SharedPreferences.getInstance();
-        prefs.setString("pid", product.id);
-        prefs.setString("uid", product.distributorId);
-
-        if (!context.mounted) return;
+        prefs.setString("pid", widget.product.id);
+        prefs.setString("uid", widget.product.distributorId);
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(builder: (_) => const addOrder()),
         );
       } else if (value == 'wishlist') {
-        if (!context.mounted) return;
-        _showSnackBar(context, "Added ${product.productName} to Wishlist", primaryColor);
-      } else if (value == 'share') {
-        if (!context.mounted) return;
-        _showSnackBar(context, "Sharing ${product.productName}...", primaryColor);
+        _toggleWishlist();
       }
     });
-  }
-
-  void _viewDistributorProfile(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (_) => ViewDistributorProfile(
-          distributorId: product.distributorId,
-          distributorName: product.distributorName,
-        ),
-      ),
-    );
   }
 
   @override
@@ -133,203 +161,155 @@ class ProductCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
-    final subTextColor =
-    isDark ? Colors.grey.shade400 : Colors.grey.shade600;
+    final subText = isDark ? Colors.grey.shade400 : Colors.grey.shade600;
     final cardColor = theme.cardColor;
     final primaryColor = theme.primaryColor;
+    final btnColor = isDark?AppColors.primaryDark:AppColors.primaryLight;
 
     return Card(
       margin: const EdgeInsets.fromLTRB(10, 0, 10, 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// ---------- 1. HEADER (Distributor Info + 3-dot Menu) ----------
+          // ---------- HEADER ----------
           ListTile(
-            onTap: () => _viewDistributorProfile(context),
-
+            onTap: _viewDistributorProfile,
             leading: CircleAvatar(
-              backgroundColor:
-              isDark ? Colors.grey.shade700 : Colors.grey.shade300,
-              backgroundImage: product.distributorImage.isNotEmpty
-                  ? NetworkImage(product.distributorImage)
+              backgroundImage: widget.product.distributorImage.isNotEmpty
+                  ? NetworkImage(widget.product.distributorImage)
                   : null,
-              child: product.distributorImage.isEmpty
+              child: widget.product.distributorImage.isEmpty
                   ? const Icon(Icons.store)
                   : null,
             ),
-            title: Text(
-              product.distributorName,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-            ),
-            subtitle: product.distributorPhone.isNotEmpty
-                ? Text(
-              product.distributorPhone,
-              style: TextStyle(color: subTextColor, fontSize: 12),
-            )
+            title: Text(widget.product.distributorName,
+                style:
+                TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+            subtitle: widget.product.distributorPhone.isNotEmpty
+                ? Text(widget.product.distributorPhone,
+                style: TextStyle(color: subText, fontSize: 12))
                 : null,
-
-            // Trailing button for the 3-dot menu
             trailing: Builder(
-              builder: (menuContext) {
-                return IconButton(
-                  icon: Icon(Icons.more_vert, color: textColor),
-                  onPressed: () => _showOptionsMenu(menuContext, textColor, cardColor, primaryColor),
-                );
-              },
+              builder: (ctx) => IconButton(
+                icon: Icon(Icons.more_vert, color: textColor),
+                onPressed: () =>
+                    _showOptionsMenu(ctx, textColor, cardColor),
+              ),
             ),
           ),
 
-          /// ---------- 2. IMAGE + PRICE OVERLAY ----------
+          // ---------- IMAGE + DOUBLE TAP ----------
           Stack(
+            alignment: Alignment.center,
             children: [
-              AspectRatio(
-                aspectRatio: 1,
-                child: product.image.isNotEmpty
-                    ? Image.network(
-                  product.image,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Center(
-                    child: Icon(Icons.broken_image,
-                        color: subTextColor, size: 40),
+              GestureDetector(
+                onDoubleTap: () {
+                  if (!isLiked) _toggleWishlist(fromDoubleTap: true);
+                },
+                child: AspectRatio(
+                  aspectRatio: 1,
+                  child: Image.network(
+                    widget.product.image,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade300,
+                      child: const Icon(Icons.broken_image, size: 40),
+                    ),
                   ),
-                )
-                    : Container(
-                  color: isDark
-                      ? Colors.grey.shade800
-                      : Colors.grey.shade200,
                 ),
               ),
 
-              // PRICE PILL (Right Bottom Corner)
-              if (product.price.isNotEmpty)
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.9), // Pill background
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      "₹${product.price}",
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w900,
-                        fontSize: 14,
-                        color: Colors.white,
-                      ),
-                    ),
+              // ❤️ Center Heart Animation
+              AnimatedOpacity(
+                duration: const Duration(milliseconds: 300),
+                opacity: showCenterHeart ? 1 : 0,
+                child: AnimatedScale(
+                  duration: const Duration(milliseconds: 300),
+                  scale: showCenterHeart ? 1.2 : 0.6,
+                  child: const Icon(
+                    Icons.favorite,
+                    color: Colors.red,
+                    size: 120,
                   ),
                 ),
+              ),
             ],
           ),
 
-          /// ---------- 3. ACTION BAR (Wishlist + Share + Add to Cart Button) ----------
+          // ---------- ACTION BAR ----------
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
               children: [
-                // Wishlist Icon
-                IconButton(
-                  icon: Icon(Icons.favorite_border, color: textColor),
-                  onPressed: () {
-                    _showSnackBar(context, "Added ${product.productName} to Wishlist", primaryColor);
-                  },
-                  tooltip: 'Wishlist',
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: IconButton(
+                    key: ValueKey(isLiked),
+                    icon: Icon(
+                      isLiked
+                          ? Icons.favorite
+                          : Icons.favorite_outline_rounded,
+                      color: isLiked ? Colors.red : textColor,
+                      size: 30,
+                    ),
+                    onPressed: _toggleWishlist,
+                  ),
                 ),
-
-                // Share Icon
                 IconButton(
                   icon: Icon(Icons.share_outlined, color: textColor),
-                  onPressed: () {
-                    _showSnackBar(context, "Sharing ${product.productName}...", primaryColor);
-                  },
-                  tooltip: 'Share',
+                  onPressed: () =>
+                      _showSnackBar("Sharing...", primaryColor),
                 ),
-
                 const Spacer(),
-
-                /// ---------- Add to Cart Button (CUSTOMER ONLY) ----------
-                if (showAddToCart)
+                if (widget.showAddToCart)
                   FilledButton.icon(
-                    icon: const Icon(Icons.shopping_cart_outlined, size: 18),
-                    label: const Text("Add to Cart"),
+                    style: FilledButton.styleFrom(backgroundColor: btnColor),
+                    icon: Icon(Icons.shopping_cart_outlined,color: textColor,),
+                    label: Text("Add to Cart",style: TextStyle(color:textColor ),),
                     onPressed: () async {
                       final prefs =
                       await SharedPreferences.getInstance();
-
-                      prefs.setString("pid", product.id);
-                      prefs.setString("uid", product.distributorId);
-
-                      if (!context.mounted) return;
-
+                      prefs.setString("pid", widget.product.id);
+                      prefs.setString("uid", widget.product.distributorId);
+                      if (!mounted) return;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (_) => const addOrder(),
-                        ),
+                            builder: (_) => const addOrder()),
                       );
                     },
-                    style: FilledButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      visualDensity: VisualDensity.compact,
-                    ),
                   ),
               ],
             ),
           ),
 
-          /// ---------- 4. DETAILS (Category, Name, Description) ----------
+          // ---------- DETAILS ----------
           Padding(
-            padding: const EdgeInsets.fromLTRB(12, 0, 12, 16),
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// CATEGORY
-                Text(
-                  product.categoryName.toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                    letterSpacing: 1,
-                  ),
-                ),
+                Text(widget.product.categoryName.toUpperCase(),
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor)),
                 const SizedBox(height: 4),
-
-                /// PRODUCT NAME
-                Text(
-                  product.productName,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: textColor,
-                  ),
-                ),
-
+                Text(widget.product.productName,
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: textColor)),
                 const SizedBox(height: 6),
-
-                /// DESCRIPTION (ReadMoreText)
-                if (product.description.isNotEmpty)
+                if (widget.product.description.isNotEmpty)
                   ReadMoreText(
-                    product.description,
+                    widget.product.description,
                     trimLines: 2,
                     colorClickableText: primaryColor,
                     trimCollapsedText: 'read more',
                     trimExpandedText: 'show less',
                     style: TextStyle(color: textColor),
-                    moreStyle: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
                   ),
               ],
             ),

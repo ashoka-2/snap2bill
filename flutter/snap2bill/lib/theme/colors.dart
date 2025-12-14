@@ -3,8 +3,14 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
+
+
+  static const Color dangerColor = Color(0xFFEE1C1C);
+
+
+
   // Light Mode
-  static const Color primaryLight = Color(0xFF4A69FF);
+  static const Color primaryLight = Color(0xFF4B9FFF);
   static const Color backgroundLight = Color(0xFFF0F4F8);
   static const Color cardLight = Color(0xFFFFFFFF);
   static const Color textMainLight = Color(0xFF1A1D1E);
@@ -12,17 +18,18 @@ class AppColors {
   static const Color inputFillLight = Color(0xFFF5F6FA);
 
   static const Color buttonColorLight = Color(0xFFFFFFFF);
-  static const Color iconColorLight = Color(0xFF7A0CEF);
+  static const Color iconColorLight = Color(0xFF000000);
 
   static const Color greyButton = Color(0xA1676767);
   static const Color borderColor = Color(0xc7c7c7);
-  static const Color pillColor = Color(0xff0022ff);
+  static const Color pillColor = Color(0xff23afda);
+  static const Color whiteTextColor = Color(0xE5FFFFFF);
 
   // Dark Mode
   static const Color buttonColorDark = Color(0xFF000000);
-  static const Color iconColorDark = Color(0xFF2A57E8);
+  static const Color iconColorDark = Color(0xFFFFFFFF);
 
-  static const Color primaryDark = Color(0xFF5C7AE6);
+  static const Color primaryDark = Color(0xFF3361F5);
   static const Color backgroundDark = Color(0xFF121212);
   static const Color cardDark = Color(0xFF1E1E1E);
   static const Color textMainDark = Color(0xFFFFFFFF);

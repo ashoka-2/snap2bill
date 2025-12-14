@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snap2bill/theme/colors.dart';
 import '../data/dataModels.dart';
 
 class CategoryFilterBar extends StatelessWidget {
@@ -17,6 +18,7 @@ class CategoryFilterBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final pillColor =  AppColors.pillColor;
 
     return SizedBox(
       height: 60,
@@ -34,7 +36,7 @@ class CategoryFilterBar extends StatelessWidget {
               label: Text(cat.name),
               selected: isSelected,
               onSelected: (_) => onSelect(cat.id),
-              selectedColor: theme.primaryColor,
+              selectedColor:pillColor.withValues(alpha: 0.5),
               backgroundColor:
               isDark ? Colors.grey.shade800 : Colors.grey.shade200,
               labelStyle: TextStyle(
@@ -46,6 +48,13 @@ class CategoryFilterBar extends StatelessWidget {
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
+
+              ),
+              side: BorderSide(
+                color: isSelected
+                    ? pillColor           // border for selected
+                    : isDark?Colors.white:Colors.black,     // no border for others
+                width: 1.5,
               ),
             ),
           );

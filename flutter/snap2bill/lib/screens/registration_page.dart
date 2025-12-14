@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart'; // for kIsWeb
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,7 +14,7 @@ import '../theme/colors.dart';
 import '../widgets/app_button.dart';
 
 class RegistrationPage extends StatefulWidget {
-  final bool isDistributor; // The Magic Switch
+  final bool isDistributor;
 
   const RegistrationPage({Key? key, required this.isDistributor}) : super(key: key);
 
@@ -25,10 +25,10 @@ class RegistrationPage extends StatefulWidget {
 class _RegistrationPageState extends State<RegistrationPage> {
   // --- FORM KEYS ---
   final _formKeys = [
-    GlobalKey<FormState>(), // Step 1
-    GlobalKey<FormState>(), // Step 2
-    GlobalKey<FormState>(), // Step 3
-    GlobalKey<FormState>(), // Step 4
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
+    GlobalKey<FormState>(),
   ];
 
   // --- CONTROLLERS ---
@@ -42,8 +42,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final place = TextEditingController();
   final post = TextEditingController();
   final bio = TextEditingController();
-  final latitude = TextEditingController(); // Only for Distributor
-  final longitude = TextEditingController(); // Only for Distributor
+  final latitude = TextEditingController();
+  final longitude = TextEditingController();
 
   // --- STATE ---
   final PageController _pageController = PageController();
@@ -54,9 +54,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   bool _obscureConfirm = true;
 
   // --- FILES ---
-  PlatformFile? _file1; // Profile/Main
+  PlatformFile? _file1;
   Uint8List? _file1Bytes;
-  PlatformFile? _file2; // Proof (Distributor only)
+  PlatformFile? _file2;
   Uint8List? _file2Bytes;
 
   @override
@@ -90,23 +90,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   // --- NAVIGATION ---
   void _nextPage() {
-    // Validate current step
     if (!_formKeys[_currentPage].currentState!.validate()) return;
-
-    // Special File Validation for Step 3
     if (_currentPage == 2) {
       if (_file1 == null) {
         _showError("Please upload the required file.");
         return;
       }
-      // If Distributor, check 2nd file
       if (widget.isDistributor && _file2 == null) {
         _showError("Please upload the proof document.");
         return;
       }
     }
 
-    // Move Next
     _pageController.nextPage(
       duration: const Duration(milliseconds: 400),
       curve: Curves.easeInOut,
@@ -144,14 +139,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
       SharedPreferences sh = await SharedPreferences.getInstance();
       String ip = sh.getString("ip") ?? "http://10.0.2.2:8000";
 
-      // Dynamic URL and ID key based on type
       String endpoint = widget.isDistributor ? '/distributor_registration' : '/customer_registration';
       String idKey = widget.isDistributor ? 'uid' : 'cid';
 
       var uri = Uri.parse('$ip$endpoint');
       var request = http.MultipartRequest('POST', uri);
 
-      // Common Fields
       request.fields['name'] = name.text.trim();
       request.fields['email'] = email.text.trim();
       request.fields['phone'] = "+91${phone.text.trim()}";
@@ -164,20 +157,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
       request.fields['bio'] = bio.text.trim();
       request.fields[idKey] = sh.getString(idKey) ?? '';
 
-      // Distributor Only Fields
       if (widget.isDistributor) {
         request.fields['latitude'] = latitude.text.trim();
         request.fields['longitude'] = longitude.text.trim();
       }
 
-      // Add File 1
       if (kIsWeb && _file1Bytes != null) {
         request.files.add(http.MultipartFile.fromBytes('file', _file1Bytes!, filename: _file1!.name));
       } else if (_file1?.path != null) {
         request.files.add(await http.MultipartFile.fromPath('file', _file1!.path!));
       }
 
-      // Add File 2 (Distributor Only)
       if (widget.isDistributor) {
         if (kIsWeb && _file2Bytes != null) {
           request.files.add(http.MultipartFile.fromBytes('file1', _file2Bytes!, filename: _file2!.name));
@@ -193,7 +183,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         var decoded = json.decode(responseString);
         if (decoded['status'] == 'ok') {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Registration Successful!"), backgroundColor: Colors.green));
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => login_page()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page()));
         } else {
           _showError("Failed: ${decoded['status']}");
         }
@@ -209,8 +199,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Theme variables are defined
     final theme = Theme.of(context);
-    // Dynamic Title
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    // Determine dynamic icon color using the new AppColors constants
+    final iconColor = isDark
+        ? AppColors.iconColorDark
+        : AppColors.iconColorLight;
+
     final String pageTitle = widget.isDistributor ? "Distributor Register" : "Customer Register";
 
     return Scaffold(
@@ -223,7 +220,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
                 color: theme.cardColor,
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 5)],
+                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)],
               ),
               child: Column(
                 children: [
@@ -279,11 +276,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     subtitle: "Let's get to know you.",
                     formKey: _formKeys[0],
                     children: [
-                      _buildField(name, "Full Name", Icons.person, v: (v) => v!.length < 3 ? "Name too short" : null),
+                      _buildField(name, "Full Name", Icons.person, iconColor: iconColor, v: (v) => v!.length < 3 ? "Name too short" : null),
                       const SizedBox(height: 15),
-                      _buildField(email, "Email", Icons.email, type: TextInputType.emailAddress, v: (v) => !v!.contains("@") ? "Invalid email" : null),
+                      _buildField(email, "Email", Icons.email, iconColor: iconColor, type: TextInputType.emailAddress, v: (v) => !v!.contains("@") ? "Invalid email" : null),
                       const SizedBox(height: 15),
-                      _buildField(phone, "Phone", Icons.phone, type: TextInputType.phone, maxLength: 10, prefix: "+91 ", v: (v) => v!.length != 10 ? "10 digits required" : null),
+                      _buildField(phone, "Phone", Icons.phone, iconColor: iconColor, type: TextInputType.phone, maxLength: 10, prefix: "+91 ", v: (v) => v!.length != 10 ? "10 digits required" : null),
                     ],
                   ),
 
@@ -293,23 +290,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     subtitle: "Where are you located?",
                     formKey: _formKeys[1],
                     children: [
-                      _buildField(address, "Address", Icons.home, maxLines: 2, v: (v) => v!.isEmpty ? "Required" : null),
+                      _buildField(address, "Address", Icons.home, iconColor: iconColor, maxLines: 2, v: (v) => v!.isEmpty ? "Required" : null),
                       const SizedBox(height: 15),
+                      // FIX: Re-wrapping side-by-side fields in a Row with Expanded children
                       Row(children: [
-                        Expanded(child: _buildField(place, "City/Place", Icons.location_city, v: (v) => v!.isEmpty ? "Required" : null)),
+                        Expanded(child: _buildField(place, "City/Place", Icons.location_city, iconColor: iconColor, v: (v) => v!.isEmpty ? "Required" : null)),
                         const SizedBox(width: 10),
-                        Expanded(child: _buildField(pincode, "Pincode", Icons.pin_drop, type: TextInputType.number, maxLength: 6, v: (v) => v!.length != 6 ? "Invalid" : null)),
+                        Expanded(child: _buildField(pincode, "Pincode", Icons.pin_drop, iconColor: iconColor, type: TextInputType.number, maxLength: 6, v: (v) => v!.length != 6 ? "Invalid" : null)),
                       ]),
                       const SizedBox(height: 15),
-                      _buildField(post, "Post Office", Icons.local_post_office, v: (v) => v!.isEmpty ? "Required" : null),
+                      _buildField(post, "Post Office", Icons.local_post_office, iconColor: iconColor, v: (v) => v!.isEmpty ? "Required" : null),
 
                       // CONDITIONAL: Show Lat/Long ONLY if Distributor
                       if (widget.isDistributor) ...[
                         const SizedBox(height: 15),
+                        // FIX: Re-wrapping side-by-side fields in a Row with Expanded children
                         Row(children: [
-                          Expanded(child: _buildField(latitude, "Latitude", Icons.gps_fixed, type: TextInputType.number)),
+                          Expanded(child: _buildField(latitude, "Latitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number)),
                           const SizedBox(width: 10),
-                          Expanded(child: _buildField(longitude, "Longitude", Icons.gps_fixed, type: TextInputType.number)),
+                          Expanded(child: _buildField(longitude, "Longitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number)),
                         ]),
                       ]
                     ],
@@ -321,7 +320,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     subtitle: "Upload necessary proofs.",
                     formKey: _formKeys[2],
                     children: [
-                      _buildField(bio, "Bio / Description", Icons.description, maxLines: 3, v: (v) => v!.isEmpty ? "Required" : null),
+                      _buildField(bio, "Bio / Description", Icons.description, iconColor: iconColor, maxLines: 3, v: (v) => v!.isEmpty ? "Required" : null),
                       const SizedBox(height: 25),
 
                       Text("Uploads", style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
@@ -329,7 +328,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
                       _buildFileCard("Profile Image / File", _file1, () => _pickFile(false), theme),
 
-                      // CONDITIONAL: Show 2nd File ONLY if Distributor
                       if (widget.isDistributor) ...[
                         const SizedBox(height: 15),
                         _buildFileCard("Proof Document", _file2, () => _pickFile(true), theme),
@@ -343,7 +341,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                     subtitle: "Protect your account.",
                     formKey: _formKeys[3],
                     children: [
-                      _buildField(password, "Password", Icons.lock, isPass: true, obscure: _obscurePass,
+                      _buildField(password, "Password", Icons.lock, iconColor: iconColor, isPass: true, obscure: _obscurePass,
                           togglePass: () => setState(() => _obscurePass = !_obscurePass),
                           v: (v) {
                             if (v!.length < 8) return "Min 8 chars";
@@ -352,7 +350,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                             return null;
                           }),
                       const SizedBox(height: 20),
-                      _buildField(confirmpassword, "Confirm Password", Icons.lock_outline, isPass: true, obscure: _obscureConfirm,
+                      _buildField(confirmpassword, "Confirm Password", Icons.lock_outline, iconColor: iconColor, isPass: true, obscure: _obscureConfirm,
                           togglePass: () => setState(() => _obscureConfirm = !_obscureConfirm),
                           v: (v) => v != password.text ? "Mismatch" : null),
                       const SizedBox(height: 40),
@@ -389,6 +387,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   // --- REUSABLE WIDGETS (Internal) ---
 
   Widget _buildPage({required String title, required String subtitle, required List<Widget> children, required GlobalKey<FormState> formKey}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Form(
@@ -396,7 +397,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 5),
-          Text(subtitle, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppColors.textSubLight)),
+          Text(subtitle, style: theme.textTheme.bodyMedium?.copyWith(color: isDark ? AppColors.textSubDark : AppColors.textSubLight)),
           const SizedBox(height: 30),
           ...children,
           const SizedBox(height: 100),
@@ -406,10 +407,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildField(TextEditingController c, String label, IconData icon, {
-    bool isPass = false, bool obscure = false, VoidCallback? togglePass,
-    TextInputType type = TextInputType.text, int maxLines = 1, int? maxLength,
-    String? prefix, String? Function(String?)? v
+    required Color iconColor,
+    bool isPass = false,
+    bool obscure = false,
+    VoidCallback? togglePass,
+    TextInputType type = TextInputType.text,
+    int maxLines = 1,
+    int? maxLength,
+    String? prefix,
+    String? Function(String?)? v
   }) {
+    // FIX: Removed the outer Expanded widget from here.
+    // This allows single fields to work correctly inside a Column.
     return TextFormField(
       controller: c,
       obscureText: isPass ? obscure : false,
@@ -419,11 +428,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
       validator: v,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.iconColorLight, size: 20),
+        prefixIcon: Icon(icon, color: iconColor, size: 20),
         prefixText: prefix,
         counterText: "",
         suffixIcon: isPass ? IconButton(
-          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: AppColors.iconColorLight),
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color:iconColor),
           onPressed: togglePass,
         ) : null,
       ),
@@ -432,6 +441,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
 
   Widget _buildFileCard(String label, PlatformFile? file, VoidCallback onTap, ThemeData theme) {
     bool isSet = file != null;
+    final isDark = theme.brightness == Brightness.dark;
+
+    final dynamicPrimaryColor = isDark ? AppColors.primaryDark : AppColors.primaryLight;
+
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -439,17 +452,17 @@ class _RegistrationPageState extends State<RegistrationPage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: theme.cardColor,
-          border: Border.all(color: isSet ? AppColors.primaryLight : theme.dividerColor),
+          border: Border.all(color: isSet ? dynamicPrimaryColor : theme.dividerColor),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
-            Icon(isSet ? Icons.check_circle : Icons.upload_file, color: isSet ? AppColors.primaryLight : theme.disabledColor),
+            Icon(isSet ? Icons.check_circle : Icons.upload_file, color: isSet ? dynamicPrimaryColor : theme.disabledColor),
             const SizedBox(width: 15),
             Expanded(
               child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(isSet ? file.name : "Tap to upload", maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
+                Text(file != null ? file.name : "Tap to upload", maxLines: 1, overflow: TextOverflow.ellipsis, style: theme.textTheme.bodySmall),
               ]),
             )
           ],
