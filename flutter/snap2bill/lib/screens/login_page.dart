@@ -1265,7 +1265,7 @@ class _login_pageState extends State<login_page>
     final textColor = isDark ? AppColors.textMainDark : AppColors.textMainLight;
     final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
     final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
-
+    final iconColor = isDark?AppColors.iconColorDark:AppColors.iconColorLight;
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(
@@ -1362,7 +1362,7 @@ class _login_pageState extends State<login_page>
                               fillColor: inputFill,
                               textColor: textColor,
                               hintColor: subTextColor,
-                              themePrimary: AppColors.iconColor,
+                              themePrimary: iconColor,
                             ),
                             const SizedBox(height: 20),
 
@@ -1376,7 +1376,7 @@ class _login_pageState extends State<login_page>
                               fillColor: inputFill,
                               textColor: textColor,
                               hintColor: subTextColor,
-                              themePrimary: AppColors.iconColor,
+                              themePrimary: AppColors.iconColorDark,
                             ),
 
                             // SPECIFIC ERROR MESSAGE DISPLAY

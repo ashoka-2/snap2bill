@@ -100,6 +100,8 @@ class _MyAppState extends State<MyApp> {
       ? ThemeMode.dark
       : ThemeMode.light;
 
+
+
   void changeTheme() {
     setState(() {
       ThemeService.instance.toggle();
@@ -135,7 +137,8 @@ class _MyApp_subState extends State<MyApp_sub> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final iconColor = isDark?AppColors.iconColorDark:AppColors.iconColorLight;
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       //extend the body to be visible in the back of appbar
@@ -157,7 +160,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                 ThemeService.instance.isDarkMode
                     ? Icons.light_mode
                     : Icons.dark_mode,
-                color: AppColors.iconColor,
+                color:iconColor,
               ),
               onPressed: () {
                 MyApp.changeTheme(context);
@@ -224,10 +227,10 @@ class _MyApp_subState extends State<MyApp_sub> {
                                   ? Colors.white
                                   : Colors.black,
                             ),
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'IP Address',
-                              prefixIcon: Icon(Icons.wifi),
-                              prefixIconColor: AppColors.iconColor,
+                              prefixIcon: const Icon(Icons.wifi),
+                              prefixIconColor: iconColor,
                             ),
                           ),
 
@@ -238,7 +241,6 @@ class _MyApp_subState extends State<MyApp_sub> {
                           // ------------------------------------------------
                           AppButton(
                             text: "Submit",
-                            borderColor: AppColors.borderColor,
                             // icon: Icons.upload,
                             // isTrailingIcon: true,
                             onPressed: () async {

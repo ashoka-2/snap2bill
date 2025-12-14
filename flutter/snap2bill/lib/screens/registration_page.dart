@@ -419,11 +419,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
       validator: v,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.iconColor, size: 20),
+        prefixIcon: Icon(icon, color: AppColors.iconColorLight, size: 20),
         prefixText: prefix,
         counterText: "",
         suffixIcon: isPass ? IconButton(
-          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: AppColors.iconColor),
+          icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: AppColors.iconColorLight),
           onPressed: togglePass,
         ) : null,
       ),

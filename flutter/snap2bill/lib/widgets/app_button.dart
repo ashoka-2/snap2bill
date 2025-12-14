@@ -20,7 +20,7 @@ class AppButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.icon,
-    this.color = AppColors.buttonColor,
+    this.color = Colors.white,
     this.textColor = Colors.white,
     this.isTrailingIcon = false,
 
@@ -31,12 +31,14 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: 50,
       width: double.infinity, // Usually buttons in login forms take full width
       child: ElevatedButton(
+
         style: ElevatedButton.styleFrom(
-          backgroundColor: color,
+          backgroundColor: isDark?AppColors.buttonColorLight:AppColors.buttonColorDark,
           // FIX FOR BORDER COLOR ERROR
           // If a borderColor is passed, use it; otherwise, no border.
           side: borderColor != null ? BorderSide(color: borderColor!) : null,
@@ -68,7 +70,7 @@ class AppButton extends StatelessWidget {
             Text(
               text,
               style: TextStyle(
-                color: textColor,
+                color: isDark?AppColors.textMainLight:AppColors.textMainDark,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),

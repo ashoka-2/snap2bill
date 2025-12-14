@@ -10,13 +10,18 @@ class AppColors {
   static const Color textMainLight = Color(0xFF1A1D1E);
   static const Color textSubLight = Color(0xFF6A6C7B);
   static const Color inputFillLight = Color(0xFFF5F6FA);
-  static const Color buttonColor = Color(0xA1196FE0);
+
+  static const Color buttonColorLight = Color(0xFFFFFFFF);
+  static const Color iconColorLight = Color(0xFF7A0CEF);
+
   static const Color greyButton = Color(0xA1676767);
-  static const Color iconColor = Color(0xFF144AFD);
   static const Color borderColor = Color(0xc7c7c7);
   static const Color pillColor = Color(0xff0022ff);
 
   // Dark Mode
+  static const Color buttonColorDark = Color(0xFF000000);
+  static const Color iconColorDark = Color(0xFF2A57E8);
+
   static const Color primaryDark = Color(0xFF5C7AE6);
   static const Color backgroundDark = Color(0xFF121212);
   static const Color cardDark = Color(0xFF1E1E1E);
