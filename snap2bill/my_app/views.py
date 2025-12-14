@@ -816,19 +816,16 @@ def view_other_products(request):
     ar = []
     for i in data:
         ar.append({
-            'id': i.id,
-            # FIXED: Access details via the PRODUCT relationship
-            'name': i.PRODUCT.product_name,
-            'price': i.price,  # Price is usually specific to the stock/distributor
-            'description': i.PRODUCT.description,
-            'image': str(i.PRODUCT.image),
-
-            'distributor_name': i.DISTRIBUTOR.name,
-            'distributor_id': i.DISTRIBUTOR.id,
+             'distributor_id':i.DISTRIBUTOR.id,
+            'distributor_name':i.DISTRIBUTOR.name,
             'distributor_image':i.DISTRIBUTOR.profile_image,
-            'phone': i.DISTRIBUTOR.phone,
+            'distributor_phone':i.DISTRIBUTOR.phone,
+            'id': i.id,
+            'product_name': i.PRODUCT.product_name,
+            'price': i.price,
+            'image': i.PRODUCT.image,
+            'description': i.PRODUCT.description,
             'quantity': i.quantity,
-
             'CATEGORY': i.PRODUCT.CATEGORY.id,
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
         })
