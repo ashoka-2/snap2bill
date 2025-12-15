@@ -15,7 +15,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here
 from django.views.decorators.csrf import csrf_exempt
 
-from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment
+from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
+    cart
 
 print(make_password("password"))
 
@@ -1041,20 +1042,56 @@ def addorder(request):
 
 def view_orders(request):
     cid = request.POST.get('cid')
-    data = order_sub.objects.filter(ORDER__USER__id=cid)
+    data = order.objects.filter(USER__id=cid)
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
-            'payment_status': i.ORDER.payment_status,
-            'payment_date': str(i.ORDER.payment_date),
-            'date': str(i.ORDER.date),
-            'amount': i.ORDER.amount,
-            'username': i.ORDER.USER.name,
-            'distributor': i.ORDER.DISTRIBUTOR.name,
-            'orderid': i.ORDER.id,
+            'payment_status': i.payment_status,
+            'payment_date': str(i.payment_date),
+            'date': str(i.date),
+            'amount': i.amount,
+            'username': i.USER.name,
+            'distributor': i.DISTRIBUTOR.name,
+            'orderid': i.id,
         })
     return JsonResponse({'status': 'ok', 'data': ar})
+
+
+def view_orders_items(request):
+    cid = request.POST.get('cid')
+    data = order_sub.objects.filter(ORDER=cid)
+    print(cid,data)
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'quantity': i.quantity,
+            'price': i.STOCK.price,
+            'product_name': i.STOCK.PRODUCT.product_name,
+            'image': i.STOCK.PRODUCT.image,
+            'description': i.STOCK.PRODUCT.image,
+
+        })
+
+    data = stock.objects.all()
+    ar2 = []
+    for i in data:
+        ar2.append({
+            'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_phone': i.DISTRIBUTOR.phone,
+            'id': i.id,
+            'product_name': i.PRODUCT.product_name,
+            'price': i.price,
+            'image': i.PRODUCT.image,
+            'description': i.PRODUCT.description,
+            'quantity': i.quantity,
+            'CATEGORY': i.PRODUCT.CATEGORY.id,
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+        })
+    return JsonResponse({'status': 'ok', 'data': ar,'data2':ar2})
 
 def edit_order(request):
     id=request.POST['id']
@@ -1062,6 +1099,17 @@ def edit_order(request):
     order_sub.objects.filter(id=id).update(quantity=quantity)
     return JsonResponse({"status":"ok"})
 
+def update_order_item(request):
+    id = request.POST.get('id')
+    stock_id = request.POST.get('stock_id')
+    quantity = request.POST.get('quantity')
+
+    obj = order_sub.objects.get(id=id)
+    obj.STOCK_id = stock_id
+    obj.quantity = quantity
+    obj.save()
+
+    return JsonResponse({'status': 'ok'})
 
 def delete_order(request):
     id = request.POST.get('id')
@@ -1086,6 +1134,8 @@ def view_distributor_orders(request):
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
+
+
 def make_payment(requst):
     cid = requst.POST['cid']
     amount = requst.POST['amount']
@@ -1098,5 +1148,39 @@ def make_payment(requst):
     return JsonResponse({'status':'ok',})
 
 
+def delete_order_item(request):
+    order_sub.objects.get(id=request.POST['id'])
+    return JsonResponse({'status':'ok',})
 
 
+def viewCart(request):
+    # pid = request.POST['pid']
+    print(request.POST)
+    data = cart.objects.filter(ORDER__USER=request.POST['did'])
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            'product_name': i.STOCK.PRODUCT.product_name,
+            'price': i.STOCK.price,
+            'quantity': i.quantity,
+            'image':i.STOCK.PRODUCT.image,
+            'distributor_name':i.ORDER.DISTRIBUTOR.name,
+
+
+        })
+    return JsonResponse({'status':'ok','data':ar})
+
+
+
+def deleteFromCart(request):
+    id = request.POST.get('id')
+    cart.objects.filter(id=id).delete()
+    return JsonResponse({'status':'ok'})
+
+
+def update_quantity(request):
+    id=request.POST['id']
+    quantity=request.POST['qty']
+    cart.objects.filter(id=id).update(quantity=quantity)
+    return JsonResponse({"status":"ok"})

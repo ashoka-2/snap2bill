@@ -120,8 +120,15 @@ urlpatterns = [
 
     path('addorder',views.addorder),
     path('view_orders',views.view_orders),
+    path('view_orders_items',views.view_orders_items),
+    path('delete_order_item',views.delete_order_item),
+    path('update_order_item',views.update_order_item),
     path('view_distributor_orders',views.view_distributor_orders),
     path('make_payment',views.make_payment),
+
+    path('viewCart',views.viewCart),
+    path('deleteFromCart',views.deleteFromCart),
+    path('update_quantity',views.update_quantity),
 
 ]
 

@@ -237,6 +237,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
 
 // Keeping your original imports
 import '../Edits/editOrder.dart';
@@ -524,18 +525,11 @@ class _viewOrderSubState extends State<viewOrderSub> {
 
                 // EDIT BUTTON
                 InkWell(
-                  onTap: () async {
-                    SharedPreferences sh = await SharedPreferences.getInstance();
-                    sh.setString("id", item.id.toString()); // Pass sub-order ID for editing
-
-                    // You might want to remove this redundant API call here and handle all logic in editOrder
-                    // var data = await http.post(
-                    //   Uri.parse(sh.getString("ip").toString() + "/edit_order"),
-                    //   body: {'id': sh.getString("id")},
-                    // );
-
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const editOrder()));
-                  },
+                 onTap: () async {
+                   SharedPreferences sh = await SharedPreferences.getInstance();
+                   sh.setString("id", item.id.toString()); // Passing sub-order ID
+                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewOrderItems()));
+                 },
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(

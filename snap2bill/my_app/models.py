@@ -151,7 +151,7 @@ class order_sub(models.Model):
 
 
 class cart(models.Model):
-    PRODUCT = models.ForeignKey(product,models.CASCADE)
+    STOCK = models.ForeignKey(stock,models.CASCADE)
     ORDER= models.ForeignKey(order,models.CASCADE)
     quantity= models.CharField(max_length=100)
 

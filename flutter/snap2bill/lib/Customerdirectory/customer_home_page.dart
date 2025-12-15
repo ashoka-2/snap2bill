@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_fonts/google_fonts.dart';
+import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 // Import all required navigation classes
 import '../widgets/product_feed.dart';
@@ -146,7 +147,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const viewCart()));
             },
           ),
         ],
