@@ -111,11 +111,12 @@ class _viewCartState extends State<viewCart> {
                                 Uri.parse(sh.getString("ip").toString() + "/update_quantity",),
                                 body: {
                                   "id": i.id.toString(),
-                                  "qty":val
+                                  "qty":val.toString()
                                 },
                               );
-                              Navigator.pushReplacement(context, MaterialPageRoute(
-                                  builder: (context) => viewCart()));
+                              setState(() {
+                                i.quantity = val;
+                              });
 
                             },
 

@@ -1182,5 +1182,6 @@ def deleteFromCart(request):
 def update_quantity(request):
     id=request.POST['id']
     quantity=request.POST['qty']
-    cart.objects.filter(id=id).update(quantity=quantity)
+    print(int(float(quantity)))
+    cart.objects.filter(id=id).update(quantity=int(float(quantity)))
     return JsonResponse({"status":"ok"})
