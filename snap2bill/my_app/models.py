@@ -155,7 +155,11 @@ class cart(models.Model):
     ORDER= models.ForeignKey(order,models.CASCADE)
     quantity= models.CharField(max_length=100)
 
-
+class wishlist(models.Model):
+    STOCK = models.ForeignKey(stock, on_delete=models.CASCADE)
+    USER = models.ForeignKey(customer, on_delete=models.CASCADE, null=True, blank=True)
+    DISTRIBUTOR = models.ForeignKey(distributor, on_delete=models.CASCADE, null=True, blank=True)
+    date = models.CharField(max_length=100)
 
 
 

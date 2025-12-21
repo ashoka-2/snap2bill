@@ -16,7 +16,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
-    cart
+    cart, wishlist
 
 print(make_password("password"))
 
@@ -804,23 +804,25 @@ def distributor_view_product(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+@csrf_exempt
 def view_other_products(request):
     uid = request.POST.get('uid')
-
-    # 1. Validation (Optional but good practice)
     if not uid:
         return JsonResponse({'status': 'error', 'message': 'UID is missing'})
 
-    # 2. Logic: Get stocks NOT belonging to this distributor
-    data = stock.objects.exclude(DISTRIBUTOR__id=uid)
+    # Get stocks NOT belonging to this distributor
+    data = stock.objects.exclude(DISTRIBUTOR__id=uid).select_related('DISTRIBUTOR', 'PRODUCT', 'PRODUCT__CATEGORY')
 
     ar = []
     for i in data:
+        # Check if the distributor has liked this product
+        is_liked = wishlist.objects.filter(STOCK=i, DISTRIBUTOR_id=uid).exists() if uid else False
+
         ar.append({
-             'distributor_id':i.DISTRIBUTOR.id,
-            'distributor_name':i.DISTRIBUTOR.name,
-            'distributor_image':i.DISTRIBUTOR.profile_image,
-            'distributor_phone':i.DISTRIBUTOR.phone,
+            'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
@@ -828,7 +830,8 @@ def view_other_products(request):
             'description': i.PRODUCT.description,
             'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', 'General'),
+            'is_liked': is_liked,  # <--- CRITICAL FOR SYNC
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
@@ -885,18 +888,22 @@ def delete_distributor_product(request,id):
     return JsonResponse({'status':'ok'})
 
 
-
-
-
 def customer_view_products(request):
-    data = stock.objects.all()
+    cid = request.POST.get('cid')
+    data = stock.objects.all().select_related('DISTRIBUTOR', 'PRODUCT', 'PRODUCT__CATEGORY')
     ar = []
+
     for i in data:
+        # Check if this specific stock item is liked by this customer
+        is_liked = False
+        if cid:
+            is_liked = wishlist.objects.filter(STOCK=i, USER_id=cid).exists()
+
         ar.append({
-            'distributor_id':i.DISTRIBUTOR.id,
-            'distributor_name':i.DISTRIBUTOR.name,
-            'distributor_image':i.DISTRIBUTOR.profile_image,
-            'distributor_phone':i.DISTRIBUTOR.phone,
+            'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
@@ -904,10 +911,10 @@ def customer_view_products(request):
             'description': i.PRODUCT.description,
             'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', 'General'),
+            'is_liked': is_liked,  # <--- CRITICAL FOR SYNC
         })
     return JsonResponse({'status': 'ok', 'data': ar})
-
 
 
 
@@ -1185,3 +1192,58 @@ def update_quantity(request):
     print(int(float(quantity)))
     cart.objects.filter(id=id).update(quantity=int(float(quantity)))
     return JsonResponse({"status":"ok"})
+
+
+def toggle_wishlist(request):
+    pid = request.POST.get('pid')
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
+    if cid:
+        query = wishlist.objects.filter(STOCK_id=pid, USER_id=cid)
+    else:
+        query = wishlist.objects.filter(STOCK_id=pid, DISTRIBUTOR_id=uid)
+    if query.exists():
+        query.delete()
+        return JsonResponse({'status': 'ok', 'action': 'removed'})
+    else:
+        obj = wishlist()
+        obj.STOCK_id = pid
+        obj.date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if cid:
+            obj.USER_id = cid
+        else:
+            obj.DISTRIBUTOR_id = uid
+        obj.save()
+        return JsonResponse({'status': 'ok', 'action': 'added'})
+
+def remove_from_wishlist(request):
+    wid = request.POST.get('wid')
+    wishlist.objects.filter(id=wid).delete()
+    return JsonResponse({'status': 'ok'})
+
+def view_wishlist(request):
+    if request.method == 'POST':
+        cid = request.POST.get('cid')
+        uid = request.POST.get('uid')
+
+        if cid:
+            data = wishlist.objects.filter(USER_id=cid)
+        else:
+            data = wishlist.objects.filter(DISTRIBUTOR_id=uid)
+
+        ar = []
+        for i in data:
+            ar.append({
+                'wishlist_id': i.id,
+                'id': i.STOCK.id,
+                'product_name': i.STOCK.PRODUCT.product_name,
+                'price': i.STOCK.price,
+                'image': i.STOCK.PRODUCT.image,
+                'description': i.STOCK.PRODUCT.description,
+                'distributor_name': i.STOCK.DISTRIBUTOR.name,
+                'category_name': i.STOCK.PRODUCT.CATEGORY.category_name,
+            })
+        return JsonResponse({'status': 'ok', 'data': ar})
+
+
+

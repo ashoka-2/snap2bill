@@ -130,6 +130,10 @@ urlpatterns = [
     path('deleteFromCart',views.deleteFromCart),
     path('update_quantity',views.update_quantity),
 
+    path('view_wishlist',views.view_wishlist),
+    path('remove_from_wishlist', views.remove_from_wishlist),
+    path('toggle_wishlist', views.toggle_wishlist),
+
 ]
 
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
