@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 // Import all required navigation classes
+import '../screens/viewWishlist.dart';
 import '../widgets/product_feed.dart';
 import 'Customersends/addOrder.dart';
 import 'custviews/viewOrder.dart';
@@ -143,7 +144,19 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
         elevation: 0,
         iconTheme: IconThemeData(color: textColor),
         actions: [
-          IconButton(icon: const Icon(Icons.notifications_outlined), onPressed: () {}),
+          // ✅ Notifications hatakar Wishlist (Heart) icon add kiya
+          IconButton(
+            icon: const Icon(Icons.favorite_outline_rounded),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ViewWishlist()),
+              ).then((_) {
+                // ✅ Back aane par home page refresh hoga taaki heart colors sync rahein
+                _loadData();
+              });
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () {
@@ -152,7 +165,6 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           ),
         ],
       ),
-
       /// ---------------- DRAWER (USING REUSABLE COMPONENT) ----------------
       drawer: CustomDrawer(
         menuItems: _getDrawerItems(), // Pass customer's specific links
