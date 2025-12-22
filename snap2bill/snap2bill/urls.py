@@ -119,6 +119,7 @@ urlpatterns = [
     path('edit_order', views.edit_order),
 
     path('addorder',views.addorder),
+    path('addFinalOrder',views.addFinalOrder),
     path('view_orders',views.view_orders),
     path('view_orders_items',views.view_orders_items),
     path('delete_order_item',views.delete_order_item),

@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 import 'package:snap2bill/widgets/app_button.dart';
 
 class viewCart extends StatefulWidget {
@@ -14,17 +15,20 @@ class viewCart extends StatefulWidget {
 }
 
 class _viewCartState extends State<viewCart> {
-
+  String total = "";
   Future<List<Joke>> _getJokes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var data =
     await http.post(Uri.parse(prefs.getString("ip").toString() + "/viewCart"),
         body: {
-          'did': prefs.getString('cid').toString()
+          'cid': prefs.getString('cid').toString()
         }
     );
 
     var jsonData = json.decode(data.body);
+    setState(() {
+      total = jsonData['total'].toString();
+    });
     print(jsonData);
     List<Joke> jokes = [];
     for (var joke in jsonData["data"]) {
@@ -158,8 +162,21 @@ class _viewCartState extends State<viewCart> {
 
         bottomNavigationBar: BottomAppBar(
             color: Colors.transparent,
-            child: AppButton(text: "Place Order", onPressed: () {
+            child: AppButton(text: "Place Order ${total}", onPressed: () async {
+              SharedPreferences sh =
+                  await SharedPreferences.getInstance();
 
+              var data = await http.post(
+                Uri.parse(
+                  sh.getString("ip").toString() + "/addFinalOrder",),
+                body: {
+                  // "id": i.id.toString(),
+                  'cid': sh.getString("cid"),
+                  'total':total
+                },
+              );
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                  builder: (context) => CustomerNavigationBar(initialIndex: 0,)));
             })
         )
     );

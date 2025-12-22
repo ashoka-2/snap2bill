@@ -190,8 +190,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:snap2bill/Customerdirectory/custviews/view_product.dart';
-import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
+import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 class addOrder extends StatefulWidget {
   const addOrder({Key? key}) : super(key: key);
@@ -250,15 +249,14 @@ class _addOrderState extends State<addOrder> {
                     Uri.parse(sh.getString("ip").toString() + "/addorder"),
                     body: {
                       "quantity": quantity.text,
-                      'uid': sh.getString("uid"),
                       'cid': sh.getString("cid"),
-                      'id': sh.getString("id"),
+                      'pid': sh.getString("pid"),
                     },
                   );
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => CustomerNavigationBar(),
+                      builder: (context) => viewCart(),
                     ),
                   );
                 },

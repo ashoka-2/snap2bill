@@ -123,17 +123,11 @@ class payment(models.Model):
     status= models.CharField(max_length=100)
     USER=models.ForeignKey(customer,models.CASCADE)
 
-
-
-
-
 class stock(models.Model):
     price = models.CharField(max_length=100)
     quantity = models.CharField(max_length=100)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
     PRODUCT = models.ForeignKey(product,models.CASCADE)
-
-
 
 class order(models.Model):
     payment_status = models.CharField(max_length=100)
@@ -145,14 +139,13 @@ class order(models.Model):
 
 class order_sub(models.Model):
     ORDER= models.ForeignKey(order,models.CASCADE)
-
     quantity= models.CharField(max_length=100)
     STOCK = models.ForeignKey(stock,models.CASCADE)
 
 
 class cart(models.Model):
     STOCK = models.ForeignKey(stock,models.CASCADE)
-    ORDER= models.ForeignKey(order,models.CASCADE)
+    USER = models.ForeignKey(customer,models.CASCADE)
     quantity= models.CharField(max_length=100)
 
 class wishlist(models.Model):

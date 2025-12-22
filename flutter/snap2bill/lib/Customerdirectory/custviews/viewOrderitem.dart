@@ -147,6 +147,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+
                     if (selectedStockId != null) {
                       updateItem(
                         item['id'].toString(),

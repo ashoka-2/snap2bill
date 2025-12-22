@@ -567,13 +567,15 @@ class _ProductCardState extends State<ProductCard> {
                     icon: Icon(Icons.shopping_cart_outlined, color: textColor),
                     label: Text("Add to Cart", style: TextStyle(color: textColor)),
                     onPressed: () async {
-                      final prefs = await SharedPreferences.getInstance();
+                      final prefs =
+                      await SharedPreferences.getInstance();
                       prefs.setString("pid", widget.product.id);
                       prefs.setString("uid", widget.product.distributorId);
                       if (!mounted) return;
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const addOrder()),
+                        MaterialPageRoute(
+                            builder: (_) => const addOrder()),
                       );
                     },
                   ),

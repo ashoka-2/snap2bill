@@ -1022,29 +1022,161 @@ from django.http import JsonResponse
 
 def addorder(request):
     cid = request.POST['cid']  # Customer ID
-    distributor_id = request.POST['uid']  # Distributor ID (passed from App)
-    product_stock_id = request.POST['id']  # Stock/Product ID
+    # distributor_id = request.POST['uid']  # Distributor ID (passed from App)
+    product_stock_id = request.POST['pid']  # Stock/Product ID
     quantity = request.POST['quantity']
 
-    # 1. Create the Main Order Header
-    obj1 = order()
-    obj1.payment_status = 'pending'
-    obj1.payment_date = datetime.datetime.now().date()
-    obj1.date = datetime.datetime.now().date()
-    obj1.USER_id = cid
-    obj1.DISTRIBUTOR_id = distributor_id
-    # Calculate amount logic should be here, e.g., price * quantity
-    # obj1.amount = ...
-    obj1.save()
-
-    # 2. Create the Sub Order (Item Details)
-    obj = order_sub()
+    obj = cart()
     obj.quantity = quantity
-    obj.ORDER_id = obj1.id
+    obj.USER_id = cid
     obj.STOCK_id = product_stock_id
     obj.save()
 
+    # # 1. Create the Main Order Header
+    # obj1 = order()
+    # obj1.payment_status = 'pending'
+    # obj1.payment_date = datetime.datetime.now().date()
+    # obj1.date = datetime.datetime.now().date()
+    # obj1.USER_id = cid
+    # obj1.DISTRIBUTOR_id = distributor_id
+    # # Calculate amount logic should be here, e.g., price * quantity
+    # # obj1.amount = ...
+    # obj1.save()
+    #
+    # # 2. Create the Sub Order (Item Details)
+    # obj = order_sub()
+    # obj.quantity = quantity
+    # obj.ORDER_id = obj1.id
+    # obj.STOCK_id = product_stock_id
+    # obj.save()
+
     return JsonResponse({'status': 'ok'})
+
+
+
+
+def viewCart(request):
+    # pid = request.POST['pid']
+    print(request.POST)
+    total = 0
+    data = cart.objects.filter(USER=request.POST['cid'])
+    ar = []
+    for i in data:
+        total += int(i.STOCK.price) * int(i.quantity)
+        ar.append({
+            'id': i.id,
+            'product_name': i.STOCK.PRODUCT.product_name,
+            'price': i.STOCK.price,
+            'quantity': i.quantity,
+            'image':i.STOCK.PRODUCT.image,
+            'distributor_name':i.STOCK.DISTRIBUTOR.name,
+            "total":int(i.STOCK.price) * int(i.quantity)
+
+
+        })
+    return JsonResponse({'status':'ok','data':ar,"total":total})
+
+
+
+def deleteFromCart(request):
+    id = request.POST.get('id')
+    cart.objects.filter(id=id).delete()
+    return JsonResponse({'status':'ok'})
+
+
+def update_quantity(request):
+    id=request.POST['id']
+    quantity=request.POST['qty']
+    print(int(float(quantity)))
+    cart.objects.filter(id=id).update(quantity=int(float(quantity)))
+    return JsonResponse({"status":"ok"})
+
+
+def toggle_wishlist(request):
+    pid = request.POST.get('pid')
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
+    if cid:
+        query = wishlist.objects.filter(STOCK_id=pid, USER_id=cid)
+    else:
+        query = wishlist.objects.filter(STOCK_id=pid, DISTRIBUTOR_id=uid)
+    if query.exists():
+        query.delete()
+        return JsonResponse({'status': 'ok', 'action': 'removed'})
+    else:
+        obj = wishlist()
+        obj.STOCK_id = pid
+        obj.date = datetime.datetime.now().strftime("%Y-%m-%d")
+        if cid:
+            obj.USER_id = cid
+        else:
+            obj.DISTRIBUTOR_id = uid
+        obj.save()
+        return JsonResponse({'status': 'ok', 'action': 'added'})
+
+def remove_from_wishlist(request):
+    wid = request.POST.get('wid')
+    wishlist.objects.filter(id=wid).delete()
+    return JsonResponse({'status': 'ok'})
+
+def view_wishlist(request):
+    if request.method == 'POST':
+        cid = request.POST.get('cid')
+        uid = request.POST.get('uid')
+
+        if cid:
+            data = wishlist.objects.filter(USER_id=cid)
+        else:
+            data = wishlist.objects.filter(DISTRIBUTOR_id=uid)
+
+        ar = []
+        for i in data:
+            ar.append({
+                'wishlist_id': i.id,
+                'id': i.STOCK.id,
+                'product_name': i.STOCK.PRODUCT.product_name,
+                'price': i.STOCK.price,
+                'image': i.STOCK.PRODUCT.image,
+                'description': i.STOCK.PRODUCT.description,
+                'distributor_name': i.STOCK.DISTRIBUTOR.name,
+                'category_name': i.STOCK.PRODUCT.CATEGORY.category_name,
+            })
+        return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+def addFinalOrder(request):
+    cid = request.POST['cid']
+    data = cart.objects.filter(USER=cid)
+    distributorlist = []
+    for i in data:
+        if str(i.STOCK.DISTRIBUTOR_id) not in distributorlist:
+            distributorlist.append(str(i.STOCK.DISTRIBUTOR_id))
+    print(distributorlist)
+
+    for j in distributorlist:
+        total = 0
+        obj1 = order()
+        obj1.payment_status = 'pending'
+        obj1.payment_date = datetime.datetime.now().date()
+        obj1.date = datetime.datetime.now().date()
+        obj1.amount = int(i.STOCK.price) * int(i.quantity)
+        obj1.USER_id = cid
+        obj1.DISTRIBUTOR_id = j
+        obj1.save()
+        data = cart.objects.filter(USER=cid,STOCK__DISTRIBUTOR=j)
+        for  i in data:
+            total +=  int(i.STOCK.price) * int(i.quantity)
+            obj = order_sub()
+            obj.quantity = i.quantity
+            obj.ORDER_id = obj1.id
+            obj.STOCK_id = i.STOCK.id
+            obj.save()
+            i.delete()
+        order.objects.filter(id=obj1.id).update(amount=total)
+
+    return JsonResponse({'status': 'ok'})
+
 
 
 def view_orders(request):
@@ -1158,92 +1290,3 @@ def make_payment(requst):
 def delete_order_item(request):
     order_sub.objects.get(id=request.POST['id'])
     return JsonResponse({'status':'ok',})
-
-
-def viewCart(request):
-    # pid = request.POST['pid']
-    print(request.POST)
-    data = cart.objects.filter(ORDER__USER=request.POST['did'])
-    ar = []
-    for i in data:
-        ar.append({
-            'id': i.id,
-            'product_name': i.STOCK.PRODUCT.product_name,
-            'price': i.STOCK.price,
-            'quantity': i.quantity,
-            'image':i.STOCK.PRODUCT.image,
-            'distributor_name':i.ORDER.DISTRIBUTOR.name,
-
-
-        })
-    return JsonResponse({'status':'ok','data':ar})
-
-
-
-def deleteFromCart(request):
-    id = request.POST.get('id')
-    cart.objects.filter(id=id).delete()
-    return JsonResponse({'status':'ok'})
-
-
-def update_quantity(request):
-    id=request.POST['id']
-    quantity=request.POST['qty']
-    print(int(float(quantity)))
-    cart.objects.filter(id=id).update(quantity=int(float(quantity)))
-    return JsonResponse({"status":"ok"})
-
-
-def toggle_wishlist(request):
-    pid = request.POST.get('pid')
-    cid = request.POST.get('cid')
-    uid = request.POST.get('uid')
-    if cid:
-        query = wishlist.objects.filter(STOCK_id=pid, USER_id=cid)
-    else:
-        query = wishlist.objects.filter(STOCK_id=pid, DISTRIBUTOR_id=uid)
-    if query.exists():
-        query.delete()
-        return JsonResponse({'status': 'ok', 'action': 'removed'})
-    else:
-        obj = wishlist()
-        obj.STOCK_id = pid
-        obj.date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if cid:
-            obj.USER_id = cid
-        else:
-            obj.DISTRIBUTOR_id = uid
-        obj.save()
-        return JsonResponse({'status': 'ok', 'action': 'added'})
-
-def remove_from_wishlist(request):
-    wid = request.POST.get('wid')
-    wishlist.objects.filter(id=wid).delete()
-    return JsonResponse({'status': 'ok'})
-
-def view_wishlist(request):
-    if request.method == 'POST':
-        cid = request.POST.get('cid')
-        uid = request.POST.get('uid')
-
-        if cid:
-            data = wishlist.objects.filter(USER_id=cid)
-        else:
-            data = wishlist.objects.filter(DISTRIBUTOR_id=uid)
-
-        ar = []
-        for i in data:
-            ar.append({
-                'wishlist_id': i.id,
-                'id': i.STOCK.id,
-                'product_name': i.STOCK.PRODUCT.product_name,
-                'price': i.STOCK.price,
-                'image': i.STOCK.PRODUCT.image,
-                'description': i.STOCK.PRODUCT.description,
-                'distributor_name': i.STOCK.DISTRIBUTOR.name,
-                'category_name': i.STOCK.PRODUCT.CATEGORY.category_name,
-            })
-        return JsonResponse({'status': 'ok', 'data': ar})
-
-
-
