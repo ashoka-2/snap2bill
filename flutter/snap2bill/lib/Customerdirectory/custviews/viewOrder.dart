@@ -428,22 +428,24 @@ class _viewOrderSubState extends State<viewOrderSub> {
                         MaterialPageRoute(builder: (_) => ViewOrderItems()));
                   },
                 ),
-                                                IconButton(
-                                                  icon: const Icon(Icons.delete_outline,color: Colors.red,),
-                                  onPressed: () async {
-                                    SharedPreferences sh =
-                                        await SharedPreferences.getInstance();
-
-                                    var data = await http.post(
-                                      Uri.parse(
-                                        sh.getString("ip").toString() + "/delete_order",),
-                                      body: {
-                                        "id": item.id,
-                                      },
-                                    );
-                                  },
-
-                                ),
+                Container(
+                decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(50)
+                ),
+                child: IconButton(
+                icon: const Icon(Icons.delete_outline,color: Colors.red),
+                onPressed: () async {
+                SharedPreferences sh =
+                await SharedPreferences.getInstance();
+                var data = await http.post(Uri.parse(sh.getString("ip").toString() + "/delete_order",),
+                body: {
+                "id": item.id,
+                },
+                );
+                },
+                ),
+                ),
               ],
             ),
           ],

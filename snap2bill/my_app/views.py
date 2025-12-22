@@ -27,15 +27,6 @@ def log(request):
 def logout(request):
     return render(request, 'login.html')
 
-@csrf_exempt
-def logout_view(request):
-    try:
-        logout(request)
-        return JsonResponse({'status': 'ok', 'message': 'Logged out successfully'})
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
-
-
 
 
 def login_post(request):
@@ -709,6 +700,147 @@ def customer_change_password(request):
 
 
 
+def forgotemail(request):
+    import random
+    import smtplib
+    email = request.POST['email']
+    print(email)
+    data = User.objects.filter(username=email)
+    print(data)
+    if data.exists():
+        otp = str(random.randint(111111, 999999))
+        print(otp)
+        # *✨ Python Email Codeimport smtplib*
+
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+
+        # ✅ Gmail credentials (use App Password, not real password)
+        try:
+            sender_email = "choudharyashok1230@gmail.com"
+            receiver_email = email # change to actual recipient
+            app_password = "rstp yllh ebht kmuh"
+            # Setup SMTP
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(sender_email, app_password)
+
+            # Create the email
+            msg = MIMEMultipart("alternative")
+            msg["From"] = sender_email
+            msg["To"] = receiver_email
+            msg["Subject"] = "🔑 Forgot Password "
+
+            # Plain text (backup)
+            # text = f"""
+            # Hello,
+
+            # Your password for Smart Donation Website is: {pwd}
+
+            # Please keep it safe and do not share it with anyone.
+            # """
+
+            # HTML (attractive)
+            html = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Password Reset OTP</title>
+                </head>
+                <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+                            line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+                        <h1 style="color: white; margin: 0; font-size: 28px;">
+                            🔐 Smart Donation
+                        </h1>
+                    </div>
+
+                    <div style="background-color: #f9f9f9; padding: 40px 30px; border-radius: 0 0 10px 10px; 
+                                border: 1px solid #eaeaea;">
+
+                        <h2 style="color: #2d3748; margin-top: 0;">Password Reset Request</h2>
+
+                        <p style="color: #4a5568; font-size: 16px;">
+                            Hello,
+                        </p>
+
+                        <p style="color: #4a5568; font-size: 16px;">
+                            You requested to reset your password. Use the OTP below to proceed:
+                        </p>
+
+                        <div style="background: white; border-radius: 8px; padding: 20px; 
+                                    text-align: center; margin: 30px 0; border: 2px dashed #cbd5e0;">
+                            <div style="font-size: 32px; font-weight: bold; letter-spacing: 10px; 
+                                        color: #2c7be5; margin: 10px 0;">
+                                {otp}
+                            </div>
+                            <div style="font-size: 14px; color: #718096; margin-top: 10px;">
+                                (Valid for 10 minutes)
+                            </div>
+                        </div>
+
+                        <p style="color: #4a5568; font-size: 16px;">
+                            Enter this code on the password reset page to complete the process.
+                        </p>
+
+                        <div style="background-color: #fef3c7; border-left: 4px solid #d97706; 
+                                    padding: 15px; margin: 25px 0; border-radius: 4px;">
+                            <p style="color: #92400e; margin: 0; font-size: 14px;">
+                                ⚠️ <strong>Security tip:</strong> Never share this OTP with anyone. 
+                                Our team will never ask for your password or OTP.
+                            </p>
+                        </div>
+
+                        <p style="color: #718096; font-size: 14px;">
+                            If you didn't request this password reset, please ignore this email or 
+                            contact our support team if you have concerns.
+                        </p>
+
+                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+
+                        <p style="text-align: center; color: #a0aec0; font-size: 12px;">
+                            This is an automated email from Smart Donation System.<br>
+                            © {datetime.datetime.now().date()} Smart Donation. All rights reserved.
+                        </p>
+
+                    </div>
+                </body>
+                </html>
+                """
+
+            # Attach both versions
+            # msg.attach(MIMEText(text, "plain"))
+            msg.attach(MIMEText(html, "html"))
+
+            # Send email
+            server.send_message(msg)
+            print("✅ Email sent successfully!", otp)
+
+            # Close connection
+            server.quit()
+
+        except Exception as e:
+            print("❌ Error loading email credentials:", e)
+            return JsonResponse({'status': "ok", 'otpp': otp})
+
+        return JsonResponse({'status': 'ok', 'otpp': otp})
+    return JsonResponse({'status': "not found"})
+
+
+def forgotpass(request):
+    email = request.POST['email']
+    npass = request.POST['password']
+    cpass = request.POST['confirmpassword']
+    print(email, npass, cpass)
+    if npass == cpass:
+        User.objects.filter(username=email).update(password=make_password(npass))
+        return JsonResponse({'status': 'ok'})
+    return JsonResponse({'status': 'invalid'})
+
 
 
 
@@ -1263,7 +1395,24 @@ def update_order_item(request):
     return JsonResponse({'status': 'ok'})
 
 def delete_order_item(request):
-    order_sub.objects.get(id=request.POST['id']).delete()
+
+    id=request.POST['id']
+
+    orderid = order_sub.objects.get(id=id).ORDER_id
+    order_sub.objects.get(id=id).delete()
+    print(orderid,"okyyy")
+    allordereditem = order_sub.objects.filter(ORDER=orderid)
+    print("okkkkk")
+    total = 0
+    for i in allordereditem:
+        total += int(i.quantity) * int(i.STOCK.price)
+    print("tttt",total)
+    order.objects.filter(id=orderid).update(amount=total)
+    if  order_sub.objects.filter(ORDER=orderid).exists():
+        pass
+    else:
+        order.objects.filter(id=orderid).delete()
+
     return JsonResponse({'status':'ok',})
 
 
@@ -1306,3 +1455,13 @@ def make_payment(requst):
     obj.USER_id = cid
     obj.save()
     return JsonResponse({'status':'ok',})
+
+
+
+
+
+
+
+
+
+

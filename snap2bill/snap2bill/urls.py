@@ -26,7 +26,6 @@ urlpatterns = [
     path("__reload__/", include("django_browser_reload.urls")),
     path('login_post',views.login_post),
     path('logout',views.logout),
-    path('logout_view',views.logout_view),
     path('change_password',views.change_password),
     path('change_password_post', views.change_password_post),
     path('forget_password', views.forget_password),
@@ -96,7 +95,8 @@ urlpatterns = [
 
     path('password_change',views.password_change),
     path('customer_change_password',views.customer_change_password),
-
+    path('forgotemail', views.forgotemail),
+    path('forgotpass', views.forgotpass),
 
     path('distributor_products',views.distributor_products),
     path('customer_view_products',views.customer_view_products),

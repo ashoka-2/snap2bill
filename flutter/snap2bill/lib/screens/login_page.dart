@@ -1104,6 +1104,8 @@ import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 import 'package:snap2bill/widgets/app_button.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
+import '../password/forgotemail.dart';
+
 const List<Color> _blobGradient1 = AppColors.blobGradient1;
 const List<Color> _blobGradient2 = AppColors.blobGradient2;
 
@@ -1414,7 +1416,13 @@ class _login_pageState extends State<login_page>
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(
-                                onPressed: () {},
+                                onPressed: () {
+
+                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>forgotemail()));
+
+
+
+                                },
                                 child: Text(
                                   "Forgot password?",
                                   style: TextStyle(
