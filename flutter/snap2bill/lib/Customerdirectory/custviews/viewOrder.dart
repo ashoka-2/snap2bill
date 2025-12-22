@@ -231,17 +231,14 @@
 // // }
 //
 
-
-
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
-
-// Keeping your original imports
-import '../Edits/editOrder.dart';
 import 'package:snap2bill/Customerdirectory/payment/RazorpayScreen.dart';
+
 class viewOrder extends StatelessWidget {
   const viewOrder({Key? key}) : super(key: key);
 
@@ -260,324 +257,193 @@ class viewOrderSub extends StatefulWidget {
 
 class _viewOrderSubState extends State<viewOrderSub> {
 
-  // --- API Logic (Kept exactly as yours) ---
+  Timer? _timer;
+  Future<List<Joke>>? _ordersFuture;
+
+  // ---------------- API ----------------
   Future<List<Joke>> _getJokes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    // The backend views_orders uses 'cid' in the new logic, but your original code
-    // used "orderid" and "lid". Adjusting to use 'cid' and 'ip' for robust customer view.
     String? ip = prefs.getString("ip");
-    String? cid = prefs.getString("cid"); // Assuming CID is stored upon customer login
+    String? cid = prefs.getString("cid");
 
     if (ip == null || cid == null) return [];
 
     try {
-      var data = await http.post(
-        // API endpoint from your backend views: /view_orders
+      var response = await http.post(
         Uri.parse("$ip/view_orders"),
-        body: {"cid": cid}, // Pass customer ID to fetch all orders for this customer
+        body: {"cid": cid},
       );
 
-      var jsonData = json.decode(data.body);
-      List<Joke> jokes = [];
+      var jsonData = json.decode(response.body);
+      List<Joke> list = [];
 
       if (jsonData["data"] != null) {
-        for (var joke in jsonData["data"]) {
-          Joke newJoke = Joke(
-            joke["id"].toString(),
-            joke["payment_status"].toString(),
-            joke["payment_date"].toString(),
-            joke["date"].toString(),
-            joke["amount"].toString(),
-            joke["username"].toString(),
-            joke["distributor"].toString(),
-            joke["orderid"].toString(), // This is the main order ID
-          );
-          jokes.add(newJoke);
+        for (var item in jsonData["data"]) {
+          list.add(Joke(
+            item["id"].toString(),
+            item["payment_status"].toString(),
+            item["payment_date"].toString(),
+            item["date"].toString(),
+            item["amount"].toString(),
+            item["username"].toString(),
+            item["distributor"].toString(),
+            item["orderid"].toString(),
+          ));
         }
       }
-      return jokes;
+      return list;
     } catch (e) {
-      debugPrint("Order fetch error: $e");
+      debugPrint("API error: $e");
       return [];
     }
   }
 
+  // ---------------- INIT ----------------
+  @override
+  void initState() {
+    super.initState();
+
+    _ordersFuture = _getJokes();
+
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) return;
+      setState(() {
+        _ordersFuture = _getJokes();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  // ---------------- UI ----------------
   @override
   Widget build(BuildContext context) {
-    // Theme consistency variables
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
 
     return Scaffold(
-      backgroundColor: isDark ? bgColor : Colors.grey[50], // Light grey background for card pop
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "My Orders",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
-      ),
+      appBar: AppBar(title: const Text("My Orders")),
       body: FutureBuilder<List<Joke>>(
-        future: _getJokes(),
-        builder: (BuildContext context, AsyncSnapshot<List<Joke>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        future: _ordersFuture,
+        builder: (context, snapshot) {
+
+          if (_ordersFuture == null) {
+            return const SizedBox();
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
           final items = snapshot.data ?? [];
 
           if (items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.shopping_cart_outlined, size: 80, color: hintColor),
-                  const SizedBox(height: 16),
-                  Text(
-                    "No orders found",
-                    style: TextStyle(color: hintColor, fontSize: 16),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return ListView.builder(
-              padding: const EdgeInsets.all(12),
-              itemCount: items.length,
-              itemBuilder: (BuildContext context, int index) {
-                var item = items[index];
-                return _buildOrderCard(item, cardColor, textColor, hintColor!, isDark);
-              },
-            );
+            return const Center(child: Text("No orders found"));
           }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(12),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              return _buildCard(items[index]);
+            },
+          );
         },
       ),
     );
   }
 
-  Widget _buildOrderCard(Joke item, Color cardColor, Color textColor, Color hintColor, bool isDark) {
-    // Logic for Status Color
-    bool isPaid = item.payment_status.toLowerCase() == 'paid';
-    Color statusColor = isPaid ? Colors.green : Colors.orange;
-    String statusText = item.payment_status.toUpperCase();
-    final primaryColor = Theme.of(context).primaryColor;
+  // ---------------- CARD ----------------
+  Widget _buildCard(Joke item) {
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    bool isPaid = item.payment_status.toLowerCase() == 'paid';
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 1. Header: ID and Status
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  "Order ID: ${item.orderid}", // Main Order ID
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: hintColor,
-                  ),
-                ),
-                // Status Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withOpacity(0.3)),
-                  ),
-                  child: Text(
-                    statusText,
+                Text("Order ID: ${item.orderid}"),
+                Text(item.payment_status.toUpperCase(),
                     style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: statusColor,
-                    ),
-                  ),
-                ),
+                        color: isPaid ? Colors.green : Colors.orange)),
+              ],
+            ),
+
+            const SizedBox(height: 10),
+
+            Text(item.distributor,
+                style: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold)),
+
+            const SizedBox(height: 8),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Sub ID: ${item.id}"),
+                Text("₹${item.amount}",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
               ],
             ),
 
             const SizedBox(height: 12),
-            Divider(color: Colors.grey.withOpacity(0.1), thickness: 1),
-            const SizedBox(height: 12),
 
-            // 2. Body: Distributor and Dates
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.distributor,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
-                      ),
-                    ),
-                    Text(
-                      "Distributor",
-                      style: TextStyle(fontSize: 12, color: hintColor),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      "Order Date: ${item.date}",
-                      style: TextStyle(fontSize: 12, color: hintColor),
-                    ),
-                    if (item.payment_date != "null" && item.payment_date.isNotEmpty)
-                      Text(
-                        "Paid On: ${item.payment_date}",
-                        style: TextStyle(fontSize: 12, color: hintColor),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 16),
-
-            // 3. Amount
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Sub-Order ID: ${item.id}", // Order Sub ID for Edit
-                  style: TextStyle(fontSize: 11, color: hintColor),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text("Total Amount", style: TextStyle(fontSize: 11, color: hintColor)),
-                    const SizedBox(height: 2),
-                    Text(
-                      "₹${item.amount}",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor, // Primary color for highlight
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            const SizedBox(height: 20),
-
-            // 4. Action Buttons (Pay, Edit, Delete)
             Row(
               children: [
-                // PAY BUTTON
+
                 Expanded(
-                  child: ElevatedButton.icon(
-                    onPressed: isPaid ? null : () async { // Disable if already paid
-                      SharedPreferences sh = await SharedPreferences.getInstance();
-                      sh.setString("amount", item.amount.toString());
-                      sh.setString("id", item.id.toString()); // Passing sub-order ID
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => RazorpayScreen()));
+                  child: ElevatedButton(
+                    onPressed: isPaid ? null : () async {
+                      SharedPreferences sh =
+                      await SharedPreferences.getInstance();
+                      sh.setString("amount", item.amount);
+                      sh.setString("id", item.id);
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => RazorpayScreen()));
                     },
-                    icon: Icon(isPaid ? Icons.check_circle : Icons.payment, color: Colors.white, size: 18),
-                    label: Text(isPaid ? "Paid" : "Pay Now", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: isPaid ? Colors.green.shade600 : Colors.blue.shade600,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
+                    child: Text(isPaid ? "Paid" : "Pay Now"),
                   ),
                 ),
 
                 const SizedBox(width: 10),
 
-                // EDIT BUTTON
-                InkWell(
-                 onTap: () async {
-                   SharedPreferences sh = await SharedPreferences.getInstance();
-                   sh.setString("id", item.id.toString()); // Passing sub-order ID
-                   Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewOrderItems()));
-                 },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(Icons.edit, color: primaryColor, size: 20),
-                  ),
-                ),
-
-                const SizedBox(width: 10),
-
-                // DELETE BUTTON
-                InkWell(
-                  onTap: () async {
-                    bool confirm = await showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text("Delete Order"),
-                          content: const Text("Are you sure you want to delete this order? This action cannot be undone."),
-                          actions: [
-                            TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
-                            TextButton(onPressed: () => Navigator.pop(context, true), child: const Text("Delete", style: TextStyle(color: Colors.red))),
-                          ],
-                        )
-                    ) ?? false;
-
-                    if (confirm) {
-                      SharedPreferences sh = await SharedPreferences.getInstance();
-
-                      // API Call: Uses the main order ID (item.orderid) based on your backend view_orders return
-                      await http.post(
-                        Uri.parse(sh.getString("ip").toString() + "/delete_order"),
-                        body: {"id": item.orderid.toString()},
-                      );
-                      // Reload page by replacing the current screen
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const viewOrderSub()));
-                    }
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    SharedPreferences sh =
+                    await SharedPreferences.getInstance();
+                    sh.setString("id", item.id);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => ViewOrderItems()));
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.red.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(Icons.delete_outline, color: Colors.red, size: 20),
-                  ),
                 ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.delete_outline,color: Colors.red,),
+                                  onPressed: () async {
+                                    SharedPreferences sh =
+                                        await SharedPreferences.getInstance();
+
+                                    var data = await http.post(
+                                      Uri.parse(
+                                        sh.getString("ip").toString() + "/delete_order",),
+                                      body: {
+                                        "id": item.id,
+                                      },
+                                    );
+                                  },
+
+                                ),
               ],
             ),
           ],
@@ -587,16 +453,16 @@ class _viewOrderSubState extends State<viewOrderSub> {
   }
 }
 
-// Model Class - Kept names exact
+// ---------------- MODEL ----------------
 class Joke {
-  final String id; // order_sub ID
+  final String id;
   final String payment_status;
   final String payment_date;
-  final String date; // Order Date
+  final String date;
   final String amount;
   final String username;
   final String distributor;
-  final String orderid; // Main Order ID
+  final String orderid;
 
   Joke(
       this.id,

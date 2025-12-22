@@ -1206,6 +1206,7 @@ def view_orders_items(request):
         ar.append({
             'id': i.id,
             'quantity': i.quantity,
+            'sid': i.STOCK.id,
             'price': i.STOCK.price,
             'product_name': i.STOCK.PRODUCT.product_name,
             'image': i.STOCK.PRODUCT.image,
@@ -1242,13 +1243,29 @@ def update_order_item(request):
     id = request.POST.get('id')
     stock_id = request.POST.get('stock_id')
     quantity = request.POST.get('quantity')
-
-    obj = order_sub.objects.get(id=id)
-    obj.STOCK_id = stock_id
-    obj.quantity = quantity
-    obj.save()
+    print(id,stock_id,quantity)
+    try:
+        obj = order_sub.objects.get(id=id)
+        obj.STOCK_id = stock_id
+        obj.quantity = quantity
+        obj.save()
+    except:
+        obj = order_sub.objects.get(id=id)
+        obj.quantity = quantity
+        obj.save()
+    orderid = order_sub.objects.get(id=id).ORDER_id
+    allordereditem = order_sub.objects.filter(ORDER=orderid)
+    total = 0
+    for i in allordereditem:
+        total += int(i.quantity) * int(i.STOCK.price)
+    order.objects.filter(id = orderid).update(amount=total)
 
     return JsonResponse({'status': 'ok'})
+
+def delete_order_item(request):
+    order_sub.objects.get(id=request.POST['id']).delete()
+    return JsonResponse({'status':'ok',})
+
 
 def delete_order(request):
     id = request.POST.get('id')
@@ -1275,6 +1292,10 @@ def view_distributor_orders(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+
+
+
+
 def make_payment(requst):
     cid = requst.POST['cid']
     amount = requst.POST['amount']
@@ -1284,9 +1305,4 @@ def make_payment(requst):
     obj.amount_date = datetime.datetime.now()
     obj.USER_id = cid
     obj.save()
-    return JsonResponse({'status':'ok',})
-
-
-def delete_order_item(request):
-    order_sub.objects.get(id=request.POST['id'])
     return JsonResponse({'status':'ok',})

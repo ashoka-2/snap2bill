@@ -50,6 +50,11 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
 
   Future<void> updateItem(
       String itemId, String stockId, String qty) async {
+
+    print(itemId);
+    print(stockId);
+    print(qty);
+
     SharedPreferences sp = await SharedPreferences.getInstance();
     String ip = sp.getString("ip")!;
 
@@ -77,8 +82,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     stockList.map((s) => s['id'].toString()).toList();
 
     /// FIX: use stock_id (NOT order item id)
-    String? selectedStockId =
-    stockIds.contains(item['stock_id'].toString())
+    String? selectedStockId = stockIds.contains(item['stock_id'].toString())
         ? item['stock_id'].toString()
         : null;
 
@@ -146,12 +150,22 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
                     if (selectedStockId != null) {
                       updateItem(
                         item['id'].toString(),
                         selectedStockId!,
+                        qty.text,
+                      );
+                    }
+
+                    else{
+
+
+                      updateItem(
+                        item['id'].toString(),
+                        prefs.getString("sid").toString(),
                         qty.text,
                       );
                     }
@@ -245,7 +259,9 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {
+                            onPressed: () async {
+                              SharedPreferences prefs = await SharedPreferences.getInstance();
+                              prefs.setString("sid", item['sid'].toString());
                               openEditSheet(
                                 context,
                                 item,
@@ -269,8 +285,13 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                                       child: const Text("Cancel"),
                                     ),
                                     TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(context, true),
+                                      onPressed: () {
+
+                                        deleteItem(item['id'].toString());
+                                        Navigator.pop(context, true);
+
+                                      },
+
                                       child: const Text(
                                         "Remove",
                                         style: TextStyle(color: Colors.red),
@@ -280,9 +301,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                                 ),
                               );
 
-                              if (confirm) {
-                                deleteItem(item['id'].toString());
-                              }
+
                             },
                           ),
                         ],
