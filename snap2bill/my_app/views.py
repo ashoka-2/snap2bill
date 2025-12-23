@@ -1170,6 +1170,11 @@ def addorder(request):
     # distributor_id = request.POST['uid']  # Distributor ID (passed from App)
     product_stock_id = request.POST['pid']  # Stock/Product ID
     quantity = request.POST['quantity']
+    if cart.objects.filter(STOCK=product_stock_id,USER=cid).exists():
+        oldqty = cart.objects.get(STOCK=product_stock_id,USER=cid).quantity
+        qty = int(quantity) + int(oldqty)
+        cart.objects.filter(STOCK=product_stock_id, USER=cid).update(quantity = qty)
+        return JsonResponse({'status': 'ok'})
 
     obj = cart()
     obj.quantity = quantity
