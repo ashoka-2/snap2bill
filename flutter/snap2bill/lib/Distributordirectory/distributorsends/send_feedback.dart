@@ -68,6 +68,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/home_page.dart';
+import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 // Make sure these point to your actual file locations
 import '../../widgets/app_button.dart';
@@ -121,7 +122,7 @@ class _send_feedbackState extends State<send_feedback> {
         // Navigate back to Home
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Home_page()),
+          MaterialPageRoute(builder: (context) =>  DistributorNavigationBar(initialIndex: 0,)),
         );
       } else {
         throw Exception('Failed to send feedback (Status: ${res.statusCode})');

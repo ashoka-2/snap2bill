@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
 
+
+
 class ViewCustomerProfile extends StatelessWidget {
   final Joke customer;
 
@@ -111,6 +113,64 @@ class ViewCustomerProfile extends StatelessWidget {
             ),
 
             const SizedBox(height: 25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Container(
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+
+                        child: InkWell(
+                          onTap: (){
+                            print("Call");
+                          },
+                          child: Container(
+
+                              color: Colors.blueAccent,
+
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Center(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+
+                                    children: [
+                                      Icon(Icons.call),
+                                      SizedBox(width: 10,),
+                                      Text("Call "),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                        )),
+                    SizedBox(width: 10,),
+                    Expanded(
+
+                        child: InkWell(
+                          onTap: (){
+                            print("message");
+                          },
+                          child: Container(
+                              color: Colors.green,
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Center(
+
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.chat),
+                                      SizedBox(width: 10,),
+                                      Text("Message "),
+                                    ],
+                                  ),
+                                ),
+                              )),
+                        )),
+                  ],
+                ),
+              ),
+            ),
             const Divider(),
 
             // 4. DETAILS SECTION (Multi-line enabled)
@@ -230,3 +290,5 @@ class ViewCustomerProfile extends StatelessWidget {
     );
   }
 }
+
+

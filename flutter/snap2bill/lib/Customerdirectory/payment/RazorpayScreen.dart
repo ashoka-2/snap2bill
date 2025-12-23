@@ -101,6 +101,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
     await http.post(
       Uri.parse("${sh.getString("ip")}/make_payment"),
       body: {
+        "id": sh.getString("id"),
         "cid": sh.getString("cid"),
         "amount": sh.getString("amount"),
         "mode": _paymentMode,

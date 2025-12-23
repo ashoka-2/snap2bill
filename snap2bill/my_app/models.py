@@ -6,9 +6,9 @@ class customer(models.Model):
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
-    profile_image = models.CharField(max_length=100)
-    bio = models.CharField(max_length=500)
-    address = models.CharField(max_length=200)
+    profile_image = models.TextField()
+    bio = models.TextField()
+    address = models.TextField()
     place = models.CharField(max_length=100)
     pincode = models.CharField(max_length=100)
     post = models.CharField(max_length=100)
@@ -19,15 +19,15 @@ class distributor(models.Model):
     name = models.CharField(max_length=100)
     email = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
-    profile_image = models.CharField(max_length=100)
-    bio = models.CharField(max_length=500)
-    address = models.CharField(max_length=200)
+    profile_image = models.TextField()
+    bio = models.TextField()
+    address = models.TextField()
     place = models.CharField(max_length=100)
     pincode = models.CharField(max_length=100)
     post = models.CharField(max_length=100)
     latitude = models.CharField(max_length=100)
     longitude = models.CharField(max_length=100)
-    proof = models.CharField(max_length=100)
+    proof = models.TextField()
     status=models.CharField(max_length=100)
     LOGIN = models.ForeignKey(User,models.CASCADE)
 
@@ -41,9 +41,8 @@ class category(models.Model):
 
 class product(models.Model):
     product_name = models.CharField(max_length=100)
-    # price = models.CharField(max_length=100)
-    image = models.CharField(max_length=100)
-    description = models.CharField(max_length=100)
+    image = models.TextField()
+    description = models.TextField()
     quantity = models.CharField(max_length=100)
     CATEGORY = models.ForeignKey(category,models.CASCADE)
 
@@ -59,23 +58,11 @@ class product(models.Model):
 
 
 
-# class review(models.Model):
-#     reviews = models.CharField(max_length=100)
-#     review_date = models.CharField(max_length=100)
-#     rating = models.CharField(max_length=100)
-#     USER = models.ForeignKey(customer,models.CASCADE)
-#     DISTRIBUTOR = models.ForeignKey(
-#         distributor,
-#         on_delete=models.SET_NULL,
-#         null=True,
-#         blank=True
-#     )
-
 
 class review(models.Model):
     reviews = models.TextField()
     rating = models.IntegerField()
-    review_date = models.CharField(max_length=100)  # 👈 back to simple string
+    review_date = models.CharField(max_length=100)
     USER = models.ForeignKey('customer', on_delete=models.SET_NULL, null=True, blank=True)
     DISTRIBUTOR = models.ForeignKey('distributor', on_delete=models.SET_NULL, null=True, blank=True)
 

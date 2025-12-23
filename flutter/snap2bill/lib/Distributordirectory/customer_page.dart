@@ -181,7 +181,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart'; // Ensure shimmer is in pubspec.yaml
 // Import your page
+import 'package:snap2bill/Distributordirectory/view/viewCustomerProfile.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
+import 'package:snap2bill/Distributordirectory/view/viewOrderItems.dart';
 
 class customer_page extends StatelessWidget {
   const customer_page({Key? key}) : super(key: key);
@@ -227,8 +230,11 @@ class _customer_page_subState extends State<customer_page_sub> {
 
     try {
       var data = await http.post(
-        Uri.parse("$ip/distributor_view_customer"),
-        body: {"cid": prefs.getString("cid").toString()},
+          Uri.parse("$ip/distributor_view_customer"),
+        body: {
+            // "cid": prefs.getString("cid").toString(),
+          "uid":prefs.getString("uid").toString()
+        },
       );
 
       if (data.statusCode == 200) {
@@ -244,6 +250,7 @@ class _customer_page_subState extends State<customer_page_sub> {
 
             Joke newJoke = Joke(
               joke["id"].toString(),
+              joke["cid"].toString(),
               joke["name"].toString(),
               joke["email"].toString(),
               joke["phone"].toString(),
@@ -478,8 +485,10 @@ class _customer_page_subState extends State<customer_page_sub> {
         ),
       ),
       child: InkWell(
-        onTap: () {
-          print("Clicked on ${item.name}");
+        onTap: () async {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("id", item.id);
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>viewOrderItems() ));
         },
         borderRadius: BorderRadius.circular(15),
         child: Padding(
@@ -497,23 +506,30 @@ class _customer_page_subState extends State<customer_page_sub> {
                   ),
                 ),
                 padding: const EdgeInsets.all(2),
-                child: CircleAvatar(
-                  radius: 30,
-                  backgroundColor: Colors.grey.shade300,
-                  backgroundImage:
-                      (item.profile_image.isNotEmpty &&
-                          item.profile_image != "null")
-                      ? NetworkImage(item.profile_image)
-                      : null,
-                  child:
-                      (item.profile_image.isEmpty ||
-                          item.profile_image == "null")
-                      ? Icon(
-                          Icons.person,
-                          color: Colors.grey.shade600,
-                          size: 30,
-                        )
-                      : null,
+                child: InkWell(
+                  onTap: (){
+
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewCustomerProfile(customer:item )));
+
+                  },
+                  child: CircleAvatar(
+                    radius: 30,
+                    backgroundColor: Colors.grey.shade300,
+                    backgroundImage:
+                        (item.profile_image.isNotEmpty &&
+                            item.profile_image != "null")
+                        ? NetworkImage(item.profile_image)
+                        : null,
+                    child:
+                        (item.profile_image.isEmpty ||
+                            item.profile_image == "null")
+                        ? Icon(
+                            Icons.person,
+                            color: Colors.grey.shade600,
+                            size: 30,
+                          )
+                        : null,
+                  ),
                 ),
               ),
 
@@ -576,6 +592,8 @@ class _customer_page_subState extends State<customer_page_sub> {
                     );
                   } else if (value == 'view_bills') {
                     // View Bills Logic
+                  }else if (value == 'view_profile'){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewCustomerProfile(customer:item)));
                   }
                 },
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -617,6 +635,25 @@ class _customer_page_subState extends State<customer_page_sub> {
                       ],
                     ),
                   ),
+                  PopupMenuItem<String>(
+                    value: 'view_profile',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: theme.primaryColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Text(
+                          'View Profile',
+                          style: TextStyle(
+                            color: isDark ? Colors.white : Colors.black,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -629,6 +666,8 @@ class _customer_page_subState extends State<customer_page_sub> {
 
 class Joke {
   final String id;
+  final String cid;
+
   final String name;
   final String email;
   final String phone;
@@ -641,7 +680,9 @@ class Joke {
 
   Joke(
     this.id,
-    this.name,
+      this.cid,
+
+      this.name,
     this.email,
     this.phone,
     this.profile_image,

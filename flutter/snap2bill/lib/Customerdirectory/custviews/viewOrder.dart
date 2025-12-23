@@ -402,19 +402,21 @@ class _viewOrderSubState extends State<viewOrderSub> {
             Row(
               children: [
 
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: isPaid ? null : () async {
-                      SharedPreferences sh =
-                      await SharedPreferences.getInstance();
-                      sh.setString("amount", item.amount);
-                      sh.setString("id", item.id);
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => RazorpayScreen()));
-                    },
-                    child: Text(isPaid ? "Paid" : "Pay Now"),
-                  ),
-                ),
+               if(item.payment_status.toLowerCase() == "pending")...[
+                 Expanded(
+                   child: ElevatedButton(
+                     onPressed: isPaid ? null : () async {
+                       SharedPreferences sh =
+                       await SharedPreferences.getInstance();
+                       sh.setString("amount", item.amount);
+                       sh.setString("id", item.id);
+                       Navigator.push(context,
+                           MaterialPageRoute(builder: (_) => RazorpayScreen()));
+                     },
+                     child: Text(isPaid ? "Paid" : "Pay Now"),
+                   ),
+                 ),
+               ],
 
                 const SizedBox(width: 10),
 

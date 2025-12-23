@@ -1119,8 +1119,8 @@ class login_page extends StatefulWidget {
 class _login_pageState extends State<login_page>
     with SingleTickerProviderStateMixin {
 
-  final TextEditingController username = TextEditingController(text: "ashoka@gmail.com");
-  final TextEditingController password = TextEditingController(text: "Password1");
+  final TextEditingController username = TextEditingController(text: "s526@tlsy.amritavidyalayam.edu.in");
+  final TextEditingController password = TextEditingController(text: "Password123");
 
   // UI state
   bool _obscureText = true;

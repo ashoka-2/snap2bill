@@ -77,8 +77,6 @@ urlpatterns = [
     path('edit_customer_profile', views.edit_customer_profile),
     
   
-    path('customer_share', views.customer_share),
-    path('customer_save', views.customer_save),
     path('customer_view_notifications', views.customer_view_notifications),
     path('customer_view_bill', views.customer_view_bill),
     path('distributor_make_bill', views.distributor_make_bill),
@@ -87,7 +85,6 @@ urlpatterns = [
     path('distributor_send_bill', views.distributor_send_bill),
     path('customer_receive_bill', views.customer_receive_bill),
     path('distributor_view_product',views.distributor_view_product),
-    path('distributor_delete_customers',views.distributor_delete_customers),
     path('distributor_view_customer',views.distributor_view_customer),
     path('distributor_view_distributor', views.distributor_view_distributor),
     path('edit_distributor_profile',views.edit_distributor_profile),
@@ -125,6 +122,7 @@ urlpatterns = [
     path('delete_order_item',views.delete_order_item),
     path('update_order_item',views.update_order_item),
     path('view_distributor_orders',views.view_distributor_orders),
+    path('view_distributor_ordersitems',views.view_distributor_ordersitems),
     path('make_payment',views.make_payment),
 
     path('viewCart',views.viewCart),

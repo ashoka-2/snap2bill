@@ -510,11 +510,25 @@ def edit_distributor_profile(request):
 
 
 def distributor_view_customer(request):
-    cid=request.POST['cid']
-    data=customer.objects.all()
+    # cid=request.POST['cid']
+    uid = request.POST['uid']
+
+    # data=customer.objects.all()
+    data = order.objects.filter(DISTRIBUTOR=uid)
     ar=[]
     for i in data:
-        ar.append({'id':i.id,'name':i.name,'email':i.email,'phone':i.phone,'profile_image':i.profile_image,'bio':i.bio,'address':i.address,'place':i.place,'pincode':i.pincode,'post':i.post})
+        ar.append({
+            'id': i.id,
+            'name':i.USER.name,
+            'email':i.USER.email,
+            'phone':i.USER.phone,
+            'profile_image':i.USER.profile_image,
+            'bio':i.USER.bio,
+            'address':i.USER.address,
+            'place':i.USER.place,
+            'pincode':i.USER.pincode,
+            'post':i.USER.post
+        })
 
     return JsonResponse({'status':'ok','data':ar})
 
@@ -553,13 +567,6 @@ def customer_search_page(request):
 
 
 
-def customer_share(request):
-    return JsonResponse({'status':'ok'})
-
-def customer_save(request):
-    return JsonResponse({'status':'ok'})
-
-
 
 def customer_view_notifications(request):
     return JsonResponse({'status':'ok'})
@@ -591,15 +598,6 @@ def customer_receive_bill(request):
 
 
 
-
-
-
-
-
-
-
-def distributor_delete_customers(request):
-    return JsonResponse({'status':'ok'})
 
 
 
@@ -994,6 +992,8 @@ def add_stock(request):
     uid= request.POST['uid']
     pid = request.POST['pid']
     price = request.POST['price']
+    if stock.objects.filter(DISTRIBUTOR_id = uid,PRODUCT_id = pid).exists():
+        return JsonResponse({"status":"not"})
     obj = stock()
     obj.quantity = quantity
     obj.price = price
@@ -1140,8 +1140,21 @@ def customer_view_distributor(request):
 
     ar = []
     for i in data:
-        ar.append({'id': i.id, 'name': i.name, 'email': i.email, 'phone': i.phone, 'profile_image': i.profile_image,
-                   'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,'latitude':i.latitude,'longitude':i.longitude,'proof':i.proof})
+        ar.append({
+            'id': i.id,
+            'name': i.name,
+            'email': i.email,
+            'phone': i.phone,
+            'profile_image': i.profile_image,
+            'bio': i.bio,
+            'address': i.address,
+            'place': i.place,
+            'pincode': i.pincode,
+            'post': i.post,
+            'latitude':i.latitude,
+            'longitude':i.longitude,
+            'proof':i.proof
+        })
 
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -1342,7 +1355,7 @@ def view_orders_items(request):
             'price': i.STOCK.price,
             'product_name': i.STOCK.PRODUCT.product_name,
             'image': i.STOCK.PRODUCT.image,
-            'description': i.STOCK.PRODUCT.image,
+            'description': i.STOCK.PRODUCT.description,
 
         })
 
@@ -1424,17 +1437,38 @@ def delete_order(request):
 
 def view_distributor_orders(request):
     uid = request.POST['uid']
-    data = order_sub.objects.filter(ORDER__DISTRIBUTOR__id=uid)
+    data = order.objects.filter(DISTRIBUTOR__id=uid)
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
-            'payment_status': i.ORDER.payment_status,
+            'payment_status': i.payment_status,
+            'payment_date': str(i.payment_date),
+            'date': str(i.date),
+            'amount': i.amount,
+            'username': i.USER.name,
+            # 'distributor': i.ORDER.DISTRIBUTOR.name,
+
+
+
+        })
+
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+def view_distributor_ordersitems(request):
+    # uid = request.POST['uid']
+    id = request.POST["id"]
+    data = order_sub.objects.filter(ORDER=id)
+    ar = []
+    for i in data:
+        ar.append({
+            'id': i.id,
+            # 'payment_status': i.ORDER.payment_status,
             'payment_date': str(i.ORDER.payment_date) if i.ORDER.payment_date else "Pending",
             'date': str(i.ORDER.date),
-            'amount': i.ORDER.amount,
-            'username': i.ORDER.USER.name,
-            'distributor': i.ORDER.DISTRIBUTOR.name,
+            'amount': i.STOCK.price,
+            'username': i.STOCK.PRODUCT.product_name,
+            'distributor': i.ORDER.USER.name,
 
         })
 
@@ -1443,14 +1477,16 @@ def view_distributor_orders(request):
 
 
 
+def make_payment(request):
+    cid = request.POST['cid']
+    id = request.POST['id']
+    amount = request.POST['amount']
 
+    order.objects.filter(id=id).update(payment_status=request.POST['mode'],payment_date=datetime.datetime.now())
 
-def make_payment(requst):
-    cid = requst.POST['cid']
-    amount = requst.POST['amount']
     obj = payment()
     obj.amount = amount
-    obj.status = "paid"
+    obj.status = request.POST['mode']
     obj.amount_date = datetime.datetime.now()
     obj.USER_id = cid
     obj.save()
