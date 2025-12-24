@@ -166,18 +166,16 @@
       gap:.35rem;
     padding:.35rem .6rem;
       border-radius:9999px;
-    background:rgba(21,101,192,.1);
-      color:var(--primary);
-    border:.0625rem solid var(--pill--border);
+    background:var(--pill-bg);
+      color:var(--pill-text);
+    border: 1px solid var(--pill-border);
       font-weight:700;
   }
+  /*.pill i{*/
+      /*color: var(--icon-color);*/
+  /*}*/
 
 
-  .pill.mail{
-      background:rgba(14,165,233,.12);
-      border-color:var(--pill--border);
-      color:var(--primary);
-  }
 
  .details{
      display:grid;

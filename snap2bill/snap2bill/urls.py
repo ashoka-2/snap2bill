@@ -89,7 +89,6 @@ urlpatterns = [
     path('distributor_view_distributor', views.distributor_view_distributor),
     path('edit_distributor_profile',views.edit_distributor_profile),
 
-
     path('password_change',views.password_change),
     path('customer_change_password',views.customer_change_password),
     path('forgotemail', views.forgotemail),

@@ -8,7 +8,8 @@
 <title>Admin Reviews</title>
 
 <!-- 1. Favicon -->
-    <script src="{% static 'scripts/setting.js' %}"></script>
+    <script defer src="{% static 'scripts/setting.js' %}"></script>
+    <script defer src="{% static 'scripts/navbar.js' %}"></script>
 
 <!-- 2. Icons & Styles -->
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
@@ -206,30 +207,7 @@
 <div class="main-content">
     <!-- Sidebar -->
     <div class="admin-left-main-content">
-        <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
-        <div class="admin-mid-left-content">
-            <div id="navbar-section">
-                <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
-                <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
-                <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
-                <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
-                <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
-                <a class="nav-links" href="/admin_review"><div class="mid-left-navbars active"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-                <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
-                <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
-                <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
-            </div>
-        </div>
-        <hr>
-        <div class="admin-bottom-left-content">
-            <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
-                <div class="setting-dropdown">
-                    <a href="/admin_setting" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
-                    <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn"><i id="themeIcon" class="ri-sun-line"></i> Switch theme</a>
-                    <a href="/logout" class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</a>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Main Content -->
@@ -333,28 +311,6 @@
 </div>
 
 <script>
-    /* --- Sidebar & Theme Logic --- */
-    const moreBtn = document.querySelector(".more-section");
-    const dropdown = document.querySelector(".setting-dropdown");
-    const themeBtn = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const root = document.documentElement;
-
-    document.body.addEventListener("click", (e) => {
-        if (moreBtn.contains(e.target)) dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-        else if (!dropdown.contains(e.target)) dropdown.style.display = "none";
-    });
-
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    root.setAttribute('data-theme', savedTheme);
-    themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-
-    themeBtn.addEventListener('click', () => {
-        const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-    });
 
     /* --- Filtering Logic --- */
     const searchInput = document.getElementById('searchInput');
@@ -397,190 +353,3 @@
 
 </body>
 </html>
-{##}
-{##}
-{#{% load static %}#}
-{#<!DOCTYPE html>#}
-{#<html lang="en" data-theme="light">#}
-{#<head>#}
-{#<meta charset="utf-8" />#}
-{#<title>Admin Reviews | Snap2Bill</title>#}
-{#<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#    <script src="{% static 'scripts/setting.js' %}"></script>#}
-{##}
-{#<!-- Remix Icons -->#}
-{#<link#}
-{#  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
-{#  rel="stylesheet"#}
-{#/>#}
-{##}
-{#<style>#}
-{##}
-{##}
-{##}
-{#  .fb-header{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-block-end:1.25rem; }#}
-{#  .fb-title{ font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:.5rem; }#}
-{#  .fb-sub{ color:var(--text-soft); font-size:clamp(.9rem,1.2vw,1rem); margin-top:.25em; }#}
-{#  .fb-actions{ display:flex; gap:.75rem; flex-wrap:wrap; }#}
-{##}
-{#  .btn{ display:inline-flex; align-items:center; gap:.4rem; text-decoration:none; border-radius:9999px; font-weight:700; border:0; cursor:pointer; transition:all .3s ease; }#}
-{#  .btn i{ font-size:1.2rem; }#}
-{#  .btn-primary{ background:linear-gradient(90deg,var(--primary),var(--accent),var(--primary)); color:#fff; padding:.9rem 1.2rem; box-shadow:var(--shadow); }#}
-{#  .btn-primary:hover{ transform:translateY(-3px); opacity:.9; }#}
-{#  .btn-ghost{#}
-{#      background:transparent;#}
-{#      color:var(--primary);#}
-{#      border:.0625rem solid var(--primary);#}
-{#      padding:.85rem 1.1rem;#}
-{#  }#}
-{#  .btn-ghost:hover{ background:rgba(21,101,192,0.08); transform:translateY(-2px); }#}
-{##}
-{#  .fb-table-wrap{#}
-{#      background:#fff;#}
-{#      border:.0625rem solid var(--line);#}
-{#      border-radius:calc(var(--radius) + .25rem);#}
-{#      box-shadow:var(--shadow);#}
-{#      overflow:auto;#}
-{#      transition: background .3s ease;#}
-{#  }#}
-{#  [data-theme="dark"] .fb-table-wrap{ background:transparent; }#}
-{##}
-{#  table.fb-table{#}
-{#      width:100%;#}
-{#      border-collapse:separate;#}
-{#      border-spacing:0;#}
-{#  }#}
-{#  .fb-table thead th{#}
-{#    position:sticky;#}
-{#      top:0;#}
-{#      background:linear-gradient(0deg,#f7faff,#ffffff);#}
-{#    color:var(--text-main);#}
-{#      text-align:left;#}
-{#      padding:1rem 1.2rem;#}
-{#      font-weight:800;#}
-{#    transition:background .3s ease;#}
-{#  }#}
-{##}
-{#</style>#}
-{#</head>#}
-{##}
-{#<body>#}
-{##}
-{#<div class="main-content">#}
-{#  <!-- Sidebar -->#}
-{#  <div class="admin-left-main-content">#}
-{#    <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
-{#    <div class="admin-mid-left-content">#}
-{#      <div id="navbar-section">#}
-{#        <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>#}
-{#        <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>#}
-{#        <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>#}
-{#          <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>#}
-{#        <a class="nav-links" href="/admin_review"><div class="mid-left-navbars active"><i class="ri-star-line"></i><span>View Reviews</span></div></a>#}
-{#<a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>#}
-{#         <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>#}
-{#          <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>#}
-{##}
-{#      </div>#}
-{#    </div>#}
-{#    <hr>#}
-{#    <div class="admin-bottom-left-content">#}
-{#      <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>#}
-{#        <div class="setting-dropdown">#}
-{#          <a href="admin_setting"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>#}
-{#          <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">#}
-{#            <i id="themeIcon" class="ri-sun-line"></i> Switch theme#}
-{#          </a>#}
-{#          <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>#}
-{#        </div>#}
-{#      </div>#}
-{#    </div>#}
-{#  </div>#}
-{##}
-{#  <!-- Right Content -->#}
-{#  <div class="admin-right-main-content">#}
-{##}
-{#    <div class="fb-header">#}
-{#      <div>#}
-{#        <div class="fb-title"><i class="ri-star-line"></i> Reviews</div>#}
-{#        <div class="fb-sub">All customer reviews for distributors</div>#}
-{#      </div>#}
-{#      <div class="fb-actions">#}
-{#        <a class="btn btn-ghost" href="/admin_home"><i class="ri-dashboard-line"></i> Dashboard</a>#}
-{#        <a class="btn btn-primary" href="/admin_viewcustomer"><i class="ri-user-3-line"></i> Customers</a>#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <div class="fb-table-wrap">#}
-{#      <table class="fb-table">#}
-{#        <thead>#}
-{#          <tr>#}
-{#            <th><i class="ri-hashtag"></i> S.No</th>#}
-{#            <th><i class="ri-user-line"></i> Customer</th>#}
-{#            <th><i class="ri-store-2-line"></i> Distributor</th>#}
-{#            <th><i class="ri-chat-3-line"></i> Review</th>#}
-{#            <th><i class="ri-star-fill"></i> Rating</th>#}
-{#            <th><i class="ri-calendar-line"></i> Date</th>#}
-{#          </tr>#}
-{#        </thead>#}
-{#        <tbody>#}
-{#          {% for r in reviewdata %}#}
-{#          <tr>#}
-{#            <td>{{ forloop.counter }}</td>#}
-{#            <td>{{ r.USER.name }}</td>#}
-{#            <td>{{ r.DISTRIBUTOR.name }}</td>#}
-{#            <td>{{ r.reviews }}</td>#}
-{#            <td>#}
-{#              {% for i in "12345"|slice:":" %}#}
-{#                {% if forloop.counter <= r.rating %}#}
-{#                  <i class="ri-star-fill" style="color:gold;"></i>#}
-{#                {% else %}#}
-{#                  <i class="ri-star-line" style="color:gray;"></i>#}
-{#                {% endif %}#}
-{#              {% endfor %}#}
-{#            </td>#}
-{#            <td>{{ r.review_date }}</td>#}
-{#          </tr>#}
-{#          {% empty %}#}
-{#          <tr><td colspan="6" style="text-align:center; color:var(--text-soft); padding:2rem;">No reviews yet.</td></tr>#}
-{#          {% endfor %}#}
-{#        </tbody>#}
-{#      </table>#}
-{#    </div>#}
-{##}
-{#  </div>#}
-{#</div>#}
-{##}
-{#<script>#}
-{#  // Sidebar dropdown#}
-{#  const moreBtn = document.querySelector(".more-section");#}
-{#  const dropdown = document.querySelector(".setting-dropdown");#}
-{#  document.body.addEventListener("click", e => {#}
-{#    if (moreBtn && moreBtn.contains(e.target)) {#}
-{#      e.stopPropagation();#}
-{#      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
-{#    } else if (dropdown && !dropdown.contains(e.target)) {#}
-{#      dropdown.style.display = "none";#}
-{#    }#}
-{#  });#}
-{##}
-{#  // Theme toggle with Remix Icons#}
-{#  const root = document.documentElement;#}
-{#  const themeBtn = document.getElementById('themeToggle');#}
-{#  const themeIcon = document.getElementById('themeIcon');#}
-{##}
-{#  const savedTheme = localStorage.getItem('theme') || 'light';#}
-{#  root.setAttribute('data-theme', savedTheme);#}
-{#  themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{##}
-{#  themeBtn.addEventListener('click', () => {#}
-{#    const current = root.getAttribute('data-theme');#}
-{#    const next = current === 'dark' ? 'light' : 'dark';#}
-{#    root.setAttribute('data-theme', next);#}
-{#    localStorage.setItem('theme', next);#}
-{#    themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{#  });#}
-{#</script>#}
-{#</body>#}
-{#</html>#}

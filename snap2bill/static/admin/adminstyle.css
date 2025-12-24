@@ -40,8 +40,13 @@ body::-webkit-scrollbar {
     --radius:.8rem;
     --shadow:0 1.2rem 3rem rgba(2,6,23,.08);
     --gap: clamp(2rem, 2.5vw, 3rem);
-    --pill--border:rgba(14,165,233,.3);
-    --danger: #ff0700;
+     --danger: #ff0700;
+
+    --pill-border: rgb(50, 76, 255);
+    --pill-text: rgb(70, 71, 255);
+    --pill-bg:rgba(21,101,192,.1);
+
+    --icon-color: rgb(52, 238, 255);
 
   }
 
@@ -54,7 +59,7 @@ body::-webkit-scrollbar {
       --bg-body: #000000;
     --line:rgba(255,255,255,0.15);
     --shadow:0 1rem 2rem rgba(0,0,0,0.4);
-      --pill--border: rgba(10, 104, 233, 0.3);
+      /*--pill--border: rgba(10, 104, 233, 0.3);*/
 
   }
 
@@ -180,10 +185,10 @@ display: flex;
 }
 
 
-.mid-left-navbars i {
+.mid-left-navbars i{
     font-size:1rem;
     margin-right:.5rem;
-    color:var(--primary);
+    color:var(--icon-color);
 }
 
 
@@ -210,7 +215,7 @@ display: flex;
     /*color: var(--primary);*/
 }
 .more-section i{
-    color: var(--primary);
+    color: var(--icon-color);
 }
 .more-section:hover{
     background-color: var(--text-soft);
@@ -285,7 +290,9 @@ display: flex;
 }
 
 
-
+.setting-dropdown.show {
+  display: block;
+}
 
 
 
@@ -349,12 +356,6 @@ display: flex;
   .fb-table tbody tr:hover{
       background:#1e3a8a;
       color:#f3f4f6;
-  }
-
-  .mid-left-navbars i {
-      font-size:1rem;
-      margin-right:.5rem;
-      color:var(--primary);
   }
 
 

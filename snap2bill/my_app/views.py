@@ -1,5 +1,5 @@
 import datetime
-from django.contrib.auth import authenticate, login , logout
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
-
+import datetime
 
 
 
@@ -25,7 +25,7 @@ def log(request):
 
 
 def logout(request):
-    return render(request, 'login.html')
+    return redirect("/")
 
 
 
@@ -40,11 +40,11 @@ def login_post(request):
             return redirect('/admin_home')
     else:
         return  HttpResponse("Invalid")
-    #         messages.success(request, f"Welcome back, {data.username} 👋")
-    #         return redirect('/admin_home')
-    #
-    # messages.error(request, "Invalid username or password.")
-    # return redirect('/')
+   
+
+
+
+
 
 
 @login_required(login_url='')
@@ -1159,11 +1159,10 @@ def customer_view_distributor(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
-import datetime
-from django.http import JsonResponse
 
 
-# Import your models: order, order_sub
+
+
 
 def addorder(request):
     cid = request.POST['cid']  # Customer ID

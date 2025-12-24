@@ -5,7 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Edit Product</title>
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
-    <script src="{% static 'scripts/setting.js' %}"></script>
+    <script defer src="{% static 'scripts/setting.js' %}"></script>
+    <script defer src="{% static 'scripts/navbar.js' %}"></script>
 
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'admin/product.css' %}">
@@ -57,32 +58,7 @@
 
     <div class="main-content">
         <div class="admin-left-main-content">
-            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
-            <div class="admin-mid-left-content">
-                <div id="navbar-section">
-                    <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
-                    <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
-                    <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
-                    <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
-                    <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
-                    <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-                    <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
-                    <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
-                    <a class="nav-links" href="/view_product"><div class="mid-left-navbars active"><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
-                </div>
-            </div>
-            <hr>
-            <div class="admin-bottom-left-content">
-                <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
-                    <div class="setting-dropdown">
-                        <a href="admin_setting" class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</a>
-                        <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
-                            <i id="themeIcon" class="ri-sun-line"></i> Switch theme
-                        </a>
-                        <a href="/logout" class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</a>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
         <div class="admin-right-main-content">
@@ -176,38 +152,7 @@
     </div>
 
 <script>
-    /* Dropdown Logic */
-    const moreBtn = document.querySelector(".more-section");
-    const dropdown = document.querySelector(".setting-dropdown");
-    let bodyEl = document.querySelector("body");
 
-    moreBtn.addEventListener("click", function (e) {
-        e.stopPropagation();
-        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
-    });
-
-    bodyEl.addEventListener("click", function (event) {
-        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {
-            dropdown.style.display = "none";
-        }
-    });
-
-    /* Theme Toggle Logic */
-    const root = document.documentElement;
-    const themeBtn = document.getElementById('themeToggle');
-    const themeIcon = document.getElementById('themeIcon');
-    const savedTheme = localStorage.getItem('theme') || 'light';
-
-    root.setAttribute('data-theme', savedTheme);
-    themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-
-    themeBtn.addEventListener('click', () => {
-        const current = root.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
-        root.setAttribute('data-theme', next);
-        localStorage.setItem('theme', next);
-        themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';
-    });
 
     /* --- Form Validation Logic (Edit Product) --- */
     const form = document.getElementById('editProductForm');
