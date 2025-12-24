@@ -322,8 +322,9 @@
           <p><strong>Post :</strong> {{ i.post }}</p>
           {% if i.bio %}<p><strong>Bio :</strong> {{ i.bio }}</p>{% endif %}
 
-          {% if i.proof %}
-             <p><a href="{{ i.proof }}" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:700;"><i class="ri-file-list-line"></i> View Proof</a></p>
+          <div class="proof-location">
+            {% if i.proof %}
+             <p class="proof"><a href="{{ i.proof }}" target="_blank" ><i class="ri-file-list-line"></i> View Proof</a></p>
           {% endif %}
 
           {% if i.latitude and i.longitude %}
@@ -335,6 +336,8 @@
               <i class="ri-map-pin-2-line"></i> No Location
             </a>
           {% endif %}
+          </div>
+
         </div>
 
       </div>

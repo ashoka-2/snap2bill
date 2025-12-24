@@ -333,11 +333,15 @@
           <p><strong>Post :</strong> {{ i.post }}</p>
           <p><strong>Latitude :</strong> {{ i.latitude }}</p>
           <p><strong>Longitude :</strong> {{ i.longitude }}</p>
-          <p><strong>Proof :</strong> {{ i.proof }}</p>
           <p class="bio"><strong>Bio :</strong> {{ i.bio }}</p>
-            {% if i.latitude and i.longitude %}
-    <a class="btn-map"
-       href="https://www.google.com/maps?q={{ i.latitude }},{{ i.longitude }}"
+
+            <div class="proof-location">
+                {% if i.proof %}
+             <p class="proof"><a href="{{ i.proof }}" target="_blank" ><i class="ri-file-list-line"></i> View Proof</a></p>
+          {% endif %}
+
+                {% if i.latitude and i.longitude %}
+    <a class="btn-map" href="https://www.google.com/maps?q={{ i.latitude }},{{ i.longitude }}"
        target="_blank" rel="noopener">
       <i class="ri-map-pin-2-line"></i> Location
     </a>
@@ -346,9 +350,12 @@
       <i class="ri-map-pin-2-line"></i> No location
     </a>
   {% endif %}
+            </div>
+
         </div>
 
         <div class="actions">
+
           <a class="btn-action btn-accept" href="/accept_distributor/{{ i.id }}"><i class="ri-check-line"></i>Accept</a>
           <a class="btn-action btn-reject" href="/reject_distributor/{{ i.id }}"><i class="ri-close-line"></i>Reject</a>
         </div>

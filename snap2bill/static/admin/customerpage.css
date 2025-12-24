@@ -82,29 +82,27 @@
 
 
 
-
-
-
-
- /* ===== Flex cards: exactly 4 per row on wide screens ===== */
-  .cards-container{
-    display:flex;
-      flex-wrap:wrap;
-      gap:1rem;
-  }
+.cards-container{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+}
 
 .card{
-    box-sizing:border-box;
-    min-width: 18rem;
-    flex: 1 1 300px;
-    max-width: 400px;
-    background:var(--surface);
-    border:.0625rem solid var(--text-soft);
-    border-radius:calc(var(--radius) + .2rem);
-    box-shadow:var(--shadow);
-    padding: clamp(.9rem, 1.8vw, 1.2rem);
-    display:flex; flex-direction:column; gap:.75rem;
-    transition: transform .15s, box-shadow .2s;
+  flex: 1 1 260px;   /* 👈 magic line */
+  max-width: 320px; /* optional control */
+
+  box-sizing: border-box;
+  background: var(--surface);
+  border: 1px solid var(--text-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: var(--padding-lg);
+
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
 }
 
   .card:hover{
@@ -161,6 +159,7 @@
 
 
   .pill{
+          width: fit-content;
     display:inline-flex;
       align-items:center;
       gap:.35rem;
@@ -217,19 +216,43 @@
 
 
 
+.proof-location{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:10px;
+    margin-top: 10px;
+}
 
 
+.proof{
+     padding: var(--padding-btn);
+    background-color: var(--pill-bg);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--pill-border);
+
+}
+
+.proof>a{
+        text-decoration:none;
+        color:var(--pill-text);
+        font-weight:700;
+        white-space: nowrap;
+
+}
 
     /* Map button (translucent like accept/reject style) */
 .btn-map{
+    width: fit-content;
   display:inline-flex;
     align-items:center;
     gap:.4rem;
-  padding:.55rem .9rem;
-    border-radius:9999px;
+  padding:var(--padding-btn);
+    border-radius:var(--radius-xl);
     font-weight:800;
     text-decoration:none;
-  color:var(--primary);
+  color:var(--pill-text);
   background: color-mix(in oklab, var(--primary) 12%, white);
   border:.075rem solid color-mix(in oklab, var(--primary) 45%, transparent);
   transition: transform .15s, background .2s, border-color .2s;
@@ -260,6 +283,7 @@
       gap:.6rem;
       margin-top:.35rem;
       flex-wrap:wrap;
+      justify-content: center;
   }
   .btn-action{
     display:inline-flex;

@@ -13,15 +13,13 @@
     padding: 0;
     box-sizing: border-box;
     font-family: magic, sans-serif;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 
 html, body {
   width: 100%;
   min-height: 100%;
-  margin: 0;
-  padding: 0;
 }
 
 
@@ -46,7 +44,22 @@ body::-webkit-scrollbar {
     --pill-text: rgb(70, 71, 255);
     --pill-bg:rgba(21,101,192,.1);
 
-    --icon-color: rgb(52, 238, 255);
+    --icon-color: rgb(0, 0, 0);
+    --border-color: rgb(0, 0, 0);
+    --active-color: rgba(131, 134, 134, 0.47);
+    --radius-sm:10px;
+    --radius-md:20px;
+    --radius-lg:30px;
+    --radius-xl:50px;
+    --radius-circular:50%;
+
+    --transparent:transparent;
+
+
+
+    --padding-sm:1rem;
+    --padding-lg: 1.5rem;
+    --padding-btn:.55rem .9rem;
 
   }
 
@@ -59,7 +72,14 @@ body::-webkit-scrollbar {
       --bg-body: #000000;
     --line:rgba(255,255,255,0.15);
     --shadow:0 1rem 2rem rgba(0,0,0,0.4);
-      /*--pill--border: rgba(10, 104, 233, 0.3);*/
+
+       --pill-border: rgb(50, 76, 255);
+    --pill-text: rgb(70, 71, 255);
+    --pill-bg:rgba(21,101,192,.1);
+
+    --icon-color: rgb(242, 255, 244);
+    --border-color: rgb(189, 189, 189);
+    --active-color: rgba(131, 134, 134, 0.47);
 
   }
 
@@ -82,8 +102,10 @@ display: flex;
 
 
 .admin-right-main-content{
-    margin-left: 17rem;
-    width: calc(100% - 17rem);
+    margin-left: 20vw;
+    width: calc(100% - 20vw);
+    /*margin-left: 17rem;*/
+    /*width: calc(100% - 17rem);*/
     min-height:100vh;
     background:
       radial-gradient(80vw 30vh at 0% -10%, rgba(21,101,192,.08), transparent 60%),
@@ -99,7 +121,8 @@ display: flex;
 
 .admin-left-main-content{
     background-color: var(--surface);
-    width: 17rem;
+    width: 20vw;
+    /*width: 17rem;*/
     height: 100vh;
     z-index: 10;
     position: fixed;
@@ -171,17 +194,22 @@ display: flex;
     display: flex;
     align-items: center;
     cursor:pointer;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--transparent);
+
 }
 .mid-left-navbars:hover{
-    background-color: var(--text-soft);
-    border-radius: 0.5rem;
+    background-color: var(--active-color);
     transition: all ease-in-out 1ms;
+    border: 1px solid var(--border-color);
+
 }
 
 .active{
-    background-color: var(--text-soft);
-    border-radius: 0.5rem;
+    background-color: var(--active-color);
+    /*border-radius:var(--radius-sm);*/
     transition: all ease-in-out 1ms;
+    border: 1px solid var(--border-color);
 }
 
 
