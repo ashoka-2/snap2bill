@@ -33,8 +33,8 @@ body::-webkit-scrollbar {
 
     --modal-color:#02061780;
     --black-color:black;
-    --primary:#1565c0;
-    --accent:#0ea5e9;
+    --primary: #0d0bc0;
+    --accent: #3c71e9;
     --text-main:#0a0a0a;
     --text-soft: #8c9aa9;
     --surface:#ffffff;
@@ -64,12 +64,12 @@ body::-webkit-scrollbar {
     --pill-bg:rgba(21,101,192,.1);
     --pill-hover-color: rgba(35, 25, 206, 0.25);
     --icon-color: rgb(0, 0, 0);
-    --border-color: rgb(0, 0, 0);
+    --border-color: rgb(122, 122, 122);
     --active-color: rgba(131, 134, 134, 0.47);
 
 
 
-    --radius-sm:10px;
+    --radius-sm:15px;
     --radius-md:20px;
     --radius-lg:30px;
     --radius-xl:50px;
@@ -95,10 +95,12 @@ body::-webkit-scrollbar {
 
     --font-xs:0.5rem;
     --font-sm:1rem;
+    --font-md:1.2rem;
     --font-lg:1.5rem;
     --font-xl:2rem;
     --font-2xl:2.5rem;
     --font-3xl:3rem;
+    --font-4xl:4rem;
 
     --margin-xxs:0.1rem;
     --margin-xs:0.5rem;

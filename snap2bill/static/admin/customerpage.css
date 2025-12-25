@@ -403,22 +403,22 @@
 #noDataMessage {
   width: 100%;
     text-align: center;
-    margin-top: 3rem;
+    margin-top: var(--margin-3xl);
     color: var(--text-soft);
   display: none;
     flex-direction: column;
     align-items: center;
 }
 #noDataMessage i {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    color: var(--text-soft);
+    font-size: var(--font-4xl);
+    margin-bottom:var(--margin-sm);
+    color: var(--icon-color);
     opacity: 0.5;
 }
 #noDataMessage h2 {
-    font-size: 1.5rem;
+    font-size: var(--font-lg);
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--margin-xs);
     color: var(--text-main);
 }
 
