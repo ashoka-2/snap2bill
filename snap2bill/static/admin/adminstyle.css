@@ -31,7 +31,8 @@ body::-webkit-scrollbar {
 
     --image-size:5rem;
 
-
+    --modal-color:#02061780;
+    --black-color:black;
     --primary:#1565c0;
     --accent:#0ea5e9;
     --text-main:#0a0a0a;
@@ -40,23 +41,38 @@ body::-webkit-scrollbar {
     --bg-body: #f4f7fe;
     --line:#e5e7eb;
     --radius:.8rem;
-    --shadow:0 1.2rem 3rem rgba(224, 223, 214, 0.69);
+    --shadow:0 0 2rem rgba(224, 223, 214, 0.69);
     --gap: clamp(2rem, 2.5vw, 3rem);
-     --danger: #ff0700;
-    --success: #05bc0c;
-    --white-color:#ffffff;
+
+
+    --danger: #8d0813;
+    --danger-bg:#fff1f0;
+    --danger-border:#f7c3c0;
+
+
+
+    --success: #009d40;
+    --success-bg: #e1ffd4;
+    --success-border: #b7f7b2;
+
+
+
+
+    --white-color: rgb(241, 241, 241);
     --pill-border: rgb(50, 76, 255);
     --pill-text: rgb(70, 71, 255);
     --pill-bg:rgba(21,101,192,.1);
-
+    --pill-hover-color: rgba(35, 25, 206, 0.25);
     --icon-color: rgb(0, 0, 0);
     --border-color: rgb(0, 0, 0);
     --active-color: rgba(131, 134, 134, 0.47);
+
+
+
     --radius-sm:10px;
     --radius-md:20px;
     --radius-lg:30px;
     --radius-xl:50px;
-
     --radius-circular:50%;
 
     --transparent:transparent;
@@ -123,7 +139,7 @@ body::-webkit-scrollbar {
     --surface:#000000;
       --bg-body: #000000;
     --line:rgba(255,255,255,0.15);
-    --shadow:0 1rem 2rem rgba(0,0,0,0.4);
+    --shadow:0 0 1rem rgba(0,0,0,0.4);
 
        --pill-border: rgb(50, 76, 255);
     --pill-text: rgb(70, 71, 255);
