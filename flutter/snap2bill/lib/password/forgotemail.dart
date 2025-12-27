@@ -1,13 +1,12 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/Login_page.dart';
-
+import '../../theme/colors.dart';
+import '../../widgets/app_button.dart';
 import 'forgototp.dart';
-
-
-
 
 class forgotemail extends StatefulWidget {
   const forgotemail({Key? key}) : super(key: key);
@@ -17,324 +16,195 @@ class forgotemail extends StatefulWidget {
 }
 
 class _forgotemailState extends State<forgotemail> {
-  TextEditingController email = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
 
   Future<void> _checkEmail() async {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       SharedPreferences sh = await SharedPreferences.getInstance();
-      sh.setString("email", email.text);
+      String? ip = sh.getString("ip");
 
       var res = await http.post(
-        Uri.parse("${sh.getString("ip")}/forgotemail"),
-        body: {'email': email.text},
+        Uri.parse("$ip/forgotemail"),
+        body: {'email': emailController.text.trim()},
       );
 
       var decode = json.decode(res.body);
 
       if (decode["status"] == "ok") {
-        sh.setString("otpp", decode['otpp'].toString());
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('OTP sent to your email!'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        Navigator.push(context, MaterialPageRoute(builder: (context) => forgototp()));
+        await sh.setString("email", emailController.text.trim());
+        await sh.setString("otpp", decode['otpp'].toString());
+        // Save generation time for the OTP timer logic
+        await sh.setString("otp_generated_time", DateTime.now().toIso8601String());
+
+        if (!mounted) return;
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const forgototp()));
       } else {
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text(
-              "Email Not Found",
-              style: TextStyle(
-                color: Colors.red,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            content: Text(
-              "The email address you entered is not registered. Please check and try again.",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[700],
-              ),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  "OK",
-                  style: TextStyle(
-                    color: Color(0xFF1976D2),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
+        _showCustomDialog(
+          title: "Email Not Found",
+          message: "This email address is not registered in our system.",
+          isSuccess: false,
         );
       }
     } catch (e) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text(
-            "Connection Error",
-            style: TextStyle(
-              color: Colors.red,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          content: Text(
-            "Unable to connect. Please check your internet connection and try again.",
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[700],
-            ),
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                "OK",
-                style: TextStyle(
-                  color: Color(0xFF1976D2),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
+      _showCustomDialog(
+        title: "Connection Error",
+        message: "Unable to connect to the server. Please check your IP settings.",
+        isSuccess: false,
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  void _showCustomDialog({required String title, required String message, required bool isSuccess}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: Theme.of(context).cardColor,
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  isSuccess ? Icons.check_circle_outline : Icons.error_outline,
+                  size: 60,
+                  color: isSuccess ? Colors.green : Colors.redAccent,
+                ),
+                const SizedBox(height: 20),
+                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+                const SizedBox(height: 10),
+                Text(message, textAlign: TextAlign.center, style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[600])),
+                const SizedBox(height: 24),
+                AppButton(
+                  text: "Retry",
+                  onPressed: () => Navigator.pop(context),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(24),
-            child: Column(
-              children: [
-                // Back Button
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: Icon(Icons.arrow_back, color: Colors.grey[700]),
-                    onPressed: () {
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>login_page()));
-                    },
-                  ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
+          onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page())),
+        ),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              // Header Icon
+              Container(
+                height: 100, width: 100,
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF2C2C2C) : Colors.red.shade50,
+                  shape: BoxShape.circle,
                 ),
+                child: Icon(Icons.email_outlined, size: 50, color: isDark ? Colors.white : Colors.red.shade400),
+              ),
+              const SizedBox(height: 30),
+              Text("Forgot Password", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
+              const SizedBox(height: 10),
+              Text(
+                "Enter your email address to receive a 6-digit verification code.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 15, color: subTextColor),
+              ),
+              const SizedBox(height: 40),
 
-                // Header Section
-                Container(
-                  margin: EdgeInsets.only(top: 20, bottom: 40),
+              // Responsive Input Card
+              Container(
+                padding: const EdgeInsets.all(25),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Form(
+                  key: _formKey,
                   child: Column(
                     children: [
-                      Icon(
-                        Icons.lock_reset,
-                        size: 80,
-                        color: Color(0xFF1976D2),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Forgot Password?',
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1976D2),
-                        ),
-                      ),
-                      SizedBox(height: 12),
-                      Text(
-                        "Enter your email address and we'll send you an OTP to reset your password",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                          height: 1.5,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                // Email Input Card
-                Card(
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        children: [
-                          Text(
-                            'Enter Your Email',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.grey[800],
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                          TextFormField(
-                            controller: email,
-                            keyboardType: TextInputType.emailAddress,
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your email address';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Please enter a valid email address';
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              labelText: "Email Address",
-                              prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[400]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[400]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Color(0xFF1976D2), width: 2),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                              focusedErrorBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.red, width: 2),
-                              ),
-                              contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Text(
-                            'We will send a 6-digit OTP to this email',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[500],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 30),
-
-                // Send OTP Button
-                Container(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _checkEmail,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF1976D2),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 2,
-                    ),
-                    child: _isLoading
-                        ? SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
-                    )
-                        : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.send, size: 20, color: Colors.white),
-                        SizedBox(width: 8),
-                        Text(
-                          'SEND OTP',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                SizedBox(height: 20),
-
-                // Help Text
-                Container(
-                  padding: EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Color(0xFF1976D2),
-                        size: 20,
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          "Check your spam folder if you don't receive the OTP within a few minutes",
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.blue[800],
+                      TextFormField(
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) return 'Please enter your email';
+                          if (!RegExp(r"^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$").hasMatch(value)) return 'Enter a valid email';
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          hintText: "Email Address",
+                          hintStyle: TextStyle(color: subTextColor),
+                          prefixIcon: Icon(Icons.alternate_email, color: textColor.withOpacity(0.5)),
+                          filled: true,
+                          fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[50],
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide(color: theme.primaryColor, width: 1),
                           ),
                         ),
                       ),
                     ],
                   ),
                 ),
+              ),
+              const SizedBox(height: 40),
 
-                SizedBox(height: 40),
-              ],
-            ),
+              // Styled Button
+              AppButton(
+                text: "Send OTP",
+                onPressed: () => _checkEmail(),
+                isLoading: _isLoading,
+                color: isDark ? Colors.white : Colors.black,
+                textColor: isDark ? Colors.black : Colors.white,
+              ),
+
+              const SizedBox(height: 30),
+              // Help Info
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.info_outline, size: 16, color: subTextColor),
+                  const SizedBox(width: 8),
+                  Text("Check your spam folder for the code", style: TextStyle(fontSize: 12, color: subTextColor)),
+                ],
+              ),
+            ],
           ),
         ),
       ),

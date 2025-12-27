@@ -83,7 +83,7 @@
       color:var(--white-color);
       box-shadow:var(--shadow);
       transition:transform .15s, box-shadow .2s;
-      animation:moveGrad 5s linear infinite;
+      animation:moveGrad 5s linear infinite ;
   }
 
   .btn-primary:hover{

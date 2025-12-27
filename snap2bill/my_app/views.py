@@ -715,9 +715,9 @@ def forgotemail(request):
 
         # ✅ Gmail credentials (use App Password, not real password)
         try:
-            sender_email = "choudharyashok1230@gmail.com"
+            sender_email = "snap2bill@gmail.com"
             receiver_email = email # change to actual recipient
-            app_password = "rstp yllh ebht kmuh"
+            app_password = "zfpm hiry mqgm rzer"
             # Setup SMTP
             server = smtplib.SMTP("smtp.gmail.com", 587)
             server.starttls()
@@ -738,78 +738,94 @@ def forgotemail(request):
             # Please keep it safe and do not share it with anyone.
             # """
 
-            # HTML (attractive)
+
+
+            logo_url = "https://lh3.googleusercontent.com/d/1bxyWDmDw3-p2xNIAP5wSAGgZPx1TtzBj"
+
+
             html = f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Password Reset OTP</title>
-                </head>
-                <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                            line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Snap2Bill Verification</title>
+            </head>
+            <body style="margin:0; padding:0; background-color:#F0F4F8; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
 
-                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                                padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-                        <h1 style="color: white; margin: 0; font-size: 28px;">
-                            🔐 Smart Donation
-                        </h1>
-                    </div>
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#F0F4F8; padding:40px 10px;">
+                <tr>
+                  <td align="center">
 
-                    <div style="background-color: #f9f9f9; padding: 40px 30px; border-radius: 0 0 10px 10px; 
-                                border: 1px solid #eaeaea;">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:500px; background-color:#ffffff; border-radius:24px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
 
-                        <h2 style="color: #2d3748; margin-top: 0;">Password Reset Request</h2>
+                      <tr>
+                        <td align="center" style="padding:40px 0 20px 0;">
+                          <img src="{logo_url}" alt="Snap2Bill Logo" width="80" style="display:block; margin-bottom:15px; border:0;">
 
-                        <p style="color: #4a5568; font-size: 16px;">
-                            Hello,
-                        </p>
+                          <h1 style="margin:0; font-size:24px; color:#1E293B; letter-spacing:-0.5px;">
+                            Snap<span style="color:#2563EB;">2</span>Bill
+                          </h1>
+                        </td>
+                      </tr>
 
-                        <p style="color: #4a5568; font-size: 16px;">
-                            You requested to reset your password. Use the OTP below to proceed:
-                        </p>
-
-                        <div style="background: white; border-radius: 8px; padding: 20px; 
-                                    text-align: center; margin: 30px 0; border: 2px dashed #cbd5e0;">
-                            <div style="font-size: 32px; font-weight: bold; letter-spacing: 10px; 
-                                        color: #2c7be5; margin: 10px 0;">
-                                {otp}
-                            </div>
-                            <div style="font-size: 14px; color: #718096; margin-top: 10px;">
-                                (Valid for 10 minutes)
-                            </div>
-                        </div>
-
-                        <p style="color: #4a5568; font-size: 16px;">
-                            Enter this code on the password reset page to complete the process.
-                        </p>
-
-                        <div style="background-color: #fef3c7; border-left: 4px solid #d97706; 
-                                    padding: 15px; margin: 25px 0; border-radius: 4px;">
-                            <p style="color: #92400e; margin: 0; font-size: 14px;">
-                                ⚠️ <strong>Security tip:</strong> Never share this OTP with anyone. 
-                                Our team will never ask for your password or OTP.
+                      <tr>
+                        <td style="padding:0 40px 40px 40px;">
+                          <div style="text-align:center;">
+                            <h2 style="color:#1E293B; font-size:22px; margin-bottom:10px;">Verify your identity</h2>
+                            <p style="color:#64748B; font-size:15px; line-height:1.6; margin-bottom:30px;">
+                              Hello,<br>
+                              Use the code below to securely reset your password. This code is unique to your request.
                             </p>
-                        </div>
+                          </div>
 
-                        <p style="color: #718096; font-size: 14px;">
-                            If you didn't request this password reset, please ignore this email or 
-                            contact our support team if you have concerns.
-                        </p>
+                          <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:25px; text-align:center; margin-bottom:30px;">
+                            <span style="display:block; color:#94A3B8; font-size:12px; font-weight:bold; letter-spacing:1px; margin-bottom:10px; text-transform:uppercase;">Verification Code</span>
+                            <span style="font-family:'Courier New', Courier, monospace; font-size:38px; font-weight:bold; color:#2563EB; letter-spacing:8px; margin-left:8px;">
+                              {otp}
+                            </span>
+                          </div>
 
-                        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;">
+                          <div style="text-align:center; margin-bottom:30px;">
+                            <p style="color:#64748B; font-size:14px; margin:0;">
+                               This code expires in <strong style="color:#F59E0B;">10 minutes</strong>.
+                            </p>
+                          </div>
 
-                        <p style="text-align: center; color: #a0aec0; font-size: 12px;">
-                            This is an automated email from Smart Donation System.<br>
-                            © {datetime.datetime.now().date()} Smart Donation. All rights reserved.
-                        </p>
+                          <div style="height:1px; background-color:#E2E8F0; margin-bottom:30px;"></div>
 
-                    </div>
-                </body>
-                </html>
-                """
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="background-color:#FFFBEB; border-radius:12px; padding:15px;">
+                                <p style="margin:0; font-size:13px; color:#B45309; line-height:1.5;">
+                                  <strong>Security Reminder:</strong> Never share this code with anyone. Snap2Bill employees will never ask for this code over the phone or via email.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
 
+                      <tr>
+                        <td align="center" style="padding:0 40px 40px 40px;">
+                          <p style="color:#94A3B8; font-size:12px; margin:0;">
+                            If you didn't request this, you can safely ignore this email.
+                          </p>
+                          <p style="color:#CBD5E1; font-size:11px; margin-top:20px;">
+                            © {datetime.datetime.now().year} Snap2Bill Inc. <br>
+                            Smart Billing Solutions
+                          </p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+            </body>
+            </html>
+            """
             # Attach both versions
             # msg.attach(MIMEText(text, "plain"))
             msg.attach(MIMEText(html, "html"))
