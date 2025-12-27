@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
+import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 class view_review extends StatefulWidget {
   const view_review({Key? key}) : super(key: key);
@@ -92,7 +93,7 @@ class _view_reviewState extends State<view_review> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Review deleted")));
 
         // Refresh the page or navigate away as per your original logic
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const distributor_page()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 3,)));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));

@@ -141,7 +141,10 @@ class wishlist(models.Model):
     DISTRIBUTOR = models.ForeignKey(distributor, on_delete=models.CASCADE, null=True, blank=True)
     date = models.CharField(max_length=100)
 
-
+class DistributorCustomerLink(models.Model):
+    DISTRIBUTOR = models.ForeignKey(distributor, on_delete=models.CASCADE)
+    CUSTOMER = models.ForeignKey(customer, on_delete=models.CASCADE)
+    added_date = models.DateTimeField(auto_now_add=True)
 
 
 

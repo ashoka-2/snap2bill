@@ -70,7 +70,11 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
       DrawerItemModel(
         icon: Icons.list_alt,
         title: "Orders",
-        onTap: () => const viewOrder(),
+          onTap: () async {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove("selected_distributor_id");
+            return const viewOrder();
+          },
       ),
       DrawerItemModel(
         icon: Icons.lock_outline,

@@ -270,23 +270,29 @@ class _forgototpState extends State<forgototp> {
             color: focusNodes[index].hasFocus ? Colors.blue : Colors.transparent,
             width: 2),
       ),
-      child: TextField(
-        controller: otpControllers[index],
-        focusNode: focusNodes[index],
-        keyboardType: TextInputType.number,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
-        decoration: const InputDecoration(counterText: "", border: InputBorder.none),
-        onChanged: (value) {
-          // Focus navigation logic
-          if (value.isNotEmpty && index < 5) {
-            focusNodes[index + 1].requestFocus();
-          } else if (value.isEmpty && index > 0) {
-            focusNodes[index - 1].requestFocus();
-          }
-          setState(() {}); // Updates border colors on focus change
-        },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+
+        child: Center(
+          child: TextField(
+            controller: otpControllers[index],
+            focusNode: focusNodes[index],
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            maxLength: 1,
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor),
+            decoration: const InputDecoration(counterText: "", border: InputBorder.none),
+            onChanged: (value) {
+              // Focus navigation logic
+              if (value.isNotEmpty && index < 5) {
+                focusNodes[index + 1].requestFocus();
+              } else if (value.isEmpty && index > 0) {
+                focusNodes[index - 1].requestFocus();
+              }
+              setState(() {}); // Updates border colors on focus change
+            },
+          ),
+        ),
       ),
     );
   }

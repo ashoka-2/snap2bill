@@ -56,7 +56,7 @@ class _send_feedbackState extends State<send_feedback> {
         // Navigate back to Customer Home/Nav Bar
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const CustomerNavigationBar()),
+          MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0,)),
         );
       } else {
         throw Exception('Failed to send feedback (Status: ${res.statusCode})');

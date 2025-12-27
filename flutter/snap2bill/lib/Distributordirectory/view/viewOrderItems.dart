@@ -1,6 +1,3 @@
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -23,87 +20,63 @@ class viewOrderItemsSub extends StatefulWidget {
 }
 
 class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
-
-  Future<List<Joke>> _getOrders() async {
+  Future<List<OrderItem>> _getOrderItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? ip = prefs.getString("ip");
-    String? uid = prefs.getString("uid"); // Keeping your original logic
+    String? orderId = prefs.getString("id"); // The specific Order ID
 
-    if (ip == null || uid == null) return [];
+    if (ip == null || orderId == null) return [];
 
     try {
-      var data = await http.post(
+      var response = await http.post(
           Uri.parse("$ip/view_distributor_ordersitems"),
-          body: {"uid": uid,
-          "id":prefs.getString("id"),
-          }
+          body: {"id": orderId}
       );
 
-      if (data.statusCode != 200) return [];
+      if (response.statusCode != 200) return [];
 
-      var jsonData = json.decode(data.body);
+      var jsonData = json.decode(response.body);
+      if (jsonData["status"] != "ok" || jsonData["data"] == null) return [];
 
-      // Safety check if data is null
-      if (jsonData["data"] == null) return [];
-
-      List<Joke> orders = [];
+      List<OrderItem> items = [];
       for (var item in jsonData["data"]) {
-        Joke newOrder = Joke(
-          item["id"].toString(),
-          // item["payment_status"].toString(),
-          item["payment_date"] == null || item["payment_date"] == "null" ? "Pending" : item["payment_date"].toString(),
-          item["date"].toString(),
-          item["amount"].toString(),
-          item["username"].toString(),
-          item["distributor"].toString(),
-        );
-        orders.add(newOrder);
+        items.add(OrderItem.fromJson(item, ip));
       }
-      return orders;
+      return items;
     } catch (e) {
-      debugPrint("Error fetching orders: $e");
+      debugPrint("Error fetching order items: $e");
       return [];
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Theme consistency variables
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bgColor = theme.scaffoldBackgroundColor;
     final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
+    final subTextColor = (isDark ? Colors.white70 : Colors.grey[600]) ?? Colors.grey;
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
+          onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Orders",
+          "Item Details",
           style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
         ),
       ),
-      body: FutureBuilder<List<Joke>>(
-        future: _getOrders(),
-        builder: (BuildContext context, AsyncSnapshot<List<Joke>> snapshot) {
+      body: FutureBuilder<List<OrderItem>>(
+        future: _getOrderItems(),
+        builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
-          if (snapshot.hasError) {
-            return Center(child: Text("Error loading orders", style: TextStyle(color: textColor)));
-          }
-
           final items = snapshot.data ?? [];
 
           if (items.isEmpty) {
@@ -111,22 +84,19 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.shopping_bag_outlined, size: 80, color: hintColor),
-                  const SizedBox(height: 16),
-                  Text(
-                    "No orders found",
-                    style: TextStyle(color: hintColor, fontSize: 16),
-                  ),
+                  Icon(Icons.inventory_2_outlined, size: 70, color: subTextColor),
+                  const SizedBox(height: 10),
+                  Text("No items found in this order", style: TextStyle(color: subTextColor)),
                 ],
               ),
             );
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             itemCount: items.length,
-            itemBuilder: (BuildContext context, int index) {
-              return _buildOrderCard(items[index], cardColor, textColor, hintColor!, isDark);
+            itemBuilder: (context, index) {
+              return _buildProductCard(items[index], theme, isDark, textColor, subTextColor);
             },
           );
         },
@@ -134,16 +104,12 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
     );
   }
 
-  Widget _buildOrderCard(Joke item, Color cardColor, Color textColor, Color hintColor, bool isDark) {
-    // Logic for Status Color
-    // bool isPaid = item.payment_status.toLowerCase() == 'paid';
-    // Color statusColor = isPaid ? Colors.green : Colors.orange;
-    // String statusText = item.payment_status.toUpperCase();
-
+  Widget _buildProductCard(OrderItem item, ThemeData theme, bool isDark, Color textColor, Color? subTextColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: cardColor,
+        color: theme.cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -153,109 +119,112 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
           ),
         ],
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: ID and Date
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Order #${item.id}",
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: hintColor,
-                  ),
-                ),
-                Text(
-                  item.date,
-                  style: TextStyle(fontSize: 12, color: hintColor),
-                ),
-              ],
+      child: Row(
+        children: [
+          // PRODUCT IMAGE
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              item.imageUrl,
+              height: 90,
+              width: 90,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                height: 90,
+                width: 90,
+                color: Colors.grey[200],
+                child: const Icon(Icons.image_not_supported_outlined, color: Colors.grey),
+              ),
             ),
-            const SizedBox(height: 12),
-            Divider(color: Colors.grey.withOpacity(0.1), thickness: 1),
-            const SizedBox(height: 12),
+          ),
+          const SizedBox(width: 16),
 
-            // Body: Customer Name and Amount
-            Row(
+          // PRODUCT DETAILS
+          Expanded(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Icon Box
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                Text(
+                  item.productName,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: textColor,
                   ),
-                  child: const Icon(Icons.person, color: Colors.blue, size: 24),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(width: 15),
-
-                // Text Details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.username,
-                        style: TextStyle(
-                          fontSize: 16,
+                const SizedBox(height: 4),
+                Text(
+                  "Price: ₹${item.price}",
+                  style: TextStyle(fontSize: 14, color: subTextColor),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Quantity Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        "Qty: ${item.quantity}",
+                        style: const TextStyle(
+                          color: Colors.blue,
                           fontWeight: FontWeight.bold,
-                          color: textColor,
+                          fontSize: 12,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        "Amount",
-                        style: TextStyle(fontSize: 12, color: hintColor),
+                    ),
+                    // Total for this item
+                    Text(
+                      "₹${double.parse(item.price) * double.parse(item.quantity)}",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        "₹${item.amount}",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textColor,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-
               ],
             ),
-
-            const SizedBox(height: 12),
-
-
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 }
 
-// Renamed 'Joke' to 'Joke' for clarity, but fields match your backend
-class Joke {
+// Updated Model to match your specific backend return keys
+class OrderItem {
   final String id;
-  // final String payment_status;
-  final String payment_date;
-  final String date;
-  final String amount;
-  final String username;
-  final String distributor;
+  final String quantity;
+  final String imageUrl;
+  final String price;
+  final String productName;
+  final String customerName;
 
-  Joke(
-      this.id,
-      // this.payment_status,
-      this.payment_date,
-      this.date,
-      this.amount,
-      this.username,
-      this.distributor,
-      );
+  OrderItem({
+    required this.id,
+    required this.quantity,
+    required this.imageUrl,
+    required this.price,
+    required this.productName,
+    required this.customerName,
+  });
+
+  factory OrderItem.fromJson(Map<String, dynamic> json, String ip) {
+    return OrderItem(
+      id: json['id'].toString(),
+      quantity: json['quatity'].toString(), // Matches your backend typo 'quatity'
+      imageUrl: "$ip${json['image']}",      // Prepends Server IP to Image path
+      price: json['amount'].toString(),
+      productName: json['product_name'].toString(),
+      customerName: json['username'].toString(),
+    );
+  }
 }

@@ -47,7 +47,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   void _openCheckout() {
     var options = {
       'key': 'rzp_test_HKCAwYtLt0rwQe',
-      'amount': '${int.parse(fee) * 100}',
+      'amount': '${double.parse(fee) * 100}',
       'name': 'Snap2bill',
       'description': 'Test Payment',
       'prefill': {

@@ -16,7 +16,7 @@ import datetime
 from django.views.decorators.csrf import csrf_exempt
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
-    cart, wishlist
+    cart, wishlist, DistributorCustomerLink
 
 print(make_password("password"))
 
@@ -506,33 +506,36 @@ def edit_distributor_profile(request):
     return JsonResponse({'status':'ok'})
 
 
-
-
-
 def distributor_view_customer(request):
-    # cid=request.POST['cid']
-    uid = request.POST['uid']
+    try:
+        uid = request.POST.get('uid')
 
-    # data=customer.objects.all()
-    data = order.objects.filter(DISTRIBUTOR=uid)
-    ar=[]
-    for i in data:
-        ar.append({
-            'id': i.id,
-            'name':i.USER.name,
-            'email':i.USER.email,
-            'phone':i.USER.phone,
-            'profile_image':i.USER.profile_image,
-            'bio':i.USER.bio,
-            'address':i.USER.address,
-            'place':i.USER.place,
-            'pincode':i.USER.pincode,
-            'post':i.USER.post
-        })
+        # 1. Query the Link table instead of the Order table
+        # We use select_related('CUSTOMER') to fetch customer details in one go (optimization)
+        links = DistributorCustomerLink.objects.filter(DISTRIBUTOR_id=uid).select_related('CUSTOMER')
 
-    return JsonResponse({'status':'ok','data':ar})
+        ar = []
+        for link in links:
+            # 'link.CUSTOMER' points to the actual customer object
+            i = link.CUSTOMER
 
+            ar.append({
+                'id': i.id,
+                'cid': i.id,  # Included for compatibility with your Flutter Joke model
+                'name': i.name,
+                'email': i.email,
+                'phone': i.phone,
+                'profile_image': i.profile_image,
+                'address': i.address,
+                'place': i.place,
+                'pincode': i.pincode,
+                'post': i.post,
+                'bio': i.bio
+            })
 
+        return JsonResponse({'status': 'ok', 'data': ar})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 
@@ -1148,34 +1151,31 @@ def edit_customer_profile(request):
     return JsonResponse({'status':'ok'})
 
 
-
-
 def customer_view_distributor(request):
-    uid = request.POST['uid']
-    data = distributor.objects.all()
+    try:
+        cid = request.POST.get('cid')
+        links = DistributorCustomerLink.objects.filter(CUSTOMER_id=cid).select_related('DISTRIBUTOR')
+        ar = []
+        for link in links:
+            i = link.DISTRIBUTOR
+            ar.append({
+                'id': i.id,
+                'name': i.name,
+                'email': i.email,
+                'phone': i.phone,
+                'profile_image': i.profile_image,
+                'bio': i.bio,
+                'address': i.address,
+                'place': i.place,
+                'pincode': i.pincode,
+                'post': i.post,
+                'latitude': i.latitude,
+                'longitude': i.longitude,
+            })
 
-    ar = []
-    for i in data:
-        ar.append({
-            'id': i.id,
-            'name': i.name,
-            'email': i.email,
-            'phone': i.phone,
-            'profile_image': i.profile_image,
-            'bio': i.bio,
-            'address': i.address,
-            'place': i.place,
-            'pincode': i.pincode,
-            'post': i.post,
-            'latitude':i.latitude,
-            'longitude':i.longitude,
-            'proof':i.proof
-        })
-
-    return JsonResponse({'status': 'ok', 'data': ar})
-
-
-
+        return JsonResponse({'status': 'ok', 'data': ar})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 
@@ -1310,53 +1310,96 @@ def view_wishlist(request):
 
 
 
+
 def addFinalOrder(request):
-    cid = request.POST['cid']
-    data = cart.objects.filter(USER=cid)
-    distributorlist = []
-    for i in data:
-        if str(i.STOCK.DISTRIBUTOR_id) not in distributorlist:
-            distributorlist.append(str(i.STOCK.DISTRIBUTOR_id))
-    print(distributorlist)
+    try:
+        cid = request.POST['cid']
+        # Fetch all items in the customer's cart
+        cart_items = cart.objects.filter(USER_id=cid)
 
-    for j in distributorlist:
-        total = 0
-        obj1 = order()
-        obj1.payment_status = 'pending'
-        obj1.payment_date = datetime.datetime.now().date()
-        obj1.date = datetime.datetime.now().date()
-        obj1.amount = int(i.STOCK.price) * int(i.quantity)
-        obj1.USER_id = cid
-        obj1.DISTRIBUTOR_id = j
-        obj1.save()
-        data = cart.objects.filter(USER=cid,STOCK__DISTRIBUTOR=j)
-        for  i in data:
-            total +=  int(i.STOCK.price) * int(i.quantity)
-            obj = order_sub()
-            obj.quantity = i.quantity
-            obj.ORDER_id = obj1.id
-            obj.STOCK_id = i.STOCK.id
-            obj.save()
-            i.delete()
-        order.objects.filter(id=obj1.id).update(amount=total)
+        if not cart_items.exists():
+            return JsonResponse({'status': 'error', 'message': 'Cart is empty'})
 
-    return JsonResponse({'status': 'ok'})
+        # Get a list of unique distributor IDs from the cart items
+        distributor_list = []
+        for item in cart_items:
+            dist_id = str(item.STOCK.DISTRIBUTOR_id)
+            if dist_id not in distributor_list:
+                distributor_list.append(dist_id)
 
+        # Iterate through each distributor to create separate orders
+        for d_id in distributor_list:
+
+            # --- PERMANENT LINK LOGIC ---
+            # This creates a record in DistributorCustomerLink if it doesn't exist.
+            # This is why the customer will never disappear from the distributor's list.
+            DistributorCustomerLink.objects.get_or_create(
+                DISTRIBUTOR_id=d_id,
+                CUSTOMER_id=cid
+            )
+
+            # Create the main Order header for this distributor
+            new_order = order()
+            new_order.USER_id = cid
+            new_order.DISTRIBUTOR_id = d_id
+            new_order.payment_status = 'pending'
+            new_order.payment_date = "pending"  # or datetime.datetime.now().date()
+            new_order.date = datetime.datetime.now().date()
+            new_order.amount = 0  # Will update this after calculating total
+            new_order.save()
+
+            # Filter cart items belonging to THIS specific distributor
+            specific_dist_items = cart.objects.filter(USER_id=cid, STOCK__DISTRIBUTOR_id=d_id)
+
+            order_total = 0
+            for c_item in specific_dist_items:
+                # Calculate subtotal for this item
+                item_price = float(c_item.STOCK.price)
+                item_qty = int(c_item.quantity)
+                order_total += (item_price * item_qty)
+
+                # Create Order Sub entry (the specific product in the order)
+                sub_obj = order_sub()
+                sub_obj.ORDER_id = new_order.id
+                sub_obj.STOCK_id = c_item.STOCK.id
+                sub_obj.quantity = item_qty
+                sub_obj.save()
+
+                # Remove the item from the cart as it is now an order
+                c_item.delete()
+
+            # Update the main order with the correct total amount
+            new_order.amount = order_total
+            new_order.save()
+
+        return JsonResponse({'status': 'ok'})
+
+    except Exception as e:
+        print(f"Error in addFinalOrder: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 def view_orders(request):
-    cid = request.POST.get('cid')
-    data = order.objects.filter(USER__id=cid)
+    cid = request.POST.get('cid')  # Customer ID
+    did = request.POST.get('did')  # NEW: Distributor ID filter
+
+    filters = {'USER_id': cid}
+
+    # If customer clicked a specific distributor, filter orders for that distributor
+    if did and did not in ["", "null", "None"]:
+        filters['DISTRIBUTOR_id'] = did
+
+    data = order.objects.filter(**filters).select_related('DISTRIBUTOR').order_by('-id')
+
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
             'payment_status': i.payment_status,
-            'payment_date': str(i.payment_date),
+            'payment_date': str(i.payment_date) if i.payment_date else "---",
             'date': str(i.date),
             'amount': i.amount,
-            'username': i.USER.name,
-            'distributor': i.DISTRIBUTOR.name,
+            'distributor': i.DISTRIBUTOR.name,  # Show distributor name instead of username
             'orderid': i.id,
         })
     return JsonResponse({'status': 'ok', 'data': ar})
@@ -1456,39 +1499,40 @@ def delete_order(request):
 
 
 def view_distributor_orders(request):
-    uid = request.POST['uid']
-    data = order.objects.filter(DISTRIBUTOR__id=uid)
+    uid = request.POST.get('uid')
+    cid = request.POST.get('cid')
+    filters = {'DISTRIBUTOR_id': uid}
+    if cid and cid not in ["", "null", "None"]:
+        filters['USER_id'] = cid
+    data = order.objects.filter(**filters).select_related('USER').order_by('-id')
     ar = []
     for i in data:
+        p_date = str(i.payment_date)
+        if p_date in ["None", "null", "pending", ""]:
+            p_date = "Not Paid Yet"
         ar.append({
             'id': i.id,
             'payment_status': i.payment_status,
-            'payment_date': str(i.payment_date),
+            'payment_date': p_date,
             'date': str(i.date),
             'amount': i.amount,
             'username': i.USER.name,
-            # 'distributor': i.ORDER.DISTRIBUTOR.name,
-
-
-
         })
-
     return JsonResponse({'status': 'ok', 'data': ar})
 
+
 def view_distributor_ordersitems(request):
-    # uid = request.POST['uid']
     id = request.POST["id"]
     data = order_sub.objects.filter(ORDER=id)
     ar = []
     for i in data:
         ar.append({
             'id': i.id,
-            # 'payment_status': i.ORDER.payment_status,
-            'payment_date': str(i.ORDER.payment_date) if i.ORDER.payment_date else "Pending",
-            'date': str(i.ORDER.date),
+            'quatity':i.quantity,
+            'image': i.STOCK.PRODUCT.image,
             'amount': i.STOCK.price,
-            'username': i.STOCK.PRODUCT.product_name,
-            'distributor': i.ORDER.USER.name,
+            'product_name': i.STOCK.PRODUCT.product_name,
+            'username': i.ORDER.USER.name,
 
         })
 

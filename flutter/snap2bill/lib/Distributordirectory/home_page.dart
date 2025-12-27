@@ -26,6 +26,7 @@ import '../data/product_service.dart';
 // NEW IMPORT
 import 'package:snap2bill/widgets/custom_drawer.dart';
 
+import '../screens/viewWishlist.dart';
 import '../widgets/product_feed.dart'; // Import CustomDrawer (which includes DrawerItemModel)
 
 class Home_page extends StatefulWidget {
@@ -155,9 +156,16 @@ class _Home_pageState extends State<Home_page> {
         iconTheme: IconThemeData(color: textColor),
         actions: [
           IconButton(
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context)=>ViewWishlist()));
+            },
+            icon: Icon(Icons.favorite, color: textColor),
+          ),
+          IconButton(
             onPressed: () {},
             icon: Icon(Icons.notifications_none, color: textColor),
           )
+
         ],
       ),
 
