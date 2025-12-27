@@ -1195,6 +1195,7 @@ class _login_pageState extends State<login_page>
 
         // --- SUCCESS LOGIC ---
         if (status == 'custok') {
+          await sh.remove("uid");
           await sh.setString("cid", decoded['cid'].toString());
           await sh.setString("pwd", password.text); // Note: Saving plain text password is insecure
 
@@ -1208,6 +1209,7 @@ class _login_pageState extends State<login_page>
             MaterialPageRoute(builder: (context) => CustomerNavigationBar(initialIndex: 0,)),
           );
         } else if (status == 'distok') {
+          await sh.remove("cid");
           await sh.setString("uid", decoded['uid'].toString());
           await sh.setString("pwd1", password.text);
 

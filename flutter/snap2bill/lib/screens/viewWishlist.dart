@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snap2bill/theme/colors.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
 
 class ViewWishlist extends StatefulWidget {
@@ -15,7 +14,10 @@ class ViewWishlist extends StatefulWidget {
 class _ViewWishlistState extends State<ViewWishlist> {
   List _wishlistItems = [];
   bool _isLoading = true;
-  String _baseUrl = ""; // IP address store karne ke liye
+
+  String _baseUrl = "";
+  String? _cid; // customer id
+  String? _uid; // distributor id
 
   @override
   void initState() {
@@ -23,9 +25,9 @@ class _ViewWishlistState extends State<ViewWishlist> {
     _fetchWishlist();
   }
 
-  // ---------- Image URL Helper (Same as your DataModel logic) ----------
+  // ---------------- IMAGE URL JOINER ----------------
   String _joinUrl(String base, String path) {
-    if (path.isEmpty || path == "null" || base.isEmpty) return "";
+    if (base.isEmpty || path.isEmpty || path == "null") return "";
     if (path.startsWith("http")) return path;
 
     if (base.endsWith("/") && path.startsWith("/")) {
@@ -37,76 +39,74 @@ class _ViewWishlistState extends State<ViewWishlist> {
     return base + path;
   }
 
-  // ---------- Fetch Wishlist Data ----------
+  // ---------------- FETCH WISHLIST ----------------
   Future<void> _fetchWishlist() async {
-    // Note: Sirf pehli baar loading dikhayenge, refresh par smooth update ke liye list reset nahi karenge
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
-      _baseUrl = ip ?? "";
+      final prefs = await SharedPreferences.getInstance();
 
-      String? cid = sh.getString("cid"); // Customer ID
-      String? uid = sh.getString("uid"); // Distributor ID
+      _baseUrl = prefs.getString("ip") ?? "";
+      _cid = prefs.getString("cid");
+      _uid = prefs.getString("uid");
 
-      var response = await http.post(
-        Uri.parse("$ip/view_wishlist"),
-        body: {
-          'cid': cid ?? "",
-          'uid': uid ?? "",
-        },
+      if (_baseUrl.isEmpty) {
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      Map<String, String> body = {};
+
+      // 🔒 STRICT ROLE CHECK
+      if (_cid != null && _cid!.isNotEmpty && (_uid == null || _uid!.isEmpty)) {
+        body['cid'] = _cid!;
+      } else if (_uid != null && _uid!.isNotEmpty && (_cid == null || _cid!.isEmpty)) {
+        body['uid'] = _uid!;
+      }
+
+      final res = await http.post(
+        Uri.parse("$_baseUrl/view_wishlist"),
+        body: body,
       );
 
-      if (response.statusCode == 200) {
-        var jsonData = json.decode(response.body);
-        if (mounted) {
-          setState(() {
-            _wishlistItems = jsonData['data'];
-            _isLoading = false;
-          });
-        }
+      if (res.statusCode == 200) {
+        final jsonData = jsonDecode(res.body);
+        setState(() {
+          _wishlistItems = jsonData['data'] ?? [];
+          _isLoading = false;
+        });
+      } else {
+        setState(() => _isLoading = false);
       }
     } catch (e) {
-      if (mounted) setState(() => _isLoading = false);
-      _showSnackBar("Connection Error", Colors.red);
+      setState(() => _isLoading = false);
     }
   }
 
-  // ---------- Remove Item from Wishlist ----------
+  // ---------------- REMOVE FROM WISHLIST ----------------
   Future<void> _removeItem(String wid) async {
-    try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
+    final prefs = await SharedPreferences.getInstance();
+    final ip = prefs.getString("ip") ?? "";
 
-      var response = await http.post(
-        Uri.parse("$ip/remove_from_wishlist"),
-        body: {'wid': wid},
-      );
+    Map<String, String> body = {'wid': wid};
 
-      if (response.statusCode == 200) {
-        _showSnackBar("Removed from Wishlist", Colors.grey);
-        // List refresh karein
-        _fetchWishlist();
-      }
-    } catch (e) {
-      _showSnackBar("Error removing item", Colors.red);
+    if (_cid != null && _cid!.isNotEmpty) {
+      body['cid'] = _cid!;
+    } else if (_uid != null && _uid!.isNotEmpty) {
+      body['uid'] = _uid!;
     }
-  }
 
-  // ---------- Snackbar ----------
-  void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-          content: Text(message),
-          backgroundColor: color,
-          duration: const Duration(milliseconds: 800)
-      ),
+    await http.post(
+      Uri.parse("$ip/remove_from_wishlist"),
+      body: body,
     );
+
+    _fetchWishlist();
   }
 
-  // Error image placeholder
+  // ---------------- ERROR IMAGE ----------------
   Widget _errorImage() {
     return Container(
-      width: 80, height: 80,
+      width: 80,
+      height: 80,
       color: Colors.grey.shade300,
       child: const Icon(Icons.broken_image, color: Colors.grey),
     );
@@ -117,6 +117,10 @@ class _ViewWishlistState extends State<ViewWishlist> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
+
+    // ✅ CUSTOMER ONLY
+    final bool isCustomer =
+        _cid != null && _cid!.isNotEmpty && (_uid == null || _uid!.isEmpty);
 
     return Scaffold(
       appBar: AppBar(
@@ -131,25 +135,26 @@ class _ViewWishlistState extends State<ViewWishlist> {
         padding: const EdgeInsets.all(10),
         itemCount: _wishlistItems.length,
         itemBuilder: (context, index) {
-          var item = _wishlistItems[index];
-          String fullImageUrl = _joinUrl(_baseUrl, item['image'] ?? "");
+          final item = _wishlistItems[index];
+          final imageUrl = _joinUrl(_baseUrl, item['image'] ?? "");
 
           return Card(
-            // ✅ CRITICAL FIX: ValueKey use kiya taaki ListView items refresh ke waqt crash na hon
             key: ValueKey(item['wishlist_id'].toString()),
             elevation: 3,
             margin: const EdgeInsets.only(bottom: 12),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             child: Padding(
               padding: const EdgeInsets.all(10),
               child: Row(
                 children: [
-                  // Product Image
+                  // IMAGE
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: fullImageUrl.isNotEmpty
+                    child: imageUrl.isNotEmpty
                         ? Image.network(
-                      fullImageUrl,
+                      imageUrl,
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -159,60 +164,75 @@ class _ViewWishlistState extends State<ViewWishlist> {
                   ),
                   const SizedBox(width: 12),
 
-                  // Product Details
+                  // DETAILS
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                            item['product_name'] ?? "No Name",
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)
+                          item['product_name'] ?? "No Name",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: textColor,
+                          ),
                         ),
                         Text(
-                            item['category_name'] ?? "General",
-                            style: const TextStyle(color: Colors.grey, fontSize: 12)
+                          item['category_name'] ?? "",
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                            "₹${item['price']}",
-                            style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 15)
+                          "₹${item['price']}",
+                          style: TextStyle(
+                            color: theme.primaryColor,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                            "By: ${item['distributor_name']}",
-                            style: const TextStyle(fontSize: 11, color: Colors.blueGrey)
+                          "By: ${item['distributor_name']}",
+                          style: const TextStyle(
+                              fontSize: 11,
+                              color: Colors.blueGrey),
                         ),
                       ],
                     ),
                   ),
 
-                  // Actions (Remove & Add to Cart)
+                  // ACTIONS
                   Column(
                     children: [
+                      // REMOVE
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () => _removeItem(item['wishlist_id'].toString()),
-                        tooltip: "Remove",
+                        icon: const Icon(Icons.delete_outline,
+                            color: Colors.red),
+                        onPressed: () => _removeItem(
+                            item['wishlist_id'].toString()),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.add_shopping_cart, color: Colors.green),
-                        onPressed: () async {
-                          final prefs = await SharedPreferences.getInstance();
-                          // Stock ID set kar rahe hain order ke liye
-                          prefs.setString("pid", item['id'].toString());
 
-                          if (!mounted) return;
-                          Navigator.push(
+                      // 🛒 ADD TO CART (ONLY CUSTOMER)
+                      if (isCustomer)
+                        IconButton(
+                          icon: const Icon(
+                              Icons.add_shopping_cart,
+                              color: Colors.green),
+                          onPressed: () async {
+                            final prefs =
+                            await SharedPreferences.getInstance();
+                            prefs.setString(
+                                "pid", item['id'].toString());
+
+                            if (!mounted) return;
+                            Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (_) => const addOrder())
-                          ).then((_) {
-                            // Agar cart se wapis aayein toh list refresh kar saken
-                            _fetchWishlist();
-                          });
-                        },
-                        tooltip: "Add to Cart",
-                      ),
+                              MaterialPageRoute(
+                                  builder: (_) => const addOrder()),
+                            ).then((_) => _fetchWishlist());
+                          },
+                        ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),

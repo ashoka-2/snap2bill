@@ -1,3 +1,7 @@
+/// =============================================================
+/// DATA MODELS
+/// Used across Customer & Distributor modules
+/// =============================================================
 
 class ProductData {
   final String id;
@@ -11,7 +15,7 @@ class ProductData {
   final String distributorName;
   final String distributorImage;
   final String distributorPhone;
-  final bool isLiked; // ✅ Added for Wishlist Sync
+  bool isLiked; // ✅ Wishlist sync flag (mutable for UI toggle)
 
   ProductData({
     required this.id,
@@ -25,16 +29,21 @@ class ProductData {
     required this.distributorName,
     required this.distributorImage,
     required this.distributorPhone,
-    required this.isLiked, // ✅ Constructor update
+    required this.isLiked,
   });
 
-  /// ✅ USED BY BOTH CUSTOMER & DISTRIBUTOR HOME PAGES
+  /// -----------------------------------------------------------
+  /// FACTORY: Used by both Customer & Distributor Home Pages
+  /// -----------------------------------------------------------
   factory ProductData.fromJson(
       Map<String, dynamic> json,
       String ip,
       ) {
+    /// 🔐 Safe URL joiner
     String joinUrl(String base, String path) {
       if (path.isEmpty || path == "null") return "";
+      if (path.startsWith("http")) return path;
+
       if (base.endsWith("/") && path.startsWith("/")) {
         return base + path.substring(1);
       }
@@ -45,9 +54,9 @@ class ProductData {
     }
 
     return ProductData(
-      id: json['id'].toString(),
+      id: json['id']?.toString() ?? "",
       productName: json['product_name'] ?? "",
-      price: json['price'].toString(),
+      price: json['price']?.toString() ?? "0",
       image: joinUrl(ip, json['image'] ?? ""),
       description: json['description'] ?? "",
       categoryName: json['CATEGORY_NAME'] ?? "All",
@@ -56,12 +65,14 @@ class ProductData {
       distributorName: json['distributor_name'] ?? "",
       distributorImage: joinUrl(ip, json['distributor_image'] ?? ""),
       distributorPhone: json['distributor_phone'] ?? "",
-      isLiked: json['is_liked'] ?? false, // ✅ Mapping 'is_liked' from Django JsonResponse
+      isLiked: json['is_liked'] == true, // ✅ backend truth
     );
   }
 }
 
-/// -------------------------------------------------------------
+/// =============================================================
+/// CATEGORY MODEL
+/// =============================================================
 
 class CategoryData {
   final String id;
@@ -74,7 +85,7 @@ class CategoryData {
 
   factory CategoryData.fromJson(Map<String, dynamic> json) {
     return CategoryData(
-      id: json['id'].toString(),
+      id: json['id']?.toString() ?? "",
       name: json['category_name'] ?? "",
     );
   }

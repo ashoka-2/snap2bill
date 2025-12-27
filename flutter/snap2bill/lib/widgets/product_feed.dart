@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:snap2bill/widgets/product_card.dart';
+
 import '../data/dataModels.dart';
 
 class ProductFeedWidget extends StatelessWidget {
@@ -17,27 +18,38 @@ class ProductFeedWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
+    /// ---------------- LOADING STATE ----------------
     if (isLoading) {
       return ListView.builder(
         itemCount: 3,
-        itemBuilder: (context, index) => _buildShimmer(Theme.of(context).brightness == Brightness.dark),
+        padding: const EdgeInsets.only(bottom: 100),
+        itemBuilder: (context, index) => _buildShimmer(isDark),
       );
     }
 
+    /// ---------------- EMPTY STATE ----------------
     if (filteredProducts.isEmpty) {
-      return const Center(child: Text("No products found"));
+      return const Center(
+        child: Text(
+          "No products found",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+      );
     }
 
-    //
+    /// ---------------- PRODUCT LIST ----------------
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 100),
       itemCount: filteredProducts.length,
       addAutomaticKeepAlives: true,
-      cacheExtent: 1000, // Pre-loads items for zero lag
+      cacheExtent: 1000, // ⚡ smooth scrolling
       itemBuilder: (context, index) {
         final product = filteredProducts[index];
+
         return ProductCard(
-          // Key ensures that the card state (color) resets when data reloads
+          /// 🔑 Key forces rebuild when wishlist state changes
           key: ValueKey("${product.id}_${product.isLiked}"),
           product: product,
           showAddToCart: showAddToCart,
@@ -46,14 +58,18 @@ class ProductFeedWidget extends StatelessWidget {
     );
   }
 
+  /// ---------------- SHIMMER PLACEHOLDER ----------------
   Widget _buildShimmer(bool isDark) {
     return Shimmer.fromColors(
-      baseColor: isDark ? Colors.grey[800]! : Colors.grey[300]!,
-      highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
+      baseColor: isDark ? Colors.grey.shade800 : Colors.grey.shade300,
+      highlightColor: isDark ? Colors.grey.shade700 : Colors.grey.shade100,
       child: Container(
-        margin: const EdgeInsets.all(15),
-        height: 300,
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+        height: 280,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+        ),
       ),
     );
   }

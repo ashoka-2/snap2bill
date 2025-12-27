@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
@@ -8,7 +8,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
-import datetime
+
 
 
 
@@ -239,7 +239,7 @@ def send_review(request):
     obj.DISTRIBUTOR_id = uid
     obj.reviews = reviews
     obj.rating = float  (rating)
-    obj.review_date = datetime.datetime.now().date()
+    obj.review_date = datetime.now().date()
     obj.save()
 
     return JsonResponse({'status': 'ok'})
@@ -332,7 +332,7 @@ def delete_category(request, id):
 #     feedbacks = request.POST['feedbacks']
 #     uid = request.POST['uid']
 #     obj = feedback()
-#     obj.feedback_date = datetime.datetime.now().date()
+#     obj.feedback_date = datetime.now().date()
 #
 #     obj.feedbacks = feedbacks
 #     obj.USER_id = cid
@@ -353,7 +353,7 @@ def send_feedback(request):
 
         obj = feedback()
         obj.feedbacks = feedbacks
-        obj.feedback_date = datetime.datetime.now().date()
+        obj.feedback_date = datetime.now().date()
 
         # Identify sender type
         if cid:
@@ -815,7 +815,7 @@ def forgotemail(request):
                             If you didn't request this, you can safely ignore this email.
                           </p>
                           <p style="color:#CBD5E1; font-size:11px; margin-top:20px;">
-                            © {datetime.datetime.now().year} Snap2Bill Inc. <br>
+                            © {datetime.now().year} Snap2Bill Inc. <br>
                             Smart Billing Solutions
                           </p>
                         </td>
@@ -953,37 +953,37 @@ def distributor_view_product(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
-@csrf_exempt
 def view_other_products(request):
     uid = request.POST.get('uid')
-    if not uid:
-        return JsonResponse({'status': 'error', 'message': 'UID is missing'})
+    dist = distributor.objects.get(id=uid)
 
-    # Get stocks NOT belonging to this distributor
-    data = stock.objects.exclude(DISTRIBUTOR__id=uid).select_related('DISTRIBUTOR', 'PRODUCT', 'PRODUCT__CATEGORY')
-
+    data = stock.objects.exclude(DISTRIBUTOR=dist)
     ar = []
+
     for i in data:
-        # Check if the distributor has liked this product
-        is_liked = wishlist.objects.filter(STOCK=i, DISTRIBUTOR_id=uid).exists() if uid else False
+        liked = wishlist.objects.filter(
+            STOCK=i,
+            DISTRIBUTOR=dist,
+            USER__isnull=True
+        ).exists()
 
         ar.append({
-            'distributor_id': i.DISTRIBUTOR.id,
-            'distributor_name': i.DISTRIBUTOR.name,
-            'distributor_image': i.DISTRIBUTOR.profile_image,
-            'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
             'image': i.PRODUCT.image,
             'description': i.PRODUCT.description,
-            'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', 'General'),
-            'is_liked': is_liked,  # <--- CRITICAL FOR SYNC
+            'CATEGORY_NAME': i.PRODUCT.CATEGORY.category_name,
+            'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_phone': i.DISTRIBUTOR.phone,
+            'is_liked': liked,   # 🔥 THIS LINE
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
+
 
 
 def distributor_products(request):
@@ -1041,31 +1041,37 @@ def delete_distributor_product(request,id):
 
 def customer_view_products(request):
     cid = request.POST.get('cid')
-    data = stock.objects.all().select_related('DISTRIBUTOR', 'PRODUCT', 'PRODUCT__CATEGORY')
+    user = customer.objects.get(id=cid) if cid else None
+
+    data = stock.objects.all()
     ar = []
 
     for i in data:
-        # Check if this specific stock item is liked by this customer
-        is_liked = False
-        if cid:
-            is_liked = wishlist.objects.filter(STOCK=i, USER_id=cid).exists()
+        liked = False
+        if user:
+            liked = wishlist.objects.filter(
+                STOCK=i,
+                USER=user,
+                DISTRIBUTOR__isnull=True
+            ).exists()
 
         ar.append({
-            'distributor_id': i.DISTRIBUTOR.id,
-            'distributor_name': i.DISTRIBUTOR.name,
-            'distributor_image': i.DISTRIBUTOR.profile_image,
-            'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
             'image': i.PRODUCT.image,
             'description': i.PRODUCT.description,
-            'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
-            'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', 'General'),
-            'is_liked': is_liked,  # <--- CRITICAL FOR SYNC
+            'CATEGORY_NAME': i.PRODUCT.CATEGORY.category_name,
+            'distributor_id': i.DISTRIBUTOR.id,
+            'distributor_name': i.DISTRIBUTOR.name,
+            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_phone': i.DISTRIBUTOR.phone,
+            'is_liked': liked,   # 🔥 THIS LINE
         })
+
     return JsonResponse({'status': 'ok', 'data': ar})
+
 
 
 
@@ -1200,8 +1206,8 @@ def addorder(request):
     # # 1. Create the Main Order Header
     # obj1 = order()
     # obj1.payment_status = 'pending'
-    # obj1.payment_date = datetime.datetime.now().date()
-    # obj1.date = datetime.datetime.now().date()
+    # obj1.payment_date = datetime.now().date()
+    # obj1.date = datetime.now().date()
     # obj1.USER_id = cid
     # obj1.DISTRIBUTOR_id = distributor_id
     # # Calculate amount logic should be here, e.g., price * quantity
@@ -1256,57 +1262,124 @@ def update_quantity(request):
     cart.objects.filter(id=id).update(quantity=int(float(quantity)))
     return JsonResponse({"status":"ok"})
 
-
 def toggle_wishlist(request):
     pid = request.POST.get('pid')
     cid = request.POST.get('cid')
     uid = request.POST.get('uid')
-    if cid:
-        query = wishlist.objects.filter(STOCK_id=pid, USER_id=cid)
-    else:
-        query = wishlist.objects.filter(STOCK_id=pid, DISTRIBUTOR_id=uid)
-    if query.exists():
-        query.delete()
-        return JsonResponse({'status': 'ok', 'action': 'removed'})
-    else:
-        obj = wishlist()
-        obj.STOCK_id = pid
-        obj.date = datetime.datetime.now().strftime("%Y-%m-%d")
-        if cid:
-            obj.USER_id = cid
+
+    if not pid:
+        return JsonResponse({'status': 'error', 'msg': 'pid missing'})
+
+    stock_obj = stock.objects.get(id=pid)
+
+    # ================= CUSTOMER =================
+    if cid and not uid:
+        print("👉 CUSTOMER WISHLIST")
+        user = customer.objects.get(id=cid)
+
+        qs = wishlist.objects.filter(
+            STOCK=stock_obj,
+            USER=user,
+            DISTRIBUTOR__isnull=True
+        )
+
+        if qs.exists():
+            qs.delete()
+            return JsonResponse({'status': 'ok', 'action': 'removed'})
         else:
-            obj.DISTRIBUTOR_id = uid
-        obj.save()
-        return JsonResponse({'status': 'ok', 'action': 'added'})
+            wishlist.objects.create(
+                STOCK=stock_obj,
+                USER=user,
+                DISTRIBUTOR=None,
+                date=str(datetime.now())
+            )
+            return JsonResponse({'status': 'ok', 'action': 'added'})
+
+    # ================= DISTRIBUTOR =================
+    if uid and not cid:
+        print("👉 DISTRIBUTOR WISHLIST")
+        dist = distributor.objects.get(id=uid)
+
+        qs = wishlist.objects.filter(
+            STOCK=stock_obj,
+            DISTRIBUTOR=dist,
+            USER__isnull=True
+        )
+
+        if qs.exists():
+            qs.delete()
+            return JsonResponse({'status': 'ok', 'action': 'removed'})
+        else:
+            wishlist.objects.create(
+                STOCK=stock_obj,
+                DISTRIBUTOR=dist,
+                USER=None,
+                date=str(datetime.now())
+            )
+            return JsonResponse({'status': 'ok', 'action': 'added'})
+
+    return JsonResponse({'status': 'error', 'msg': 'invalid request'})
 
 def remove_from_wishlist(request):
     wid = request.POST.get('wid')
-    wishlist.objects.filter(id=wid).delete()
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
+
+    if not wid:
+        return JsonResponse({'status': 'error', 'msg': 'wid missing'})
+
+    # CUSTOMER
+    if cid and not uid:
+        wishlist.objects.filter(
+            id=wid,
+            USER_id=cid,
+            DISTRIBUTOR__isnull=True
+        ).delete()
+
+    # DISTRIBUTOR
+    elif uid and not cid:
+        wishlist.objects.filter(
+            id=wid,
+            DISTRIBUTOR_id=uid,
+            USER__isnull=True
+        ).delete()
+
     return JsonResponse({'status': 'ok'})
 
 def view_wishlist(request):
-    if request.method == 'POST':
-        cid = request.POST.get('cid')
-        uid = request.POST.get('uid')
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
 
-        if cid:
-            data = wishlist.objects.filter(USER_id=cid)
-        else:
-            data = wishlist.objects.filter(DISTRIBUTOR_id=uid)
+    # CUSTOMER
+    if cid and not uid:
+        data = wishlist.objects.filter(
+            USER__id=cid,
+            DISTRIBUTOR__isnull=True
+        )
 
-        ar = []
-        for i in data:
-            ar.append({
-                'wishlist_id': i.id,
-                'id': i.STOCK.id,
-                'product_name': i.STOCK.PRODUCT.product_name,
-                'price': i.STOCK.price,
-                'image': i.STOCK.PRODUCT.image,
-                'description': i.STOCK.PRODUCT.description,
-                'distributor_name': i.STOCK.DISTRIBUTOR.name,
-                'category_name': i.STOCK.PRODUCT.CATEGORY.category_name,
-            })
-        return JsonResponse({'status': 'ok', 'data': ar})
+    # DISTRIBUTOR
+    elif uid and not cid:
+        data = wishlist.objects.filter(
+            DISTRIBUTOR__id=uid,
+            USER__isnull=True
+        )
+
+    else:
+        data = []
+
+    ar = []
+    for i in data:
+        ar.append({
+            'wishlist_id': i.id,
+            'id': i.STOCK.id,
+            'product_name': i.STOCK.PRODUCT.product_name,
+            'price': i.STOCK.price,
+            'image': i.STOCK.PRODUCT.image,
+            'category_name': i.STOCK.PRODUCT.CATEGORY.category_name,
+            'distributor_name': i.STOCK.DISTRIBUTOR.name,
+        })
+
+    return JsonResponse({'status': 'ok', 'data': ar})
 
 
 
@@ -1343,8 +1416,8 @@ def addFinalOrder(request):
             new_order.USER_id = cid
             new_order.DISTRIBUTOR_id = d_id
             new_order.payment_status = 'pending'
-            new_order.payment_date = "pending"  # or datetime.datetime.now().date()
-            new_order.date = datetime.datetime.now().date()
+            new_order.payment_date = "pending"  # or datetime.now().date()
+            new_order.date = datetime.now().date()
             new_order.amount = 0  # Will update this after calculating total
             new_order.save()
 
@@ -1550,12 +1623,12 @@ def make_payment(request):
     id = request.POST['id']
     amount = request.POST['amount']
 
-    order.objects.filter(id=id).update(payment_status=request.POST['mode'],payment_date=datetime.datetime.now())
+    order.objects.filter(id=id).update(payment_status=request.POST['mode'],payment_date=datetime.now())
 
     obj = payment()
     obj.amount = amount
     obj.status = request.POST['mode']
-    obj.amount_date = datetime.datetime.now()
+    obj.amount_date = datetime.now()
     obj.USER_id = cid
     obj.save()
     return JsonResponse({'status':'ok',})
