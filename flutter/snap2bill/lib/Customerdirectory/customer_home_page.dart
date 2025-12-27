@@ -1,32 +1,19 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
-
-// Import all required navigation classes
-import '../screens/viewWishlist.dart';
-import '../widgets/product_feed.dart';
-import 'Customersends/addOrder.dart';
-import 'custviews/viewOrder.dart';
-import 'custviews/view_product.dart';
-import 'custviews/view_feedback.dart';
-import 'Customersends/send_feedback.dart';
-import 'password/changePassword.dart';
+import 'package:snap2bill/Customerdirectory/custviews/view_feedback.dart';
+import 'package:snap2bill/Customerdirectory/custviews/view_product.dart';
+import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
+import 'package:snap2bill/Customerdirectory/custviews/viewOrder.dart';
+import 'package:snap2bill/Customerdirectory/password/changePassword.dart';
 import 'package:snap2bill/screens/Login_page.dart';
-
-import '../data/category_service.dart';
-import '../data/product_service.dart';
-import '../main.dart';
-import '../theme/theme.dart';
-import '../data/dataModels.dart';
+import 'package:snap2bill/data/dataModels.dart';
+import 'package:snap2bill/data/category_service.dart';
+import 'package:snap2bill/data/product_service.dart';
 import 'package:snap2bill/widgets/category_filter_bar.dart';
-import 'package:snap2bill/widgets/product_card.dart';
-
-// NEW IMPORT
-import 'package:snap2bill/widgets/custom_drawer.dart'; // Import CustomDrawer (which includes DrawerItemModel)
-
+import 'package:snap2bill/widgets/product_feed.dart';
+import 'package:snap2bill/widgets/custom_drawer.dart';
+import 'package:snap2bill/screens/viewWishlist.dart';
 
 class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({Key? key}) : super(key: key);
@@ -37,7 +24,6 @@ class CustomerHomePage extends StatefulWidget {
 
 class _CustomerHomePageState extends State<CustomerHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   List<ProductData> _allProducts = [];
   List<CategoryData> _categories = [];
   String _selectedCategoryId = "All";
@@ -49,65 +35,14 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     _loadData();
   }
 
-  /// ---------------- GET DRAWER ITEMS (Customer Specific) ----------------
-  List<DrawerItemModel> _getDrawerItems() {
-    return [
-      DrawerItemModel(
-        icon: Icons.shopping_bag_outlined,
-        title: "View Products",
-        onTap: () => const view_product(),
-      ),
-      DrawerItemModel(
-        icon: Icons.feedback_outlined,
-        title: "Send Feedback",
-        onTap: () => const send_feedback(),
-      ),
-      DrawerItemModel(
-        icon: Icons.feedback_outlined,
-        title: "View Feedback",
-        onTap: () => const view_feedback(),
-      ),
-      DrawerItemModel(
-        icon: Icons.list_alt,
-        title: "Orders",
-          onTap: () async {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.remove("selected_distributor_id");
-            return const viewOrder();
-          },
-      ),
-      DrawerItemModel(
-        icon: Icons.lock_outline,
-        title: "Change Password",
-        onTap: () => const changePassword(),
-      ),
-      DrawerItemModel(
-        icon: Icons.logout,
-        title: "Logout",
-        onTap: () async {
-          final prefs = await SharedPreferences.getInstance();
-          final savedIp = prefs.getString("ip");
-          await prefs.clear();
-          if (savedIp != null) { await prefs.setString("ip", savedIp); }
-          return const login_page();
-        },
-        color: Colors.red,
-      ),
-    ];
-  }
-
-
-  /// ---------------- LOAD PRODUCTS + CATEGORIES ----------------
   Future<void> _loadData() async {
     if (!mounted) return;
-
     setState(() => _isLoading = true);
 
     final products = await ProductService.customerProducts();
     final categories = await CategoryService.fetchCategories();
 
     if (!mounted) return;
-
     setState(() {
       _allProducts = products;
       _categories = categories;
@@ -115,95 +50,75 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     });
   }
 
-  /// ---------------- SWIPE TO OPEN DRAWER ----------------
-  void _handleSwipe(DragEndDetails details) {
-    const double sensitivity = 500;
-    if (details.primaryVelocity != null &&
-        details.primaryVelocity! > sensitivity) {
-      _scaffoldKey.currentState?.openDrawer();
-    }
+  List<DrawerItemModel> _getDrawerItems() {
+    return [
+      DrawerItemModel(icon: Icons.shopping_bag_outlined, title: "View Products", onTap: () => const view_product()),
+      DrawerItemModel(icon: Icons.feedback_outlined, title: "Send Feedback", onTap: () => const send_feedback()),
+      DrawerItemModel(icon: Icons.feedback_outlined, title: "View Feedback", onTap: () => const view_feedback()),
+      DrawerItemModel(icon: Icons.list_alt, title: "Orders", onTap: () => const viewOrder()),
+      DrawerItemModel(icon: Icons.lock_outline, title: "Change Password", onTap: () => const changePassword()),
+      DrawerItemModel(icon: Icons.logout, title: "Logout", color: Colors.red, onTap: () async {
+        final prefs = await SharedPreferences.getInstance();
+        final ip = prefs.getString("ip");
+        await prefs.clear();
+        if (ip != null) await prefs.setString("ip", ip);
+        return const login_page();
+      }),
+    ];
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
 
-    final List<ProductData> filteredProducts = _selectedCategoryId == "All"
+    final filteredProducts = _selectedCategoryId == "All"
         ? _allProducts
-        : _allProducts
-        .where((p) => p.categoryId == _selectedCategoryId)
-        .toList();
+        : _allProducts.where((p) => p.categoryId == _selectedCategoryId).toList();
 
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: theme.scaffoldBackgroundColor,
-
-      /// ---------------- APP BAR ----------------
+      // Enables Swipe to open from left edge
+      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.2,
+      drawer: CustomDrawer(menuItems: _getDrawerItems()),
       appBar: AppBar(
-        title: Text("Home", style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: const Text("Home", style: TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
-        backgroundColor: theme.scaffoldBackgroundColor,
-        elevation: 0,
-        iconTheme: IconThemeData(color: textColor),
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+        ),
         actions: [
-          // ✅ Notifications hatakar Wishlist (Heart) icon add kiya
           IconButton(
-            icon: const Icon(Icons.favorite_outline_rounded),
+            icon: const Icon(Icons.favorite_border),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ViewWishlist()),
-              ).then((_) {
-                // ✅ Back aane par home page refresh hoga taaki heart colors sync rahein
-                _loadData();
-              });
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewWishlist()))
+                  .then((_) => _loadData());
             },
           ),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const viewCart()));
-            },
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const viewCart())),
           ),
         ],
       ),
-      /// ---------------- DRAWER (USING REUSABLE COMPONENT) ----------------
-      drawer: CustomDrawer(
-        menuItems: _getDrawerItems(), // Pass customer's specific links
-      ),
-
-      /// ---------------- BODY ----------------
-      body: GestureDetector(
-        onHorizontalDragEnd: _handleSwipe,
-        child: RefreshIndicator(
-          onRefresh: _loadData,
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-            children: [
-              /// CATEGORY FILTER BAR
-              CategoryFilterBar(
-                categories: _categories,
-                selectedId: _selectedCategoryId,
-                onSelect: (id) {
-                  setState(() => _selectedCategoryId = id);
-                },
+      body: RefreshIndicator(
+        onRefresh: _loadData,
+        child: Column(
+          children: [
+            CategoryFilterBar(
+              categories: _categories,
+              selectedId: _selectedCategoryId,
+              onSelect: (id) => setState(() => _selectedCategoryId = id),
+            ),
+            Expanded(
+              child: ProductFeedWidget(
+                filteredProducts: filteredProducts,
+                showAddToCart: true,
+                isLoading: _isLoading,
               ),
-
-              /// PRODUCT FEED
-              Expanded(
-                child: ProductFeedWidget(
-                  // Pass the calculated list
-                  filteredProducts: filteredProducts,
-                  // Customer sees 'Add to Cart'
-                  showAddToCart: true,
-                  // Pass loading state
-                  isLoading: _isLoading,
-                ),
-              ),            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

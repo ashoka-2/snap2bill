@@ -1408,7 +1408,7 @@ def view_orders(request):
 def view_orders_items(request):
     cid = request.POST.get('cid')
     data = order_sub.objects.filter(ORDER=cid)
-    print(cid,data)
+
     ar = []
     for i in data:
         ar.append({
@@ -1417,9 +1417,8 @@ def view_orders_items(request):
             'sid': i.STOCK.id,
             'price': i.STOCK.price,
             'product_name': i.STOCK.PRODUCT.product_name,
-            'image': i.STOCK.PRODUCT.image,
+            'image': i.STOCK.PRODUCT.image or "",
             'description': i.STOCK.PRODUCT.description,
-
         })
 
     data = stock.objects.all()
@@ -1428,18 +1427,23 @@ def view_orders_items(request):
         ar2.append({
             'distributor_id': i.DISTRIBUTOR.id,
             'distributor_name': i.DISTRIBUTOR.name,
-            'distributor_image': i.DISTRIBUTOR.profile_image,
+            'distributor_image': i.DISTRIBUTOR.profile_image or "",
             'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
-            'image': i.PRODUCT.image,
+            'image': i.PRODUCT.image or "",
             'description': i.PRODUCT.description,
             'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
         })
-    return JsonResponse({'status': 'ok', 'data': ar,'data2':ar2})
+
+    return JsonResponse({
+        'status': 'ok',
+        'data': ar,
+        'data2': ar2
+    })
 
 def edit_order(request):
     id=request.POST['id']
