@@ -315,7 +315,7 @@ class ViewCustomerProfile extends StatelessWidget {
   // ✅ Function to trigger WhatsApp (preferred) or SMS
   Future<void> _messageCustomer(String phoneNumber) async {
     // Try WhatsApp first
-    final Uri whatsappUri = Uri.parse("whatsapp://send?phone=+91$phoneNumber");
+    final Uri whatsappUri = Uri.parse("whatsapp://send?phone=$phoneNumber");
     if (await canLaunchUrl(whatsappUri)) {
       await launchUrl(whatsappUri);
     } else {
