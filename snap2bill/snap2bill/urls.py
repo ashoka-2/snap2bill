@@ -75,7 +75,9 @@ urlpatterns = [
     path('customer_search_page',views.customer_search_page),
     path('customer_view_distributor', views.customer_view_distributor),
     path('edit_customer_profile', views.edit_customer_profile),
-    
+
+
+    path('get_product_details',views.get_product_details),
   
     path('customer_view_notifications', views.customer_view_notifications),
     path('customer_view_bill', views.customer_view_bill),

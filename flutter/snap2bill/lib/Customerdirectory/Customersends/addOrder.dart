@@ -1,195 +1,11 @@
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// // Assuming CustomerNavigationBar and other necessary files are correctly imported
-// import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
-//
-// class addOrder extends StatefulWidget {
-//   // If possible, it's safer to pass product/stock ID directly here:
-//   // final String? productId;
-//   // const addOrder({Key? key, this.productId}) : super(key: key);
-//
-//   const addOrder({Key? key}) : super(key: key);
-//
-//   @override
-//   State<addOrder> createState() => _addOrderState();
-// }
-//
-// class _addOrderState extends State<addOrder> {
-//   // Use a final keyword for controllers
-//   final TextEditingController _quantityController = TextEditingController(text: "1");
-//   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-//   bool _isAddingToCart = false;
-//
-//   @override
-//   void dispose() {
-//     _quantityController.dispose();
-//     super.dispose();
-//   }
-//
-//   Future<void> _addToCart(BuildContext context) async {
-//     if (!_formKey.currentState!.validate() || _isAddingToCart) {
-//       return;
-//     }
-//
-//     setState(() {
-//       _isAddingToCart = true;
-//     });
-//
-//     SharedPreferences sh = await SharedPreferences.getInstance();
-//     String? ip = sh.getString("ip");
-//     // Ensure all required IDs are available from SharedPreferences
-//     String? cid = sh.getString("cid"); // Customer ID
-//     String? uid = sh.getString("uid");
-//     String? id  = sh.getString("pid");
-//     // Product/Stock ID
-//
-//     if (ip == null || cid == null || uid == null || id == null) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(
-//           content: Text("Error: Missing login or product data (IP/CID/UID/ID)."),
-//           backgroundColor: Colors.red,
-//         ),
-//       );
-//       setState(() {
-//         _isAddingToCart = false;
-//       });
-//       return;
-//     }
-//
-//     try {
-//       var data = await http.post(
-//         Uri.parse("$ip/addorder"),
-//         body: {
-//           "quantity": _quantityController.text,
-//           'uid': uid, // Distributor ID
-//           'cid': cid, // Customer ID
-//           'id': id,   // Product/Stock ID (The stock ID being ordered)
-//         },
-//       );
-//
-//       var jsonData = json.decode(data.body);
-//
-//       if (data.statusCode == 200 && jsonData['status'] == 'ok') {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           const SnackBar(content: Text("Product added to cart successfully!")),
-//         );
-//         // Navigate back to the main customer navigation screen
-//         Navigator.pushAndRemoveUntil(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => const CustomerNavigationBar(),
-//           ),
-//               (route) => false, // Clears the stack to prevent back button issues
-//         );
-//       } else {
-//         ScaffoldMessenger.of(context).showSnackBar(
-//           SnackBar(
-//             content: Text("Failed to add: ${jsonData['message'] ?? 'Server error.'}"),
-//             backgroundColor: Colors.red,
-//           ),
-//         );
-//       }
-//     } catch (e) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text("Network error: Could not reach server. $e"),
-//           backgroundColor: Colors.red,
-//         ),
-//       );
-//     } finally {
-//       setState(() {
-//         _isAddingToCart = false;
-//       });
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//         centerTitle: true,
-//         leading: IconButton(
-//           icon: const Icon(
-//             Icons.arrow_back_ios_new,
-//             color: Colors.black87,
-//             size: 20,
-//           ),
-//           onPressed: () {
-//             if (Navigator.canPop(context)) Navigator.pop(context);
-//           },
-//         ),
-//         title: const Text(
-//           "Add Product to Cart",
-//           style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//       body: Padding(
-//         padding: const EdgeInsets.all(20.0),
-//         child: Form(
-//           key: _formKey,
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.stretch,
-//             children: [
-//               const SizedBox(height: 10),
-//               // --- Quantity Input ---
-//               TextFormField(
-//                 controller: _quantityController,
-//                 keyboardType: TextInputType.number,
-//                 decoration: const InputDecoration(
-//                   hintText: 'Enter quantity (e.g., 2, 5)',
-//                   labelText: 'Quantity',
-//                   prefixIcon: Icon(Icons.numbers),
-//                   border: OutlineInputBorder(),
-//                 ),
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter a quantity.';
-//                   }
-//                   if (int.tryParse(value) == null || int.parse(value) <= 0) {
-//                     return 'Quantity must be a positive number.';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               const SizedBox(height: 30),
-//
-//               // --- Add to Cart Button ---
-//               ElevatedButton(
-//                 onPressed: _isAddingToCart ? null : () => _addToCart(context),
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: Colors.deepPurple,
-//                   foregroundColor: Colors.white,
-//                   padding: const EdgeInsets.symmetric(vertical: 15),
-//                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-//                 ),
-//                 child: _isAddingToCart
-//                     ? const SizedBox(
-//                   height: 20,
-//                   width: 20,
-//                   child: CircularProgressIndicator(
-//                     color: Colors.white,
-//                     strokeWidth: 3,
-//                   ),
-//                 )
-//                     : const Text(
-//                   "Add to Cart",
-//                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Required for input formatters
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 class addOrder extends StatefulWidget {
@@ -200,70 +16,241 @@ class addOrder extends StatefulWidget {
 }
 
 class _addOrderState extends State<addOrder> {
-  final quantity = TextEditingController(text: "1");
+  final TextEditingController _qtyController = TextEditingController(text: "1");
+  Map<String, dynamic>? productData;
+  bool _isLoading = true;
+  String _ip = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchDetails();
+  }
+
+  @override
+  void dispose() {
+    _qtyController.dispose();
+    super.dispose();
+  }
+
+  // Helper to get current qty safely
+  int get currentQty => int.tryParse(_qtyController.text) ?? 1;
+
+  Future<void> _fetchDetails() async {
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    _ip = sh.getString("ip") ?? "";
+    String pid = sh.getString("pid") ?? "";
+
+    final response = await http.post(
+      Uri.parse("$_ip/get_product_details"),
+      body: {'pid': pid},
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        productData = json.decode(response.body)['data'];
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _addToCart() async {
+    if (currentQty < 1) return;
+
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    final response = await http.post(
+      Uri.parse("$_ip/addorder"),
+      body: {
+        "quantity": _qtyController.text,
+        'cid': sh.getString("cid"),
+        'pid': sh.getString("pid"),
+      },
+    );
+
+    if (json.decode(response.body)['status'] == 'ok') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const viewCart()),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
+    double price = double.tryParse(productData!['price'].toString()) ?? 0.0;
+    double totalPrice = price * currentQty;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black87,
-            size: 20,
-          ),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
+          icon: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          "Add product to cart",
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
-        ),
+        title: Text("Product Details",
+            style: GoogleFonts.poppins(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          width: double.infinity,
-          height: 500,
-          child: Column(
-            children: [
-              SizedBox(height: 10),
-              TextField(
-                controller: quantity,
-                decoration: InputDecoration(
-                  hintText: 'Enter quantiy',
-                  labelText: 'Quantity',
-                  prefixIcon: Icon(Icons.numbers),
-                  border: OutlineInputBorder(),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 15),
+            // Product Image Container
+            Container(
+              height: 280,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white10 : Colors.grey[100],
+                borderRadius: BorderRadius.circular(25),
+                image: DecorationImage(
+                  image: NetworkImage(_ip + productData!['image']),
+                  fit: BoxFit.contain,
                 ),
               ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  SharedPreferences sh = await SharedPreferences.getInstance();
-                  var data = await http.post(
-                    Uri.parse(sh.getString("ip").toString() + "/addorder"),
-                    body: {
-                      "quantity": quantity.text,
-                      'cid': sh.getString("cid"),
-                      'pid': sh.getString("pid"),
-                    },
-                  );
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => viewCart(),
+            ),
+
+            const SizedBox(height: 25),
+
+            Text(
+                productData!['category'].toString().toUpperCase(),
+                style: GoogleFonts.poppins(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
+            ),
+            Text(
+                productData!['product_name'],
+                style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)
+            ),
+
+            const SizedBox(height: 20),
+
+            // Price and Dual-Input Quantity Section
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Unit Price", style: TextStyle(color: Colors.grey[500], fontSize: 12)),
+                    Text(
+                      "₹${productData!['price']}",
+                      style: GoogleFonts.poppins(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.greenAccent : Colors.green[800]
+                      ),
                     ),
-                  );
-                },
-                child: Text("Add to cart"),
+                  ],
+                ),
+
+                // ✅ UPDATED: Hybrid Quantity Selector (Buttons + Keyboard)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.white12 : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            if (currentQty > 1) {
+                              setState(() => _qtyController.text = (currentQty - 1).toString());
+                            }
+                          },
+                          icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor)
+                      ),
+
+                      // Keyboard Input Field
+                      SizedBox(
+                        width: 50,
+                        child: TextField(
+                          controller: _qtyController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          onChanged: (value) => setState(() {}),
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          decoration: const InputDecoration(
+                            border: InputBorder.none,
+                            isDense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+
+                      IconButton(
+                          onPressed: () {
+                            setState(() => _qtyController.text = (currentQty + 1).toString());
+                          },
+                          icon: Icon(Icons.add_circle_outline, color: theme.primaryColor)
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 25),
+              child: Divider(),
+            ),
+
+            // Description
+            Text("Description", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 10),
+            Text(
+              productData!['description'] ?? "No description available.",
+              style: GoogleFonts.poppins(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
+            ),
+            const SizedBox(height: 120),
+          ],
+        ),
+      ),
+
+      // Bottom Bar with Total Price & Add to Cart
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
+        decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Total Price", style: TextStyle(color: Colors.grey[500], fontSize: 13)),
+                  Text("₹${totalPrice.toStringAsFixed(2)}",
+                      style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              flex: 2,
+              child: ElevatedButton(
+                onPressed: _addToCart,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.primaryColor,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  elevation: 0,
+                ),
+                child: Text("Add to Cart",
+                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+              ),
+            ),
+          ],
         ),
       ),
     );

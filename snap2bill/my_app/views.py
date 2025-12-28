@@ -1184,45 +1184,47 @@ def customer_view_distributor(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
+@csrf_exempt
+def get_product_details(request):
+    pid = request.POST.get('pid')
+    try:
+        # Fetching from Stock model since that's where the price and current stock are
+        i = stock.objects.get(id=pid)
+        data = {
+            'id': i.id,
+            'product_name': i.PRODUCT.product_name,
+            'price': i.price,
+            'image': i.PRODUCT.image,
+            'description': i.PRODUCT.description,
+            'stock_quantity': i.quantity,
+            'category': i.PRODUCT.CATEGORY.category_name,
+            'distributor': i.DISTRIBUTOR.name
+        }
+        return JsonResponse({'status': 'ok', 'data': data})
+    except stock.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Product not found'})
 
 
+@csrf_exempt
 def addorder(request):
-    cid = request.POST['cid']  # Customer ID
-    # distributor_id = request.POST['uid']  # Distributor ID (passed from App)
-    product_stock_id = request.POST['pid']  # Stock/Product ID
-    quantity = request.POST['quantity']
-    if cart.objects.filter(STOCK=product_stock_id,USER=cid).exists():
-        oldqty = cart.objects.get(STOCK=product_stock_id,USER=cid).quantity
-        qty = int(quantity) + int(oldqty)
-        cart.objects.filter(STOCK=product_stock_id, USER=cid).update(quantity = qty)
-        return JsonResponse({'status': 'ok'})
+    cid = request.POST.get('cid')
+    product_stock_id = request.POST.get('pid')
+    quantity = int(request.POST.get('quantity', 1))
 
-    obj = cart()
-    obj.quantity = quantity
-    obj.USER_id = cid
-    obj.STOCK_id = product_stock_id
-    obj.save()
+    # Check if item already in cart
+    cart_item = cart.objects.filter(STOCK_id=product_stock_id, USER_id=cid).first()
 
-    # # 1. Create the Main Order Header
-    # obj1 = order()
-    # obj1.payment_status = 'pending'
-    # obj1.payment_date = datetime.now().date()
-    # obj1.date = datetime.now().date()
-    # obj1.USER_id = cid
-    # obj1.DISTRIBUTOR_id = distributor_id
-    # # Calculate amount logic should be here, e.g., price * quantity
-    # # obj1.amount = ...
-    # obj1.save()
-    #
-    # # 2. Create the Sub Order (Item Details)
-    # obj = order_sub()
-    # obj.quantity = quantity
-    # obj.ORDER_id = obj1.id
-    # obj.STOCK_id = product_stock_id
-    # obj.save()
+    if cart_item:
+        cart_item.quantity = int(cart_item.quantity) + quantity
+        cart_item.save()
+    else:
+        obj = cart()
+        obj.quantity = quantity
+        obj.USER_id = cid
+        obj.STOCK_id = product_stock_id
+        obj.save()
 
     return JsonResponse({'status': 'ok'})
-
 
 
 
@@ -1246,6 +1248,9 @@ def viewCart(request):
 
         })
     return JsonResponse({'status':'ok','data':ar,"total":total})
+
+
+
 
 
 
