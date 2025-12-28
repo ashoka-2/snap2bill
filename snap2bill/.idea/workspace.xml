@@ -91,8 +91,8 @@
               <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
                 <entry file="file://$PROJECT_DIR$/my_app/views.py">
                   <provider selected="true" editor-type-id="text-editor">
-                    <state relative-caret-position="336">
-                      <caret line="1243" column="42" lean-forward="true" selection-start-line="1243" selection-start-column="42" selection-end-line="1243" selection-end-column="42" />
+                    <state relative-caret-position="101">
+                      <caret line="503" column="29" lean-forward="true" selection-start-line="503" selection-start-column="29" selection-end-line="503" selection-end-column="29" />
                       <folding>
                         <element signature="e#0#29#0" expanded="true" />
                       </folding>
@@ -151,7 +151,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>view_orders</find>
       <find>make_payment</find>
       <find>login_page</find>
       <find>setting-dropdown</find>
@@ -181,6 +180,7 @@
       <find>datetime.datetime</find>
       <find>wishlist</find>
       <find>addorder</find>
+      <find>view_customer</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -1111,8 +1111,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="1243" column="42" lean-forward="true" selection-start-line="1243" selection-start-column="42" selection-end-line="1243" selection-end-column="42" />
+        <state relative-caret-position="101">
+          <caret line="503" column="29" lean-forward="true" selection-start-line="503" selection-start-column="29" selection-end-line="503" selection-end-column="29" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
           </folding>

@@ -785,7 +785,6 @@ class distributor_profile_page extends StatefulWidget {
 class _distributor_profile_pageState extends State<distributor_profile_page> {
   DistributorProfileModel? _profile;
   List<ProductModel> _products = [];
-  int _customerCount = 0;
   bool _isLoading = true;
 
   final PageController _pageController = PageController();
@@ -806,7 +805,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
   Future<void> _fetchAllData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
-    await Future.wait([_getProfile(), _getProducts(), _getCustomerCount()]);
+    await Future.wait([_getProfile(), _getProducts()]);
     if (mounted) setState(() => _isLoading = false);
   }
 
@@ -856,19 +855,6 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
         }
       }
     } catch (e) { debugPrint("Product Error: $e"); }
-  }
-
-  Future<void> _getCustomerCount() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final base = prefs.getString("ip") ?? "";
-      final uid = prefs.getString("uid") ?? "";
-      final res = await http.post(Uri.parse("$base/view_customer"), body: {"uid": uid});
-      if (res.statusCode == 200) {
-        final js = json.decode(res.body);
-        if (js['data'] != null) setState(() => _customerCount = (js['data'] as List).length);
-      }
-    } catch (e) { debugPrint("Customer count error: $e"); }
   }
 
   String _joinUrl(String base, String path) {
@@ -931,7 +917,8 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
               ],
             ),
           ),
-          const SizedBox(height: 80),
+          // ✅ THIS IS THE SPACE FOR THE NAVIGATION BAR
+          const SizedBox(height: 70),
         ],
       ),
     );
@@ -970,7 +957,6 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _StatItem(label: "Products", count: _products.length.toString(), color: textColor),
-                    _StatItem(label: "Customers", count: _customerCount.toString(), color: textColor),
                     _StatItem(label: "Rating", count: "4.5", color: textColor),
                   ],
                 ),
@@ -1024,7 +1010,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
   Widget _buildProductGrid(ThemeData theme, bool isDark) {
     if (_products.isEmpty) return const Center(child: Text("No products found"));
     return GridView.builder(
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.fromLTRB(2, 2, 2, 20), // Added bottom padding to grid
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
       itemCount: _products.length,
       itemBuilder: (context, index) => GestureDetector(
@@ -1036,7 +1022,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
 
   Widget _buildContactDetails(ThemeData theme, Color textColor, bool isDark) {
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+      padding: const EdgeInsets.fromLTRB(20, 25, 20, 30), // Added bottom padding to info list
       children: [
         _InfoItem(icon: Icons.alternate_email_rounded, label: "Email Address", value: _profile!.email, color: textColor),
         _InfoItem(icon: Icons.phone_android_rounded, label: "Mobile Number", value: _profile!.phone, color: textColor),
@@ -1075,7 +1061,6 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
             Text(product.description, style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 25),
 
-            // ✅ ACTION BUTTONS: EDIT STOCK & DELETE
             Row(
               children: [
                 Expanded(
@@ -1092,7 +1077,6 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      // Add your delete API call here
                       Navigator.pop(context);
                     },
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Colors.red)),
