@@ -507,6 +507,8 @@ def edit_distributor_profile(request):
 
 
 def distributor_view_customer(request):
+
+
     try:
         uid = request.POST.get('uid')
 
