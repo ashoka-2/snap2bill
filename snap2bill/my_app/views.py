@@ -1,4 +1,7 @@
+import os
 from datetime import datetime
+
+from django.conf import settings
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
@@ -11,6 +14,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 
 
+import google.generativeai as genai
+from PIL import Image
+import io
+
+
+
+
+#   admin@gmail.com     superuser
 
 # Create your views here
 from django.views.decorators.csrf import csrf_exempt
@@ -1640,12 +1651,197 @@ def make_payment(request):
     obj.save()
     return JsonResponse({'status':'ok',})
 
+from difflib import get_close_matches
+import cv2
+
+def compare_images(img1_path, img2_path):
+    img1 = cv2.imread(img1_path)
+    img2 = cv2.imread(img2_path)
+
+    if img1 is None or img2 is None:
+        return -1
+
+    img1 = cv2.resize(img1, (300, 300))
+    img2 = cv2.resize(img2, (300, 300))
+
+    hist1 = cv2.calcHist([img1], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
+    hist2 = cv2.calcHist([img2], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
+
+    cv2.normalize(hist1, hist1)
+    cv2.normalize(hist2, hist2)
+
+    score = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
+    return score
+
+def scanItem(request):
+
+    if request.method != "POST":
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+
+    # =========================
+    # 1. Distributor stock
+    # =========================
+    uid = request.POST.get('uid')
+    if not uid:
+        return JsonResponse({'status': 'error', 'message': 'uid missing'})
+
+    allproduct = stock.objects.filter(DISTRIBUTOR_id=uid)
+
+    if not allproduct.exists():
+        return JsonResponse({'status': 'error', 'message': 'No stock found'})
+
+    # =========================
+    # 2. Uploaded image
+    # =========================
+    if 'image' not in request.FILES:
+        return JsonResponse({'status': 'error', 'message': 'Image missing'})
+
+    image_file = request.FILES['image']
+    fs = FileSystemStorage()
+    saved_name = fs.save(image_file.name, image_file)
+
+    scanned_image_path = os.path.normpath(fs.path(saved_name))
+    print("Scanned image:", scanned_image_path)
+
+    # =========================
+    # 3. Compare with stock images
+    # =========================
+    best_score = -1
+    matched_stock = None
+
+    for item in allproduct:
+
+        if not item.PRODUCT.image:
+            continue
+
+        product_image_path = r"D:\snap2bill\snap2bill\media\\"+item.PRODUCT.image.split('/')[-1]
+
+        print("Comparing with:", product_image_path)
+
+        if not os.path.exists(product_image_path):
+            print("❌ Image not found")
+            continue
+
+        score = compare_images(scanned_image_path, product_image_path)
+        print(item.PRODUCT.product_name, "score:", score)
+
+        if score > best_score:
+            best_score = score
+            matched_stock = item
+
+    # =========================
+    # 4. Threshold + response
+    # =========================
+    if matched_stock and best_score >= 0.7:
+        return JsonResponse({
+            'status': 'ok',
+            'stock_id': matched_stock.id,
+            'product_name': matched_stock.PRODUCT.product_name,
+            'match_score': round(best_score, 2)
+        })
+
+    return JsonResponse({
+        'status': 'not_found',
+        'match_score': round(best_score, 2)
+    })
 
 
-
-
-
-
+# def scanItem(request):
+#
+#     if request.method != "POST":
+#         return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+#
+#     # ============================
+#     # 1. Get distributor stock
+#     # ============================
+#     uid = request.POST.get('uid')
+#     if not uid:
+#         return JsonResponse({'status': 'error', 'message': 'uid missing'})
+#
+#     allproduct = stock.objects.filter(DISTRIBUTOR_id=uid)
+#
+#     if not allproduct.exists():
+#         return JsonResponse({'status': 'error', 'message': 'No stock found'})
+#
+#     # ============================
+#     # 2. Save uploaded image
+#     # ============================
+#     if 'image' not in request.FILES:
+#         return JsonResponse({'status': 'error', 'message': 'Image missing'})
+#
+#     image_file = request.FILES['image']
+#     fs = FileSystemStorage()
+#     saved_path = fs.save(image_file.name, image_file)
+#     image_path = fs.path(saved_path)
+#
+#     # ============================
+#     # 3. Load image & convert to bytes
+#     # ============================
+#     image = Image.open(image_path)
+#     image_bytes = io.BytesIO()
+#     image.save(image_bytes, format="JPEG")
+#     image_bytes = image_bytes.getvalue()
+#
+#     # ============================
+#     # 4. Gemini Configuration
+#     # ============================
+#     genai.configure(api_key="AIzaSyAduEHNgfrIKbihOtLOAUJf9NsoXsw7MW0")
+#
+#     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
+#
+#     response = model.generate_content(
+#         [
+#             "Identify the main product in this image. "
+#             "Return ONLY product name in 1–3 words. "
+#             "No sentence, no punctuation.",
+#             {"mime_type": "image/jpeg", "data": image_bytes}
+#         ],
+#         generation_config={
+#             "temperature": 0.2,
+#             "max_output_tokens": 50
+#         }
+#     )
+#
+#     detected_object = response.text.strip().lower()
+#     print("Detected object:", detected_object)
+#
+#     # ============================
+#     # 5. Match with stock products
+#     # ============================
+#     stock_names = {}
+#     for item in allproduct:
+#         name = item.PRODUCT.product_name.lower()
+#         stock_names[name] = item
+#
+#     matched_stock = None
+#
+#     # Direct contains match
+#     for name, item in stock_names.items():
+#         if detected_object in name or name in detected_object:
+#             matched_stock = item
+#             break
+#
+#     # Fuzzy match if direct not found
+#     if not matched_stock:
+#         close = get_close_matches(detected_object, stock_names.keys(), n=1, cutoff=0.6)
+#         if close:
+#             matched_stock = stock_names[close[0]]
+#
+#     # ============================
+#     # 6. Response
+#     # ============================
+#     if matched_stock:
+#         return JsonResponse({
+#             'status': 'ok',
+#             'stock_id': matched_stock.id,
+#             'product_name': matched_stock.PRODUCT.name,
+#             'detected_object': detected_object
+#         })
+#     else:
+#         return JsonResponse({
+#             'status': 'not_found',
+#             'detected_object': detected_object
+#         })
 
 
 

@@ -134,6 +134,9 @@ urlpatterns = [
     path('remove_from_wishlist', views.remove_from_wishlist),
     path('toggle_wishlist', views.toggle_wishlist),
 
+
+
+    path('scanItem',views.scanItem)
 ]
 
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

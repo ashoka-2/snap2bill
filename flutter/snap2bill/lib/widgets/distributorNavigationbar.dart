@@ -7,7 +7,7 @@ import 'package:line_icons/line_icons.dart';
 // Import your distributor pages (adjust paths if needed)
 import '../Distributordirectory/home_page.dart';
 import '../Distributordirectory/search_page.dart';
-import '../Distributordirectory/upload_page.dart';
+import '../Distributordirectory/scanItem.dart';
 import '../Distributordirectory/customer_page.dart';
 import '../Distributordirectory/profile_page.dart';
 
@@ -49,7 +49,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
     _pages = const [
       Home_page(),
       search_page(),
-      upload_page(),
+      Cameracapturemain(),
       customer_page(),
       distributor_profile_page(),
     ];

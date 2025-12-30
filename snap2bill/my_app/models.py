@@ -46,19 +46,6 @@ class product(models.Model):
     quantity = models.CharField(max_length=100)
     CATEGORY = models.ForeignKey(category,models.CASCADE)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 class review(models.Model):
     reviews = models.TextField()
     rating = models.IntegerField()
@@ -96,13 +83,6 @@ class feedback(models.Model):
         elif self.DISTRIBUTOR:
             return f"Distributor Feedback: {self.DISTRIBUTOR.name}"
         return f"Feedback #{self.id}"
-
-
-
-
-
-
-
 
 class payment(models.Model):
     amount = models.CharField(max_length=100)
