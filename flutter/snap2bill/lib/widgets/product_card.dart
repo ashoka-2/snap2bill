@@ -595,9 +595,19 @@ class _ProductCardState extends State<ProductCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(widget.product.distributorImage),
-              onBackgroundImageError: (_, __) => const Icon(Icons.store),
+
+            leading: InkWell(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ViewDistributorProfile(
+                distributorId: widget.product.distributorId,
+                distributorName: widget.product.distributorName,
+              )));
+                },
+              child: CircleAvatar(
+
+                backgroundImage: NetworkImage(widget.product.distributorImage),
+                onBackgroundImageError: (_, __) => const Icon(Icons.store),
+              ),
             ),
             title: Text(widget.product.distributorName, style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text(widget.product.distributorPhone, style: const TextStyle(fontSize: 12)),
