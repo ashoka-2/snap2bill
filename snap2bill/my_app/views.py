@@ -1497,33 +1497,46 @@ def view_orders(request):
 
 
 def view_orders_items(request):
-    cid = request.POST.get('cid')
-    data = order_sub.objects.filter(ORDER=cid)
+    # 1. Get the Order ID (passed as cid from Flutter)
+    order_id = request.POST.get('cid')
+
+    # 2. Fetch the specific items for this order
+    items_data = order_sub.objects.filter(ORDER=order_id)
 
     ar = []
-    for i in data:
+    for i in items_data:
         ar.append({
             'id': i.id,
             'quantity': i.quantity,
             'sid': i.STOCK.id,
             'price': i.STOCK.price,
             'product_name': i.STOCK.PRODUCT.product_name,
-            'image': i.STOCK.PRODUCT.image or "",
+            'image': i.STOCK.PRODUCT.image,
             'description': i.STOCK.PRODUCT.description,
         })
 
-    data = stock.objects.all()
+    # 3. FIX: Identify the distributor linked to this specific order
+    # We get the distributor from the parent Order object
+    try:
+        parent_order = order.objects.get(id=order_id)
+        distributor_id = parent_order.DISTRIBUTOR_id
+
+        # 4. Filter stock to ONLY show products from this specific distributor
+        stock_data = stock.objects.filter(DISTRIBUTOR_id=distributor_id)
+    except order.DoesNotExist:
+        stock_data = []
+
     ar2 = []
-    for i in data:
+    for i in stock_data:
         ar2.append({
             'distributor_id': i.DISTRIBUTOR.id,
             'distributor_name': i.DISTRIBUTOR.name,
-            'distributor_image': i.DISTRIBUTOR.profile_image or "",
+            'distributor_image': i.DISTRIBUTOR.profile_image,
             'distributor_phone': i.DISTRIBUTOR.phone,
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
             'price': i.price,
-            'image': i.PRODUCT.image or "",
+            'image': i.PRODUCT.image,
             'description': i.PRODUCT.description,
             'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
@@ -1535,7 +1548,6 @@ def view_orders_items(request):
         'data': ar,
         'data2': ar2
     })
-
 def edit_order(request):
     id=request.POST['id']
     quantity=request.POST['quantity']

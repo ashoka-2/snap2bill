@@ -44,12 +44,12 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
     super.dispose();
   }
 
+  // ✅ Swipe-to-Reload function
   Future<void> _fetchAllData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
     SharedPreferences sh = await SharedPreferences.getInstance();
 
-    // Check if cid exists to determine if the user is a Customer
     String? cid = sh.getString("cid");
     setState(() {
       _isCustomer = (cid != null && cid.isNotEmpty && cid != "null");
@@ -139,22 +139,40 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
         ),
         title: Text(_profile?.name ?? widget.distributorName, style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
       ),
-      body: _isLoading ? const Center(child: CircularProgressIndicator()) : Column(
-        children: [
-          _buildProfileHeader(theme, textColor, isDark),
-          _buildToggleTabs(isDark, theme),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) => setState(() => _activeTab = index),
-              children: [
-                _products.isEmpty ? const Center(child: Text("No products listed")) : _buildProductGrid(theme),
-                SingleChildScrollView(child: _buildContactDetails(theme, textColor)),
-              ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+        onRefresh: _fetchAllData,
+        child: CustomScrollView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          slivers: [
+            // ✅ Profile Header - Part of the main scroll
+            SliverToBoxAdapter(
+              child: _buildProfileHeader(theme, textColor, isDark),
             ),
-          ),
-          // ✅ SPACE REMOVED FROM HERE TO PREVENT CONTENT HIDING
-        ],
+            // ✅ Tabs - Part of the main scroll
+            SliverToBoxAdapter(
+              child: _buildToggleTabs(isDark, theme),
+            ),
+            // ✅ Tab Content - Takes remaining space but scrolls as one
+            SliverFillRemaining(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) => setState(() => _activeTab = index),
+                children: [
+                  _products.isEmpty
+                      ? const Center(child: Text("No products listed"))
+                      : _buildProductGrid(theme),
+                  SingleChildScrollView(
+                    physics: const NeverScrollableScrollPhysics(), // Scroll handled by sliver
+                    child: _buildContactDetails(theme, textColor),
+                  ),
+                ],
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 50)),
+          ],
+        ),
       ),
     );
   }
@@ -224,8 +242,30 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
     return Column(children: [
       const Divider(height: 1),
       Row(children: [
-        _TabButton(icon: Icons.grid_on, isActive: _activeTab == 0, onTap: () => _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
-        _TabButton(icon: Icons.info_outline, isActive: _activeTab == 1, onTap: () => _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
+        Expanded(
+          child: InkWell(
+              onTap: () => _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
+              child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: _activeTab == 0 ? theme.primaryColor : Colors.transparent, width: 2))
+                  ),
+                  child: Icon(Icons.grid_on, color: _activeTab == 0 ? theme.primaryColor : Colors.grey)
+              )
+          ),
+        ),
+        Expanded(
+          child: InkWell(
+              onTap: () => _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut),
+              child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                      border: Border(bottom: BorderSide(color: _activeTab == 1 ? theme.primaryColor : Colors.transparent, width: 2))
+                  ),
+                  child: Icon(Icons.info_outline, color: _activeTab == 1 ? theme.primaryColor : Colors.grey)
+              )
+          ),
+        ),
       ]),
       const Divider(height: 1),
     ]);
@@ -235,6 +275,8 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
     return GridView.builder(
       key: const PageStorageKey('distributor_product_grid'),
       padding: const EdgeInsets.all(2),
+      physics: const NeverScrollableScrollPhysics(), // Scroll handled by CustomScrollView
+      shrinkWrap: true,
       itemCount: _products.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 2, crossAxisSpacing: 2),
       itemBuilder: (context, index) {
@@ -275,7 +317,6 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
     );
   }
 
-  // ✅ UNIVERSAL PRODUCT VIEW WITH CONDITIONAL ADD TO CART
   void _showProductDetails(ProductModel product, ThemeData theme) {
     showModalBottomSheet(
       context: context,
@@ -299,7 +340,6 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
             Text(product.description, style: const TextStyle(height: 1.5)),
             const SizedBox(height: 30),
 
-            // ✅ ONLY SHOWS FOR CUSTOMER
             if (_isCustomer)
               SizedBox(
                 width: double.infinity,
@@ -308,7 +348,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
                     SharedPreferences sh = await SharedPreferences.getInstance();
                     await sh.setString("pid", product.id);
                     await sh.setString("uid", widget.distributorId);
-                    Navigator.pop(context); // Close sheet
+                    Navigator.pop(context);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
                   },
                   icon: const Icon(Icons.shopping_cart),

@@ -131,8 +131,8 @@ class MyApp_sub extends StatefulWidget {
 }
 
 class _MyApp_subState extends State<MyApp_sub> {
-  // TextEditingController ip = TextEditingController(text: "10.53.125.28");
-  TextEditingController ip = TextEditingController(text: "192.168.29.6");
+  TextEditingController ip = TextEditingController(text: "10.39.218.28");
+  // TextEditingController ip = TextEditingController(text: "192.168.29.6");
 
   @override
   Widget build(BuildContext context) {

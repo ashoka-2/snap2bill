@@ -36,6 +36,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
     super.dispose();
   }
 
+  // ✅ SWIPE-TO-RELOAD FUNCTION
   Future<void> _fetchAllData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
@@ -137,23 +138,40 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
         centerTitle: true,
         title: Text(_profile?.name ?? "Profile", style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
       ),
-      body: _isLoading ? const Center(child: CircularProgressIndicator()) : Column(
-        children: [
-          _buildProfileHeader(theme, textColor, isDark),
-          _buildTabSwitcher(theme, isDark),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) => setState(() => _activeTab = index),
-              children: [
-                _buildProductGrid(theme, isDark),
-                _buildContactDetails(theme, textColor, isDark),
-              ],
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+        onRefresh: _fetchAllData, // ✅ TOP-TO-DOWN SWIPE TO RELOAD
+        displacement: 40,
+        child: CustomScrollView(
+          // ✅ Physics allows the bounce and ensures refresh works even if list is short
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          slivers: [
+            // 1. Profile Header Section
+            SliverToBoxAdapter(
+              child: _buildProfileHeader(theme, textColor, isDark),
             ),
-          ),
-          // ✅ THIS IS THE SPACE FOR THE NAVIGATION BAR
-          const SizedBox(height: 70),
-        ],
+            // 2. Tab Switcher
+            SliverToBoxAdapter(
+              child: _buildTabSwitcher(theme, isDark),
+            ),
+            // 3. PageView Content (Fills the rest of the screen)
+            SliverFillRemaining(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) => setState(() => _activeTab = index),
+                children: [
+                  _buildProductGrid(theme, isDark),
+                  _buildContactDetails(theme, textColor, isDark),
+                ],
+              ),
+            ),
+            // 4. Extra bottom space for Navigation Bar
+            const SliverToBoxAdapter(
+              child: SizedBox(height: 80),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -241,10 +259,14 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
     ]);
   }
 
+  // ✅ PRODUCT GRID FIXED FOR SLIVER
   Widget _buildProductGrid(ThemeData theme, bool isDark) {
     if (_products.isEmpty) return const Center(child: Text("No products found"));
     return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(2, 2, 2, 20), // Added bottom padding to grid
+      padding: const EdgeInsets.all(2),
+      // Prevent internal scroll conflicts with CustomScrollView
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
       itemCount: _products.length,
       itemBuilder: (context, index) => GestureDetector(
@@ -254,26 +276,31 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
     );
   }
 
+  // ✅ CONTACT DETAILS FIXED FOR RESPONSIVE SCROLL
   Widget _buildContactDetails(ThemeData theme, Color textColor, bool isDark) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 25, 20, 30), // Added bottom padding to info list
-      children: [
-        _InfoItem(icon: Icons.alternate_email_rounded, label: "Email Address", value: _profile!.email, color: textColor),
-        _InfoItem(icon: Icons.phone_android_rounded, label: "Mobile Number", value: _profile!.phone, color: textColor),
-        _InfoItem(icon: Icons.business_rounded, label: "Business Location", value: "${_profile!.address}, ${_profile!.place}", color: textColor),
-        _InfoItem(icon: Icons.local_post_office_rounded, label: "Post Office", value: _profile!.post, color: textColor),
-        _InfoItem(icon: Icons.pin_drop_rounded, label: "Pincode", value: _profile!.pincode, color: textColor),
-        const SizedBox(height: 25),
-        ElevatedButton.icon(
-          onPressed: _launchMaps,
-          icon: const Icon(Icons.map_rounded, color: Colors.white),
-          label: const Text("Open Location in Maps", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-        ),
-      ],
+    return SingleChildScrollView(
+      physics: const NeverScrollableScrollPhysics(), // Handled by outer sliver
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+      child: Column(
+        children: [
+          _InfoItem(icon: Icons.alternate_email_rounded, label: "Email Address", value: _profile!.email, color: textColor),
+          _InfoItem(icon: Icons.phone_android_rounded, label: "Mobile Number", value: _profile!.phone, color: textColor),
+          _InfoItem(icon: Icons.business_rounded, label: "Business Location", value: "${_profile!.address}, ${_profile!.place}", color: textColor),
+          _InfoItem(icon: Icons.local_post_office_rounded, label: "Post Office", value: _profile!.post, color: textColor),
+          _InfoItem(icon: Icons.pin_drop_rounded, label: "Pincode", value: _profile!.pincode, color: textColor),
+          const SizedBox(height: 25),
+          ElevatedButton.icon(
+            onPressed: _launchMaps,
+            icon: const Icon(Icons.map_rounded, color: Colors.white),
+            label: const Text("Open Location in Maps", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          ),
+        ],
+      ),
     );
   }
 
+  // ... (Dialog and details sheet functions remain unchanged)
   void _showProofDialog(String url, ThemeData theme) {
     showDialog(context: context, builder: (_) => Dialog(child: InteractiveViewer(child: Image.network(url, errorBuilder: (c,e,s) => const Center(child: Text("No proof found"))))));
   }
@@ -294,7 +321,6 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
             const SizedBox(height: 15),
             Text(product.description, style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 25),
-
             Row(
               children: [
                 Expanded(
@@ -310,11 +336,9 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => Navigator.pop(context),
                     style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Colors.red)),
-                    child: const Text("Delete Product"),
+                    child: const Text("Delete"),
                   ),
                 ),
               ],
@@ -371,6 +395,7 @@ class _InfoItem extends StatelessWidget {
   }
 }
 
+// Models
 class DistributorProfileModel {
   final String id, name, email, phone, profile_image, bio, address, place, pincode, post, latitude, longitude, proof;
   DistributorProfileModel(this.id, this.name, this.email, this.phone, this.profile_image, this.bio, this.address, this.place, this.pincode, this.post, this.latitude, this.longitude, this.proof);
