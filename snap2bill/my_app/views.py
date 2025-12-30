@@ -1497,8 +1497,8 @@ def view_orders(request):
 
 
 def view_orders_items(request):
-    # 1. Get the Order ID (passed as cid from Flutter)
-    order_id = request.POST.get('cid')
+    # 1. Get the Order ID (passed as oid from Flutter)
+    order_id = request.POST.get('oid')
 
     # 2. Fetch the specific items for this order
     items_data = order_sub.objects.filter(ORDER=order_id)

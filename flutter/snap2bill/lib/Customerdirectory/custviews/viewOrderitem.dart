@@ -43,7 +43,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     serverIp = sp.getString("ip") ?? "";
     String orderId = sp.getString("id") ?? "";
-    final res = await http.post(Uri.parse("$serverIp/view_orders_items"), body: {'cid': orderId});
+    final res = await http.post(Uri.parse("$serverIp/view_orders_items"), body: {'oid': orderId});
     return json.decode(res.body);
   }
 
