@@ -1497,10 +1497,7 @@ def view_orders(request):
 
 
 def view_orders_items(request):
-    # 1. Get the Order ID (passed as oid from Flutter)
     order_id = request.POST.get('oid')
-
-    # 2. Fetch the specific items for this order
     items_data = order_sub.objects.filter(ORDER=order_id)
 
     ar = []
@@ -1515,13 +1512,9 @@ def view_orders_items(request):
             'description': i.STOCK.PRODUCT.description,
         })
 
-    # 3. FIX: Identify the distributor linked to this specific order
-    # We get the distributor from the parent Order object
     try:
         parent_order = order.objects.get(id=order_id)
         distributor_id = parent_order.DISTRIBUTOR_id
-
-        # 4. Filter stock to ONLY show products from this specific distributor
         stock_data = stock.objects.filter(DISTRIBUTOR_id=distributor_id)
     except order.DoesNotExist:
         stock_data = []
@@ -1548,8 +1541,10 @@ def view_orders_items(request):
         'data': ar,
         'data2': ar2
     })
+
+
 def edit_order(request):
-    id=request.POST['id']
+    id = request.POST['id']
     quantity=request.POST['quantity']
     order_sub.objects.filter(id=id).update(quantity=quantity)
     return JsonResponse({"status":"ok"})

@@ -59,7 +59,7 @@ body::-webkit-scrollbar {
 
 
     --white-color: rgb(241, 241, 241);
-    --pill-border: rgb(50, 76, 255);
+    --pill-border: rgba(50, 77, 255, 0.52);
     --pill-text: rgb(70, 71, 255);
     --pill-bg:rgba(21,101,192,.1);
     --pill-hover-color: rgba(35, 25, 206, 0.25);
