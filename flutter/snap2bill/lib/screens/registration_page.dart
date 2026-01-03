@@ -173,7 +173,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       request.fields.addAll({
         'name': name.text.trim(),
         'email': email.text.trim(),
-        'phone': "+91${phone.text.trim()}",
+        'phone': phone.text.trim(),
         'password': password.text.trim(),
         'confirmpassword': confirmpassword.text.trim(),
         'address': address.text.trim(),

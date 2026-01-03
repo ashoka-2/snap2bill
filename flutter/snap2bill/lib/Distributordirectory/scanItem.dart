@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Distributordirectory/distributorsends/addToBill.dart';
+import 'dart:convert';
+
+import '../Distributordirectory/search_page.dart';
 
 class Cameracapturemain extends StatelessWidget {
   const Cameracapturemain({Key? key}) : super(key: key);
@@ -56,10 +60,28 @@ class _CameraCaptureState extends State<CameraCapture> {
     request.fields['uid'] = sh.getString("uid").toString();
     var response = await request.send();
 
-    if (response.statusCode == 200) {
-    print('Image uploaded successfully!');
+    var responseString = await response.stream.bytesToString();
+    var decoded = json.decode(responseString);
+
+    if (decoded['status'] == 'ok') {
+      SharedPreferences sh = await SharedPreferences.getInstance();
+      sh.setString("stock_id", decoded['stock_id'].toString());
+      sh.setString("pname", decoded['product_name']);
+      var pname= decoded['product_name'];
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Showing product details for " + pname),
+        ),
+      );
+      print("item Scanned and sent");
+      Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
     } else {
-    print('Error uploading image: ${response.statusCode}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Cant recognise product",style: TextStyle(backgroundColor: Colors.red,color: Colors.black),),
+        ),
+      );
     }
   }
 

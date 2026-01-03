@@ -11,6 +11,8 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
+from difflib import get_close_matches
+import cv2
 
 
 
@@ -19,7 +21,9 @@ from PIL import Image
 import io
 
 
-
+def get_new_filename():
+    dt=datetime.now().strftime("%Y%m%d_%H%M%S")+".jpg"
+    return dt
 
 #   admin@gmail.com     superuser
 
@@ -897,14 +901,16 @@ def add_product(request):
 def add_product_post(request):
     product_name = request.POST['product_name']
     img = request.FILES['image']
+    fname=get_new_filename()
+    fullpath=r"D:\snap2bill\snap2bill\media\\"+fname
     fs=FileSystemStorage()
-    image=fs.save(img.name,img)
+    image=fs.save(fullpath,img)
     # price = request.POST['price']
     quantity = request.POST['quantity']
     description = request.POST['description']
     category = request.POST['category']
     # obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
-    obj = product(product_name=product_name,image=fs.url(image),quantity=quantity,description=description,CATEGORY_id=category)
+    obj = product(product_name=product_name,image="/media/"+fname,quantity=quantity,description=description,CATEGORY_id=category)
     obj.save()
     # messages.success(request, f"Category '{category_name}' added successfully!")
     return redirect('/view_product')
@@ -1658,8 +1664,10 @@ def make_payment(request):
     obj.save()
     return JsonResponse({'status':'ok',})
 
-from difflib import get_close_matches
-import cv2
+
+
+
+
 
 def compare_images(img1_path, img2_path):
     img1 = cv2.imread(img1_path)
@@ -1703,11 +1711,14 @@ def scanItem(request):
     if 'image' not in request.FILES:
         return JsonResponse({'status': 'error', 'message': 'Image missing'})
 
+    fname=get_new_filename()
+    full_path=r"D:\snap2bill\snap2bill\media\\" + fname
     image_file = request.FILES['image']
     fs = FileSystemStorage()
-    saved_name = fs.save(image_file.name, image_file)
+    saved_name = fs.save(full_path, image_file)
 
-    scanned_image_path = os.path.normpath(fs.path(saved_name))
+    # scanned_image_path = os.path.normpath(fs.path(saved_name))
+    scanned_image_path = full_path
     print("Scanned image:", scanned_image_path)
 
     # =========================
@@ -1739,7 +1750,9 @@ def scanItem(request):
     # =========================
     # 4. Threshold + response
     # =========================
-    if matched_stock and best_score >= 0.7:
+    print("Best match\n***************")
+    print(best_score, matched_stock)
+    if matched_stock and best_score >= 0.6:
         return JsonResponse({
             'status': 'ok',
             'stock_id': matched_stock.id,
