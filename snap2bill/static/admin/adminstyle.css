@@ -10,7 +10,6 @@
     padding: 0;
     box-sizing: border-box;
     font-family: magic, sans-serif;
-    font-weight: 600;
 }
 
 
@@ -41,21 +40,23 @@ body::-webkit-scrollbar {
     --surface:#ffffff;
     --bg-body: #f4f7fe;
     --line:#e5e7eb;
-    --radius:.8rem;
     --shadow:0 0 2rem rgba(224, 223, 214, 0.69);
     --gap: clamp(2rem, 2.5vw, 3rem);
 
 
-    --danger: #8d0813;
-    --danger-bg:#fff1f0;
-    --danger-border:#f7c3c0;
+    --danger: #c60001;
+    --danger-bg: rgba(255, 0, 2, 0.29);
+    --danger-border: rgba(255, 0, 9, 0.58);
 
 
 
     --success: #009d40;
-    --success-bg: #e1ffd4;
+    --success-bg: rgba(4, 255, 10, 0.28);
     --success-border: #b7f7b2;
 
+     --edit: #002eff;
+    --edit-bg: rgba(0, 33, 255, 0.2);
+    --edit-border: #0037f7;
 
 
 
@@ -69,7 +70,8 @@ body::-webkit-scrollbar {
     --active-color: rgba(131, 134, 134, 0.47);
 
 
-
+    --radius:5px;
+    --radius-xs:10px;
     --radius-sm:15px;
     --radius-md:20px;
     --radius-lg:30px;
@@ -144,9 +146,9 @@ body::-webkit-scrollbar {
     --line:rgba(255,255,255,0.15);
     --shadow:0 0 1rem rgba(0,0,0,0.4);
 
-       --pill-border: rgb(50, 76, 255);
-    --pill-text: rgb(70, 71, 255);
-    --pill-bg:rgba(21,101,192,.1);
+       --pill-border: rgb(113, 55, 255);
+    --pill-text: rgb(136, 82, 255);
+    --pill-bg: rgba(134, 58, 192, 0.1);
 
     --icon-color: rgb(255, 255, 255);
     --border-color: rgb(189, 189, 189);
@@ -288,9 +290,9 @@ display: flex;
 
 .active{
     background-color: var(--active-color);
-    /*border-radius:var(--radius-sm);*/
+    border-radius:var(--radius-sm);
     transition: all ease-in-out 1ms;
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color) !important;
 }
 
 

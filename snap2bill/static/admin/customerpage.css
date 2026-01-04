@@ -92,19 +92,26 @@
 
 .card{
   /*flex: 1 1 270px;   !* 👈 magic line *!*/
-  /*max-width: 360px; !* optional control *!*/
-
+    /*width: fit-content;*/
+  /*max-width: 350px; !* optional control *!*/
   box-sizing: border-box;
   background: var(--surface);
   border: 1px solid var(--text-soft);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
-  padding: var(--padding-lg);
+  padding: var(--padding-sm);
 
   display: flex;
   flex-direction: column;
   gap: var(--gutter-md);
-    transition:100ms all ease;
+    transition:300ms all ease;
+     overflow: auto;          /* scrolling allowed */
+  scrollbar-width: none;   /* Firefox */
+  -ms-overflow-style: none;
+}
+
+.card::-webkit-scrollbar {
+  display: none;           /* Chrome, Safari */
 }
 
   .card:hover{
@@ -168,7 +175,7 @@
 
 
   .pill{
-          /*width: fit-content;*/
+          width:fit-content;
     display:inline-flex;
       align-items:center;
       gap:var(--gutter-xs);
@@ -177,9 +184,7 @@
     background:var(--pill-bg);
       color:var(--pill-text);
     border: 1px solid var(--pill-border);
-      font-weight:700;
-            width: fit-content;
-
+    font-size: var(--font-sm);
   }
   /*.pill i{*/
       /*color: var(--icon-color);*/
@@ -188,8 +193,7 @@
 
 
  .details{
-           width: fit-content;
-
+     width: fit-content;
      display:grid;
     gap:var(--gutter-xs);
     margin-top:var(--margin-xxs);
@@ -197,14 +201,14 @@
     color: var(--text-soft);
 }
 .details strong{
-          width: fit-content;
-
     color:var(--text-main);
 }
 
 
+.details p:nth-child(2){
+    width: 250px;
 
-
+}
 
 
 
