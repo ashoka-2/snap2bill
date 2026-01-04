@@ -1,11 +1,4 @@
 
-.admin-right-main-content {
-    margin-left: 17rem;
-    width: calc(100% - 17rem);
-    min-height: 100vh;
-    padding: 2rem;
-    background: var(--bg-body);
-}
 
 /* Header Area */
 .dashboard-header {
@@ -418,7 +411,6 @@
     outline: none;
     transition: border 0.3s ease;
     width: 100%;
-    font-family: inherit;
 }
 
 .form-group input:focus,

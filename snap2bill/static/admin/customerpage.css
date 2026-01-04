@@ -14,7 +14,6 @@
 
 
   #heading-name{
-    font-family: bayon;
     text-transform: uppercase;
       font-size:clamp(var(--font-sm),var(--size-xl),var(--font-xl));
       font-weight:700;
@@ -92,8 +91,8 @@
 }
 
 .card{
-  flex: 1 1 270px;   /* 👈 magic line */
-  max-width: 340px; /* optional control */
+  /*flex: 1 1 270px;   !* 👈 magic line *!*/
+  /*max-width: 360px; !* optional control *!*/
 
   box-sizing: border-box;
   background: var(--surface);
@@ -114,6 +113,7 @@
 
 
   .card-head{
+      width: fit-content;
       display:grid;
       grid-template-columns:auto 1fr;
       gap:var(--gutter-md);
@@ -143,12 +143,16 @@
   .primary-info{
       display:grid;
       gap:var(--gutter-xs);
+            width: fit-content;
+
   }
   .name{
       font-size:var(--font-sm);
       font-weight:800;
       color:var(--text-main);
       line-height:1.2;
+            width: fit-content;
+
   }
 
   .contact-line{
@@ -158,6 +162,8 @@
       align-items:center;
       color:var(--text-soft);
       font-size:var(--font-sm);
+            width: fit-content;
+
   }
 
 
@@ -172,6 +178,8 @@
       color:var(--pill-text);
     border: 1px solid var(--pill-border);
       font-weight:700;
+            width: fit-content;
+
   }
   /*.pill i{*/
       /*color: var(--icon-color);*/
@@ -180,6 +188,8 @@
 
 
  .details{
+           width: fit-content;
+
      display:grid;
     gap:var(--gutter-xs);
     margin-top:var(--margin-xxs);
@@ -187,6 +197,8 @@
     color: var(--text-soft);
 }
 .details strong{
+          width: fit-content;
+
     color:var(--text-main);
 }
 

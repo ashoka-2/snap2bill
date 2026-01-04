@@ -1,11 +1,4 @@
-/*@font-face {*/
-    /*font-family: magic;*/
-  /*src: url('/static/fonts/SamsungOne-400.woff2');*/
-/*}*/
-/*@font-face {*/
-    /*font-family: bayon;*/
-  /*src: url('/static/fonts/Bayon.ttf');*/
-/*}*/
+
 @font-face {
     font-family: magic;
   src: url('/static/fonts/NeueMachina-Regular.ttf');
@@ -26,6 +19,9 @@ html, body {
   min-height: 100%;
 }
 
+i{
+    font-size: var(--font-md) !important;
+}
 
 body::-webkit-scrollbar {
   display: none;
@@ -36,6 +32,7 @@ body::-webkit-scrollbar {
     --image-size:5rem;
 
     --modal-color:#02061780;
+    --popup-bg-color:black;
     --black-color:black;
     --primary: #0d0bc0;
     --accent: #3c71e9;
@@ -98,8 +95,8 @@ body::-webkit-scrollbar {
     --size-2xl:2.5vw;
 
     --font-xs:0.5rem;
-    --font-sm:1rem;
-    --font-md:1.2rem;
+    --font-sm:0.9rem;
+    --font-md:1rem;
     --font-lg:1.5rem;
     --font-xl:2rem;
     --font-2xl:2.5rem;
@@ -140,7 +137,7 @@ body::-webkit-scrollbar {
   [data-theme="dark"] {
     --primary:#4f9eff;
     --accent:#64b5f6;
-    --text-main: #ffffff;
+    --text-main: rgba(255, 255, 255, 0.85);
     --text-soft:#9ca3af;
     --surface:#000000;
       --bg-body: #000000;
@@ -151,9 +148,10 @@ body::-webkit-scrollbar {
     --pill-text: rgb(70, 71, 255);
     --pill-bg:rgba(21,101,192,.1);
 
-    --icon-color: rgb(242, 255, 244);
+    --icon-color: rgb(255, 255, 255);
     --border-color: rgb(189, 189, 189);
     --active-color: rgba(131, 134, 134, 0.47);
+      --popup-bg-color:white;
 
   }
 

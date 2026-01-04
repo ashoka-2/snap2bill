@@ -88,7 +88,7 @@
 
   .btn-primary:hover{
       transform:translateY(-.1rem);
-      box-shadow:0 1.4rem 2.2rem rgba(21,101,192,.22);
+      box-shadow:var(--shadow);
   }
 
   .btn-ghost{
@@ -177,7 +177,7 @@
       flex-wrap:wrap;
       margin-top:var(--margin-sm);
       padding-top:var(--padding-sm);
-      border-top:.0625rem solid var(--border-color);
+      border-top:1px solid var(--border-color);
   }
 
   .help{
@@ -209,14 +209,14 @@
       background:var(--surface);
       color:var(--text-main);
       text-align:left;
-      padding:1rem 1.2rem;
+      padding:var(--padding-sm) var(--padding-lg);
       font-weight:800;
       border-bottom:1px solid var(--line);
   }
   .cat-table tbody td{
-      padding:1rem 1.2rem;
+      padding:var(--padding-sm) var(--padding-lg);
       color:var(--text-main);
-      border-bottom:.0625rem solid var(--line);
+      border-bottom:1px solid var(--line);
   }
 
   .cat-table tbody tr:hover{
@@ -235,7 +235,7 @@
       font-size:var(--font-sm);
       text-decoration:none;
       user-select:none;
-      border:.0625rem solid var(--line);
+      border:1pxsolid var(--line);
       transition:background .2s, transform .15s, border-color .2s, color .2s;
   }
 
@@ -275,17 +275,17 @@
   .modal-backdrop{
     position:fixed;
       inset:0;
-      background:rgba(2,6,23,.45);
+      background:var(--modal-color);
     display:none;
       place-items:center;
       z-index:9998;
   }
   .modal{
-    width:min(92vw, 32rem);
-      background:var(--text-main);
+    /*width:min(92vw, 32rem);*/
+      background:var(--popup-bg-color);
     border-radius:1rem;
-      box-shadow:0 2rem 4rem rgba(0,0,0,.25);
-    padding:1.25rem 1.25rem 1rem;
+      box-shadow:var(--shadow);
+    padding:var(--padding-sm) var(--padding-lg);
       transform:translateY(1rem);
       opacity:0;
     transition:opacity .2s ease, transform .2s ease;
