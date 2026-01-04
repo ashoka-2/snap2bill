@@ -46,10 +46,10 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
   void initState() {
     super.initState();
     _selectedIndex = widget.initialIndex.clamp(0, 4);
-    _pages = const [
+    _pages =  [
       Home_page(),
       search_page(),
-      Cameracapturemain(),
+      CameraCapture(),
       customer_page(),
       distributor_profile_page(),
     ];
