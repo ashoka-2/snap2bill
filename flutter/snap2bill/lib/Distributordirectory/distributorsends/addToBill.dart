@@ -1,63 +1,9 @@
-// import 'package:flutter/material.dart';
-//
-//
-// class addToBill extends StatefulWidget {
-//   const addToBill({Key? key}) : super(key: key);
-//
-//   @override
-//   State<addToBill> createState() => _addToBillState();
-// }
-//
-// class _addToBillState extends State<addToBill> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//
-//
-//       body: Container(
-//         height: double.infinity,
-//         width: double.infinity,
-//         padding: EdgeInsets.all(8.0),
-//         decoration: BoxDecoration(
-//           // color: Colors.red,
-//         ),
-//
-//         child: Center(
-//
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//
-//             Text("product Name"),
-//               SizedBox(height: 10,),
-//
-//               TextFormField(
-//
-//                 decoration:InputDecoration(
-//                     labelText: "Enter Price",
-//                     border: OutlineInputBorder()
-//                 ) ,),
-//               SizedBox(height: 10,),
-//               TextFormField(
-//
-//                 decoration:InputDecoration(
-//                     labelText: "Enter quantity",
-//                     border: OutlineInputBorder()
-//                 ) ,),
-//           ],),
-//         ),
-//       ),
-//
-//     );
-//   }
-// }
-
-
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Distributordirectory/scanItem.dart';
 import 'dart:convert';
 
 // Assuming these exist in your project as per your provided style
@@ -73,6 +19,7 @@ class addToBill extends StatefulWidget {
 class _addToBillState extends State<addToBill> {
   final quantityController = TextEditingController(text: "1");
   final priceController = TextEditingController();
+  String ip = "";
 
   String productName = "Loading...";
   String productImage = "";
@@ -90,7 +37,7 @@ class _addToBillState extends State<addToBill> {
     try {
       SharedPreferences sh = await SharedPreferences.getInstance();
       String ip = sh.getString("ip") ?? "";
-      String sid = sh.getString("stock_id") ?? "";
+      String sid = sh.getString("sid") ?? "";
 
       var response = await http.post(Uri.parse("$ip/get_product_details"), body: {
         'pid': sid,
@@ -124,13 +71,33 @@ class _addToBillState extends State<addToBill> {
     setState(() => _isSubmitting = true);
 
     // Simulate a brief delay or call your specific billing API here
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 100));
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Item added to bill")),
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   const SnackBar(content: Text("Item added to bill")),
+    // );
+
+    SharedPreferences sh = await SharedPreferences.getInstance();
+    String ip = sh.getString("ip") ?? "";
+
+    final response = await http.post(
+      Uri.parse("$ip/addtobill"),
+      body: {
+        "quantity": quantityController.text,
+        "price": priceController.text,
+        'cid': sh.getString("cid"),
+        'sid': sh.getString("sid"),
+        'uid': sh.getString("uid"),
+      },
     );
 
-    Navigator.pop(context);
+
+    if (json.decode(response.body)['status'] == 'ok') {
+      sh.setString("oid", json.decode(response.body)['oid'].toString());
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CameraCapture()));
+    }
+
+
   }
 
   @override

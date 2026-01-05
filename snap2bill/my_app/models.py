@@ -103,11 +103,12 @@ class order(models.Model):
     amount = models.CharField(max_length=100)
     USER = models.ForeignKey(customer,models.CASCADE)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
-    # order_type = models.CharField(max_length=100, default='online')
+    order_type = models.CharField(max_length=100, default='online')
 
 class order_sub(models.Model):
     ORDER= models.ForeignKey(order,models.CASCADE)
-    quantity= models.CharField(max_length=100)
+    quantity= models.IntegerField(max_length=100)
+    price= models.CharField(max_length=100)
     STOCK = models.ForeignKey(stock,models.CASCADE)
 
 

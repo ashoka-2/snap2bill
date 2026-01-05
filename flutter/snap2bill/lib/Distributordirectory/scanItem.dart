@@ -65,7 +65,7 @@
 //
 //     if (decoded['status'] == 'ok') {
 //       SharedPreferences sh = await SharedPreferences.getInstance();
-//       sh.setString("stock_id", decoded['stock_id'].toString());
+//       sh.setString("sid", decoded['sid'].toString());
 //       sh.setString("pname", decoded['product_name']);
 //       var pname= decoded['product_name'];
 //
@@ -127,6 +127,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/addToBill.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:snap2bill/Distributordirectory/view/viewBillItems.dart';
 
 // Import your custom widgets
 import '../../widgets/app_button.dart';
@@ -186,10 +187,10 @@ class _CameraCaptureState extends State<CameraCapture> {
       var decoded = json.decode(responseString);
 
       if (decoded['status'] == 'ok') {
-        sh.setString("stock_id", decoded['stock_id'].toString());
+        sh.setString("sid", decoded['sid'].toString());
         sh.setString("pname", decoded['product_name']);
 
-        Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -318,6 +319,17 @@ class _CameraCaptureState extends State<CameraCapture> {
                   height: 1.5,
                 ),
               ),
+              SizedBox(height: 20,),
+              AppButton(
+                text: "View Bill",
+                onPressed: () async {
+                  SharedPreferences sh = await SharedPreferences.getInstance();
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>viewBillItems()));
+                },
+                color: buttonColor,
+                textColor: buttonTextColor,
+                icon: Icons.receipt,
+              )
             ],
           ),
         ),

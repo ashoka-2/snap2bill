@@ -136,7 +136,10 @@ urlpatterns = [
 
 
 
-    path('scanItem',views.scanItem)
+    path('scanItem',views.scanItem),
+    path('viewAllCustomers',views.viewAllCustomers),
+    path('addtobill',views.addtobill),
+
 ]
 
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

@@ -251,32 +251,23 @@ class _customer_page_subState extends State<customer_page_sub> {
 }
 
 class Joke {
-  final String id;
-  final String name;
-  final String email;
-  final String phone;
-  final String profile_image;
-  final String bio;
-  final String address;
-  final String place;
-  final String pincode;
-  final String post;
-
-  Joke(this.id, this.name, this.email, this.phone, this.profile_image, this.bio, this.address, this.place, this.pincode, this.post);
+  final String id, name, email, phone, profile_image, bio, address, place, pincode, post,oid;
+  Joke(this.id, this.name, this.email, this.phone, this.profile_image, this.bio, this.address, this.place, this.pincode, this.post, this.oid);
 
   factory Joke.fromJson(Map<String, dynamic> json, String ip) {
-    String img = json['profile_image'].toString();
+    String img = json['profile_image']?.toString() ?? "";
     return Joke(
       json['id'].toString(),
-      json['name'] ?? "",
-      json['email'] ?? "",
-      json['phone'] ?? "",
-      img.startsWith("http") ? img : "$ip$img",
-      json['bio'] ?? "",
-      json['address'] ?? "",
-      json['place'] ?? "",
-      json['pincode'] ?? "",
-      json['post'] ?? "",
+      json['name']?.toString() ?? "Unknown",
+      json['email']?.toString() ?? "",
+      json['phone']?.toString() ?? "",
+      img.startsWith("http") ? img : (img.isNotEmpty ? "$ip$img" : ""),
+      json['bio']?.toString() ?? "",
+      json['address']?.toString() ?? "",
+      json['place']?.toString() ?? "",
+      json['pincode']?.toString() ?? "",
+      json['post']?.toString() ?? "",
+      json['oid'].toString(),
     );
   }
 }

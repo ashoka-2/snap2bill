@@ -3,11 +3,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:snap2bill/Distributordirectory/allCustomers.dart';
 
 // Import your distributor pages (adjust paths if needed)
 import '../Distributordirectory/home_page.dart';
 import '../Distributordirectory/search_page.dart';
-import '../Distributordirectory/scanItem.dart';
 import '../Distributordirectory/customer_page.dart';
 import '../Distributordirectory/profile_page.dart';
 
@@ -49,7 +49,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
     _pages =  [
       Home_page(),
       search_page(),
-      CameraCapture(),
+      allCustomers(),
       customer_page(),
       distributor_profile_page(),
     ];
