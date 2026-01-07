@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
 
+import '../../widgets/Navbar.dart';
+
 // Import your send feedback page
 // Make sure this file exists in your project
 
@@ -71,20 +73,13 @@ class _view_feedbackState extends State<view_feedback> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "My Feedbacks",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "My Feedbacks",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
 
       // --- Floating Button to Send Feedback ---

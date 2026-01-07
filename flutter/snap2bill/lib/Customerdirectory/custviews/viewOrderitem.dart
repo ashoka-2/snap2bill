@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../widgets/Navbar.dart';
+
 class ViewOrderItems extends StatefulWidget {
   const ViewOrderItems({Key? key}) : super(key: key);
 
@@ -68,11 +70,13 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: Text("Order Items", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      appBar: ThemeNavbar(title: "Order Items",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: futureData,

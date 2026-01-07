@@ -5,6 +5,7 @@ import 'package:snap2bill/screens/login_page.dart';
 
 // Make sure these point to your actual file locations
 import '../../theme/colors.dart';
+import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
 class changePassword extends StatelessWidget {
@@ -236,21 +237,15 @@ class _changePasswordSubState extends State<changePasswordSub> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Change Password",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Change Password",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(24.0),

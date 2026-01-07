@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 // --- SERVICE IMPORTS ---
 import '../../data/dataModels.dart';
@@ -8,7 +9,7 @@ import '../../data/product_service.dart';
 import 'package:snap2bill/widgets/product_card.dart';
 
 // --- NAVIGATION IMPORTS (Original) ---
-import '../Customersends/addOrder.dart';
+import '../../widgets/Navbar.dart';
 
 class view_product extends StatelessWidget {
   const view_product({Key? key}) : super(key: key);
@@ -50,24 +51,20 @@ class _ViewProductSubState extends State<_ViewProductSub> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "My Wishlist",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          "All Products", // Renamed title for clarity
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
+
         actions: [
           IconButton(
             icon: Icon(Icons.shopping_bag_outlined, color: textColor),
             onPressed: () {
               // Assuming this navigates to the cart/addOrder page
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const viewCart()));
             },
           ),
         ],

@@ -275,6 +275,8 @@ import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
 import 'package:snap2bill/Customerdirectory/payment/RazorpayScreen.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
+import '../../widgets/Navbar.dart';
+
 class viewOrder extends StatefulWidget {
   const viewOrder({Key? key}) : super(key: key);
 
@@ -337,13 +339,14 @@ class _viewOrderState extends State<viewOrder> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: Text("My Orders", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      appBar: ThemeNavbar(title: "My Orders",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: FutureBuilder<List<Joke>>(
+
+      ),      body: FutureBuilder<List<Joke>>(
         future: _ordersFuture,
         builder: (context, snapshot) {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());

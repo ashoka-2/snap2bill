@@ -8,6 +8,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
+import '../../widgets/Navbar.dart';
+
 class viewCart extends StatefulWidget {
   const viewCart({Key? key}) : super(key: key);
 
@@ -89,16 +91,13 @@ class _viewCartState extends State<viewCart> {
 
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
-      appBar: AppBar(
-        title: Text("Shopping Cart",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+      appBar: ThemeNavbar(title: "Shopping Cart",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: isDark ? Colors.white : Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: cartFuture,

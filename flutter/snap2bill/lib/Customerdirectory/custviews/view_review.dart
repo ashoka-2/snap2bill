@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
+import '../../widgets/Navbar.dart';
+
 class view_review extends StatefulWidget {
   const view_review({Key? key}) : super(key: key);
 
@@ -117,20 +119,13 @@ class _view_reviewState extends State<view_review> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Reviews",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Reviews",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
 
       body: FutureBuilder<List<Joke>>(

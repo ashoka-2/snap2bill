@@ -5,6 +5,7 @@ import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 // Make sure these point to your actual file locations
 import '../../theme/colors.dart';
+import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
 class send_feedback extends StatefulWidget {
@@ -89,20 +90,13 @@ class _send_feedbackState extends State<send_feedback> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Send Feedback",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Send Feedback",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: SingleChildScrollView(
         child: Padding(

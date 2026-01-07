@@ -8,7 +8,7 @@ import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/Customerdirectory/profile_page.dart';
 import 'package:snap2bill/Customerdirectory/search_page.dart';
-import '../Customerdirectory/chat_page.dart';
+
 
 /// CustomerNavigationBar
 /// - `initialIndex` lets you open the nav bar with a specific tab selected.
@@ -39,7 +39,6 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
   // Colors for tab backgrounds (keeps your original palette)
   final List<Color> tabColors = [
     Colors.purple,
-    Colors.yellow,
     Colors.blue,
     Colors.green,
     Colors.red,
@@ -48,11 +47,10 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
   @override
   void initState() {
     super.initState();
-    _selectedIndex = widget.initialIndex.clamp(0, 4);
+    _selectedIndex = widget.initialIndex.clamp(0, 3);
     _pages = const [
       CustomerHomePage(),
       search_page(),
-      chat_page(),
       distributor_page(),
       profile_page(),
     ];
@@ -112,7 +110,6 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
                     tabs: const [
                       GButton(icon: LineIcons.home, text: 'Home'),
                       GButton(icon: LineIcons.search, text: 'Search'),
-                      GButton(icon: LineIcons.facebookMessenger, text: 'Chat'),
                       GButton(icon: LineIcons.users, text: 'Distributors'),
                       GButton(icon: LineIcons.user, text: 'Profile'),
                     ],

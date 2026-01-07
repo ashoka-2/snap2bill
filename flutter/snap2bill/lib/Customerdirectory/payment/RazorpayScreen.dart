@@ -258,6 +258,7 @@ import 'package:http/http.dart' as http;
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 // Conditional imports for Web/Mobile Razorpay
+import '../../widgets/Navbar.dart';
 import 'mobile_razorpay_helper.dart'
 if (dart.library.js) 'web_razorpay_helper.dart' as razorpay_helper;
 import 'package:razorpay_flutter/razorpay_flutter.dart' as razorpay_flutter;
@@ -393,18 +394,13 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
     return Scaffold(
       backgroundColor: isDark ? theme.scaffoldBackgroundColor : Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Checkout",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          "Checkout",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: _isProcessing
           ? const Center(child: CircularProgressIndicator())
