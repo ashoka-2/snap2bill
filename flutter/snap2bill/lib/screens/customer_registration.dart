@@ -203,8 +203,8 @@
 // //                     return;
 // //                   }
 // //
-// //                   SharedPreferences sh = await SharedPreferences.getInstance();
-// //                   String? ip = sh.getString('ip');
+// //                   SharedPreferences prefs = await SharedPreferences.getInstance();
+// //                   String? ip = prefs.getString('ip');
 // //
 // //
 // //
@@ -223,7 +223,7 @@
 // //                   request.fields['post'] = post.text;
 // //                   request.fields['bio'] = bio.text;
 // //
-// //                   request.fields['cid'] = sh.getString('cid')?.toString() ?? '';
+// //                   request.fields['cid'] = prefs.getString('cid')?.toString() ?? '';
 // //
 // //
 // //                   if (_selectedFile != null) {
@@ -544,10 +544,10 @@
 // // //
 // // //   // 🚀 Registration function
 // // //   Future<void> _registerUser() async {
-// // //     SharedPreferences sh = await SharedPreferences.getInstance();
+// // //     SharedPreferences prefs = await SharedPreferences.getInstance();
 // // //     try {
 // // //       var data = await http.post(
-// // //         Uri.parse('${sh.getString("ip")}/customer_registration'),
+// // //         Uri.parse('${prefs.getString("ip")}/customer_registration'),
 // // //         body: {
 // // //           'name': name.text,
 // // //           'email': email.text,
@@ -748,8 +748,8 @@
 //     setState(() => _isLoading = true);
 //
 //     try {
-//       SharedPreferences sh = await SharedPreferences.getInstance();
-//       String ip = sh.getString("ip") ?? "http://10.0.2.2:8000";
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       String ip = prefs.getString("ip") ?? "http://10.0.2.2:8000";
 //
 //       var uri = Uri.parse('$ip/customer_registration');
 //       var request = http.MultipartRequest('POST', uri);
@@ -766,7 +766,7 @@
 //       request.fields['post'] = post.text.trim();
 //       request.fields['bio'] = bio.text.trim();
 //       // Using 'cid' as per your customer snippet
-//       request.fields['cid'] = sh.getString('cid')?.toString() ?? '';
+//       request.fields['cid'] = prefs.getString('cid')?.toString() ?? '';
 //
 //       // Add File
 //       if (kIsWeb && _webFileBytes != null) {

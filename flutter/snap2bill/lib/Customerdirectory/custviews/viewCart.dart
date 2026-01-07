@@ -36,9 +36,9 @@ class _viewCartState extends State<viewCart> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchCart() async {
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    _ip = sh.getString("ip") ?? "";
-    String cid = sh.getString('cid') ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _ip = prefs.getString("ip") ?? "";
+    String cid = prefs.getString('cid') ?? "";
 
     final res = await http.post(
         Uri.parse("$_ip/viewCart"),
@@ -180,9 +180,9 @@ class _viewCartState extends State<viewCart> {
                           _calculateLocalTotal();
 
                           // Background Sync with Django
-                          SharedPreferences sh = await SharedPreferences.getInstance();
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
                           await http.post(
-                            Uri.parse(sh.getString("ip").toString() + "/update_quantity"),
+                            Uri.parse(prefs.getString("ip").toString() + "/update_quantity"),
                             body: {
                               "id": item['id'].toString(),
                               "qty": val.toString()
@@ -194,9 +194,9 @@ class _viewCartState extends State<viewCart> {
                       IconButton(
                         icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
                         onPressed: () async {
-                          SharedPreferences sh = await SharedPreferences.getInstance();
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
                           await http.post(
-                            Uri.parse(sh.getString("ip").toString() + "/deleteFromCart"),
+                            Uri.parse(prefs.getString("ip").toString() + "/deleteFromCart"),
                             body: {"id": item['id'].toString()},
                           );
                           // On delete, we refresh the whole future to remove the row
@@ -246,10 +246,10 @@ class _viewCartState extends State<viewCart> {
                 elevation: 0,
               ),
               onPressed: () async {
-                SharedPreferences sh = await SharedPreferences.getInstance();
+                SharedPreferences prefs = await SharedPreferences.getInstance();
                 await http.post(
-                  Uri.parse(sh.getString("ip").toString() + "/addFinalOrder"),
-                  body: {'cid': sh.getString("cid"), 'total': totalValue},
+                  Uri.parse(prefs.getString("ip").toString() + "/addFinalOrder"),
+                  body: {'cid': prefs.getString("cid"), 'total': totalValue},
                 );
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
               },

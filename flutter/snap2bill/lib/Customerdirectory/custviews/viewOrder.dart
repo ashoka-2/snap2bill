@@ -206,9 +206,9 @@
 //                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
 //                       ),
 //                       onPressed: () async {
-//                         SharedPreferences sh = await SharedPreferences.getInstance();
-//                         sh.setString("amount", item.amount);
-//                         sh.setString("id", item.id);
+//                         SharedPreferences prefs = await SharedPreferences.getInstance();
+//                         prefs.setString("amount", item.amount);
+//                         prefs.setString("id", item.id);
 //                         Navigator.push(context, MaterialPageRoute(builder: (_) => RazorpayScreen()));
 //                       },
 //                       child: const Text("Pay Now", style: TextStyle(color: Colors.white)),
@@ -220,8 +220,8 @@
 //                 IconButton(
 //                   icon: const Icon(Icons.edit, color: Colors.blue),
 //                   onPressed: () async {
-//                     SharedPreferences sh = await SharedPreferences.getInstance();
-//                     sh.setString("id", item.id);
+//                     SharedPreferences prefs = await SharedPreferences.getInstance();
+//                     prefs.setString("id", item.id);
 //                     Navigator.push(context, MaterialPageRoute(builder: (_) => ViewOrderItems()));
 //                   },
 //                 ),
@@ -234,9 +234,9 @@
 //                   child: IconButton(
 //                     icon: const Icon(Icons.delete_outline, color: Colors.red),
 //                     onPressed: () async {
-//                       SharedPreferences sh = await SharedPreferences.getInstance();
+//                       SharedPreferences prefs = await SharedPreferences.getInstance();
 //                       await http.post(
-//                         Uri.parse("${sh.getString("ip")}/delete_order"),
+//                         Uri.parse("${prefs.getString("ip")}/delete_order"),
 //                         body: {"id": item.id},
 //                       );
 //                       // Timer will naturally pick up the change in 1 second
@@ -366,9 +366,9 @@ class _viewOrderState extends State<viewOrder> {
 
     return GestureDetector(
       onTap: () async {
-        SharedPreferences sh = await SharedPreferences.getInstance();
-        sh.setString("id", item.id);
-        sh.setString("order_payment_status", item.payment_status);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("id", item.id);
+        prefs.setString("order_payment_status", item.payment_status);
         Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewOrderItems()));
       },
       child: Card(
@@ -409,9 +409,9 @@ class _viewOrderState extends State<viewOrder> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                         ),
                         onPressed: () async {
-                          SharedPreferences sh = await SharedPreferences.getInstance();
-                          sh.setString("amount", item.amount);
-                          sh.setString("id", item.id);
+                          SharedPreferences prefs = await SharedPreferences.getInstance();
+                          prefs.setString("amount", item.amount);
+                          prefs.setString("id", item.id);
                           Navigator.push(context, MaterialPageRoute(builder: (_) => RazorpayScreen()));
                         },
                         child: const Text("Pay Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -423,9 +423,9 @@ class _viewOrderState extends State<viewOrder> {
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
                       onPressed: () async {
-                        SharedPreferences sh = await SharedPreferences.getInstance();
-                        sh.setString("id", item.id);
-                        sh.setString("order_payment_status", item.payment_status);
+                        SharedPreferences prefs = await SharedPreferences.getInstance();
+                        prefs.setString("id", item.id);
+                        prefs.setString("order_payment_status", item.payment_status);
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewOrderItems()));
                       },
                       child: Text(isCompleted ? "View Items" : "Edit Order"),
@@ -458,8 +458,8 @@ class _viewOrderState extends State<viewOrder> {
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(
             onPressed: () async {
-              SharedPreferences sh = await SharedPreferences.getInstance();
-              await http.post(Uri.parse("${sh.getString("ip")}/delete_order"), body: {"id": orderId});
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+              await http.post(Uri.parse("${prefs.getString("ip")}/delete_order"), body: {"id": orderId});
               Navigator.pop(context);
             },
             child: const Text("Delete", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),

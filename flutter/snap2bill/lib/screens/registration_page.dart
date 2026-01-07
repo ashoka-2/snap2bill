@@ -164,8 +164,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip = sh.getString("ip") ?? "http://10.0.2.2:8000";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "http://10.0.2.2:8000";
       String endpoint = widget.isDistributor ? '/distributor_registration' : '/customer_registration';
 
       var request = http.MultipartRequest('POST', Uri.parse('$ip$endpoint'));
@@ -251,7 +251,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Column(children: [
         Row(children: [
           IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => _currentPage > 0 ? _prevPage() : Navigator.pop(context)),
-          Expanded(child: Center(child: Text(widget.isDistributor ? "Distributor Register" : "Customer Register", style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)))),
+          Expanded(child: Center(child: Text(widget.isDistributor ? "Distributor Register" : "Customer Register",maxLines: 1, style: TextStyle(fontSize: 20,fontWeight: FontWeight.w900)))),
           const SizedBox(width: 40),
         ]),
         const SizedBox(height: 15),

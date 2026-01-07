@@ -7,6 +7,7 @@ import 'package:snap2bill/Distributordirectory/scanItem.dart';
 import 'dart:convert';
 
 // Assuming these exist in your project as per your provided style
+import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
 class addToBill extends StatefulWidget {
@@ -35,9 +36,9 @@ class _addToBillState extends State<addToBill> {
   // --- Fetch Product Details using your existing View logic ---
   Future<void> fetchFullDetails() async {
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip = sh.getString("ip") ?? "";
-      String sid = sh.getString("sid") ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "";
+      String sid = prefs.getString("sid") ?? "";
 
       var response = await http.post(Uri.parse("$ip/get_product_details"), body: {
         'pid': sid,
@@ -77,23 +78,23 @@ class _addToBillState extends State<addToBill> {
     //   const SnackBar(content: Text("Item added to bill")),
     // );
 
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    String ip = sh.getString("ip") ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ip = prefs.getString("ip") ?? "";
 
     final response = await http.post(
       Uri.parse("$ip/addtobill"),
       body: {
         "quantity": quantityController.text,
         "price": priceController.text,
-        'cid': sh.getString("cid"),
-        'sid': sh.getString("sid"),
-        'uid': sh.getString("uid"),
+        'cid': prefs.getString("cid"),
+        'sid': prefs.getString("sid"),
+        'uid': prefs.getString("uid"),
       },
     );
 
 
     if (json.decode(response.body)['status'] == 'ok') {
-      sh.setString("oid", json.decode(response.body)['oid'].toString());
+      prefs.setString("oid", json.decode(response.body)['oid'].toString());
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>CameraCapture()));
     }
 
@@ -117,20 +118,14 @@ class _addToBillState extends State<addToBill> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Confirm Item",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          "Confirm Item",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
-      ),
-      body: _isLoading
+
+      ),       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Padding(

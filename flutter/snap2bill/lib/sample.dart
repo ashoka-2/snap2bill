@@ -314,14 +314,14 @@
 // // //         // =====================================================
 // // //         var request =   await http.MultipartRequest(
 // // //             'POST',
-// // //             Uri.parse('${sh.getString('ip')}/aadd_missing_item')
+// // //             Uri.parse('${prefs.getString('ip')}/aadd_missing_item')
 // // //         );
 // // //
 // // //         // 🔹 Normal Form Data
 // // //         request.fields['item'] = item_name.text;
 // // //         request.fields['des'] = description.text;
 // // //         request.fields['loc'] = location.text;
-// // //         request.fields['uid'] = sh.getString('uid').toString();
+// // //         request.fields['uid'] = prefs.getString('uid').toString();
 // // //
 // // //         // 🔹 File Upload Part
 // // //         if (kIsWeb) {
@@ -376,9 +376,9 @@
 // //   // ================================
 // //   Future<void> loadPanchayath() async {
 // //     try {
-// //       SharedPreferences sh = await SharedPreferences.getInstance();
+// //       SharedPreferences prefs = await SharedPreferences.getInstance();
 // //       final response = await http.post(
-// //         Uri.parse("${sh.getString('ip')}/loadpanchayath"), // replace with your function
+// //         Uri.parse("${prefs.getString('ip')}/loadpanchayath"), // replace with your function
 // //       );
 // //       var decode = json.decode(response.body);
 // //       decode['data'].forEach((item){
@@ -605,14 +605,14 @@
 //         // =====================================================
 //         var request =   await http.MultipartRequest(
 //             'POST',
-//             Uri.parse('${sh.getString('ip')}/aadd_missing_item')
+//             Uri.parse('${prefs.getString('ip')}/aadd_missing_item')
 //         );
 //
 //         // 🔹 Normal Form Data
 //         request.fields['item'] = item_name.text;
 //         request.fields['des'] = description.text;
 //         request.fields['loc'] = location.text;
-//         request.fields['uid'] = sh.getString('uid').toString();
+//         request.fields['uid'] = prefs.getString('uid').toString();
 //
 //         // 🔹 File Upload Part
 //         if (kIsWeb) {

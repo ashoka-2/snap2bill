@@ -57,9 +57,9 @@ class _forgotpassState extends State<forgotpass> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
-      String? email = sh.getString('email');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString("ip");
+      String? email = prefs.getString('email');
 
       var response = await http.post(
         Uri.parse("$ip/forgotpass"),

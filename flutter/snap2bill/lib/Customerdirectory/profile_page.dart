@@ -366,9 +366,9 @@ class _ProfilePageSubState extends State<ProfilePageSub> {
 
   // API Logic
   Future<List<CustomerProfileModel>> _getData() async {
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    String ip = sh.getString("ip") ?? "";
-    String cid = sh.getString("cid") ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String ip = prefs.getString("ip") ?? "";
+    String cid = prefs.getString("cid") ?? "";
 
     var data = await http.post(
       Uri.parse("$ip/customer_view_profile"),

@@ -63,9 +63,9 @@ class _editOrderState extends State<editOrder> {
               SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () async {
-                  SharedPreferences sh = await SharedPreferences.getInstance();
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
                   var data = await http.post(
-                    Uri.parse(sh.getString("ip").toString() + "/edit_order"),
+                    Uri.parse(prefs.getString("ip").toString() + "/edit_order"),
                     body: {
                       "id":widget.id,
                       "quantity": quantity.text,

@@ -302,8 +302,8 @@
 // //                               return;
 // //                             }
 // //
-// //                             SharedPreferences sh = await SharedPreferences.getInstance();
-// //                             String? ip = sh.getString('ip');
+// //                             SharedPreferences prefs = await SharedPreferences.getInstance();
+// //                             String? ip = prefs.getString('ip');
 // //
 // //
 // //
@@ -324,7 +324,7 @@
 // //                             request.fields['latitude'] = latitude.text;
 // //                             request.fields['longitude'] = longitude.text;
 // //
-// //                             request.fields['uid'] = sh.getString('uid')?.toString() ?? '';
+// //                             request.fields['uid'] = prefs.getString('uid')?.toString() ?? '';
 // //
 // //
 // //                             if (_selectedFile != null) {
@@ -562,9 +562,9 @@
 //     setState(() => _isLoading = true);
 //
 //     try {
-//       SharedPreferences sh = await SharedPreferences.getInstance();
-//       String? ip = sh.getString('ip');
-//       String? uid = sh.getString('uid');
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       String? ip = prefs.getString('ip');
+//       String? uid = prefs.getString('uid');
 //
 //       if(ip == null) { _showError("IP configuration missing"); setState(() => _isLoading = false); return; }
 //

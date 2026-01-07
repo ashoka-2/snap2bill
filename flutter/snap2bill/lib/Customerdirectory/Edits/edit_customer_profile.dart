@@ -280,9 +280,9 @@
 //     setState(() => _isLoading = true);
 //
 //     try {
-//       SharedPreferences sh = await SharedPreferences.getInstance();
-//       final String? ip = sh.getString("ip");
-//       final String? cid = sh.getString("cid");
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       final String? ip = prefs.getString("ip");
+//       final String? cid = prefs.getString("cid");
 //
 //       if (ip == null || cid == null) {
 //         throw Exception("Session expired or IP not found");
@@ -688,9 +688,9 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      final String ip = sh.getString("ip")!;
-      final String cid = sh.getString("cid")!;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String ip = prefs.getString("ip")!;
+      final String cid = prefs.getString("cid")!;
 
       var request = http.MultipartRequest('POST', Uri.parse('$ip/edit_customer_profile'));
       request.fields.addAll({

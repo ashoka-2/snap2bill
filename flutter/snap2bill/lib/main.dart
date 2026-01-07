@@ -46,9 +46,9 @@
 //
 //         SizedBox(height: 8,),
 //         ElevatedButton(onPressed: () async {
-//           SharedPreferences sh = await SharedPreferences.getInstance();
+//           SharedPreferences prefs = await SharedPreferences.getInstance();
 //
-//           sh.setString("ip","http://${ip.text}:8000");
+//           prefs.setString("ip","http://${ip.text}:8000");
 //           Navigator.push(context, MaterialPageRoute(builder: (context)=>login_page()));
 //
 //         }, child: Text('submit')),
@@ -246,9 +246,9 @@ class _MyApp_subState extends State<MyApp_sub> {
                             // icon: Icons.upload,
                             // isTrailingIcon: true,
                             onPressed: () async {
-                              SharedPreferences sh =
+                              SharedPreferences prefs =
                                   await SharedPreferences.getInstance();
-                              sh.setString("ip", "http://${ip.text}:8000");
+                              prefs.setString("ip", "http://${ip.text}:8000");
 
                               if (context.mounted) {
                                 Navigator.pushReplacement(

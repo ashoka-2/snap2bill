@@ -38,10 +38,10 @@ class _send_reviewState extends State<send_review> {
     setState(() => isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString('ip');
-      String? cid = sh.getString('cid');
-      String? uid = sh.getString('uid'); // Distributor ID
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString('ip');
+      String? cid = prefs.getString('cid');
+      String? uid = prefs.getString('uid'); // Distributor ID
 
       if (ip == null) {
         throw Exception("IP address not found in storage");

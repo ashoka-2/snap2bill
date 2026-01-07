@@ -50,11 +50,11 @@ class _ProductCardState extends State<ProductCard> {
     setState(() => _isProcessing = true);
 
     try {
-      final sh = await SharedPreferences.getInstance();
+      final prefs = await SharedPreferences.getInstance();
 
-      final ip = sh.getString("ip") ?? "";
-      final cid = sh.getString("cid") ?? "";
-      final uid = sh.getString("uid") ?? "";
+      final ip = prefs.getString("ip") ?? "";
+      final cid = prefs.getString("cid") ?? "";
+      final uid = prefs.getString("uid") ?? "";
 
       final res = await http.post(
         Uri.parse("$ip/toggle_wishlist"),

@@ -41,8 +41,8 @@
 //
 //   Future<void> _sendImage() async {
 //     if (_image == null) return;
-//     SharedPreferences sh = await SharedPreferences.getInstance();
-//     String ip = sh.getString("ip") ?? "";
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     String ip = prefs.getString("ip") ?? "";
 //
 //     var request = http.MultipartRequest(
 //       'POST',
@@ -57,16 +57,16 @@
 //     ),
 //     );
 //
-//     request.fields['uid'] = sh.getString("uid").toString();
+//     request.fields['uid'] = prefs.getString("uid").toString();
 //     var response = await request.send();
 //
 //     var responseString = await response.stream.bytesToString();
 //     var decoded = json.decode(responseString);
 //
 //     if (decoded['status'] == 'ok') {
-//       SharedPreferences sh = await SharedPreferences.getInstance();
-//       sh.setString("sid", decoded['sid'].toString());
-//       sh.setString("pname", decoded['product_name']);
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       prefs.setString("sid", decoded['sid'].toString());
+//       prefs.setString("pname", decoded['product_name']);
 //       var pname= decoded['product_name'];
 //
 //       ScaffoldMessenger.of(context).showSnackBar(
@@ -131,6 +131,7 @@ import 'package:snap2bill/Distributordirectory/view/viewBillItems.dart';
 
 // Import your custom widgets
 import '../../widgets/app_button.dart';
+import '../widgets/Navbar.dart';
 
 
 
@@ -161,8 +162,8 @@ class _CameraCaptureState extends State<CameraCapture> {
     setState(() => _isScanning = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip = sh.getString("ip") ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "";
 
       var request = http.MultipartRequest('POST', Uri.parse("${ip}/scanItem"));
 
@@ -181,14 +182,14 @@ class _CameraCaptureState extends State<CameraCapture> {
         ));
       }
 
-      request.fields['uid'] = sh.getString("uid").toString();
+      request.fields['uid'] = prefs.getString("uid").toString();
       var response = await request.send();
       var responseString = await response.stream.bytesToString();
       var decoded = json.decode(responseString);
 
       if (decoded['status'] == 'ok') {
-        sh.setString("sid", decoded['sid'].toString());
-        sh.setString("pname", decoded['product_name']);
+        prefs.setString("sid", decoded['sid'].toString());
+        prefs.setString("pname", decoded['product_name']);
 
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
@@ -219,14 +220,13 @@ class _CameraCaptureState extends State<CameraCapture> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar:ThemeNavbar(title: "Scan Product",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        title: Text(
-          'Scan Product',
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -323,7 +323,7 @@ class _CameraCaptureState extends State<CameraCapture> {
               AppButton(
                 text: "View Bill",
                 onPressed: () async {
-                  SharedPreferences sh = await SharedPreferences.getInstance();
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>viewBillItems()));
                 },
                 color: buttonColor,

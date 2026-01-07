@@ -370,8 +370,8 @@
 //     setState(() => _isLoading = true);
 //
 //     try {
-//       SharedPreferences sh = await SharedPreferences.getInstance();
-//       final String? ip = sh.getString("ip");
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       final String? ip = prefs.getString("ip");
 //
 //       Uri uri = Uri.parse('${ip}/edit_distributor_profile');
 //       var request = http.MultipartRequest('POST', uri);
@@ -386,7 +386,7 @@
 //       request.fields['bio'] = bio.text;
 //       request.fields['latitude'] = latitude.text;
 //       request.fields['longitude'] = longitude.text;
-//       request.fields['uid'] = sh.getString("uid").toString();
+//       request.fields['uid'] = prefs.getString("uid").toString();
 //
 //       // File Logic
 //       if (_selectedFile != null) {
@@ -771,14 +771,14 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      final String ip = sh.getString("ip")!;
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String ip = prefs.getString("ip")!;
       var request = http.MultipartRequest('POST', Uri.parse('$ip/edit_distributor_profile'));
 
       request.fields.addAll({
         'name': name.text, 'email': email.text, 'phone': phone.text, 'address': address.text,
         'pincode': pincode.text, 'place': place.text, 'post': post.text, 'bio': bio.text,
-        'latitude': latitude.text, 'longitude': longitude.text, 'uid': sh.getString("uid")!,
+        'latitude': latitude.text, 'longitude': longitude.text, 'uid': prefs.getString("uid")!,
       });
 
       if (_selectedFile != null) {

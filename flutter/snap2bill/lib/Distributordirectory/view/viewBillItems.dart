@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../widgets/Navbar.dart';
+
 class viewBillItems extends StatelessWidget {
   const viewBillItems({Key? key}) : super(key: key);
 
@@ -58,18 +60,13 @@ class _viewBillItemsSubState extends State<viewBillItemsSub> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar:ThemeNavbar(title: "Item Details",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          "Item Details",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: FutureBuilder<List<OrderItem>>(
         future: _getOrderItems(),

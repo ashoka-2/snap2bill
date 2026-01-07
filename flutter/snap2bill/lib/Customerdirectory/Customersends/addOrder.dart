@@ -37,9 +37,9 @@
 //   int get currentQty => int.tryParse(_qtyController.text) ?? 1;
 //
 //   Future<void> _fetchDetails() async {
-//     SharedPreferences sh = await SharedPreferences.getInstance();
-//     _ip = sh.getString("ip") ?? "";
-//     String pid = sh.getString("pid") ?? "";
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     _ip = prefs.getString("ip") ?? "";
+//     String pid = prefs.getString("pid") ?? "";
 //
 //     final response = await http.post(
 //       Uri.parse("$_ip/get_product_details"),
@@ -57,13 +57,13 @@
 //   Future<void> _addToCart() async {
 //     if (currentQty < 1) return;
 //
-//     SharedPreferences sh = await SharedPreferences.getInstance();
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     final response = await http.post(
 //       Uri.parse("$_ip/addorder"),
 //       body: {
 //         "quantity": _qtyController.text,
-//         'cid': sh.getString("cid"),
-//         'pid': sh.getString("pid"),
+//         'cid': prefs.getString("cid"),
+//         'pid': prefs.getString("pid"),
 //       },
 //     );
 //
@@ -295,9 +295,9 @@ class _addOrderState extends State<addOrder> {
   int get currentQty => int.tryParse(_qtyController.text) ?? 1;
 
   Future<void> _fetchDetails() async {
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    _ip = sh.getString("ip") ?? "";
-    String pid = sh.getString("pid") ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _ip = prefs.getString("ip") ?? "";
+    String pid = prefs.getString("pid") ?? "";
 
     final response = await http.post(
       Uri.parse("$_ip/get_product_details"),
@@ -315,13 +315,13 @@ class _addOrderState extends State<addOrder> {
   Future<void> _addToCart() async {
     if (currentQty < 1) return;
 
-    SharedPreferences sh = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
       Uri.parse("$_ip/addorder"),
       body: {
         "quantity": _qtyController.text,
-        'cid': sh.getString("cid"),
-        'pid': sh.getString("pid"),
+        'cid': prefs.getString("cid"),
+        'pid': prefs.getString("pid"),
       },
     );
 

@@ -294,7 +294,9 @@
 //
 import 'package:flutter/material.dart';
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
-import 'package:url_launcher/url_launcher.dart'; // ✅ Import this
+import 'package:url_launcher/url_launcher.dart';
+
+import '../../widgets/Navbar.dart'; // ✅ Import this
 
 class ViewCustomerProfile extends StatelessWidget {
   final Joke customer;
@@ -354,16 +356,13 @@ class ViewCustomerProfile extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text("Customer Profile",
-            style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+      appBar:ThemeNavbar(title: "Customer Profile ",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
+
       ),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),

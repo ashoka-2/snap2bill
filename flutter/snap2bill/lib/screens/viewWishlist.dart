@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
+import '../widgets/Navbar.dart';
 
 class ViewWishlist extends StatefulWidget {
   const ViewWishlist({Key? key}) : super(key: key);
@@ -123,9 +124,13 @@ class _ViewWishlistState extends State<ViewWishlist> {
         _cid != null && _cid!.isNotEmpty && (_uid == null || _uid!.isEmpty);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Wishlist"),
+      appBar: ThemeNavbar(title: "My Wishlist",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
+
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())

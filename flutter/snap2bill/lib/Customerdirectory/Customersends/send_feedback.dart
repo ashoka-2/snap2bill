@@ -31,9 +31,9 @@ class _send_feedbackState extends State<send_feedback> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      var ip = sh.getString("ip") ?? "";
-      var cid = sh.getString("cid") ?? ""; // Using CID for Customer
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      var ip = prefs.getString("ip") ?? "";
+      var cid = prefs.getString("cid") ?? ""; // Using CID for Customer
 
       // Ensure IP is valid
       if (ip.isEmpty) {

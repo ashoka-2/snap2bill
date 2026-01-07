@@ -38,9 +38,9 @@
 //   }
 //
 //   Future<void> loadfee() async {
-//     SharedPreferences sh = await SharedPreferences.getInstance();
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     setState(() {
-//       fee = sh.getString("amount") ?? "0";
+//       fee = prefs.getString("amount") ?? "0";
 //     });
 //   }
 //
@@ -97,13 +97,13 @@
 //   }
 //
 //   Future<void> updatepaymentstatus() async {
-//     SharedPreferences sh = await SharedPreferences.getInstance();
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
 //     await http.post(
-//       Uri.parse("${sh.getString("ip")}/make_payment"),
+//       Uri.parse("${prefs.getString("ip")}/make_payment"),
 //       body: {
-//         "id": sh.getString("id"),
-//         "cid": sh.getString("cid"),
-//         "amount": sh.getString("amount"),
+//         "id": prefs.getString("id"),
+//         "cid": prefs.getString("cid"),
+//         "amount": prefs.getString("amount"),
 //         "mode": _paymentMode,
 //       },
 //     );
@@ -289,9 +289,9 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   }
 
   Future<void> loadfee() async {
-    SharedPreferences sh = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      fee = sh.getString("amount") ?? "0";
+      fee = prefs.getString("amount") ?? "0";
     });
   }
 
@@ -349,16 +349,16 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
   Future<void> updatepaymentstatus() async {
     setState(() => _isProcessing = true);
-    SharedPreferences sh = await SharedPreferences.getInstance();
-    String? ip = sh.getString("ip");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? ip = prefs.getString("ip");
 
     if (ip != null) {
       try {
         await http.post(
           Uri.parse("$ip/make_payment"),
           body: {
-            "id": sh.getString("id") ?? "",
-            "cid": sh.getString("cid") ?? "",
+            "id": prefs.getString("id") ?? "",
+            "cid": prefs.getString("cid") ?? "",
             "amount": fee,
             "mode": _paymentMode,
           },

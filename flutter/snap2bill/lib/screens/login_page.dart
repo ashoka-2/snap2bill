@@ -83,8 +83,8 @@ class _login_pageState extends State<login_page>
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String ip = sh.getString("ip") ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "";
 
       // Check if IP is set
       if (ip.isEmpty) {
@@ -107,9 +107,9 @@ class _login_pageState extends State<login_page>
 
         // --- SUCCESS LOGIC ---
         if (status == 'custok') {
-          await sh.remove("uid");
-          await sh.setString("cid", decoded['cid'].toString());
-          await sh.setString("pwd", password.text); // Note: Saving plain text password is insecure
+          await prefs.remove("uid");
+          await prefs.setString("cid", decoded['cid'].toString());
+          await prefs.setString("pwd", password.text); // Note: Saving plain text password is insecure
 
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
@@ -121,9 +121,9 @@ class _login_pageState extends State<login_page>
             MaterialPageRoute(builder: (context) => CustomerNavigationBar(initialIndex: 0,)),
           );
         } else if (status == 'distok') {
-          await sh.remove("cid");
-          await sh.setString("uid", decoded['uid'].toString());
-          await sh.setString("pwd1", password.text);
+          await prefs.remove("cid");
+          await prefs.setString("uid", decoded['uid'].toString());
+          await prefs.setString("pwd1", password.text);
 
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(

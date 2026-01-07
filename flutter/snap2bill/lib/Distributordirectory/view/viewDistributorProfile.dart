@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../Customerdirectory/Customersends/addOrder.dart';
+import '../../widgets/Navbar.dart';
 
 class ViewDistributorProfile extends StatefulWidget {
   final String distributorId;
@@ -48,9 +49,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
   Future<void> _fetchAllData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
-    SharedPreferences sh = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? cid = sh.getString("cid");
+    String? cid = prefs.getString("cid");
     setState(() {
       _isCustomer = (cid != null && cid.isNotEmpty && cid != "null");
     });
@@ -61,8 +62,8 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
 
   Future<void> _getProfile() async {
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString("ip");
       var response = await http.post(Uri.parse("$ip/distributor_view_profile"), body: {"uid": widget.distributorId});
       var jsonData = json.decode(response.body);
       if (jsonData["data"] != null && jsonData["data"].isNotEmpty) {
@@ -82,8 +83,8 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
 
   Future<void> _getProducts() async {
     try {
-      final sh = await SharedPreferences.getInstance();
-      final base = sh.getString("ip") ?? "";
+      final prefs = await SharedPreferences.getInstance();
+      final base = prefs.getString("ip") ?? "";
       final res = await http.post(Uri.parse("$base/distributor_products"), body: {"uid": widget.distributorId});
       if (res.statusCode == 200) {
         final js = json.decode(res.body);
@@ -130,14 +131,14 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
-        elevation: 0, centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(_profile?.name ?? widget.distributorName, style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+
+      appBar: ThemeNavbar(title:_profile?.name ?? widget.distributorName ,
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
+        centerTitle: true,
+
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -345,9 +346,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    SharedPreferences sh = await SharedPreferences.getInstance();
-                    await sh.setString("pid", product.id);
-                    await sh.setString("uid", widget.distributorId);
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    await prefs.setString("pid", product.id);
+                    await prefs.setString("uid", widget.distributorId);
                     Navigator.pop(context);
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
                   },

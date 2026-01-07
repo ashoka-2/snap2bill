@@ -89,8 +89,8 @@ class _forgototpState extends State<forgototp> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? storedOtp = sh.getString('otpp');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? storedOtp = prefs.getString('otpp');
 
       if (otp == storedOtp) {
         if (!mounted) return;
@@ -116,9 +116,9 @@ class _forgototpState extends State<forgototp> {
   Future<void> _resendOTP() async {
     setState(() => _isResending = true);
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
-      String? email = sh.getString("email");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString("ip");
+      String? email = prefs.getString("email");
 
       var res = await http.post(
         Uri.parse("$ip/forgotemail"),
@@ -127,7 +127,7 @@ class _forgototpState extends State<forgototp> {
 
       var decode = json.decode(res.body);
       if (decode["status"] == "ok") {
-        await sh.setString("otpp", decode['otpp'].toString());
+        await prefs.setString("otpp", decode['otpp'].toString());
         _startResendCooldown();
         setState(() {
           _otpExpirySeconds = 600;

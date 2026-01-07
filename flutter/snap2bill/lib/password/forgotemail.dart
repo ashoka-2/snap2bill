@@ -26,8 +26,8 @@ class _forgotemailState extends State<forgotemail> {
     setState(() => _isLoading = true);
 
     try {
-      SharedPreferences sh = await SharedPreferences.getInstance();
-      String? ip = sh.getString("ip");
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? ip = prefs.getString("ip");
 
       var res = await http.post(
         Uri.parse("$ip/forgotemail"),
@@ -37,10 +37,10 @@ class _forgotemailState extends State<forgotemail> {
       var decode = json.decode(res.body);
 
       if (decode["status"] == "ok") {
-        await sh.setString("email", emailController.text.trim());
-        await sh.setString("otpp", decode['otpp'].toString());
+        await prefs.setString("email", emailController.text.trim());
+        await prefs.setString("otpp", decode['otpp'].toString());
         // Save generation time for the OTP timer logic
-        await sh.setString("otp_generated_time", DateTime.now().toIso8601String());
+        await prefs.setString("otp_generated_time", DateTime.now().toIso8601String());
 
         if (!mounted) return;
         Navigator.push(context, MaterialPageRoute(builder: (context) => const forgototp()));

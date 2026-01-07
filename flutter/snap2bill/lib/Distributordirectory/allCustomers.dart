@@ -12,6 +12,8 @@ import 'package:snap2bill/Distributordirectory/customer_page.dart';
 import 'package:snap2bill/Distributordirectory/view/viewCustomerProfile.dart';
 import 'package:snap2bill/Distributordirectory/scanItem.dart';
 
+import '../widgets/Navbar.dart';
+
 class allCustomers extends StatelessWidget {
   const allCustomers({Key? key}) : super(key: key);
 
@@ -83,70 +85,69 @@ class _allCustomers_subState extends State<allCustomers_sub> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text("Select Customer",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _handleRefresh,
-        color: Colors.blueAccent,
-        child: Column(
-          children: [
-            // --- SEARCH BAR (Name, Email, Phone) ---
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
-                  ],
-                ),
-                child: TextField(
-                  onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                  decoration: InputDecoration(
-                    hintText: "Search name, email or phone...",
-                    hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: Colors.blueAccent),
-                    border: InputBorder.none,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+      // appBar: AppBar(
+      //   title: Text(" "),
+      // ),
+
+      body: SafeArea(
+        child: RefreshIndicator(
+          onRefresh: _handleRefresh,
+          color: Colors.blueAccent,
+          child: Column(
+            children: [
+              // --- SEARCH BAR (Name, Email, Phone) ---
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Container(
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                    borderRadius: BorderRadius.circular(15),
+                    boxShadow: [
+                      BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)
+                    ],
+                  ),
+                  child: TextField(
+                    onChanged: (value) => setState(() => _searchQuery = value.toLowerCase()),
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+                    decoration: InputDecoration(
+                      hintText: "Search name, email or phone...",
+                      hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+                      prefixIcon: const Icon(Icons.search, color: Colors.blueAccent),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
                   ),
                 ),
               ),
-            ),
-
-            Expanded(
-              child: FutureBuilder<List<Joke>>(
-                future: _customerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return _buildShimmerList(isDark);
-                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return _buildEmptyState();
-                  }
-
-                  final filteredList = snapshot.data!.where((c) =>
-                  c.name.toLowerCase().contains(_searchQuery) ||
-                      c.email.toLowerCase().contains(_searchQuery) ||
-                      c.phone.contains(_searchQuery)
-                  ).toList();
-
-                  return ListView.builder(
-                    padding: const EdgeInsets.only(top: 8),
-                    itemCount: filteredList.length,
-                    itemBuilder: (context, index) =>
-                        _buildCustomerCard(filteredList[index], theme, isDark),
-                  );
-                },
+        
+              Expanded(
+                child: FutureBuilder<List<Joke>>(
+                  future: _customerFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return _buildShimmerList(isDark);
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return _buildEmptyState();
+                    }
+        
+                    final filteredList = snapshot.data!.where((c) =>
+                    c.name.toLowerCase().contains(_searchQuery) ||
+                        c.email.toLowerCase().contains(_searchQuery) ||
+                        c.phone.contains(_searchQuery)
+                    ).toList();
+        
+                    return ListView.builder(
+                      padding: const EdgeInsets.only(top: 8),
+                      itemCount: filteredList.length,
+                      itemBuilder: (context, index) =>
+                          _buildCustomerCard(filteredList[index], theme, isDark),
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -172,10 +173,10 @@ class _allCustomers_subState extends State<allCustomers_sub> {
           borderRadius: BorderRadius.circular(20),
           // --- CONTAINER CLICK -> ADD BILL (CameraCapture) ---
           onTap: () async {
-            SharedPreferences sh = await SharedPreferences.getInstance();
-            await sh.setString("cid", item.id);
-            await sh.setString("oid", item.oid);
-            await sh.setString("selected_customer_name", item.name);
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.setString("cid", item.id);
+            await prefs.setString("oid", item.oid);
+            await prefs.setString("selected_customer_name", item.name);
             print(item.id+" customer id");
             Navigator.push(context, MaterialPageRoute(builder: (context) => CameraCapture()));
           },

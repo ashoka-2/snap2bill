@@ -204,9 +204,9 @@
 //               PopupMenuButton<String>(
 //                 icon: const Icon(Icons.more_vert),
 //                 onSelected: (String value) async {
-//                   SharedPreferences sh = await SharedPreferences.getInstance();
-//                   sh.setString("uid", item.id.toString());
-//                   sh.setString("selected_distributor_id", item.id.toString());
+//                   SharedPreferences prefs = await SharedPreferences.getInstance();
+//                   prefs.setString("uid", item.id.toString());
+//                   prefs.setString("selected_distributor_id", item.id.toString());
 //
 //                   if (value == 'send_review') {
 //                     Navigator.push(context, MaterialPageRoute(builder: (context) => send_review()));
@@ -487,9 +487,9 @@ class _distributor_page_subState extends State<distributor_page_sub> {
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
                 onSelected: (String value) async {
-                  SharedPreferences sh = await SharedPreferences.getInstance();
-                  sh.setString("uid", item.id.toString());
-                  sh.setString("selected_distributor_id", item.id.toString());
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString("uid", item.id.toString());
+                  prefs.setString("selected_distributor_id", item.id.toString());
 
                   if (value == 'send_review') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => send_review()));
