@@ -17,7 +17,7 @@ class CategoryFilterBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    // final isDark = theme.brightness == Brightness.dark;
     final pillColor =  AppColors.pillColor;
 
     return SizedBox(
@@ -37,8 +37,7 @@ class CategoryFilterBar extends StatelessWidget {
               selected: isSelected,
               onSelected: (_) => onSelect(cat.id),
               selectedColor:pillColor.withValues(alpha: 0.5),
-              backgroundColor:
-              isDark ? Colors.grey.shade800 : Colors.grey.shade200,
+              backgroundColor:AppColors.getPillBg(context),
               labelStyle: TextStyle(
                 color: isSelected
                     ? Colors.white
@@ -53,8 +52,8 @@ class CategoryFilterBar extends StatelessWidget {
               side: BorderSide(
                 color: isSelected
                     ? pillColor           // border for selected
-                    : isDark?Colors.white:Colors.black,     // no border for others
-                width: 1.5,
+                    : AppColors.getBorderColor(context),     // no border for others
+                width: 1,
               ),
             ),
           );

@@ -95,7 +95,7 @@
 //           onPressed: () => Navigator.pop(context),
 //         ),
 //         title: Text("Product Details",
-//             style: GoogleFonts.poppins(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+//             style: TextStyle(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
 //       ),
 //       body: SingleChildScrollView(
 //         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -121,11 +121,11 @@
 //
 //             Text(
 //                 productData!['category'].toString().toUpperCase(),
-//                 style: GoogleFonts.poppins(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
+//                 style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
 //             ),
 //             Text(
 //                 productData!['product_name'],
-//                 style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)
+//                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
 //             ),
 //
 //             const SizedBox(height: 20),
@@ -140,7 +140,7 @@
 //                     Text("Unit Price", style: TextStyle(color: Colors.grey[500], fontSize: 12)),
 //                     Text(
 //                       "₹${productData!['price']}",
-//                       style: GoogleFonts.poppins(
+//                       style: TextStyle(
 //                           fontSize: 22,
 //                           fontWeight: FontWeight.bold,
 //                           color: isDark ? Colors.greenAccent : Colors.green[800]
@@ -203,11 +203,11 @@
 //             ),
 //
 //             // Description
-//             Text("Description", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+//             Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
 //             const SizedBox(height: 10),
 //             Text(
 //               productData!['description'] ?? "No description available.",
-//               style: GoogleFonts.poppins(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
+//               style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
 //             ),
 //             const SizedBox(height: 120),
 //           ],
@@ -231,7 +231,7 @@
 //                 children: [
 //                   Text("Total Price", style: TextStyle(color: Colors.grey[500], fontSize: 13)),
 //                   Text("₹${totalPrice.toStringAsFixed(2)}",
-//                       style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+//                       style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
 //                 ],
 //               ),
 //             ),
@@ -247,7 +247,7 @@
 //                   elevation: 0,
 //                 ),
 //                 child: Text("Add to Cart",
-//                     style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+//                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
 //               ),
 //             ),
 //           ],
@@ -353,7 +353,7 @@ class _addOrderState extends State<addOrder> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text("Product Details",
-            style: GoogleFonts.poppins(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+            style: TextStyle(color: isDark ? Colors.white : Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -392,11 +392,11 @@ class _addOrderState extends State<addOrder> {
 
             Text(
                 productData!['category'].toString().toUpperCase(),
-                style: GoogleFonts.poppins(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
+                style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
             ),
             Text(
                 productData!['product_name'],
-                style: GoogleFonts.poppins(fontSize: 24, fontWeight: FontWeight.bold)
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
             ),
 
             const SizedBox(height: 20),
@@ -411,7 +411,7 @@ class _addOrderState extends State<addOrder> {
                     Text("Unit Price", style: TextStyle(color: Colors.grey[500], fontSize: 12)),
                     Text(
                       "₹${productData!['price']}",
-                      style: GoogleFonts.poppins(
+                      style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
                           color: isDark ? Colors.greenAccent : Colors.green[800]
@@ -471,11 +471,11 @@ class _addOrderState extends State<addOrder> {
             ),
 
             // Description
-            Text("Description", style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+            Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Text(
               productData!['description'] ?? "No description available.",
-              style: GoogleFonts.poppins(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
+              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
             ),
             const SizedBox(height: 120),
           ],
@@ -499,7 +499,7 @@ class _addOrderState extends State<addOrder> {
                 children: [
                   Text("Total Price", style: TextStyle(color: Colors.grey[500], fontSize: 13)),
                   Text("₹${totalPrice.toStringAsFixed(2)}",
-                      style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
                 ],
               ),
             ),
@@ -515,7 +515,7 @@ class _addOrderState extends State<addOrder> {
                   elevation: 0,
                 ),
                 child: Text("Add to Cart",
-                    style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
           ],

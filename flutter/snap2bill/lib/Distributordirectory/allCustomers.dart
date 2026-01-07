@@ -85,7 +85,7 @@ class _allCustomers_subState extends State<allCustomers_sub> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text("Select Customer",
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: isDark ? Colors.white : Colors.black87)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -207,7 +207,7 @@ class _allCustomers_subState extends State<allCustomers_sub> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(item.name,
-                          style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isDark ? Colors.white : Colors.black87)),
                       const SizedBox(height: 4),
                       Text(item.email, style: const TextStyle(fontSize: 12, color: Colors.blueAccent)),
                       Text(item.phone, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),

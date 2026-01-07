@@ -8,7 +8,7 @@ final ThemeData lightTheme = ThemeData(
   primaryColor: AppColors.primaryLight,
   scaffoldBackgroundColor: AppColors.backgroundLight,
   shadowColor: AppColors.backgroundDark,
-  fontFamily: 'Roboto',
+  fontFamily: 'NeueMachina',
   colorScheme: const ColorScheme.light(primary: AppColors.primaryLight),
   cardColor: AppColors.cardLight,
   inputDecorationTheme: InputDecorationTheme(
@@ -28,7 +28,7 @@ final ThemeData darkTheme = ThemeData(
   shadowColor: AppColors.backgroundLight,
 
   scaffoldBackgroundColor: AppColors.backgroundDark,
-  fontFamily: 'Roboto',
+  fontFamily: 'NeueMachina',
   colorScheme: const ColorScheme.dark(primary: AppColors.primaryDark),
   cardColor: AppColors.cardDark,
   inputDecorationTheme: InputDecorationTheme(

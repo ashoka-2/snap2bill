@@ -118,6 +118,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _mode,
+
       home: const MyApp_sub(),
     );
   }
@@ -214,7 +215,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                           Text(
                             "Enter Your IP Address",
 
-                            style: GoogleFonts.montserrat(
+                            style: TextStyle(
                               color: AppColors.primaryLight,
                               fontSize: 20,
                             ),

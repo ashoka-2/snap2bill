@@ -240,6 +240,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Distributordirectory/view/viewOrderItems.dart';
 
+import '../../widgets/Navbar.dart';
+
 class viewOrder extends StatelessWidget {
   const viewOrder({Key? key}) : super(key: key);
 
@@ -321,28 +323,13 @@ class _viewOrderSubState extends State<viewOrderSub> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Order History",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new,
-              color: isDark ? Colors.white : Colors.black87, size: 20),
-          onPressed: () async {
-            // ✅ CRITICAL: Clear the customer filter when leaving the page
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            await prefs.remove("selected_customer_id");
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Order History",
-          style: GoogleFonts.poppins(
-            color: isDark ? Colors.white : Colors.black87,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-        ),
+
       ),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
@@ -380,7 +367,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
           Icon(Icons.receipt_long_outlined, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
           Text("No orders found",
-              style: GoogleFonts.poppins(color: Colors.grey, fontSize: 16)),
+              style: TextStyle(color: Colors.grey, fontSize: 16)),
         ],
       ),
     );
@@ -422,7 +409,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
                 children: [
                   Text(
                     "Order #${item.id}",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                         color: theme.primaryColor
@@ -453,7 +440,7 @@ class _viewOrderSubState extends State<viewOrderSub> {
                   const Text("Bill Amount", style: TextStyle(color: Colors.grey, fontSize: 13)),
                   Text(
                     "₹${item.amount}",
-                    style: GoogleFonts.poppins(
+                    style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
                         color: isDark ? Colors.white : Colors.black87

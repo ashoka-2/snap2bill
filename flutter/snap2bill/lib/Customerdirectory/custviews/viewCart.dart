@@ -91,7 +91,7 @@ class _viewCartState extends State<viewCart> {
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
       appBar: AppBar(
         title: Text("Shopping Cart",
-            style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18)),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -155,7 +155,7 @@ class _viewCartState extends State<viewCart> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['product_name'], style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(item['product_name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   Text("Distributor: ${item['distributor_name']}", style: TextStyle(color: Colors.grey[500], fontSize: 11)),
                   const SizedBox(height: 5),
                   Text("₹${item['price']}", style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
@@ -231,8 +231,8 @@ class _viewCartState extends State<viewCart> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Total Amount", style: GoogleFonts.poppins(color: Colors.grey)),
-              Text("₹$totalValue", style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+              Text("Total Amount", style: TextStyle(color: Colors.grey)),
+              Text("₹$totalValue", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.primaryColor)),
             ],
           ),
           const SizedBox(height: 20),
@@ -253,7 +253,7 @@ class _viewCartState extends State<viewCart> {
                 );
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
               },
-              child: Text("Place Order", style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+              child: Text("Place Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
             ),
           ),
         ],
@@ -262,6 +262,6 @@ class _viewCartState extends State<viewCart> {
   }
 
   Widget _buildEmptyState() {
-    return Center(child: Text("Your cart is empty", style: GoogleFonts.poppins(color: Colors.grey)));
+    return Center(child: Text("Your cart is empty", style: TextStyle(color: Colors.grey)));
   }
 }

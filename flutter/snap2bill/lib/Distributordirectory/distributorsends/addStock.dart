@@ -78,6 +78,7 @@ import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 // Make sure these point to your actual file locations
 import '../../theme/colors.dart';
+import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
 class addStock extends StatelessWidget {
@@ -171,20 +172,13 @@ class _addStockSubState extends State<addStockSub> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Add Stock",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Update Inventory",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: SingleChildScrollView(
         child: Padding(

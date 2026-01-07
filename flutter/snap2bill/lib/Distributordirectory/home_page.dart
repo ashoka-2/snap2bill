@@ -15,6 +15,7 @@ import 'package:snap2bill/screens/viewWishlist.dart';
 import 'package:snap2bill/data/dataModels.dart';
 import 'package:snap2bill/data/category_service.dart';
 import 'package:snap2bill/data/product_service.dart';
+import 'package:snap2bill/widgets/Navbar.dart';
 
 import 'package:snap2bill/widgets/category_filter_bar.dart';
 import 'package:snap2bill/widgets/product_feed.dart';
@@ -134,20 +135,18 @@ class _Home_pageState extends State<Home_page> {
       backgroundColor: theme.scaffoldBackgroundColor,
 
       /// Swipe from left edge
-      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.2,
+      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
 
       drawer: CustomDrawer(menuItems: _getDrawerItems()),
 
-      appBar: AppBar(
-        title: const Text(
+      appBar: ThemeNavbar(
+        title:
           "Snap2Bill",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-        ),
+        leadingIcon: Icons.menu,
+        onLeadingPressed: ()=>
+        {
+          _scaffoldKey.currentState?.openDrawer(),
+        },
         actions: [
           IconButton(
             icon: const Icon(Icons.favorite_border),
@@ -161,6 +160,19 @@ class _Home_pageState extends State<Home_page> {
               });
             },
           ),
+          // IconButton(
+          //   icon: const Icon(Icons.favorite),
+          //   onPressed: () {
+          //
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (_) => const ViewWishlist()),
+          //     ).then((_) {
+          //       /// 🔁 Sync wishlist state on return
+          //       _loadData();
+          //     });
+          //   },
+          // ),
         ],
       ),
 

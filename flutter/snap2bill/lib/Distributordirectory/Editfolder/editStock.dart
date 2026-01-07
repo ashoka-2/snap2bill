@@ -84,6 +84,7 @@ import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 // Make sure this points to your actual colors file
 import '../../theme/colors.dart';
+import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
 class editStock extends StatefulWidget {
@@ -183,20 +184,13 @@ class _editStockState extends State<editStock> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "Update Stock",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "Edit Stock",
-          style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
-        ),
+
       ),
       body: SingleChildScrollView(
         child: Padding(

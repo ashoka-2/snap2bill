@@ -6,7 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 // Import your addStock page
-import '../addfolder/addStock.dart';
+import '../../widgets/Navbar.dart';
+import '../distributorsends/addStock.dart';
 
 class view_product extends StatelessWidget {
   const view_product({Key? key}) : super(key: key);
@@ -78,20 +79,13 @@ class _view_product_subState extends State<view_product_sub> {
 
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(title: "All Products",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: titleColor, size: 20),
-          onPressed: () {
-            if (Navigator.canPop(context)) Navigator.pop(context);
-          },
-        ),
-        title: Text(
-          "All Products",
-          style: TextStyle(color: titleColor, fontWeight: FontWeight.bold, fontSize: 20),
-        ),
+
       ),
       body: FutureBuilder<List<Joke>>(
         future: _getProducts(),

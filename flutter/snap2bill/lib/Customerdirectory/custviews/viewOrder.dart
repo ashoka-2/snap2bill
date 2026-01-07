@@ -338,7 +338,7 @@ class _viewOrderState extends State<viewOrder> {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: Text("My Orders", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text("My Orders", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -387,14 +387,14 @@ class _viewOrderState extends State<viewOrder> {
                 ],
               ),
               const SizedBox(height: 10),
-              Text(item.distributor, style: GoogleFonts.poppins(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(item.distributor, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               Text("Date: ${item.date}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
               const Divider(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text("Total Payable", style: TextStyle(color: Colors.grey)),
-                  Text("₹${item.amount}", style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+                  Text("₹${item.amount}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
                 ],
               ),
               const SizedBox(height: 15),

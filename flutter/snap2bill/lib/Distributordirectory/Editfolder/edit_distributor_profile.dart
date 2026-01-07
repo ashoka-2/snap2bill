@@ -515,6 +515,8 @@ import 'dart:typed_data';
 
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
+import '../../widgets/Navbar.dart';
+
 class edit_distributor_profile_sub extends StatefulWidget {
   final dynamic id, name, email, phone, bio, address, pincode, place, post, latitude, longitude;
 
@@ -605,22 +607,20 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: Icon(Icons.close, color: textColor),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text("Edit Profile", style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+
+      appBar: ThemeNavbar(title: "Update Profile",
+        leadingIcon: Icons.close,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
         centerTitle: true,
         actions: [
-          TextButton(
-            onPressed: _isLoading ? null : _updateProfile,
-            child: const Text("SAVE", style: TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.w900)),
-          )
+          IconButton(onPressed: _isLoading ? null : _updateProfile
+              , icon:Icon(Icons.save))
         ],
+
       ),
+
       body: Stack(
         children: [
           ListView(

@@ -69,7 +69,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     return Scaffold(
       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: Text("Order Items", style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: Text("Order Items", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -113,7 +113,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item['product_name'], style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 15)),
+                Text(item['product_name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                 Text("Price: ₹${item['price']}", style: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold)),
                 Text("Quantity: ${item['quantity']}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
               ],
