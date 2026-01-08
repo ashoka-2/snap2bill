@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 // Make sure these point to your actual file locations
-import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 

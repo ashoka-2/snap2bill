@@ -5,7 +5,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 // Imports from your project structure
-import 'package:snap2bill/Distributordirectory/Editfolder/edit_product.dart';
 import '../../theme/theme.dart';
 import '../../widgets/Navbar.dart';
 import '../Editfolder/editStock.dart';

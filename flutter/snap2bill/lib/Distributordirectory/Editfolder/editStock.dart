@@ -80,10 +80,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // REQUIRED FOR VALIDATION
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 // Make sure this points to your actual colors file
-import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 

@@ -51,7 +51,7 @@ class _ViewProductSubState extends State<_ViewProductSub> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: ThemeNavbar(title: "My Wishlist",
+      appBar: ThemeNavbar(title: "Products",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
           if (Navigator.canPop(context)) Navigator.pop(context)

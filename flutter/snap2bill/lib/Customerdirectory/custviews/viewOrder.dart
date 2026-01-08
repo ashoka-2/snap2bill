@@ -270,10 +270,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
 import 'package:snap2bill/Customerdirectory/payment/RazorpayScreen.dart';
-import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 import '../../widgets/Navbar.dart';
 

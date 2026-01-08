@@ -99,28 +99,7 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      // appBar: AppBar(
-      //   elevation: 0,
-      //   backgroundColor: Colors.transparent,
-      //   leading: IconButton(
-      //     icon: Icon(Icons.arrow_back_ios_new, size: 20, color: isDark ? Colors.white : Colors.black),
-      //     onPressed: () => Navigator.pop(context),
-      //   ),
-      //   title: Text(
-      //       "Edit Profile",
-      //       style: TextStyle(fontWeight: FontWeight.w800, fontSize: 18, color: isDark ? Colors.white : Colors.black)
-      //   ),
-      //   centerTitle: true,
-      //   actions: [
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 8.0),
-      //       child: TextButton(
-      //         onPressed: _isLoading ? null : _updateProfile,
-      //         child: const Text("Save", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blueAccent)),
-      //       ),
-      //     )
-      //   ],
-      // ),
+
       appBar: ThemeNavbar(title: "Update Profile",
         leadingIcon: Icons.close,
         onLeadingPressed: ()=>{

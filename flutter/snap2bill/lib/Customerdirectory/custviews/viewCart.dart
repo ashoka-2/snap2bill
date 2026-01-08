@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:input_quantity/input_quantity.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 

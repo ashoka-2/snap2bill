@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 
 import '../theme/colors.dart';
 
@@ -63,14 +64,14 @@ class AppButton extends StatelessWidget {
           children: [
             // Only show Leading Icon if icon exists AND it is not trailing
             if (!isTrailingIcon && icon != null) ...[
-              Icon(icon, color: textColor),
+              Icon(icon, color: AppColors.getTextColor2(context)),
               const SizedBox(width: 10),
             ],
 
             Text(
               text,
               style: TextStyle(
-                color: isDark?AppColors.textMainLight:AppColors.textMainDark,
+                color: AppColors.getTextColor2(context),
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
@@ -84,6 +85,106 @@ class AppButton extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+
+
+
+
+class CartButton extends StatefulWidget {
+  final String text;
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  const CartButton({
+    super.key,
+    required this.text,
+    required this.icon,
+    required this.onPressed,
+  });
+
+  @override
+  State<CartButton> createState() => _CartButtonState();
+}
+
+class _CartButtonState extends State<CartButton>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller =
+    AnimationController(vsync: this, duration: const Duration(seconds: 4))
+      ..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (_, __) {
+        return Container(
+          padding: const EdgeInsets.all(2), // ✅ border thickness
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50),
+            gradient: SweepGradient(
+              startAngle: 0,
+              endAngle: 2 * pi,
+              transform:
+              GradientRotation(_controller.value * 2 * pi), // 🔥 rotate border
+              colors:  [
+                AppColors.getTextColor2(context),
+                AppColors.getTextColor2(context),
+                AppColors.getTextColor2(context),
+                AppColors.getTextColor2(context),
+                AppColors.getTextColor2(context),
+                AppColors.getTextColor(context),
+
+
+              ],
+            ),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: AppColors.getButtonBg(context),
+              // gradient: AppColors.premiumGradient,
+              borderRadius: BorderRadius.circular(50),
+
+            ),
+            child: ElevatedButton.icon(
+              onPressed: widget.onPressed,
+              icon: Icon(widget.icon, size: 16, color: AppColors.getTextColor(context)),
+              label: Text(
+                widget.text,
+                style:  TextStyle(
+                  color: AppColors.getTextColor(context),
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                shadowColor: Colors.transparent,
+                elevation: 0,
+                padding:
+                const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

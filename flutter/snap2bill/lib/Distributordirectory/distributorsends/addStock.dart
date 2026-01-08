@@ -77,7 +77,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 
 // Make sure these point to your actual file locations
-import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 

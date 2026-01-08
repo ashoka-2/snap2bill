@@ -10,6 +10,7 @@ import '../data/dataModels.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
 import '../Distributordirectory/view/ViewDistributorProfile.dart';
 import '../theme/colors.dart';
+import 'app_button.dart';
 
 class ProductCard extends StatefulWidget {
   final ProductData product;
@@ -142,6 +143,7 @@ class _ProductCardState extends State<ProductCard> {
       child: SizedBox(
         width: 340,
         child: Card(
+          color: AppColors.getCardColor(context),
           elevation: 3,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
           child: Column(
@@ -150,32 +152,42 @@ class _ProductCardState extends State<ProductCard> {
             children: [
 
               /// HEADER
-              ListTile(
-                leading: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => ViewDistributorProfile(
-                          distributorId: widget.product.distributorId,
-                          distributorName: widget.product.distributorName,
+              Container(
+                // margin: EdgeInsets.only(left: 8,right: 8,top: 5,bottom: 2),
+                // decoration: BoxDecoration(
+                //   color: AppColors.getPillBg(context),
+                //   borderRadius: BorderRadius.circular(50),
+                // ),
+                child: ListTile(
+                  leading: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => ViewDistributorProfile(
+                            distributorId: widget.product.distributorId,
+                            distributorName: widget.product.distributorName,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: CircleAvatar(
-                    backgroundImage:
-                    NetworkImage(widget.product.distributorImage),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.grey[200], // Optional: background color
+                      backgroundImage: const AssetImage("assets/images/default-avatar.png"),
+                      foregroundImage: widget.product.distributorImage.isNotEmpty
+                          ? NetworkImage(widget.product.distributorImage)
+                          : null,
+                    ),
                   ),
-                ),
-                title: Text(widget.product.distributorName,
-                    style: const TextStyle(fontWeight: FontWeight.bold)),
-                subtitle: Text(widget.product.distributorPhone,
-                    style: const TextStyle(fontSize: 12)),
-                trailing: GestureDetector(
-                  onTapDown: (d) => _showOptionsMenu(
-                      context, d.globalPosition, textColor, theme.cardColor),
-                  child: const Icon(Icons.more_vert),
+                  title: Text(widget.product.distributorName,
+                      style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(widget.product.distributorPhone,
+                      style: const TextStyle(fontSize: 12)),
+                  trailing: GestureDetector(
+                    onTapDown: (d) => _showOptionsMenu(
+                        context, d.globalPosition, textColor, theme.cardColor),
+                    child: const Icon(Icons.more_vert),
+                  ),
                 ),
               ),
 
@@ -187,6 +199,7 @@ class _ProductCardState extends State<ProductCard> {
                     AspectRatio(
                       aspectRatio: 1.15,
                       child: ClipPath(
+
                         clipper: ExactSvgClipper(),
                         child: GestureDetector(
                           onDoubleTap: () =>
@@ -196,76 +209,190 @@ class _ProductCardState extends State<ProductCard> {
                             fit: BoxFit.cover,
                           ),
                         ),
+
+                        
+
                       ),
                     ),
 
                     /// PRICE
                     Positioned(
                       bottom: 18,
-                      right: 16,
+                      right: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: theme.primaryColor,
+                          color: AppColors.getPillBg(context),
                           borderRadius: BorderRadius.circular(18),
+                          border: Border.all(width: 1,color: AppColors.getBorderColor(context))
                         ),
                         child: Text("₹${widget.product.price}",
-                            style: const TextStyle(
-                                color: Colors.white,
+                            style:  TextStyle(
+                              fontSize: 13,
+                                color: AppColors.getTextColor(context),
                                 fontWeight: FontWeight.bold)),
                       ),
                     ),
 
                     /// WISHLIST BUTTON
                     Positioned(
-                      bottom: 16,
-                      left: 12,
-                      child: SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            shape: BoxShape.circle,
-                            border:
-                            Border.all(color: Colors.white, width: 3),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              isLiked
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: Colors.pinkAccent,
-                              size: 22,
+                      bottom: 13,
+                      left:9,
+                      child: Container(
+                        width: 63,
+                        height: 63,
+                        padding: EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color:  AppColors.getCardColor(context),
+                          borderRadius: BorderRadius.circular(50)
+                        ),
+                        child: SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: isLiked?AppColors.dangerbgColor:AppColors.getPillBg(context).withValues(alpha: 0.1),
+                              shape: BoxShape.circle,
+                              border:
+                              Border.all(color:isLiked?AppColors.dangerColor.withValues(alpha: 0.5):AppColors.getBorderColor(context) , width: 2,),
                             ),
-                            onPressed: () => _toggleWishlist(),
+                            child: IconButton(
+                              icon: Icon(
+                                isLiked
+                                    ? Icons.favorite_rounded
+                                    : Icons.favorite_border_rounded,
+                                color: isLiked?AppColors.dangerColor:AppColors.getIconColor(context),
+                                size: 30,
+                              ),
+                              onPressed: () => _toggleWishlist(),
+                            ),
                           ),
                         ),
                       ),
                     ),
 
+
                     if (showCenterHeart)
-                      const Center(
-                        child: Icon(Icons.favorite,
-                            size: 90, color: Colors.white70),
+                      Positioned.fill(
+                        child: TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0.0, end: 1.0),
+                          duration: const Duration(milliseconds: 700),
+                          builder: (context, value, child) {
+                            // 1. POP SCALE (Instagram style)
+                            double scale = 0.0;
+                            if (value < 0.2) {
+                              scale = (value / 0.2) * 1.2;
+                            } else if (value < 0.4) {
+                              scale = 1.2 - ((value - 0.2) / 0.2) * 0.2;
+                            } else {
+                              scale = 1.0;
+                            }
+
+                            // 2. SLIDE UP (Starts after the pop)
+                            double slideProgress = value > 0.4 ? (value - 0.4) / 0.6 : 0.0;
+                            double yOffset = -70 * slideProgress;
+
+                            // 3. FADE OUT
+                            double opacity = value < 0.7 ? 1.0 : 1.0 - ((value - 0.7) / 0.3);
+
+                            return Transform.translate(
+                              offset: Offset(0, yOffset),
+                              child: Transform.scale(
+                                scale: scale,
+                                child: Opacity(
+                                  opacity: opacity.clamp(0.0, 1.0),
+                                  child: child,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: ShaderMask(
+                              // 3D Gradient Colors
+                              shaderCallback: (Rect bounds) {
+                                return const RadialGradient(
+                                  center: Alignment(-0.2, -0.2), // Light source from top-left
+                                  radius: 0.8,
+                                  colors: [
+                                    Color(0xFFFF0062),
+                                    Color(0xFFFF006A),
+                                    Color(0xFFFF004D),
+                                  ],
+                                  stops: [0.2, 0.5, 1.0],
+                                ).createShader(bounds);
+                              },
+                              child: Icon(
+                                Icons.favorite_rounded,
+                                size: 110,
+                                color: Colors.white, // Required for ShaderMask
+                                shadows: [
+                                  // Bottom-right shadow for depth
+                                  Shadow(
+                                    offset: const Offset(5, 8),
+                                    blurRadius: 15,
+                                    color: Colors.black.withValues(alpha: 0.4),
+                                  ),
+                                  // Subtle white rim light for 3D effect
+                                  const Shadow(
+                                    offset: Offset(-2, -2),
+                                    blurRadius: 4,
+                                    color: Colors.white30,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
+
                   ],
                 ),
               ),
 
               /// DETAILS
               Padding(
-                padding: const EdgeInsets.fromLTRB(14, 10, 14, 12),
+                padding: const EdgeInsets.fromLTRB(14, 0, 14, 12),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(widget.product.categoryName.toUpperCase(),
-                        style: TextStyle(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          widget.product.categoryName.toUpperCase(),
+                          style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: theme.primaryColor)),
+                            color: theme.primaryColor,
+                          ),
+                        ),
+
+                        if (widget.showAddToCart)
+                          SizedBox(
+                            width: 130, // Slimmer width for the top corner
+                            height: 36, // Slightly shorter to match text height better
+                            child: CartButton(
+                              text: "Add to cart",
+                              icon: Icons.add_shopping_cart,
+                              onPressed: () async {
+                                final prefs = await SharedPreferences.getInstance();
+                                await prefs.setString("pid", widget.product.id);
+                                await prefs.setString("uid", widget.product.distributorId);
+
+                                if (context.mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (_) => const addOrder()),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+
+                      ],
+                    ),
                     const SizedBox(height: 6),
                     Text(widget.product.productName,
                         style: const TextStyle(
@@ -277,37 +404,37 @@ class _ProductCardState extends State<ProductCard> {
                         widget.product.description,
                         trimLines: 2,
                         style:
-                        TextStyle(color: textColor.withOpacity(0.7)),
+                        TextStyle(color:AppColors.getIconColor(context)),
                       ),
 
-                    if (widget.showAddToCart) ...[
-                      const SizedBox(height: 10),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: isDark
-                                ? AppColors.primaryDark
-                                : AppColors.primaryLight,
-                          ),
-                          onPressed: () async {
-                            final prefs =
-                            await SharedPreferences.getInstance();
-                            prefs.setString("pid", widget.product.id);
-                            prefs.setString(
-                                "uid", widget.product.distributorId);
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const addOrder()),
-                            );
-                          },
-                          icon: const Icon(Icons.add_shopping_cart, size: 18,color: Colors.black,),
-                          label: const Text("Add to Cart",style: TextStyle(color: Colors.black),),
-                        ),
-                      ),
-                    ],
+                    // if (widget.showAddToCart) ...[
+                    //   const SizedBox(height: 10),
+                    //   Align(
+                    //     alignment: Alignment.centerRight,
+                    //     child: ElevatedButton.icon(
+                    //       style: ElevatedButton.styleFrom(
+                    //         backgroundColor: isDark
+                    //             ? AppColors.primaryDark
+                    //             : AppColors.primaryLight,
+                    //       ),
+                    //       onPressed: () async {
+                    //         final prefs =
+                    //         await SharedPreferences.getInstance();
+                    //         prefs.setString("pid", widget.product.id);
+                    //         prefs.setString(
+                    //             "uid", widget.product.distributorId);
+                    //
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //               builder: (_) => const addOrder()),
+                    //         );
+                    //       },
+                    //       icon: const Icon(Icons.add_shopping_cart, size: 18,color: Colors.black,),
+                    //       label: const Text("Add to Cart",style: TextStyle(color: Colors.black),),
+                    //     ),
+                    //   ),
+                    // ],
                   ],
                 ),
               ),

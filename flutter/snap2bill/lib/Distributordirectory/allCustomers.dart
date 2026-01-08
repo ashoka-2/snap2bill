@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 // --- THE CRITICAL FIX: Import the model instead of redefining it ---
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
@@ -12,7 +11,6 @@ import 'package:snap2bill/Distributordirectory/customer_page.dart';
 import 'package:snap2bill/Distributordirectory/view/viewCustomerProfile.dart';
 import 'package:snap2bill/Distributordirectory/scanItem.dart';
 
-import '../widgets/Navbar.dart';
 
 class allCustomers extends StatelessWidget {
   const allCustomers({Key? key}) : super(key: key);
