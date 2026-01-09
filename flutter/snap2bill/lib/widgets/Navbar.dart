@@ -50,7 +50,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
             color: AppColors.getPillBg(context),
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppColors.getBorderColor(context),
+              color: AppColors.getBorderColor(context).withValues(alpha: 0.5),
               width: 1.5,
             ),
           ),
@@ -74,15 +74,15 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
           color: AppColors.getPillBg(context),
           borderRadius: BorderRadius.circular(30),
           border: Border.all(
-            color: AppColors.getBorderColor(context),
+            color: AppColors.getBorderColor(context).withValues(alpha: 0.5),
             width: 1.5,
           ),
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: AppColors.getTextColor(context),
-            fontWeight: FontWeight.w900,
+            color: AppColors.getTextColor(context).withValues(alpha: 0.8),
+            fontWeight: FontWeight.w800,
             fontSize: titleFontSize, // 🚀 Now uses the dynamic parameter
             letterSpacing: -0.5,
           ),
@@ -97,7 +97,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
               padding: EdgeInsets.symmetric(horizontal: actionCount > 1 ? 4.0 : 0),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: AppColors.getBorderColor(context),
+                  color: AppColors.getBorderColor(context).withValues(alpha: 0.5),
                   width: 1.5,
                 ),
                 color: AppColors.getPillBg(context),

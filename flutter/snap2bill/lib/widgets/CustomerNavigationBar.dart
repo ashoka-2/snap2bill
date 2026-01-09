@@ -2,6 +2,7 @@ import 'dart:ui'; // Required for ImageFilter
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 // Your page imports (adjust these paths to your project structure)
 import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
@@ -113,30 +114,30 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
                     tabs:  [
                       GButton(icon: LineIcons.home,
 
-                        //   leading: AmazingNeoIcons(
-                        // icon: AmazingNeoIcons.strokeRoundedHome09,
-                        // strokeWidth: _selectedIndex == 0 ? 3 : 2,),
+                          leading: HugeIcon(
+                        icon: HugeIcons.strokeRoundedHome09,
+                        strokeWidth: _selectedIndex == 0 ? 3 : 2,),
 
                           text: 'Home'),
                       GButton(icon: LineIcons.search,
 
-                        //   leading: HugeIcon(
-                        // icon: HugeIcons.strokeRoundedUserGroup03,
-                        // strokeWidth: _selectedIndex == 1 ? 3 : 2,),
+                          leading: HugeIcon(
+                        icon: HugeIcons.strokeRoundedSearch01,
+                        strokeWidth: _selectedIndex == 1 ? 3 : 2,),
 
                           text: 'Search'),
                       GButton(icon: LineIcons.users,
 
-                        //   leading: HugeIcon(
-                        // icon: HugeIcons.strokeRoundedUserGroup03,
-                        // strokeWidth: _selectedIndex == 3 ? 3 : 2,),
+                          leading: HugeIcon(
+                        icon: HugeIcons.strokeRoundedUserGroup03,
+                        strokeWidth: _selectedIndex == 2 ? 3 : 2,),
 
                           text: 'Distributors'),
                       GButton(icon: LineIcons.user,
 
-                        //   leading: HugeIcon(
-                        // icon: HugeIcons.strokeRoundedUserGroup03,
-                        // strokeWidth: _selectedIndex == 4 ? 3 : 2,),
+                          leading: HugeIcon(
+                        icon: HugeIcons.strokeRoundedUserCircle02,
+                        strokeWidth: _selectedIndex == 3 ? 3 : 2,),
 
                           text: 'Profile'),
                     ],
