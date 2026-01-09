@@ -8,6 +8,7 @@ import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/Customerdirectory/profile_page.dart';
 import 'package:snap2bill/Customerdirectory/search_page.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 
 /// CustomerNavigationBar
@@ -37,12 +38,14 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
   late final List<Widget> _pages;
 
   // Colors for tab backgrounds (keeps your original palette)
-  final List<Color> tabColors = [
-    Colors.purple,
-    Colors.blue,
-    Colors.green,
-    Colors.red,
-  ];
+  // final List<Color> tabColors = [
+  //   Colors.purple,
+  //   Colors.blue,
+  //   Colors.green,
+  //   Colors.red,
+  // ];
+
+
 
   @override
   void initState() {
@@ -101,17 +104,41 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
                     hoverColor:
                     isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
                     gap: 5,
-                    activeColor: tabColors[_selectedIndex],
+                    activeColor:AppColors.getTextColor(context),
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor: tabColors[_selectedIndex].withOpacity(0.15),
+                    tabBackgroundColor: AppColors.getTextColor(context).withOpacity(0.15),
                     color: inactiveIconColor,
-                    tabs: const [
-                      GButton(icon: LineIcons.home, text: 'Home'),
-                      GButton(icon: LineIcons.search, text: 'Search'),
-                      GButton(icon: LineIcons.users, text: 'Distributors'),
-                      GButton(icon: LineIcons.user, text: 'Profile'),
+                    tabs:  [
+                      GButton(icon: LineIcons.home,
+
+                        //   leading: AmazingNeoIcons(
+                        // icon: AmazingNeoIcons.strokeRoundedHome09,
+                        // strokeWidth: _selectedIndex == 0 ? 3 : 2,),
+
+                          text: 'Home'),
+                      GButton(icon: LineIcons.search,
+
+                        //   leading: HugeIcon(
+                        // icon: HugeIcons.strokeRoundedUserGroup03,
+                        // strokeWidth: _selectedIndex == 1 ? 3 : 2,),
+
+                          text: 'Search'),
+                      GButton(icon: LineIcons.users,
+
+                        //   leading: HugeIcon(
+                        // icon: HugeIcons.strokeRoundedUserGroup03,
+                        // strokeWidth: _selectedIndex == 3 ? 3 : 2,),
+
+                          text: 'Distributors'),
+                      GButton(icon: LineIcons.user,
+
+                        //   leading: HugeIcon(
+                        // icon: HugeIcons.strokeRoundedUserGroup03,
+                        // strokeWidth: _selectedIndex == 4 ? 3 : 2,),
+
+                          text: 'Profile'),
                     ],
                     selectedIndex: _selectedIndex,
                     onTabChange: (index) {

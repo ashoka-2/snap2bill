@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
+import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:snap2bill/Distributordirectory/allCustomers.dart';
 
@@ -10,6 +11,7 @@ import '../Distributordirectory/home_page.dart';
 import '../Distributordirectory/search_page.dart';
 import '../Distributordirectory/customer_page.dart';
 import '../Distributordirectory/profile_page.dart';
+import '../theme/colors.dart';
 
 class DistributorNavigationBar extends StatefulWidget {
   /// Allows selecting which tab is active when opening the navbar
@@ -34,13 +36,13 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
   late int _selectedIndex;
   late final List<Widget> _pages;
 
-  final List<Color> tabColors = [
-    Colors.purple,
-    Colors.yellow,
-    Colors.blue,
-    Colors.green,
-    Colors.red,
-  ];
+  // final List<Color> tabColors = [
+  //   Colors.purple,
+  //   Colors.yellow,
+  //   Colors.blue,
+  //   Colors.green,
+  //   Colors.red,
+  // ];
 
   @override
   void initState() {
@@ -100,20 +102,51 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
                         ? Colors.white.withOpacity(0.1)
                         : Colors.black.withOpacity(0.1),
                     gap: 5,
-                    activeColor: tabColors[_selectedIndex],
+                    activeColor: AppColors.getTextColor(context),
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
+                        horizontal: 10, vertical: 10),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor:
-                    tabColors[_selectedIndex].withOpacity(0.15),
+                    tabBackgroundColor:AppColors.getTextColor(context).withOpacity(0.15),
                     color: inactiveIconColor,
-                    tabs: const [
-                      GButton(icon: LineIcons.home, text: 'Home'),
-                      GButton(icon: LineIcons.search, text: 'Search'),
-                      GButton(icon: LineIcons.plus, text: 'Add'),
-                      GButton(icon: LineIcons.users, text: 'Customers'),
-                      GButton(icon: LineIcons.user, text: 'Profile'),
+                    tabs:  [
+                      GButton(icon: Icons.home, // Dummy icon
+
+                        // leading: HugeIcon(
+                        //   icon: HugeIcons.strokeRoundedHome09,
+                        //   strokeWidth: _selectedIndex == 0 ? 3 : 2,
+                        // ),
+
+                        text: 'Home' ,),
+                      GButton(icon: LineIcons.search,
+
+                      //     leading: HugeIcon(
+                      //   icon: HugeIcons.strokeRoundedSearch01,
+                      //   strokeWidth: _selectedIndex == 1 ? 3 : 2,
+                      // ),
+
+                          text: 'Search'),
+                      GButton(icon: LineIcons.plus,
+
+                          // leading: HugeIcon(
+                          // icon: HugeIcons.strokeRoundedPlusSign,
+                          // strokeWidth: _selectedIndex == 2 ? 3 : 2,),
+
+                          text: 'Add'),
+                      GButton(icon: LineIcons.users,
+
+                        //   leading: HugeIcon(
+                        // icon: HugeIcons.strokeRoundedUserGroup03,
+                        // strokeWidth: _selectedIndex == 3 ? 3 : 2,),
+
+                          text: 'Customers'),
+                      GButton(icon: LineIcons.user,
+
+                        //   leading: HugeIcon(
+                        // icon: HugeIcons.strokeRoundedUserCircle02,
+                        // strokeWidth: _selectedIndex == 4 ? 3 : 2,),
+
+                          text: 'Profile'),
                     ],
                     selectedIndex: _selectedIndex,
                     onTabChange: (index) {

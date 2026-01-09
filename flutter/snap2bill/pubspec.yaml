@@ -49,7 +49,8 @@ dependencies:
   share_plus:
   geolocator: ^13.0.2
   geocoding: ^3.0.0
-
+#  hugeicons: ^1.1.4
+#  icon_forest: ^1.1.8
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
