@@ -217,7 +217,7 @@ class OrderItem {
   factory OrderItem.fromJson(Map<String, dynamic> json, String ip) {
     return OrderItem(
       id: json['id'].toString(),
-      quantity: json['quatity'].toString(), // Matches your backend typo 'quatity'
+      quantity: json['quantity'].toString(), // Matches your backend typo 'quantity'
       imageUrl: "$ip${json['image']}",      // Prepends Server IP to Image path
       price: json['amount'].toString(),
       productName: json['product_name'].toString(),

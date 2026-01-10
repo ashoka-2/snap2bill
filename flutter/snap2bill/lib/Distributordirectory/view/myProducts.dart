@@ -8,6 +8,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../theme/theme.dart';
 import '../../widgets/Navbar.dart';
 import '../Editfolder/editStock.dart';
+import '../distributorsends/addToBill.dart';
 
 class myProducts extends StatelessWidget {
   const myProducts({Key? key}) : super(key: key);
@@ -326,56 +327,35 @@ class _myProductsSubState extends State<myProductsSub> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "₹${i.price}",
-                          style: TextStyle(
-                            color: textColor,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        // QUANTITY PILL
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: Text(
-                            "Qty: ${i.quantity}",
-                            style: TextStyle(
-                              color: textColor.withOpacity(0.7),
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    // Add Button
-                    InkWell(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text("Added to bill"), duration: Duration(milliseconds: 600)));
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8), // Slightly larger for touch target
-                        decoration: BoxDecoration(
-                          color: isDark ? Colors.white : Colors.black,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.add,
-                          color: isDark ? Colors.black : Colors.white,
-                          size: 18,
+                    Container(
+                      child: Text(
+                        "₹${i.price}",
+                        style: TextStyle(
+                          color: textColor,
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
                         ),
                       ),
                     ),
+                    // QUANTITY PILL
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        "Qty: ${i.quantity}",
+                        style: TextStyle(
+                          color: textColor.withOpacity(0.7),
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+
+                    // Add Button
+
                   ],
                 ),
               ],

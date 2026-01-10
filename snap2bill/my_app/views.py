@@ -1575,98 +1575,62 @@ def edit_order(request):
 #     for i in allordereditem:
 #         total += int(i.quantity) * int(i.STOCK.price)
 #     order.objects.filter(id = orderid).update(amount=total)
-#
 #     return JsonResponse({'status': 'ok'})
+
+
+
 def update_order_item(request):
     if request.method == 'POST':
-        item_id = request.POST.get('id')  # The unique ID for the order_sub row
-        quantity = request.POST.get('quantity')  # New Quantity sent from app
-        new_price = request.POST.get('amount')  # New Price (sent by Distributor)
-        stock_id = request.POST.get('stock_id')  # Optional: Change product/stock
+        id = request.POST.get('id')
+        stock_id = request.POST.get('stock_id')
+        quantity = request.POST.get('quantity')
+
+        print(f"Update Request - ID: {id}, Stock: {stock_id}, Qty: {quantity}")
 
         try:
-            # 1. Fetch the specific ordered item record
-            item_obj = order_sub.objects.get(id=item_id)
+            # 1. Fetch the specific ordered item
+            obj = order_sub.objects.get(id=id)
 
-            # 2. VALIDATION: Check quantity limit (Must be 1-100)
-            if quantity:
-                qty_int = int(quantity)
-                if qty_int > 100:
-                    return JsonResponse({'status': 'error', 'message': 'Quantity cannot exceed 100'})
-                if qty_int <= 0:
-                    return JsonResponse({'status': 'error', 'message': 'Quantity must be at least 1'})
-                item_obj.quantity = qty_int
+            # 2. 🚀 NEW LOGIC: Check if the bill is 'offline'
+            # We access the parent 'order' via the ForeignKey relation
+            if obj.ORDER.order_type == 'offline':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'This is an offline/instant bill and cannot be edited.'
+                })
 
-            # 3. Update Stock if a new one was selected
-            if stock_id:
-                item_obj.STOCK_id = stock_id
+            # 3. Apply your original Update Logic
+            try:
+                if stock_id:
+                    obj.STOCK_id = stock_id
+                obj.quantity = quantity
+                obj.save()
+            except Exception as e:
+                # Fallback as per your provided logic
+                obj.quantity = quantity
+                obj.save()
 
-            # 4. Update Price ONLY if provided (Distributor Flow)
-            # If 'amount' is missing from request (Customer Flow), we keep existing price
-            if new_price and str(new_price).strip() != "":
-                item_obj.price = new_price
+            # 4. Recalculate Total (Same as your logic)
+            order_id = obj.ORDER_id
+            all_ordered_items = order_sub.objects.filter(ORDER=order_id)
 
-            # Save changes to the specific item
-            item_obj.save()
-
-            # 5. RECALCULATE MAIN ORDER TOTAL
-            # Get the parent Order object
-            parent_order = item_obj.ORDER
-
-            # Fetch all sub-items belonging to this order
-            all_ordered_items = order_sub.objects.filter(ORDER=parent_order)
-
-            grand_total = 0
+            total = 0
             for i in all_ordered_items:
-                # Use i.price (the price saved in the row) * i.quantity
-                # We use float() in case price is stored as a string with decimals
-                grand_total += int(i.quantity) * float(i.price)
+                # Logic: Qty * Base Stock Price
+                total += int(i.quantity) * int(i.STOCK.price)
 
-            # 6. Update the Main Order table amount
-            parent_order.amount = str(int(grand_total))
-            parent_order.save()
+            # 5. Update the main order amount
+            order.objects.filter(id=order_id).update(amount=total)
 
-            return JsonResponse({
-                'status': 'ok',
-                'message': 'Update successful',
-                'new_item_total': int(item_obj.quantity) * float(item_obj.price),
-                'new_order_total': parent_order.amount
-            })
+            return JsonResponse({'status': 'ok'})
 
         except order_sub.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Item not found'})
         except Exception as e:
             print(f"Error: {e}")
-            return JsonResponse({'status': 'error', 'message': 'Internal Server Error'})
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
-
-# def delete_order_item(request):
-#
-#     id=request.POST['id']
-#
-#     orderid = order_sub.objects.get(id=id).ORDER_id
-#     order_sub.objects.get(id=id).delete()
-#     print(orderid,"okyyy")
-#     allordereditem = order_sub.objects.filter(ORDER=orderid)
-#     print("okkkkk")
-#     total = 0
-#     for i in allordereditem:
-#         total += int(i.quantity) * int(i.STOCK.price)
-#     print("tttt",total)
-#     order.objects.filter(id=orderid).update(amount=total)
-#     if  order_sub.objects.filter(ORDER=orderid).exists():
-#         pass
-#     else:
-#         order.objects.filter(id=orderid).delete()
-#
-#     return JsonResponse({'status':'ok',})
-#
-#
-# def delete_order(request):
-#     id = request.POST.get('id')
-#     order.objects.filter(id=id).delete()
-#     return JsonResponse({"status": "ok"})
 
 
 def delete_order_item(request):
@@ -1970,7 +1934,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyB9oADlE72fI2XYjMWk8zQ0eBax4XINaWo")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyAielRlE8FXL39atm9A1ddpviJgH7lss9A")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
@@ -2148,3 +2112,12 @@ def addtobill(request):
 
 
 
+def addFinalBill(request):
+   id = request.POST['id']
+
+   total = request.POST['total']
+   print(id,"  total  ",total)
+   order.objects.filter(id=id).update(amount = total,order_type = "offline")
+
+
+   return JsonResponse({'status': 'ok'})
