@@ -15,6 +15,7 @@ class AppButton extends StatelessWidget {
   // 2. New properties to fix your specific errors
   final bool isLoading;
   final Color? borderColor;
+  final double height;
 
   const AppButton({
     super.key,
@@ -28,13 +29,14 @@ class AppButton extends StatelessWidget {
     // Initialize new properties
     this.isLoading = false,
     this.borderColor,
+    this.height= 50.0,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
-      height: 50,
+      height: height,
       width: double.infinity, // Usually buttons in login forms take full width
       child: ElevatedButton(
 
@@ -133,7 +135,7 @@ class _CartButtonState extends State<CartButton>
       animation: _controller,
       builder: (_, __) {
         return Container(
-          padding: const EdgeInsets.all(2), // ✅ border thickness
+          padding: const EdgeInsets.all(2.5), // ✅ border thickness
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(50),
             gradient: SweepGradient(
@@ -142,9 +144,6 @@ class _CartButtonState extends State<CartButton>
               transform:
               GradientRotation(_controller.value * 2 * pi), // 🔥 rotate border
               colors:  [
-                AppColors.getTextColor2(context),
-                AppColors.getTextColor2(context),
-                AppColors.getTextColor2(context),
                 AppColors.getTextColor2(context),
                 AppColors.getTextColor2(context),
                 AppColors.getTextColor(context),
@@ -168,7 +167,7 @@ class _CartButtonState extends State<CartButton>
                 style:  TextStyle(
                   color: AppColors.getTextColor(context),
                   fontSize: 12,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w900,
                 ),
               ),
               style: ElevatedButton.styleFrom(
@@ -188,3 +187,88 @@ class _CartButtonState extends State<CartButton>
     );
   }
 }
+
+
+
+
+
+
+
+class DeleteButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+  final double size;
+
+  const DeleteButton({
+    super.key,
+    required this.onPressed,
+    this.icon = Icons.delete_outline,
+    this.size = 35.0, // Default diameter of the circle
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(size / 2),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: AppColors.dangerbgColor, // Light red transparent background
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.dangerColor, // Deep red border
+            width: 1.2,
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: AppColors.dangerColor, // Deep red icon
+          size: size * 0.5, // Icon scales with button size
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class EditButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+  final double size;
+
+  const EditButton({
+    super.key,
+    required this.onPressed,
+    this.icon = Icons.edit_outlined, // Default edit icon
+    this.size = 35.0,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(size / 2),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: AppColors.pillbgColor, // Semi-transparent blue
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.pillColor, // Solid blue border
+            width: 1.2,
+          ),
+        ),
+        child: Icon(
+          icon,
+          color: AppColors.pillColor, // Solid blue icon
+          size: size * 0.5,
+        ),
+      ),
+    );
+  }
+}
+

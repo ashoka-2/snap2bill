@@ -15,6 +15,7 @@ import 'package:snap2bill/screens/viewWishlist.dart';
 import 'package:snap2bill/data/dataModels.dart';
 import 'package:snap2bill/data/category_service.dart';
 import 'package:snap2bill/data/product_service.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/Navbar.dart';
 
 import 'package:snap2bill/widgets/category_filter_bar.dart';
@@ -132,7 +133,7 @@ class _Home_pageState extends State<Home_page> {
 
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: AppColors.getScaffoldBg(context),
 
       /// Swipe from left edge
       drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,

@@ -1555,28 +1555,91 @@ def edit_order(request):
     order_sub.objects.filter(id=id).update(quantity=quantity)
     return JsonResponse({"status":"ok"})
 
+# def update_order_item(request):
+#     id = request.POST.get('id')
+#     stock_id = request.POST.get('stock_id')
+#     quantity = request.POST.get('quantity')
+#     print(id,stock_id,quantity)
+#     try:
+#         obj = order_sub.objects.get(id=id)
+#         obj.STOCK_id = stock_id
+#         obj.quantity = quantity
+#         obj.save()
+#     except:
+#         obj = order_sub.objects.get(id=id)
+#         obj.quantity = quantity
+#         obj.save()
+#     orderid = order_sub.objects.get(id=id).ORDER_id
+#     allordereditem = order_sub.objects.filter(ORDER=orderid)
+#     total = 0
+#     for i in allordereditem:
+#         total += int(i.quantity) * int(i.STOCK.price)
+#     order.objects.filter(id = orderid).update(amount=total)
+#
+#     return JsonResponse({'status': 'ok'})
 def update_order_item(request):
-    id = request.POST.get('id')
-    stock_id = request.POST.get('stock_id')
-    quantity = request.POST.get('quantity')
-    print(id,stock_id,quantity)
-    try:
-        obj = order_sub.objects.get(id=id)
-        obj.STOCK_id = stock_id
-        obj.quantity = quantity
-        obj.save()
-    except:
-        obj = order_sub.objects.get(id=id)
-        obj.quantity = quantity
-        obj.save()
-    orderid = order_sub.objects.get(id=id).ORDER_id
-    allordereditem = order_sub.objects.filter(ORDER=orderid)
-    total = 0
-    for i in allordereditem:
-        total += int(i.quantity) * int(i.STOCK.price)
-    order.objects.filter(id = orderid).update(amount=total)
+    if request.method == 'POST':
+        item_id = request.POST.get('id')  # The unique ID for the order_sub row
+        quantity = request.POST.get('quantity')  # New Quantity sent from app
+        new_price = request.POST.get('amount')  # New Price (sent by Distributor)
+        stock_id = request.POST.get('stock_id')  # Optional: Change product/stock
 
-    return JsonResponse({'status': 'ok'})
+        try:
+            # 1. Fetch the specific ordered item record
+            item_obj = order_sub.objects.get(id=item_id)
+
+            # 2. VALIDATION: Check quantity limit (Must be 1-100)
+            if quantity:
+                qty_int = int(quantity)
+                if qty_int > 100:
+                    return JsonResponse({'status': 'error', 'message': 'Quantity cannot exceed 100'})
+                if qty_int <= 0:
+                    return JsonResponse({'status': 'error', 'message': 'Quantity must be at least 1'})
+                item_obj.quantity = qty_int
+
+            # 3. Update Stock if a new one was selected
+            if stock_id:
+                item_obj.STOCK_id = stock_id
+
+            # 4. Update Price ONLY if provided (Distributor Flow)
+            # If 'amount' is missing from request (Customer Flow), we keep existing price
+            if new_price and str(new_price).strip() != "":
+                item_obj.price = new_price
+
+            # Save changes to the specific item
+            item_obj.save()
+
+            # 5. RECALCULATE MAIN ORDER TOTAL
+            # Get the parent Order object
+            parent_order = item_obj.ORDER
+
+            # Fetch all sub-items belonging to this order
+            all_ordered_items = order_sub.objects.filter(ORDER=parent_order)
+
+            grand_total = 0
+            for i in all_ordered_items:
+                # Use i.price (the price saved in the row) * i.quantity
+                # We use float() in case price is stored as a string with decimals
+                grand_total += int(i.quantity) * float(i.price)
+
+            # 6. Update the Main Order table amount
+            parent_order.amount = str(int(grand_total))
+            parent_order.save()
+
+            return JsonResponse({
+                'status': 'ok',
+                'message': 'Update successful',
+                'new_item_total': int(item_obj.quantity) * float(item_obj.price),
+                'new_order_total': parent_order.amount
+            })
+
+        except order_sub.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Item not found'})
+        except Exception as e:
+            print(f"Error: {e}")
+            return JsonResponse({'status': 'error', 'message': 'Internal Server Error'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 # def delete_order_item(request):
 #
@@ -1698,7 +1761,7 @@ def view_distributor_ordersitems(request):
         if i.price == '':
             ar.append({
                 'id': i.id,
-                'quatity':i.quantity,
+                'quantity':i.quantity,
                 'image': i.STOCK.PRODUCT.image,
                 'amount': i.STOCK.price,
                 'product_name': i.STOCK.PRODUCT.product_name,
@@ -1708,7 +1771,7 @@ def view_distributor_ordersitems(request):
         else:
             ar.append({
                 'id': i.id,
-                'quatity': i.quantity,
+                'quantity': i.quantity,
                 'image': i.STOCK.PRODUCT.image,
                 'amount': i.price,
                 'product_name': i.STOCK.PRODUCT.product_name,

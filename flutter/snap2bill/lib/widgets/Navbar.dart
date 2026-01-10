@@ -31,7 +31,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
     final int actionCount = actions?.length ?? 0;
 
     return AppBar(
-      backgroundColor: AppColors.getScaffoldBg(context),
+      backgroundColor: Colors.transparent,
       elevation: 0,
       centerTitle: centerTitle,
       automaticallyImplyLeading: false,

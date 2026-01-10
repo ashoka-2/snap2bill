@@ -130,7 +130,7 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
 
                           leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedUserGroup03,
-                        strokeWidth: _selectedIndex == 2 ? 3 : 2,),
+                        strokeWidth: _selectedIndex == 2 ? 2.5 : 2,),
 
                           text: 'Distributors'),
                       GButton(icon: LineIcons.user,

@@ -46,6 +46,7 @@ class AppColors {
   static const Color greyButton = Color(0xA1676767);
   static const Color borderColor = Color(0xc7c7c7);
   static const Color pillColor = Color(0xff23afda);
+  static Color pillbgColor = const Color(0xff23afda).withValues(alpha: 0.2);
   static const Color whiteTextColor = Color(0xE5FFFFFF);
   static const Color borderColorLight = Color(0xFF000000);
 
@@ -81,7 +82,7 @@ class AppColors {
       isDarkMode(context) ? Colors.grey.shade800 : Colors.grey.shade100;
 
   static Color getButtonBg(BuildContext context) =>
-      isDarkMode(context) ? Colors.grey.shade700 : Colors.grey.shade300;
+      isDarkMode(context) ? primaryDark : primaryLight;
 
   static Color getTextColor(BuildContext context) =>
       isDarkMode(context) ? textMainDark : textMainLight;
