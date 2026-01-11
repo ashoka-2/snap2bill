@@ -122,6 +122,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
 
                           leading: HugeIcon(
                         icon: HugeIcons.strokeRoundedSearch01,
+
                         strokeWidth: _selectedIndex == 1 ? 3 : 2,
                       ),
 

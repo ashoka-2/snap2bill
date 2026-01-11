@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/app_button.dart';
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 class ViewOrderItems extends StatefulWidget {
   const ViewOrderItems({Key? key}) : super(key: key);
@@ -279,9 +280,18 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                 onPressed: () {
                   int? qty = int.tryParse(qtyController.text);
                   if (qty == null || qty <= 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Enter a valid quantity")));
+                    CustomSnackBar.show(
+                      context,
+                      'Enter a valid Quantity',
+                      backgroundColor: AppColors.dangerColor,
+                    );
                   } else if (qty > 100) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Quantity cannot exceed 100")));
+                    CustomSnackBar.show(
+                      context,
+                      'Please select a rating and write a review',
+                      backgroundColor: Colors.redAccent,
+                    );
                   } else {
                     updateItem(item['id'].toString(), selectedStockId!, qtyController.text);
                     Navigator.pop(context);

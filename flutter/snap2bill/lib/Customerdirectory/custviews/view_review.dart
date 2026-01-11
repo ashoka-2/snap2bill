@@ -94,7 +94,7 @@ class _view_reviewState extends State<view_review> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Review deleted")));
 
         // Refresh the page or navigate away as per your original logic
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 3,)));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)));
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));

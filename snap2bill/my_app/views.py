@@ -11,14 +11,13 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Q
 from difflib import get_close_matches
 import cv2
 
-
-#
-# import google.generativeai as genai
-# from PIL import Image
-# import io
+from PIL import Image
+import io
+import google.generativeai as genai
 
 
 def get_new_filename():
@@ -1865,11 +1864,6 @@ def make_payment(request):
 #     })
 
 
-from django.http import JsonResponse
-from django.core.files.storage import FileSystemStorage
-from PIL import Image
-import io
-import google.generativeai as genai
 
 def scanItem(request):
     if request.method != "POST":
@@ -2121,3 +2115,60 @@ def addFinalBill(request):
 
 
    return JsonResponse({'status': 'ok'})
+
+
+
+def universal_search(request):
+    query = request.GET.get('q', '').strip()
+
+    # Default state: Return all products for the Instagram grid
+    if not query:
+        products = product.objects.all()
+        product_data = [{
+            'type': 'product',
+            'id': p.id,
+            'name': p.product_name,
+            'image': p.image,
+            'category': p.CATEGORY.category_name
+        } for p in products]
+        return JsonResponse({'status': 'ok', 'data': product_data})
+
+    # 1. Search Products (Name, Category)
+    products = product.objects.filter(
+        Q(product_name__icontains=query) |
+        Q(CATEGORY__category_name__icontains=query)
+    )
+
+    # 2. Search Customers (Name, Email, Phone, Place)
+    customers = customer.objects.filter(
+        Q(name__icontains=query) |
+        Q(email__icontains=query) |
+        Q(phone__icontains=query) |
+        Q(place__icontains=query)
+    )
+
+    # 3. Search Distributors (Name, Email, Phone, Place)
+    distributors = distributor.objects.filter(
+        Q(name__icontains=query) |
+        Q(email__icontains=query) |
+        Q(phone__icontains=query) |
+        Q(place__icontains=query)
+    )
+
+    results = []
+
+    for p in products:
+        results.append({'type': 'product', 'id': p.id, 'name': p.product_name, 'image': p.image,
+                        'category': p.CATEGORY.category_name})
+
+    for c in customers:
+        results.append(
+            {'type': 'customer', 'id': c.id, 'name': c.name, 'email': c.email, 'phone': c.phone, 'place': c.place,
+             'image': c.profile_image})
+
+    for d in distributors:
+        results.append(
+            {'type': 'distributor', 'id': d.id, 'name': d.name, 'email': d.email, 'phone': d.phone, 'place': d.place,
+             'image': d.profile_image})
+
+    return JsonResponse({'status': 'ok', 'data': results})

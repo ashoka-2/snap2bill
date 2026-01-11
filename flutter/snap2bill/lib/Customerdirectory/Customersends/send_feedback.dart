@@ -8,6 +8,7 @@ import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 // Make sure these point to your actual file locations
 import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class send_feedback extends StatefulWidget {
@@ -25,8 +26,11 @@ class _send_feedbackState extends State<send_feedback> {
   Future<void> submitFeedback() async {
     // 1. Validation
     if (feedbackController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your feedback first')),
+
+      CustomSnackBar.show(
+        context,
+        'Please enter your feedback first',
+        backgroundColor: Colors.redAccent,
       );
       return;
     }
@@ -53,8 +57,11 @@ class _send_feedbackState extends State<send_feedback> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thank you! Feedback sent successfully')),
+
+        CustomSnackBar.show(
+          context,
+          'Thank you! Feedback sent successfully!',
+          backgroundColor: Colors.green,
         );
         // Navigate back to Customer Home/Nav Bar
         Navigator.pushReplacement(
@@ -65,8 +72,11 @@ class _send_feedbackState extends State<send_feedback> {
         throw Exception('Failed to send feedback (Status: ${res.statusCode})');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+
+      CustomSnackBar.show(
+        context,
+        'Error : $e',
+        backgroundColor: Colors.redAccent,
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);

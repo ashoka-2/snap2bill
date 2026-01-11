@@ -7,11 +7,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'dart:typed_data';
 
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 class edit_customer_profile extends StatefulWidget {
   final dynamic id, name, email, phone, bio, address, pincode, place, post;
@@ -81,13 +83,11 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
   }
 
   bool _showErr(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(msg),
-        backgroundColor: Colors.redAccent,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
+
+    CustomSnackBar.show(
+      context,
+      '$msg',
+      backgroundColor: AppColors.dangerColor,
     );
     return false;
   }

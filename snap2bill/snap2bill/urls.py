@@ -139,7 +139,8 @@ urlpatterns = [
     path('scanItem',views.scanItem),
     path('viewAllCustomers',views.viewAllCustomers),
     path('addtobill',views.addtobill),
-    path('addFinalBill',views.addFinalBill)
+    path('addFinalBill',views.addFinalBill),
+    path('universal_search',views.universal_search)
 
 ]
 

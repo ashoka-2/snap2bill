@@ -131,73 +131,77 @@ class _Home_pageState extends State<Home_page> {
         .where((p) => p.categoryId == _selectedCategoryId)
         .toList();
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: AppColors.getScaffoldBg(context),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
 
-      /// Swipe from left edge
-      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
+      child: Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: AppColors.getScaffoldBg(context),
 
-      drawer: CustomDrawer(menuItems: _getDrawerItems()),
+        /// Swipe from left edge
+        drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
 
-      appBar: ThemeNavbar(
-        title:
-          "Snap2Bill",
-        leadingIcon: Icons.menu,
-        onLeadingPressed: ()=>
-        {
-          _scaffoldKey.currentState?.openDrawer(),
-        },
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.favorite_border),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ViewWishlist()),
-              ).then((_) {
-                /// 🔁 Sync wishlist state on return
-                _loadData();
-              });
-            },
-          ),
-          // IconButton(
-          //   icon: const Icon(Icons.favorite),
-          //   onPressed: () {
-          //
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (_) => const ViewWishlist()),
-          //     ).then((_) {
-          //       /// 🔁 Sync wishlist state on return
-          //       _loadData();
-          //     });
-          //   },
-          // ),
-        ],
-      ),
+        drawer: CustomDrawer(menuItems: _getDrawerItems()),
 
-      body: RefreshIndicator(
-        onRefresh: _loadData,
-        child: Column(
-          children: [
-            /// CATEGORY FILTER
-            CategoryFilterBar(
-              categories: _categories,
-              selectedId: _selectedCategoryId,
-              onSelect: (id) =>
-                  setState(() => _selectedCategoryId = id),
+        appBar: ThemeNavbar(
+          title:
+            "Snap2Bill",
+          leadingIcon: Icons.menu,
+          onLeadingPressed: ()=>
+          {
+            _scaffoldKey.currentState?.openDrawer(),
+          },
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.favorite_border),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const ViewWishlist()),
+                ).then((_) {
+                  /// 🔁 Sync wishlist state on return
+                  _loadData();
+                });
+              },
             ),
-
-            /// PRODUCT FEED
-            Expanded(
-              child: ProductFeedWidget(
-                filteredProducts: filteredProducts,
-                showAddToCart: false, // ❌ Distributor = No Cart
-                isLoading: _isLoading,
-              ),
-            ),
+            // IconButton(
+            //   icon: const Icon(Icons.favorite),
+            //   onPressed: () {
+            //
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (_) => const ViewWishlist()),
+            //     ).then((_) {
+            //       /// 🔁 Sync wishlist state on return
+            //       _loadData();
+            //     });
+            //   },
+            // ),
           ],
+        ),
+
+        body: RefreshIndicator(
+          onRefresh: _loadData,
+          child: Column(
+            children: [
+              /// CATEGORY FILTER
+              CategoryFilterBar(
+                categories: _categories,
+                selectedId: _selectedCategoryId,
+                onSelect: (id) =>
+                    setState(() => _selectedCategoryId = id),
+              ),
+
+              /// PRODUCT FEED
+              Expanded(
+                child: ProductFeedWidget(
+                  filteredProducts: filteredProducts,
+                  showAddToCart: false, // ❌ Distributor = No Cart
+                  isLoading: _isLoading,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

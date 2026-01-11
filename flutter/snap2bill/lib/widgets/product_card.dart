@@ -8,7 +8,7 @@ import 'package:readmore/readmore.dart';
 
 import '../data/dataModels.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
-import '../Distributordirectory/view/ViewDistributorProfile.dart';
+import '../screens/viewDistributorProfile.dart';
 import '../theme/colors.dart';
 import 'app_button.dart';
 

@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shimmer/shimmer.dart';
-import '../../Customerdirectory/Customersends/addOrder.dart';
-import '../../widgets/Navbar.dart';
+import '../Customerdirectory/Customersends/addOrder.dart';
+import '../widgets/Navbar.dart';
 
 class ViewDistributorProfile extends StatefulWidget {
   final String distributorId;

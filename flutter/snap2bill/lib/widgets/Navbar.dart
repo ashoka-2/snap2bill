@@ -50,7 +50,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
             color: AppColors.getPillBg(context),
             shape: BoxShape.circle,
             border: Border.all(
-              color: AppColors.getBorderColor(context).withValues(alpha: 0.5),
+              color: AppColors.getBorderColor(context).withValues(alpha: 0.3),
               width: 1.5,
             ),
           ),

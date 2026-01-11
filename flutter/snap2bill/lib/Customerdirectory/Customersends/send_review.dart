@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 // Make sure these point to your actual file locations
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class send_review extends StatefulWidget {
@@ -25,11 +27,10 @@ class _send_reviewState extends State<send_review> {
   Future<void> submitReview() async {
     // 1. Validation
     if (reviews.text.isEmpty || rating == 0.0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a rating and write a review'),
-          backgroundColor: Colors.redAccent,
-        ),
+      CustomSnackBar.show(
+        context,
+        'Please select a rating and write a review',
+        backgroundColor: Colors.redAccent,
       );
       return;
     }
@@ -80,26 +81,32 @@ class _send_reviewState extends State<send_review> {
 
       if (jsonResponse['status'] == 'ok') {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Review sent successfully!'),
-            backgroundColor: Colors.green,
-          ),
+
+        CustomSnackBar.show(
+          context,
+          'Review sent successfully!',
+          backgroundColor: Colors.green,
         );
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 3,)),
+          MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)),
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to send review')),
+
+        CustomSnackBar.show(
+          context,
+          'Failed to send review!',
+          backgroundColor: AppColors.dangerColor,
         );
       }
     } catch (e) {
       print("CRITICAL ERROR: $e"); // View this in your Run tab
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+
+      CustomSnackBar.show(
+        context,
+        'Error : $e',
+        backgroundColor: AppColors.dangerColor,
       );
     } finally {
       if (mounted) setState(() => isLoading = false);

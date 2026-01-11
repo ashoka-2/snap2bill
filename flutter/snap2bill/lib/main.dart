@@ -132,144 +132,148 @@ class MyApp_sub extends StatefulWidget {
 }
 
 class _MyApp_subState extends State<MyApp_sub> {
-  // TextEditingController ip = TextEditingController(text: "10.39.218.28");
-  TextEditingController ip = TextEditingController(text: "192.168.29.5");
+  TextEditingController ip = TextEditingController(text: "10.39.218.28");
+  // TextEditingController ip = TextEditingController(text: "192.168.29.5");
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final iconColor = isDark?AppColors.iconColorDark:AppColors.iconColorLight;
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      //extend the body to be visible in the back of appbar
-      extendBodyBehindAppBar: true,
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
 
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        actions: [
-          Container(
-            padding: EdgeInsets.all(5),
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        //extend the body to be visible in the back of appbar
+        extendBodyBehindAppBar: true,
 
-            decoration: BoxDecoration(
-              color: AppColors.greyButton.withOpacity(0.5),
-              borderRadius: BorderRadius.circular(50),
-            ),
-            child: IconButton(
-              icon: Icon(
-                ThemeService.instance.isDarkMode
-                    ? Icons.light_mode
-                    : Icons.dark_mode,
-                color:iconColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            Container(
+              padding: EdgeInsets.all(5),
+
+              decoration: BoxDecoration(
+                color: AppColors.greyButton.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(50),
               ),
-              onPressed: () {
-                MyApp.changeTheme(context);
-              },
+              child: IconButton(
+                icon: Icon(
+                  ThemeService.instance.isDarkMode
+                      ? Icons.light_mode
+                      : Icons.dark_mode,
+                  color:iconColor,
+                ),
+                onPressed: () {
+                  MyApp.changeTheme(context);
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            Positioned(
-              top: -70,
-              left: -50,
-              child: _buildBlob(250, _blobGradient1),
-            ),
-            Positioned(
-              top: 150,
-              right: -80,
-              child: _buildBlob(180, _blobGradient2),
-            ),
-        
-         
-            Column(
-              
-              children: [
-                SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Stack(
+            children: [
+              Positioned(
+                top: -70,
+                left: -50,
+                child: _buildBlob(250, _blobGradient1),
+              ),
+              Positioned(
+                top: 150,
+                right: -80,
+                child: _buildBlob(180, _blobGradient2),
+              ),
 
-                Center(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: theme.cardColor,
-                      borderRadius: BorderRadius.circular(20),
 
-                    ),
-                    margin: const EdgeInsets.all(20),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 40,
+              Column(
+
+                children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.25),
+
+                  Center(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: theme.cardColor,
+                        borderRadius: BorderRadius.circular(20),
+
                       ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                              radius: 60,
-                              backgroundColor: Colors.transparent,
-                              child: SvgPicture.asset('assets/images/snap2bill_logo.svg',height:100,)),
-                          SizedBox(height: 10,),
-                          Text(
-                            "Enter Your IP Address",
+                      margin: const EdgeInsets.all(20),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 40,
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.transparent,
+                                child: SvgPicture.asset('assets/images/snap2bill_logo.svg',height:100,)),
+                            SizedBox(height: 10,),
+                            Text(
+                              "Enter Your IP Address",
 
-                            style: TextStyle(
-                              color: AppColors.primaryLight,
-                              fontSize: 20,
+                              style: TextStyle(
+                                color: AppColors.primaryLight,
+                                fontSize: 20,
+                              ),
                             ),
-                          ),
 
-                          const SizedBox(height: 20),
-                          TextFormField(
-                            controller: ip,
-                            style: TextStyle(
-                              color: ThemeService.instance.isDarkMode
-                                  ? Colors.white
-                                  : Colors.black,
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: ip,
+                              style: TextStyle(
+                                color: ThemeService.instance.isDarkMode
+                                    ? Colors.white
+                                    : Colors.black,
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'IP Address',
+                                prefixIcon: const Icon(Icons.wifi),
+                                prefixIconColor: iconColor,
+                              ),
                             ),
-                            decoration: InputDecoration(
-                              labelText: 'IP Address',
-                              prefixIcon: const Icon(Icons.wifi),
-                              prefixIconColor: iconColor,
+
+                            const SizedBox(height: 20),
+
+                            // ------------------------------------------------
+                            // 2. HERE IS YOUR NEW CUSTOM BUTTON
+                            // ------------------------------------------------
+                            AppButton(
+                              text: "Submit",
+                              // icon: Icons.upload,
+                              // isTrailingIcon: true,
+                              onPressed: () async {
+                                SharedPreferences prefs =
+                                    await SharedPreferences.getInstance();
+                                prefs.setString("ip", "http://${ip.text}:8000");
+
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => login_page(),
+                                    ),
+                                  );
+                                }
+                              },
                             ),
-                          ),
 
-                          const SizedBox(height: 20),
-
-                          // ------------------------------------------------
-                          // 2. HERE IS YOUR NEW CUSTOM BUTTON
-                          // ------------------------------------------------
-                          AppButton(
-                            text: "Submit",
-                            // icon: Icons.upload,
-                            // isTrailingIcon: true,
-                            onPressed: () async {
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              prefs.setString("ip", "http://${ip.text}:8000");
-
-                              if (context.mounted) {
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => login_page(),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-
-                          // ------------------------------------------------
-                        ],
+                            // ------------------------------------------------
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

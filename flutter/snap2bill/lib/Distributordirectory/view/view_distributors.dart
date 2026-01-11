@@ -7,8 +7,9 @@ import 'package:snap2bill/widgets/Navbar.dart';
 
 // Import your navigation bar to go to "My Profile"
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
+
+import '../../screens/viewDistributorProfile.dart';
 // Import the Read-Only profile page
-import 'ViewDistributorProfile.dart';
 
 class view_distributors extends StatefulWidget {
   const view_distributors({Key? key}) : super(key: key);
