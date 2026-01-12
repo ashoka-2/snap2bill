@@ -8,10 +8,10 @@ import 'package:hugeicons/hugeicons.dart';
 import 'package:snap2bill/Customerdirectory/customer_home_page.dart';
 import 'package:snap2bill/Customerdirectory/distributor_page.dart';
 import 'package:snap2bill/Customerdirectory/profile_page.dart';
-// import 'package:snap2bill/Customerdirectory/search_page.dart';
+
 import 'package:snap2bill/theme/colors.dart';
 
-import '../Distributordirectory/search_page.dart';
+import '../screens/search_page.dart';
 
 
 /// CustomerNavigationBar

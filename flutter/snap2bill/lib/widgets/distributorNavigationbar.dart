@@ -8,7 +8,7 @@ import 'package:snap2bill/Distributordirectory/allCustomers.dart';
 
 // Import your distributor pages (adjust paths if needed)
 import '../Distributordirectory/home_page.dart';
-import '../Distributordirectory/search_page.dart';
+import '../screens/search_page.dart';
 import '../Distributordirectory/customer_page.dart';
 import '../Distributordirectory/profile_page.dart';
 import '../theme/colors.dart';

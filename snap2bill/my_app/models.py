@@ -43,7 +43,7 @@ class product(models.Model):
     product_name = models.CharField(max_length=100)
     image = models.TextField()
     description = models.TextField()
-    quantity = models.CharField(max_length=100)
+    # quantity = models.CharField(max_length=100)
     CATEGORY = models.ForeignKey(category,models.CASCADE)
 
 class review(models.Model):
@@ -59,16 +59,6 @@ class review(models.Model):
         return f"{user_name} → {dist_name} ({self.rating}★)"
 
 
-# class feedback(models.Model):
-#     feedbacks = models.CharField(max_length=100)
-#     feedback_date = models.CharField(max_length=100)
-#     USER = models.ForeignKey(customer,models.CASCADE)
-#     DISTRIBUTOR = models.ForeignKey(
-#         distributor,
-#         on_delete=models.SET_NULL,
-#         null=True,
-#     )
-#     type = models.CharField(max_length=100)
 
 class feedback(models.Model):
     feedbacks = models.TextField()

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -138,13 +139,20 @@ class ViewCustomerProfile extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _makeCall(customer.phone),
-                      icon: const Icon(Icons.call, size: 18),
-                      label: const Text("Call"),
+                      
+                      icon: Lottie.asset(
+                        'assets/lotties/call.json',
+                        width: 35, // Slightly adjusted for better alignment with text
+                        height: 35,
+                        fit: BoxFit.contain,
+                        repeat: true, // Set to false if you want it to play only once
+                      ),
+                      label: Text("Call"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: theme.primaryColor,
+                        backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                       ),
                     ),
                   ),
@@ -152,13 +160,19 @@ class ViewCustomerProfile extends StatelessWidget {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _messageCustomer(customer.phone),
-                      icon: const Icon(Icons.message, size: 18),
+                      icon: Lottie.asset(
+                        'assets/lotties/whatsapp.json',
+                        width: 35, // Slightly adjusted for better alignment with text
+                        height: 35,
+                        fit: BoxFit.contain,
+                        repeat: true, // Set to false if you want it to play only once
+                      ),
                       label: const Text("Message"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueGrey,
+                        backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(vertical: 5),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                       ),
                     ),
                   ),

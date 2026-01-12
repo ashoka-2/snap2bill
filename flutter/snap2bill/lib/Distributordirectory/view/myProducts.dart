@@ -706,14 +706,14 @@ class _myProductsSubState extends State<myProductsSub> {
                   i.product_name,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 15),
+                  style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 15,height: 1),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Text(
                   i.CATEGORY_NAME,
                   style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,

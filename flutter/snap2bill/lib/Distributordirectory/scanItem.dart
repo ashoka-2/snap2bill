@@ -1,129 +1,13 @@
-// import 'dart:io';
-// import 'package:flutter/material.dart';
-// import 'package:image_picker/image_picker.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:snap2bill/Distributordirectory/distributorsends/addToBill.dart';
-// import 'dart:convert';
-//
-// import '../Distributordirectory/search_page.dart';
-//
-// class Cameracapturemain extends StatelessWidget {
-//   const Cameracapturemain({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(home: CameraCapture(),
-//     debugShowCheckedModeBanner: false,
-//     );
-//   }
-// }
-//
-//
-// class CameraCapture extends StatefulWidget {
-//   @override
-//   _CameraCaptureState createState() => _CameraCaptureState();
-// }
-//
-// class _CameraCaptureState extends State<CameraCapture> {
-//   File? _image;
-//   final picker = ImagePicker();
-//
-//   Future<void> _captureImage() async {
-//     final pickedFile = await picker.pickImage(source: ImageSource.camera);
-//
-//     setState(() {
-//       if (pickedFile != null) {
-//         _image = File(pickedFile.path);
-//       }
-//     });
-//   }
-//
-//   Future<void> _sendImage() async {
-//     if (_image == null) return;
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String ip = prefs.getString("ip") ?? "";
-//
-//     var request = http.MultipartRequest(
-//       'POST',
-//       Uri.parse("${ip}/scanItem"));
-//
-//       request.files.add(
-//       http.MultipartFile(
-//       'image',
-//       _image!.readAsBytes().asStream(),
-//       _image!.lengthSync(),
-//       filename: _image!.path.split('/').last,
-//     ),
-//     );
-//
-//     request.fields['uid'] = prefs.getString("uid").toString();
-//     var response = await request.send();
-//
-//     var responseString = await response.stream.bytesToString();
-//     var decoded = json.decode(responseString);
-//
-//     if (decoded['status'] == 'ok') {
-//       SharedPreferences prefs = await SharedPreferences.getInstance();
-//       prefs.setString("sid", decoded['sid'].toString());
-//       prefs.setString("pname", decoded['product_name']);
-//       var pname= decoded['product_name'];
-//
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text("Showing product details for " + pname),
-//         ),
-//       );
-//       print("item Scanned and sent");
-//       Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
-//     } else {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         SnackBar(
-//           content: Text("Cant recognise product",style: TextStyle(backgroundColor: Colors.red,color: Colors.black),),
-//         ),
-//       );
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Camera Capture'),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Container(
-//           child: Center(
-//             child: Column(
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: [
-//                 _image == null
-//                     ? Text('No image captured')
-//                     : Image.file(_image!),
-//                 SizedBox(height: 20),
-//                 ElevatedButton(
-//                   onPressed: _captureImage,
-//                   child: Text('Capture Image'),
-//                 ),
-//                 SizedBox(height: 20),
-//                 ElevatedButton(
-//                   onPressed: _sendImage,
-//                   child: Text('Send Image'),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:hugeicons/styles/stroke_rounded.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/Distributordirectory/distributorsends/addProduct.dart';
 import 'package:snap2bill/Distributordirectory/distributorsends/addToBill.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -145,6 +29,7 @@ class _CameraCaptureState extends State<CameraCapture> {
   XFile? _pickedFile;
   final picker = ImagePicker();
   bool _isScanning = false;
+  bool _showAddButton = false;
 
   Future<void> _captureImage() async {
     final pickedFile = await picker.pickImage(source: ImageSource.camera);
@@ -193,6 +78,7 @@ class _CameraCaptureState extends State<CameraCapture> {
 
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
+        setState(() => _showAddButton = true);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Could not recognize product"),
@@ -226,6 +112,24 @@ class _CameraCaptureState extends State<CameraCapture> {
           if (Navigator.canPop(context)) Navigator.pop(context)
         },
         centerTitle: true,
+
+          actions:_showAddButton
+              ? [
+            IconButton(
+              onPressed: () {
+                // Navigate to your products list so they can pick manually
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>  add_product(capturedFile: _pickedFile,))
+                );
+              },
+              icon: HugeIcon(
+                  icon: HugeIcons.strokeRoundedAddSquare,
+                  color: isDark ? Colors.white : Colors.black
+              ),
+            )
+          ]
+              : null,
 
       ),
       body: SingleChildScrollView(

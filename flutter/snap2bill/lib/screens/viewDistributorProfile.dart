@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:shimmer/shimmer.dart';
@@ -217,23 +218,50 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           const SizedBox(height: 15),
           Row(
             children: [
+              // --- CALL BUTTON ---
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => launchUrl(Uri(scheme: 'tel', path: _profile!.phone)),
-                  icon: const Icon(Icons.call, size: 18), label: const Text("Call"),
-                  style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, foregroundColor: Colors.white),
+                  icon: Lottie.asset(
+                    'assets/lotties/call.json',
+                    width: 35, // Slightly adjusted for better alignment with text
+                    height: 35,
+                    fit: BoxFit.contain,
+                    repeat: true, // Set to false if you want it to play only once
+                  ),
+                  label: const Text("Call"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                  ),
                 ),
               ),
+
               const SizedBox(width: 10),
+
+              // --- WHATSAPP BUTTON WITH LOTTIE ---
               Expanded(
                 child: ElevatedButton.icon(
                   onPressed: () => launchUrl(Uri.parse("whatsapp://send?phone=${_profile!.phone}")),
-                  icon: const Icon(Icons.chat_bubble_outline, size: 18), label: const Text("WhatsApp"),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blueGrey, foregroundColor: Colors.white),
+                  // 🚀 Lottie Animation replacing the standard icon
+                  icon: Lottie.asset(
+                    'assets/lotties/whatsapp.json',
+                    width: 35, // Slightly adjusted for better alignment with text
+                    height: 35,
+                    fit: BoxFit.contain,
+                    repeat: true, // Set to false if you want it to play only once
+                  ),
+                  label: const Text("WhatsApp"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+                  ),
                 ),
               ),
             ],
-          ),
+          )
         ],
       ),
     );

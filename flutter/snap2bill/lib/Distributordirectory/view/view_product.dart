@@ -449,7 +449,7 @@ class _view_product_subState extends State<view_product_sub> {
           (it["product_name"] ?? "").toString(),
           _joinUrl(base, (it["image"] ?? "").toString()),
           (it["description"] ?? "").toString(),
-          (it["quantity"] ?? "").toString(),
+          // (it["quantity"] ?? "").toString(),
           (it["CATEGORY"] ?? "").toString(),
           (it["CATEGORY_NAME"] ?? "").toString(),
         ));
@@ -671,25 +671,27 @@ class _view_product_subState extends State<view_product_sub> {
                       color: textColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
+                      letterSpacing: 0,
+                      height: 1
                     ),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Text(
                     i.CATEGORY_NAME,
                     style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
                   ),
-                  const SizedBox(height: 10),
+                  // const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
+                          // color: isDark ? Colors.white.withOpacity(0.1) : Colors.grey.shade100,
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Text(
-                          "Qty: ${i.quantity}",
+                        child: Text("",
+                          // "Qty: ${i.quantity}",
                           style: TextStyle(
                             color: textColor.withOpacity(0.8),
                             fontWeight: FontWeight.w600,
@@ -706,7 +708,7 @@ class _view_product_subState extends State<view_product_sub> {
                         child: Icon(
                           Icons.add,
                           color: isDark ? Colors.black : Colors.white,
-                          size: 16,
+                          size: 20,
                         ),
                       ),
                     ],
@@ -781,7 +783,7 @@ class Joke {
   final String product_name;
   final String image;
   final String description;
-  final String quantity;
+  // final String quantity;
   final String CATEGORY;
   final String CATEGORY_NAME;
 
@@ -790,7 +792,7 @@ class Joke {
       this.product_name,
       this.image,
       this.description,
-      this.quantity,
+      // this.quantity,
       this.CATEGORY,
       this.CATEGORY_NAME,
       );

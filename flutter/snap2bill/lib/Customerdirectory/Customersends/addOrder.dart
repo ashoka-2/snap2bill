@@ -10,7 +10,8 @@ import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 import '../../widgets/Navbar.dart';
 
 class addOrder extends StatefulWidget {
-  const addOrder({Key? key}) : super(key: key);
+  final String? pid; // 🚀 Add this
+  const addOrder({Key? key, this.pid}) : super(key: key);
 
   @override
   State<addOrder> createState() => _addOrderState();

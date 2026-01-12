@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.log),
     path("__reload__/", include("django_browser_reload.urls")),
+
     path('login_post',views.login_post),
     path('logout',views.logout),
     path('change_password',views.change_password),
@@ -140,8 +141,13 @@ urlpatterns = [
     path('viewAllCustomers',views.viewAllCustomers),
     path('addtobill',views.addtobill),
     path('addFinalBill',views.addFinalBill),
-    path('universal_search',views.universal_search)
+    path('universal_search',views.universal_search),
+    path('distributor_add_product',views.distributor_add_product)
 
 ]
+
+handler404 = 'my_app.views.error_404_view'
+
+
 
 urlpatterns+= static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

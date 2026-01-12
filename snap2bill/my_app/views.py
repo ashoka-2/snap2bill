@@ -34,6 +34,9 @@ from my_app.models import category, distributor, review, feedback, customer, pro
 
 print(make_password("password"))
 
+def error_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
 def log(request):
     return render(request, 'login.html')
 
@@ -107,20 +110,6 @@ def change_password_post(request):
     messages.success(request, "Password updated successfully.")
     return redirect('/admin_home')
 
-# def change_password_post(request):
-#     current = request.POST['oldpassword']
-#     newpass = request.POST['newpassword']
-#     confirmpass = request.POST['confirmpassword']
-#     data = check_password(current,request.user.password)
-#     if data:
-#         if newpass == confirmpass:
-#             obj = request.user
-#             obj.set_password(newpass)
-#             obj.save()
-#             return HttpResponse("<script>alert('Update');window.location='/'</script>")
-#         return HttpResponse("<script>alert('Incorrect');window.location='/change_password'</script>")
-#     return HttpResponse("<script>alert('invalid');window.location='/change_password'</script>")
-
 
 def forget_password(request):
     return render(request, 'forget_password.html')
@@ -137,18 +126,6 @@ def forget_password_post(request):
 def forget_password_set(request):
     return render(request, 'forget_password_set.html')
 
-
-
-# def forget_password_set_post(request):
-#     newpass = request.POST['newpassword']
-#     confirmpass = request.POST['confirmpassword']
-#     if newpass == confirmpass:
-#         obj = User.objects.get(id=request.session['fid'])
-#         obj.set_password(newpass)
-#         obj.save()
-#         return HttpResponse("<script>alert('Update');window.location='/'</script>")
-#
-#     return HttpResponse("<script>alert('Update');window.location='/'</script>")
 
 
 def forget_password_set_post(request):
@@ -905,7 +882,7 @@ def add_product_post(request):
     fs=FileSystemStorage()
     image=fs.save(fullpath,img)
     # price = request.POST['price']
-    quantity = request.POST['quantity']
+    # quantity = request.POST['quantity']
     description = request.POST['description']
     category = request.POST['category']
     # obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
@@ -926,7 +903,7 @@ def edit_product_post(request,id):
     product_name = request.POST['product_name']
 
     # price = request.POST['price']
-    quantity = request.POST['quantity']
+    # quantity = request.POST['quantity']
     description = request.POST['description']
     category = request.POST['category']
     if 'image' in request.FILES:
@@ -936,7 +913,9 @@ def edit_product_post(request,id):
         product.objects.filter(id=id).update( image=fs.url(image))
 
     # product.objects.filter(id=id).update(product_name=product_name, price=price, quantity=quantity,description=description, CATEGORY_id=category)
-    product.objects.filter(id=id).update(product_name=product_name,quantity=quantity,description=description, CATEGORY_id=category)
+    product.objects.filter(id=id).update(product_name=product_name,
+                                         # quantity=quantity,
+                                         description=description, CATEGORY_id=category)
 
     return redirect('/view_product')
 
@@ -964,7 +943,7 @@ def distributor_view_product(request):
             # 'price': i.price,
             'image': i.image,
             'description': i.description,
-            'quantity': i.quantity,
+            # 'quantity': i.quantity,
             'CATEGORY': i.CATEGORY.id,
             'CATEGORY_NAME': getattr(i.CATEGORY, 'category_name', ''),
         })
@@ -1907,6 +1886,7 @@ def scanItem(request):
     fs = FileSystemStorage()
     saved_path = fs.save(image_file.name, image_file)
     image_path = fs.path(saved_path)
+    print(image_path,"oky")
 
     # ============================
     # 4. Convert Image → Bytes
@@ -1928,7 +1908,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyAielRlE8FXL39atm9A1ddpviJgH7lss9A")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyAqWFJWnf242QO-ZkbNLQxGE63c3W9zCWw")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
@@ -1973,26 +1953,32 @@ PRODUCT LIST:
     # ============================
     matched_stock = None
     for item in allproduct:
-        if item.PRODUCT.product_name.lower() == detected_product.lower():
+        db_name = item.PRODUCT.product_name.strip().lower()
+        ai_name = detected_product.strip().lower()
+        if ai_name == db_name or ai_name in db_name or db_name in ai_name:
             matched_stock = item
             break
-    print(matched_stock)
 
-    # ============================
-    # 9. Final Response
-    # ============================
+    import os
+
+    file_path = image_path
+
+    # Check if the file exists before attempting to delete
+    if os.path.exists(file_path):
+        os.remove(file_path)
+        print(f"The file {file_path} has been removed.")
+    else:
+        print(f"The file {file_path} does not exist.")
     if matched_stock:
+        print(f"Match found: {matched_stock}")
         return JsonResponse({
             'status': 'ok',
             'sid': matched_stock.id,
             'product_name': matched_stock.PRODUCT.product_name,
-            'matched_by': 'gemini_image_compare'
         })
     else:
-        return JsonResponse({
-            'status': 'not_found',
-            'detected_product': detected_product
-        })
+        print("Match failed: Stock not found in database for detected name.")
+        return JsonResponse({'status': 'not_found', 'detected': detected_product})
 
 
 def viewAllCustomers(request):
@@ -2117,58 +2103,104 @@ def addFinalBill(request):
    return JsonResponse({'status': 'ok'})
 
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+
+
 
 def universal_search(request):
     query = request.GET.get('q', '').strip()
-
-    # Default state: Return all products for the Instagram grid
-    if not query:
-        products = product.objects.all()
-        product_data = [{
-            'type': 'product',
-            'id': p.id,
-            'name': p.product_name,
-            'image': p.image,
-            'category': p.CATEGORY.category_name
-        } for p in products]
-        return JsonResponse({'status': 'ok', 'data': product_data})
-
-    # 1. Search Products (Name, Category)
-    products = product.objects.filter(
-        Q(product_name__icontains=query) |
-        Q(CATEGORY__category_name__icontains=query)
-    )
-
-    # 2. Search Customers (Name, Email, Phone, Place)
-    customers = customer.objects.filter(
-        Q(name__icontains=query) |
-        Q(email__icontains=query) |
-        Q(phone__icontains=query) |
-        Q(place__icontains=query)
-    )
-
-    # 3. Search Distributors (Name, Email, Phone, Place)
-    distributors = distributor.objects.filter(
-        Q(name__icontains=query) |
-        Q(email__icontains=query) |
-        Q(phone__icontains=query) |
-        Q(place__icontains=query)
-    )
+    page_number = request.GET.get('page', 1)
+    limit = 10
 
     results = []
 
-    for p in products:
-        results.append({'type': 'product', 'id': p.id, 'name': p.product_name, 'image': p.image,
-                        'category': p.CATEGORY.category_name})
+    if not query:
+        items = stock.objects.all()
+        for s in items:
+            results.append({
+                'type': 'product',
+                'id': s.id,
+                'name': s.PRODUCT.product_name,
+                'image': s.PRODUCT.image,
+                'category': s.PRODUCT.CATEGORY.category_name,
+                'price': s.price,
+                'description': s.PRODUCT.description,
+                'distributor_id': s.DISTRIBUTOR.id,
+                'distributor_name': s.DISTRIBUTOR.name,
+                'distributor_phone': s.DISTRIBUTOR.phone,
+                'distributor_image': s.DISTRIBUTOR.profile_image ,
+                'is_liked': False
+            })
+    else:
+        # A. Search Stock via Product Name or Category
+        stock_qs = stock.objects.filter(
+            Q(PRODUCT__product_name__icontains=query) |
+            Q(PRODUCT__CATEGORY__category_name__icontains=query)
+        ).distinct().order_by('-id')
 
-    for c in customers:
-        results.append(
-            {'type': 'customer', 'id': c.id, 'name': c.name, 'email': c.email, 'phone': c.phone, 'place': c.place,
-             'image': c.profile_image})
+        for s in stock_qs:
+            results.append({
+                'type': 'product', 'id': s.id, 'name': s.PRODUCT.product_name,
+                'image': s.PRODUCT.image,
+                'category': s.PRODUCT.CATEGORY.category_name, 'price': s.price,
+                'description': s.PRODUCT.description, 'distributor_id': s.DISTRIBUTOR.id,
+                'distributor_name': s.DISTRIBUTOR.name, 'distributor_phone': s.DISTRIBUTOR.phone,
+                'distributor_image': s.DISTRIBUTOR.profile_image
+            })
 
-    for d in distributors:
-        results.append(
-            {'type': 'distributor', 'id': d.id, 'name': d.name, 'email': d.email, 'phone': d.phone, 'place': d.place,
-             'image': d.profile_image})
+        # B. Search People (Customers & Distributors)
+        customers = customer.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
+        for c in customers:
+            results.append({'type': 'customer', 'id': c.id, 'name': c.name, 'place': c.place,
+                            'phone': c.phone, 'image': c.profile_image})
 
-    return JsonResponse({'status': 'ok', 'data': results})
+        distributors = distributor.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
+        for d in distributors:
+            results.append({'type': 'distributor', 'id': d.id, 'name': d.name, 'place': d.place,
+                            'phone': d.phone, 'image': d.profile_image})
+
+    paginator = Paginator(results, limit)
+    try:
+        page_obj = paginator.page(page_number)
+    except (PageNotAnInteger, EmptyPage):
+        return JsonResponse({'status': 'ok', 'data': [], 'has_next': False})
+
+    return JsonResponse({
+        'status': 'ok',
+        'data': list(page_obj),
+        'has_next': page_obj.has_next()
+    })
+
+
+
+
+def distributor_add_product(request):
+    uid = request.POST['uid']
+    image = request.FILES['file']
+
+    product_name = request.POST['product_name']
+    price = request.POST['price']
+    description = request.POST['description']
+    quantity = request.POST['quantity']
+    category_id = request.POST['category']
+
+    fs = FileSystemStorage()
+    file_name = fs.save(image.name, image)
+    image_url = fs.url(file_name)
+
+    new_product = product()
+    new_product.product_name = product_name
+    new_product.image = image_url
+    new_product.description = description
+    new_product.CATEGORY_id = category_id
+    new_product.save()
+
+    obj = stock()
+    obj.PRODUCT = new_product
+    obj.DISTRIBUTOR_id = uid
+    obj.price = price
+    obj.quantity = quantity
+    obj.save()
+
+    return JsonResponse({'status': 'ok'})
