@@ -37,6 +37,8 @@ class distributor(models.Model):
 class category(models.Model):
     category_name = models.CharField(max_length=100)
 
+class unit(models.Model):
+    unit_name = models.CharField(max_length=50)
 
 
 class product(models.Model):
@@ -85,6 +87,7 @@ class stock(models.Model):
     quantity = models.CharField(max_length=100)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
     PRODUCT = models.ForeignKey(product,models.CASCADE)
+    UNIT = models.ForeignKey(unit, on_delete=models.SET_NULL, null=True)
 
 class order(models.Model):
     payment_status = models.CharField(max_length=100)

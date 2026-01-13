@@ -46,7 +46,13 @@
 
   "/distributor_feedbacks": [
     "/distributor_feedbacks"
+  ],
+
+  "/manage_units":[
+      "/manage_units"
   ]
+
+
 };
 
 
@@ -69,6 +75,7 @@
     <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
              <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
               <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
+              <a class="nav-links" href="/manage_units"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>Manage Units</span></div></a>
     
           </div>
         </div>

@@ -142,11 +142,16 @@ urlpatterns = [
     path('addtobill',views.addtobill),
     path('addFinalBill',views.addFinalBill),
     path('universal_search',views.universal_search),
-    path('distributor_add_product',views.distributor_add_product)
+    path('distributor_add_product',views.distributor_add_product),
+
+
+
+    path('manage_units',views.manage_units),
+    path('delete_unit/<id>', views.delete_unit),
+    path('view_units',views.view_units)
 
 ]
 
-handler404 = 'my_app.views.error_404_view'
 
 
 

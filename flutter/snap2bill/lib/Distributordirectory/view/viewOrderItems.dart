@@ -168,7 +168,7 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
-                        "Qty: ${item.quantity}",
+                        "Qty: ${item.quantity} ${item.unit_name}",
                         style: const TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,
@@ -204,6 +204,7 @@ class OrderItem {
   final String price;
   final String productName;
   final String customerName;
+  final String unit_name;
 
   OrderItem({
     required this.id,
@@ -212,6 +213,7 @@ class OrderItem {
     required this.price,
     required this.productName,
     required this.customerName,
+    required this.unit_name,
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json, String ip) {
@@ -222,6 +224,9 @@ class OrderItem {
       price: json['amount'].toString(),
       productName: json['product_name'].toString(),
       customerName: json['username'].toString(),
+      unit_name: (json['unit_name'] != null && json['unit_name'] != "null")
+          ? json['unit_name'].toString()
+          : "pcs",
     );
   }
 }

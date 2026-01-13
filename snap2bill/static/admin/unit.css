@@ -1,0 +1,40 @@
+/* admin/unit.css */
+
+/* Re-using your header styles */
+.unit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--gutter-md);
+    margin-bottom: var(--margin-lg);
+}
+
+.unit-title {
+    font-size: var(--font-lg);
+    font-weight: 800;
+    letter-spacing: .02em;
+    color: var(--text-main);
+}
+
+.unit-sub {
+    color: var(--text-soft);
+    font-size: var(--font-sm);
+    margin-top: var(--margin-xxs);
+}
+
+/* Quick Add Form Band */
+.unit-form-band {
+    margin-bottom: var(--margin-lg);
+}
+
+/* Modal specific overrides to match your theme */
+#editUnitModal .modal, #deleteUnitModal .modal {
+    width: min(92vw, 30rem);
+}
+
+.empty-row {
+    text-align: center;
+    padding: var(--padding-xl) !important;
+    color: var(--text-soft);
+    font-style: italic;
+}

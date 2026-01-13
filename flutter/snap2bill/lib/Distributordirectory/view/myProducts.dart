@@ -1,3 +1,4 @@
+//
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
@@ -6,9 +7,8 @@
 //
 // // Imports from your project structure
 // import '../../theme/theme.dart';
-// import '../../widgets/Navbar.dart';
+// import '../../widgets/SearchBar.dart';
 // import '../Editfolder/editStock.dart';
-// import '../distributorsends/addToBill.dart';
 //
 // class myProducts extends StatelessWidget {
 //   const myProducts({Key? key}) : super(key: key);
@@ -28,6 +28,14 @@
 //
 // class _myProductsSubState extends State<myProductsSub> {
 //   bool _isDeleting = false;
+//   String _searchQuery = ""; // 🚀 State for search text
+//   late Future<List<Joke>> _productFuture;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     _productFuture = _getProducts();
+//   }
 //
 //   // --- API LOGIC (Unchanged) ---
 //   Future<List<Joke>> _getProducts() async {
@@ -45,8 +53,7 @@
 //
 //     final js = json.decode(res.body);
 //     if (js is! Map || js['status'] != 'ok' || js['data'] == null) {
-//       final msg = (js is Map && js['message'] != null) ? js['message'].toString() : "Unexpected response";
-//       throw Exception(msg);
+//       return [];
 //     }
 //
 //     final List<Joke> out = [];
@@ -78,6 +85,7 @@
 //     bool? confirm = await showDialog(
 //       context: context,
 //       builder: (context) => AlertDialog(
+//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
 //         title: const Text("Delete Product"),
 //         content: const Text("Are you sure? This action cannot be undone."),
 //         actions: [
@@ -104,7 +112,9 @@
 //       if (res.statusCode == 200) {
 //         if (!mounted) return;
 //         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product deleted successfully')));
-//         setState(() {});
+//         setState(() {
+//           _productFuture = _getProducts(); // Refresh list
+//         });
 //       }
 //     } catch (e) {
 //       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -118,58 +128,74 @@
 //   Widget build(BuildContext context) {
 //     final isDark = ThemeService.instance.isDarkMode;
 //     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF9F9F9);
-//     final titleColor = isDark ? Colors.white : Colors.black;
 //
-//     return Scaffold(
-//       backgroundColor: bgColor,
-//       appBar: ThemeNavbar(title: "My Products",
-//         leadingIcon: Icons.arrow_back_ios_rounded,
-//         onLeadingPressed: ()=>{
-//           if (Navigator.canPop(context)) Navigator.pop(context)
-//         },
-//         centerTitle: true,
+//     return GestureDetector(
+//       onTap: () => FocusScope.of(context).unfocus(), // 🚀 Close keyboard on tap
+//       child: Scaffold(
+//         backgroundColor: bgColor,
+//         // 🚀 CUSTOM SEARCHBAR APPBAR
+//         appBar: SearchAppBar(
+//           hintText: "Search name, category or price...",
+//           onLeadingPressed: () {
+//             if (Navigator.canPop(context)) Navigator.pop(context);
+//           },
+//           onChanged: (value) {
+//             setState(() {
+//               _searchQuery = value.toLowerCase();
+//             });
+//           },
+//         ),
+//         body: FutureBuilder<List<Joke>>(
+//           future: _productFuture,
+//           builder: (context, snapshot) {
+//             if (snapshot.connectionState == ConnectionState.waiting) {
+//               return const Center(child: CircularProgressIndicator());
+//             }
+//             if (snapshot.hasError) {
+//               return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
+//             }
+//             final items = snapshot.data ?? [];
+//             if (items.isEmpty) {
+//               return const Center(
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Icon(Icons.inventory_2_outlined, size: 60, color: Colors.grey),
+//                     SizedBox(height: 10),
+//                     Text("No products found"),
+//                   ],
+//                 ),
+//               );
+//             }
 //
-//       ),
-//       body: FutureBuilder<List<Joke>>(
-//         future: _getProducts(),
-//         builder: (context, snapshot) {
-//           if (snapshot.connectionState == ConnectionState.waiting) {
-//             return const Center(child: CircularProgressIndicator());
-//           }
-//           if (snapshot.hasError) {
-//             return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
-//           }
-//           final items = snapshot.data ?? [];
-//           if (items.isEmpty) {
-//             return const Center(
-//               child: Column(
-//                 mainAxisAlignment: MainAxisAlignment.center,
-//                 children: [
-//                   Icon(Icons.inventory_2_outlined, size: 60, color: Colors.grey),
-//                   SizedBox(height: 10),
-//                   Text("No products found"),
-//                 ],
-//               ),
+//             // 🚀 FILTERING LOGIC (Name, Category, or Price)
+//             final filteredList = items.where((i) {
+//               return i.product_name.toLowerCase().contains(_searchQuery) ||
+//                   i.CATEGORY_NAME.toLowerCase().contains(_searchQuery) ||
+//                   i.price.contains(_searchQuery);
+//             }).toList();
+//
+//             if (filteredList.isEmpty) {
+//               return const Center(child: Text("No matching products found"));
+//             }
+//
+//             // --- PINTEREST / MASONRY LAYOUT ---
+//             return MasonryGridView.count(
+//               padding: const EdgeInsets.all(12),
+//               crossAxisCount: 2,
+//               mainAxisSpacing: 12,
+//               crossAxisSpacing: 12,
+//               itemCount: filteredList.length,
+//               itemBuilder: (context, index) {
+//                 return _buildPinterestCard(filteredList[index], isDark);
+//               },
 //             );
-//           }
-//
-//           // --- PINTEREST / MASONRY LAYOUT ---
-//           return MasonryGridView.count(
-//             padding: const EdgeInsets.all(12),
-//             crossAxisCount: 2,
-//             mainAxisSpacing: 12,
-//             crossAxisSpacing: 12,
-//             itemCount: items.length,
-//             itemBuilder: (context, index) {
-//               return _buildPinterestCard(items[index], isDark);
-//             },
-//           );
-//         },
+//           },
+//         ),
 //       ),
 //     );
 //   }
 //
-//   // A card that sizes itself based on image height + content
 //   Widget _buildPinterestCard(Joke i, bool isDark) {
 //     final topContainerColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF3E5D8);
 //     final bottomContainerColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
@@ -191,7 +217,6 @@
 //         crossAxisAlignment: CrossAxisAlignment.stretch,
 //         mainAxisSize: MainAxisSize.min,
 //         children: [
-//
 //           // 1. IMAGE CONTAINER
 //           Container(
 //             decoration: BoxDecoration(
@@ -209,33 +234,19 @@
 //                     topRight: Radius.circular(16),
 //                   ),
 //                   child: i.image.isEmpty
-//                       ? Container(
+//                       ? SizedBox(
 //                     height: 150,
 //                     child: Icon(Icons.image_not_supported, color: Colors.grey.shade400, size: 40),
 //                   )
 //                       : Image.network(
 //                     i.image,
 //                     fit: BoxFit.fitWidth,
-//                     loadingBuilder: (context, child, loadingProgress) {
-//                       if (loadingProgress == null) return child;
-//                       return Container(
-//                         height: 150,
-//                         alignment: Alignment.center,
-//                         child: CircularProgressIndicator(
-//                           value: loadingProgress.expectedTotalBytes != null
-//                               ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-//                               : null,
-//                         ),
-//                       );
-//                     },
-//                     errorBuilder: (c, o, s) => Container(
+//                     errorBuilder: (c, o, s) => SizedBox(
 //                       height: 150,
 //                       child: Icon(Icons.broken_image, color: Colors.grey.shade400),
 //                     ),
 //                   ),
 //                 ),
-//
-//                 // 3-Dot Menu
 //                 Positioned(
 //                   top: 8,
 //                   right: 8,
@@ -247,7 +258,6 @@
 //                       icon: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
 //                       onSelected: (value) async {
 //                         if (value == 'edit') {
-//                           // Open edit screen and wait for result
 //                           final result = await Navigator.push(
 //                             context,
 //                             MaterialPageRoute(
@@ -255,14 +265,13 @@
 //                                 id: i.id.toString(),
 //                                 price: i.price.toString(),
 //                                 quantity: i.quantity.toString(),
+//                                 unitId: item['unit_id'],
 //                               ),
 //                             ),
 //                           );
-//
-//                           // If edit returned 'refresh', trigger a reload in this page
 //                           if (result == 'refresh') {
 //                             if (mounted) setState(() {
-//                               // Calling setState will re-run FutureBuilder -> _getProducts()
+//                               _productFuture = _getProducts();
 //                             });
 //                           }
 //                         } else if (value == 'delete') {
@@ -274,9 +283,9 @@
 //                           value: 'edit',
 //                           child: Row(
 //                             children: [
-//                               Icon(Icons.edit, size: 18, color: ThemeService.instance.isDarkMode ? Colors.white : Colors.black),
+//                               Icon(Icons.edit, size: 18, color: isDark ? Colors.white : Colors.black),
 //                               const SizedBox(width: 8),
-//                               Text('Edit', style: TextStyle(color: ThemeService.instance.isDarkMode ? Colors.white : Colors.black)),
+//                               const Text('Edit'),
 //                             ],
 //                           ),
 //                         ),
@@ -291,8 +300,7 @@
 //                           ),
 //                         ),
 //                       ],
-//                     )
-//
+//                     ),
 //                   ),
 //                 ),
 //               ],
@@ -309,35 +317,22 @@
 //                   i.product_name,
 //                   maxLines: 2,
 //                   overflow: TextOverflow.ellipsis,
-//                   style: TextStyle(
-//                     color: textColor,
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 15,
-//                   ),
+//                   style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 15,height: 1),
 //                 ),
-//                 const SizedBox(height: 4),
+//                 const SizedBox(height: 2),
 //                 Text(
 //                   i.CATEGORY_NAME,
 //                   style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
 //                 ),
-//                 const SizedBox(height: 12),
-//
-//                 // --- PRICE & QUANTITY ROW ---
+//                 const SizedBox(height: 5),
 //                 Row(
 //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                   crossAxisAlignment: CrossAxisAlignment.end,
 //                   children: [
-//                     Container(
-//                       child: Text(
-//                         "₹${i.price}",
-//                         style: TextStyle(
-//                           color: textColor,
-//                           fontWeight: FontWeight.w900,
-//                           fontSize: 16,
-//                         ),
-//                       ),
+//                     Text(
+//                       "₹${i.price}",
+//                       style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 16),
 //                     ),
-//                     // QUANTITY PILL
 //                     Container(
 //                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
 //                       decoration: BoxDecoration(
@@ -346,16 +341,9 @@
 //                       ),
 //                       child: Text(
 //                         "Qty: ${i.quantity}",
-//                         style: TextStyle(
-//                           color: textColor.withOpacity(0.7),
-//                           fontSize: 10,
-//                           fontWeight: FontWeight.w600,
-//                         ),
+//                         style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
 //                       ),
 //                     ),
-//
-//                     // Add Button
-//
 //                   ],
 //                 ),
 //               ],
@@ -368,25 +356,8 @@
 // }
 //
 // class Joke {
-//   final String id;
-//   final String product_name;
-//   final String price;
-//   final String image;
-//   final String description;
-//   final String quantity;
-//   final String CATEGORY;
-//   final String CATEGORY_NAME;
-//
-//   Joke(
-//       this.id,
-//       this.product_name,
-//       this.price,
-//       this.image,
-//       this.description,
-//       this.quantity,
-//       this.CATEGORY,
-//       this.CATEGORY_NAME,
-//       );
+//   final String id, product_name, price, image, description, quantity, CATEGORY, CATEGORY_NAME;
+//   Joke(this.id, this.product_name, this.price, this.image, this.description, this.quantity, this.CATEGORY, this.CATEGORY_NAME);
 // }
 
 import 'dart:convert';
@@ -418,7 +389,7 @@ class myProductsSub extends StatefulWidget {
 
 class _myProductsSubState extends State<myProductsSub> {
   bool _isDeleting = false;
-  String _searchQuery = ""; // 🚀 State for search text
+  String _searchQuery = "";
   late Future<List<Joke>> _productFuture;
 
   @override
@@ -427,7 +398,6 @@ class _myProductsSubState extends State<myProductsSub> {
     _productFuture = _getProducts();
   }
 
-  // --- API LOGIC (Unchanged) ---
   Future<List<Joke>> _getProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final base = prefs.getString("ip") ?? "";
@@ -457,6 +427,8 @@ class _myProductsSubState extends State<myProductsSub> {
         (it["quantity"] ?? "").toString(),
         (it["CATEGORY"] ?? "").toString(),
         (it["CATEGORY_NAME"] ?? "").toString(),
+        (it["unit_id"] ?? "").toString(), // 🚀 1. Fetching unit_id from JSON
+        (it["unit_name"] ?? "").toString(), // 🚀 Fetching unit_name
       ));
     }
     return out;
@@ -503,7 +475,7 @@ class _myProductsSubState extends State<myProductsSub> {
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Product deleted successfully')));
         setState(() {
-          _productFuture = _getProducts(); // Refresh list
+          _productFuture = _getProducts();
         });
       }
     } catch (e) {
@@ -513,17 +485,15 @@ class _myProductsSubState extends State<myProductsSub> {
     }
   }
 
-  // --- UI BUILD ---
   @override
   Widget build(BuildContext context) {
     final isDark = ThemeService.instance.isDarkMode;
     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF9F9F9);
 
     return GestureDetector(
-      onTap: () => FocusScope.of(context).unfocus(), // 🚀 Close keyboard on tap
+      onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: bgColor,
-        // 🚀 CUSTOM SEARCHBAR APPBAR
         appBar: SearchAppBar(
           hintText: "Search name, category or price...",
           onLeadingPressed: () {
@@ -558,7 +528,6 @@ class _myProductsSubState extends State<myProductsSub> {
               );
             }
 
-            // 🚀 FILTERING LOGIC (Name, Category, or Price)
             final filteredList = items.where((i) {
               return i.product_name.toLowerCase().contains(_searchQuery) ||
                   i.CATEGORY_NAME.toLowerCase().contains(_searchQuery) ||
@@ -569,7 +538,6 @@ class _myProductsSubState extends State<myProductsSub> {
               return const Center(child: Text("No matching products found"));
             }
 
-            // --- PINTEREST / MASONRY LAYOUT ---
             return MasonryGridView.count(
               padding: const EdgeInsets.all(12),
               crossAxisCount: 2,
@@ -607,7 +575,6 @@ class _myProductsSubState extends State<myProductsSub> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // 1. IMAGE CONTAINER
           Container(
             decoration: BoxDecoration(
               color: topContainerColor,
@@ -648,13 +615,15 @@ class _myProductsSubState extends State<myProductsSub> {
                       icon: const Icon(Icons.more_horiz, size: 18, color: Colors.black),
                       onSelected: (value) async {
                         if (value == 'edit') {
+                          // 🚀 2. Passing unit_id to editStock
                           final result = await Navigator.push(
                             context,
                             MaterialPageRoute(
                               builder: (context) => editStock(
-                                id: i.id.toString(),
-                                price: i.price.toString(),
-                                quantity: i.quantity.toString(),
+                                id: i.id,
+                                price: i.price,
+                                quantity: i.quantity,
+                                unitId: i.unit_id, // Passed from current Joke object
                               ),
                             ),
                           );
@@ -696,7 +665,6 @@ class _myProductsSubState extends State<myProductsSub> {
             ),
           ),
 
-          // 2. DETAILS CONTAINER
           Padding(
             padding: const EdgeInsets.all(12),
             child: Column(
@@ -729,7 +697,7 @@ class _myProductsSubState extends State<myProductsSub> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
-                        "Qty: ${i.quantity}",
+                        "Qty: ${i.quantity} ${i.unit_name}", // 🚀 3. Showing Unit Name
                         style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
                       ),
                     ),
@@ -744,7 +712,8 @@ class _myProductsSubState extends State<myProductsSub> {
   }
 }
 
+// 🚀 4. Updated Joke Model with unit fields
 class Joke {
-  final String id, product_name, price, image, description, quantity, CATEGORY, CATEGORY_NAME;
-  Joke(this.id, this.product_name, this.price, this.image, this.description, this.quantity, this.CATEGORY, this.CATEGORY_NAME);
+  final String id, product_name, price, image, description, quantity, CATEGORY, CATEGORY_NAME, unit_id, unit_name;
+  Joke(this.id, this.product_name, this.price, this.image, this.description, this.quantity, this.CATEGORY, this.CATEGORY_NAME, this.unit_id, this.unit_name);
 }

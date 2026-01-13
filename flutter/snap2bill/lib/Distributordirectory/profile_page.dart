@@ -80,10 +80,16 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
           List<ProductModel> temp = [];
           for (final it in (js['data'] as List)) {
             temp.add(ProductModel(
-              (it["id"] ?? "").toString(), (it["product_name"] ?? "").toString(),
-              (it["price"] ?? "").toString(), _joinUrl(base, (it["image"] ?? "").toString()),
-              (it["description"] ?? "").toString(), (it["quantity"] ?? "").toString(),
-              (it["CATEGORY"] ?? "").toString(), (it["CATEGORY_NAME"] ?? "").toString(),
+              (it["id"] ?? "").toString(),
+              (it["product_name"] ?? "").toString(),
+              (it["price"] ?? "").toString(), _joinUrl(base,
+                (it["image"] ?? "").toString()),
+              (it["description"] ?? "").toString(),
+              (it["quantity"] ?? "").toString(),
+              (it["CATEGORY"] ?? "").toString(),
+              (it["CATEGORY_NAME"] ?? "").toString(),
+              (it["unit_id"] ?? "").toString(),    // 🚀 NEW
+              (it["unit_name"] ?? "").toString(),
             ));
           }
           setState(() => _products = temp);
@@ -317,7 +323,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
             ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.network(product.image, height: 250, fit: BoxFit.cover)),
             const SizedBox(height: 15),
             Text(product.product_name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            Text("₹ ${product.price}", style: TextStyle(fontSize: 20, color: theme.primaryColor, fontWeight: FontWeight.bold)),
+            Text("₹ ${product.price}/${product.unit_name}", style: TextStyle(fontSize: 20, color: theme.primaryColor, fontWeight: FontWeight.bold)),
             const SizedBox(height: 15),
             Text(product.description, style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 25),
@@ -327,7 +333,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => editStock(id: product.id, price: product.price, quantity: product.quantity)));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => editStock(id: product.id, price: product.price, quantity: product.quantity,unitId: product.unit_id,)));
                     },
                     style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, foregroundColor: Colors.white),
                     child: const Text("Edit Stock"),
@@ -402,6 +408,6 @@ class DistributorProfileModel {
 }
 
 class ProductModel {
-  final String id, product_name, price, image, description, quantity, CATEGORY, CATEGORY_NAME;
-  ProductModel(this.id, this.product_name, this.price, this.image, this.description, this.quantity, this.CATEGORY, this.CATEGORY_NAME);
+  final String id, product_name, price, image, description, quantity, CATEGORY, CATEGORY_NAME, unit_id, unit_name;
+  ProductModel(this.id, this.product_name, this.price, this.image, this.description, this.quantity, this.CATEGORY, this.CATEGORY_NAME, this.unit_id, this.unit_name);
 }

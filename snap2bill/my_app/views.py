@@ -30,12 +30,11 @@ def get_new_filename():
 from django.views.decorators.csrf import csrf_exempt
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
-    cart, wishlist, DistributorCustomerLink
+    cart, wishlist, DistributorCustomerLink, unit
 
 print(make_password("password"))
 
-def error_404_view(request, exception):
-    return render(request, '404.html', status=404)
+
 
 def log(request):
     return render(request, 'login.html')
@@ -307,7 +306,54 @@ def delete_category(request, id):
     return redirect('/admin_category')
 
 
+def manage_units(request):
+    # --- HANDLE ADDING/EDITING ---
+    if request.method == "POST":
+        unit_id = request.POST.get('id')  # If this exists, we are editing
+        u_name = request.POST.get('unit_name')
 
+        if unit_id:
+            # Edit existing unit
+            unit.objects.filter(id=unit_id).update(unit_name=u_name)
+            messages.success(request, "Unit Updated!")
+        else:
+            # Add new unit
+            unit.objects.create(unit_name=u_name)
+            messages.success(request, "Unit Added!")
+
+        return redirect('/manage_units')
+
+    # --- HANDLE VIEWING ---
+    data = unit.objects.all().order_by('unit_name')
+    return render(request, 'admin/manage_units.html', {'data': data})
+
+
+# --- HANDLE DELETION ---
+def delete_unit(request, id):
+    unit.objects.filter(id=id).delete()
+    messages.error(request, "Unit Deleted.")
+    return redirect('/manage_units')
+
+
+def view_units(request):
+    try:
+        # 1. Fetch all unit objects from the database
+        data = unit.objects.all().order_by('unit_name')
+
+        # 2. Convert the QuerySet into a list of dictionaries
+        ar = []
+        for i in data:
+            ar.append({
+                'id': i.id,
+                'unit_name': i.unit_name,
+            })
+
+        # 3. Return the data as JSON
+        return JsonResponse({'status': 'ok', 'data': ar})
+
+    except Exception as e:
+        # Return an error message if something goes wrong
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 
@@ -997,6 +1043,8 @@ def distributor_products(request):
             'quantity': i.quantity,
             'CATEGORY': i.PRODUCT.CATEGORY.id,
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
+            'unit_id': str(i.UNIT_id) if i.UNIT_id else "",
+            'unit_name': i.UNIT.unit_name if i.UNIT else "pcs",
         })
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -1008,6 +1056,7 @@ def add_stock(request):
     uid= request.POST['uid']
     pid = request.POST['pid']
     price = request.POST['price']
+    unit_id = request.POST['unit_id']
     if stock.objects.filter(DISTRIBUTOR_id = uid,PRODUCT_id = pid).exists():
         return JsonResponse({"status":"not"})
     obj = stock()
@@ -1015,20 +1064,30 @@ def add_stock(request):
     obj.price = price
     obj.DISTRIBUTOR_id = uid
     obj.PRODUCT_id = pid
+    obj.UNIT_id =unit_id
     obj.save()
 
     return JsonResponse({'ststus':'ok'})
 
-
 def edit_stock(request):
-    quantity = request.POST['quantity']
-    # uid = request.POST['uid']
-    pid = request.POST['pid']
-    price = request.POST['price']
+    if request.method == "POST":
+        pid = request.POST.get('pid') # The stock ID
+        quantity = request.POST.get('quantity')
+        price = request.POST.get('price')
+        unit_id = request.POST.get('unit_id') # 🚀 Receive unit_id from Flutter
 
-    stock.objects.filter(id = pid).update(price = price, quantity = quantity)
-    return JsonResponse({'status':'ok'})
+        try:
+            # We use pid to find the correct stock record and update it
+            stock.objects.filter(id=pid).update(
+                price=price,
+                quantity=quantity,
+                UNIT_id=unit_id # 🚀 Update the foreign key relationship
+            )
+            return JsonResponse({'status': 'ok'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 
 
 def delete_distributor_product(request,id):
@@ -1537,15 +1596,19 @@ def edit_order(request):
 #     id = request.POST.get('id')
 #     stock_id = request.POST.get('stock_id')
 #     quantity = request.POST.get('quantity')
+#     price = request.POST.get('amount')
 #     print(id,stock_id,quantity)
 #     try:
 #         obj = order_sub.objects.get(id=id)
 #         obj.STOCK_id = stock_id
 #         obj.quantity = quantity
+#         obj.price = price
 #         obj.save()
 #     except:
 #         obj = order_sub.objects.get(id=id)
 #         obj.quantity = quantity
+#         obj.price = price
+#
 #         obj.save()
 #     orderid = order_sub.objects.get(id=id).ORDER_id
 #     allordereditem = order_sub.objects.filter(ORDER=orderid)
@@ -1557,58 +1620,74 @@ def edit_order(request):
 
 
 
+
+
+
 def update_order_item(request):
     if request.method == 'POST':
-        id = request.POST.get('id')
-        stock_id = request.POST.get('stock_id')
+        item_id = request.POST.get('id')
         quantity = request.POST.get('quantity')
-
-        print(f"Update Request - ID: {id}, Stock: {stock_id}, Qty: {quantity}")
+        # Fields for distributor only
+        price_override = request.POST.get('amount')
+        unit_id = request.POST.get('unit_id')
+        role = request.POST.get('role')  # "customer" or "distributor"
 
         try:
-            # 1. Fetch the specific ordered item
-            obj = order_sub.objects.get(id=id)
+            # 1. Fetch the order item and its parent order
+            obj = order_sub.objects.get(id=item_id)
+            parent_order = obj.ORDER
 
-            # 2. 🚀 NEW LOGIC: Check if the bill is 'offline'
-            # We access the parent 'order' via the ForeignKey relation
-            if obj.ORDER.order_type == 'offline':
-                return JsonResponse({
-                    'status': 'error',
-                    'message': 'This is an offline/instant bill and cannot be edited.'
-                })
+            # Check if payment is done (Locking the bill)
+            if parent_order.payment_status != 'pending':
+                return JsonResponse({'status': 'error', 'message': 'Bill already processed'})
 
-            # 3. Apply your original Update Logic
-            try:
-                if stock_id:
-                    obj.STOCK_id = stock_id
-                obj.quantity = quantity
-                obj.save()
-            except Exception as e:
-                # Fallback as per your provided logic
+            # ---------------------------------------------------------
+            # 👤 ROLE: CUSTOMER (Only Quantity)
+            # ---------------------------------------------------------
+            if role == "customer":
                 obj.quantity = quantity
                 obj.save()
 
-            # 4. Recalculate Total (Same as your logic)
-            order_id = obj.ORDER_id
-            all_ordered_items = order_sub.objects.filter(ORDER=order_id)
+            # ---------------------------------------------------------
+            # 🧑‍💼 ROLE: DISTRIBUTOR (Quantity, Price, and Unit)
+            # ---------------------------------------------------------
+            elif role == "distributor":
+                obj.quantity = quantity
 
-            total = 0
-            for i in all_ordered_items:
-                # Logic: Qty * Base Stock Price
-                total += int(i.quantity) * int(i.STOCK.price)
+                # Update specific price if provided by distributor
+                if price_override:
+                    obj.price = price_override
 
-            # 5. Update the main order amount
-            order.objects.filter(id=order_id).update(amount=total)
+                # Update unit on the Stock object
+                if unit_id:
+                    stock_item = obj.STOCK
+                    stock_item.UNIT_id = unit_id
+                    stock_item.save()
+
+                obj.save()
+
+            # ---------------------------------------------------------
+            # 🔄 RECALCULATE TOTAL
+            # ---------------------------------------------------------
+            all_items = order_sub.objects.filter(ORDER=parent_order)
+            new_total = 0
+            for item in all_items:
+                # Use overridden price if exists, else fallback to stock price
+                current_price = item.price if item.price else item.STOCK.price
+                new_total += int(item.quantity) * float(current_price)
+
+            # Update the main order total
+            parent_order.amount = new_total
+            parent_order.save()
 
             return JsonResponse({'status': 'ok'})
 
         except order_sub.DoesNotExist:
             return JsonResponse({'status': 'error', 'message': 'Item not found'})
         except Exception as e:
-            print(f"Error: {e}")
             return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 
 def delete_order_item(request):
@@ -1708,6 +1787,8 @@ def view_distributor_ordersitems(request):
                 'amount': i.STOCK.price,
                 'product_name': i.STOCK.PRODUCT.product_name,
                 'username': i.ORDER.USER.name,
+                'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
+                'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
 
             })
         else:
@@ -1718,6 +1799,8 @@ def view_distributor_ordersitems(request):
                 'amount': i.price,
                 'product_name': i.STOCK.PRODUCT.product_name,
                 'username': i.ORDER.USER.name,
+                'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
+                'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
 
             })
 
@@ -1908,7 +1991,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyAqWFJWnf242QO-ZkbNLQxGE63c3W9zCWw")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyCzeOhvu47iO68jNM2Jq3thznmAiv_-zxA")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
