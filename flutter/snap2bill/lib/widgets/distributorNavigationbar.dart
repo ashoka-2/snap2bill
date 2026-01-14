@@ -85,6 +85,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
           child: BackdropFilter(
             filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
             child: Container(
+
               decoration: BoxDecoration(
                 color: glassColor,
                 borderRadius: BorderRadius.circular(50),

@@ -1132,11 +1132,9 @@ class _viewBillItemsState extends State<viewBillItems> {
                 text: "SAVE UPDATES",
                 onPressed: () {
                   int? qty = int.tryParse(qtyController.text);
-                  if (qty != null && qty > 0 && qty <= 100) {
+                  if (qty != null && qty > 0 ) {
                     updateItem(item['id'].toString(), qtyController.text, priceController.text, selectedUnitId ?? "");
                     Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Invalid Quantity (1-100)")));
                   }
                 },
               ),

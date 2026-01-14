@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+import 'package:snap2bill/Distributordirectory/view/viewAllOrders.dart';
 import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
@@ -86,7 +87,7 @@ class _Home_pageState extends State<Home_page> {
       DrawerItemModel(
         icon: Icons.list_alt,
         title: "Orders",
-        onTap: () => const viewOrder(),
+        onTap: () => const viewAllOrders(),
       ),
       DrawerItemModel(
         icon: Icons.category_outlined,

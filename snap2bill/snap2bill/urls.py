@@ -124,6 +124,7 @@ urlpatterns = [
     path('delete_order_item',views.delete_order_item),
     path('update_order_item',views.update_order_item),
     path('view_distributor_orders',views.view_distributor_orders),
+    path('view_distributor_allorders',views.view_distributor_allorders),
     path('view_distributor_ordersitems',views.view_distributor_ordersitems),
     path('make_payment',views.make_payment),
 

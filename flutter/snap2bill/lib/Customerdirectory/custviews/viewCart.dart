@@ -1,13 +1,368 @@
-
-
+//
+// import 'dart:convert';
+// import 'package:flutter/material.dart';
+// import 'package:flutter/services.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:snap2bill/theme/colors.dart';
+// import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
+//
+// import '../../widgets/Navbar.dart';
+// import '../../widgets/app_button.dart';
+//
+// class viewCart extends StatefulWidget {
+//   const viewCart({Key? key}) : super(key: key);
+//
+//   @override
+//   State<viewCart> createState() => _viewCartState();
+// }
+//
+// class _viewCartState extends State<viewCart> {
+//   String totalValue = "0";
+//   String _ip = "";
+//   late Future<List<Map<String, dynamic>>> cartFuture;
+//   List<Map<String, dynamic>> _localItems = [];
+//   bool _isPlacingOrder = false;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     cartFuture = _fetchCart();
+//   }
+//
+//   String _joinUrl(String path) {
+//     if (path.isEmpty || path == "null") return "";
+//     if (path.startsWith('http')) return path;
+//     String cleanIp = _ip.endsWith('/') ? _ip.substring(0, _ip.length - 1) : _ip;
+//     String cleanPath = path.startsWith('/') ? path : '/$path';
+//     return cleanIp + cleanPath;
+//   }
+//
+//   Future<List<Map<String, dynamic>>> _fetchCart() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     _ip = prefs.getString("ip") ?? "";
+//     String cid = prefs.getString('cid') ?? "";
+//
+//     final res = await http.post(
+//         Uri.parse("$_ip/viewCart"),
+//         body: {'cid': cid}
+//     );
+//
+//     if (res.statusCode == 200) {
+//       var body = json.decode(res.body);
+//
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         if (mounted) {
+//           setState(() {
+//             totalValue = body['total'].toString();
+//             _localItems = List<Map<String, dynamic>>.from(
+//                 body['data'].map((item) => Map<String, dynamic>.from(item))
+//             );
+//           });
+//         }
+//       });
+//
+//       return _localItems;
+//     } else {
+//       throw Exception("Failed to load cart");
+//     }
+//   }
+//
+//   void _calculateLocalTotal() {
+//     double newTotal = 0;
+//     for (var item in _localItems) {
+//       double price = double.parse(item['price'].toString());
+//       int qty = int.tryParse(item['quantity'].toString()) ?? 1;
+//       newTotal += (price * qty);
+//     }
+//     setState(() {
+//       totalValue = newTotal.toStringAsFixed(0);
+//     });
+//   }
+//
+//   // 🚀 Background Sync Helper
+//   Future<void> _updateQtyOnServer(String id, String qty) async {
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       await http.post(
+//         Uri.parse("${prefs.getString("ip")}/update_quantity"),
+//         body: {"id": id, "qty": qty},
+//       );
+//     } catch (e) {
+//       debugPrint("Sync Error: $e");
+//     }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final isDark = theme.brightness == Brightness.dark;
+//     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA);
+//     final subTextColor = isDark ? Colors.white38 : Colors.grey[500];
+//
+//     return Scaffold(
+//       backgroundColor: bgColor,
+//       appBar: ThemeNavbar(
+//         title: "Shopping Cart",
+//         leadingIcon: Icons.arrow_back_ios_rounded,
+//         onLeadingPressed: () => Navigator.pop(context),
+//         centerTitle: true,
+//       ),
+//       body: FutureBuilder<List<Map<String, dynamic>>>(
+//         future: cartFuture,
+//         builder: (context, snapshot) {
+//           if (snapshot.connectionState == ConnectionState.waiting && _localItems.isEmpty) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+//           if (_localItems.isEmpty) {
+//             return _buildEmptyState(isDark, subTextColor!);
+//           }
+//
+//           return ListView.builder(
+//             padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
+//             itemCount: _localItems.length,
+//             itemBuilder: (context, index) {
+//               final item = _localItems[index];
+//               return _buildCartItem(item, index, theme, isDark, subTextColor!);
+//             },
+//           );
+//         },
+//       ),
+//       bottomNavigationBar: _buildSummary(theme, isDark, subTextColor!),
+//     );
+//   }
+//
+//   Widget _buildCartItem(Map<String, dynamic> item, int index, ThemeData theme, bool isDark, Color subTextColor) {
+//     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+//     final textColor = isDark ? Colors.white : Colors.black87;
+//     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+//
+//     // Local controller for the quantity TextField
+//     TextEditingController qtyCtrl = TextEditingController(text: item['quantity'].toString());
+//
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16),
+//       decoration: BoxDecoration(
+//         color: cardColor,
+//         borderRadius: BorderRadius.circular(24),
+//         boxShadow: [
+//           BoxShadow(
+//             color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+//             blurRadius: 20,
+//             offset: const Offset(0, 4),
+//           )
+//         ],
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(12.0),
+//         child: Row(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             ClipRRect(
+//               borderRadius: BorderRadius.circular(18),
+//               child: Image.network(
+//                 _joinUrl(item['image'].toString()),
+//                 width: 90, height: 90, fit: BoxFit.cover,
+//                 errorBuilder: (context, error, stackTrace) => Container(
+//                   width: 90, height: 90,
+//                   color: isDark ? Colors.white10 : Colors.grey[200],
+//                   child: const Icon(Icons.broken_image),
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(width: 15),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                     children: [
+//                       Expanded(
+//                         child: Text(
+//                             item['product_name'],
+//                             maxLines: 1,
+//                             overflow: TextOverflow.ellipsis,
+//                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)
+//                         ),
+//                       ),
+//                       DeleteButton(
+//                         size: 30,
+//                         onPressed: () async {
+//                           SharedPreferences prefs = await SharedPreferences.getInstance();
+//                           await http.post(
+//                             Uri.parse("${prefs.getString("ip")}/deleteFromCart"),
+//                             body: {"id": item['id'].toString()},
+//                           );
+//                           setState(() {
+//                             _localItems.removeAt(index);
+//                             _calculateLocalTotal();
+//                           });
+//                         },
+//                       ),
+//                     ],
+//                   ),
+//                   Text("By: ${item['distributor_name']}", style: TextStyle(color: subTextColor, fontSize: 11)),
+//                   const SizedBox(height: 12),
+//                   Row(
+//                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                     children: [
+//                       Text(
+//                           "₹${item['price']}",
+//                           style: TextStyle(
+//                               color: isDark ? Colors.greenAccent : Colors.green[800],
+//                               fontWeight: FontWeight.w900,
+//                               fontSize: 18
+//                           )
+//                       ),
+//
+//                       // 🚀 CUSTOM QUANTITY SELECTOR (Synced with addOrder page)
+//                       Container(
+//                         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+//                         decoration: BoxDecoration(
+//                           color: isDark ? Colors.white10 : Colors.grey[100],
+//                           borderRadius: BorderRadius.circular(18),
+//                           border: Border.all(color: borderColor),
+//                         ),
+//                         child: Row(
+//                           children: [
+//                             IconButton(
+//                                 onPressed: () {
+//                                   int val = int.tryParse(item['quantity'].toString()) ?? 1;
+//                                   if (val > 1) {
+//                                     int newVal = val - 1;
+//                                     setState(() => _localItems[index]['quantity'] = newVal);
+//                                     _calculateLocalTotal();
+//                                     _updateQtyOnServer(item['id'].toString(), newVal.toString());
+//                                   }
+//                                 },
+//                                 icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor, size: 22)
+//                             ),
+//                             Column(
+//                               mainAxisSize: MainAxisSize.min,
+//                               children: [
+//                                 SizedBox(
+//                                   width: 50,
+//                                   child: TextField(
+//                                     controller: qtyCtrl,
+//                                     keyboardType: TextInputType.number,
+//                                     textAlign: TextAlign.center,
+//                                     inputFormatters: [
+//                                       FilteringTextInputFormatter.digitsOnly,
+//                                       LengthLimitingTextInputFormatter(3),
+//                                     ],
+//                                     onChanged: (value) {
+//                                       int? val = int.tryParse(value);
+//                                       if (val != null) {
+//                                         if (val > 100) val = 100;
+//                                         if (val < 1) val = 1;
+//                                         _localItems[index]['quantity'] = val;
+//                                         _calculateLocalTotal();
+//                                         _updateQtyOnServer(item['id'].toString(), val.toString());
+//                                       }
+//                                     },
+//                                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
+//                                     decoration: const InputDecoration(border: InputBorder.none, isDense: true),
+//                                   ),
+//                                 ),
+//                                 Text(item['unit_name'] ?? "Unit", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: subTextColor)),
+//                               ],
+//                             ),
+//                             IconButton(
+//                                 onPressed: () {
+//                                   int val = int.tryParse(item['quantity'].toString()) ?? 1;
+//                                   if (val < 100) {
+//                                     int newVal = val + 1;
+//                                     setState(() => _localItems[index]['quantity'] = newVal);
+//                                     _calculateLocalTotal();
+//                                     _updateQtyOnServer(item['id'].toString(), newVal.toString());
+//                                   }
+//                                 },
+//                                 icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
+//                             ),
+//                           ],
+//                         ),
+//                       ),
+//                     ],
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildSummary(ThemeData theme, bool isDark, Color subTextColor) {
+//     return Container(
+//       padding: const EdgeInsets.fromLTRB(25, 20, 25, 35),
+//       decoration: BoxDecoration(
+//         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+//         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+//         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, -5))],
+//       ),
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Text("Total Amount", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w600)),
+//               Text("₹$totalValue", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: theme.primaryColor)),
+//             ],
+//           ),
+//           const SizedBox(height: 20),
+//           AppButton(
+//             text: "PLACE ORDER",
+//             icon: Icons.check_circle_outline,
+//             isLoading: _isPlacingOrder,
+//             isTrailingIcon: true,
+//             onPressed: () async {
+//               setState(() => _isPlacingOrder = true);
+//               try {
+//                 SharedPreferences prefs = await SharedPreferences.getInstance();
+//                 await http.post(
+//                   Uri.parse("${prefs.getString("ip")}/addFinalOrder"),
+//                   body: {'cid': prefs.getString("cid"), 'total': totalValue},
+//                 );
+//                 if (mounted) {
+//                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
+//                 }
+//               } finally {
+//                 if (mounted) setState(() => _isPlacingOrder = false);
+//               }
+//             },
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+//
+//   Widget _buildEmptyState(bool isDark, Color subTextColor) {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withOpacity(0.3)),
+//           const SizedBox(height: 16),
+//           Text("Your cart is empty", style: TextStyle(color: subTextColor, fontSize: 16, fontWeight: FontWeight.w600)),
+//         ],
+//       ),
+//     );
+//   }
+// }
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:input_quantity/input_quantity.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
+import '../../widgets/app_button.dart';
 
 class viewCart extends StatefulWidget {
   const viewCart({Key? key}) : super(key: key);
@@ -21,6 +376,7 @@ class _viewCartState extends State<viewCart> {
   String _ip = "";
   late Future<List<Map<String, dynamic>>> cartFuture;
   List<Map<String, dynamic>> _localItems = [];
+  bool _isPlacingOrder = false;
 
   @override
   void initState() {
@@ -53,7 +409,6 @@ class _viewCartState extends State<viewCart> {
         if (mounted) {
           setState(() {
             totalValue = body['total'].toString();
-            // Convert everything to a mutable list so we can update qty locally
             _localItems = List<Map<String, dynamic>>.from(
                 body['data'].map((item) => Map<String, dynamic>.from(item))
             );
@@ -67,83 +422,97 @@ class _viewCartState extends State<viewCart> {
     }
   }
 
-  // ✅ FIXED: Robust calculation logic
   void _calculateLocalTotal() {
     double newTotal = 0;
     for (var item in _localItems) {
-      // Ensure price is treated as a double even if it's a string from DB
       double price = double.parse(item['price'].toString());
-      // Ensure quantity is treated as a number
-      double qty = double.parse(item['quantity'].toString());
+      int qty = int.tryParse(item['quantity'].toString()) ?? 1;
       newTotal += (price * qty);
     }
     setState(() {
-      // toStringAsFixed(0) removes decimals like .0
       totalValue = newTotal.toStringAsFixed(0);
     });
+  }
+
+  Future<void> _updateQtyOnServer(String id, String qty) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await http.post(
+        Uri.parse("${prefs.getString("ip")}/update_quantity"),
+        body: {"id": id, "qty": qty},
+      );
+    } catch (e) {
+      debugPrint("Sync Error: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA);
+    final subTextColor = isDark ? Colors.white38 : Colors.grey[500];
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
-      appBar: ThemeNavbar(title: "Shopping Cart",
+      backgroundColor: bgColor,
+      appBar: ThemeNavbar(
+        title: "Shopping Cart",
         leadingIcon: Icons.arrow_back_ios_rounded,
-        onLeadingPressed: ()=>{
-          if (Navigator.canPop(context)) Navigator.pop(context)
-        },
+        onLeadingPressed: () => Navigator.pop(context),
         centerTitle: true,
-
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: cartFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting && _localItems.isEmpty) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (_localItems.isEmpty) {
-            return _buildEmptyState();
+          }
+          if (_localItems.isEmpty) {
+            return _buildEmptyState(isDark, subTextColor!);
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
             itemCount: _localItems.length,
             itemBuilder: (context, index) {
               final item = _localItems[index];
-              return _buildCartItem(item, index, theme, isDark);
+              return _buildCartItem(item, index, theme, isDark, subTextColor!);
             },
           );
         },
       ),
-      bottomNavigationBar: _buildSummary(theme, isDark),
+      bottomNavigationBar: _buildSummary(theme, isDark, subTextColor!),
     );
   }
 
-  Widget _buildCartItem(Map<String, dynamic> item, int index, ThemeData theme, bool isDark) {
+  Widget _buildCartItem(Map<String, dynamic> item, int index, ThemeData theme, bool isDark, Color subTextColor) {
+    final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+
+    TextEditingController qtyCtrl = TextEditingController(text: item['quantity'].toString());
+
     return Container(
-      margin: const EdgeInsets.only(bottom: 15),
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        color: cardColor,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 20, offset: const Offset(0, 4))
         ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(18),
               child: Image.network(
                 _joinUrl(item['image'].toString()),
-                width: 90, height: 90, fit: BoxFit.cover,
+                width: 90, height: 100, fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  width: 90, height: 90, color: Colors.grey[200],
+                  width: 90, height: 90, color: isDark ? Colors.white10 : Colors.grey[200],
                   child: const Icon(Icons.broken_image),
                 ),
               ),
@@ -153,56 +522,116 @@ class _viewCartState extends State<viewCart> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['product_name'], style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                  Text("Distributor: ${item['distributor_name']}", style: TextStyle(color: Colors.grey[500], fontSize: 11)),
-                  const SizedBox(height: 5),
-                  Text("₹${item['price']}", style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 16)),
-                  const SizedBox(height: 10),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      InputQty(
-                        maxVal: 100,
-                        initVal: num.tryParse(item['quantity'].toString()) ?? 1,
-                        minVal: 1,
-                        steps: 1,
-                        decoration: const QtyDecorationProps(
-                          qtyStyle: QtyStyle.classic,
-                          width: 12,
-                          isBordered: false,
+                      Expanded(
+                        child: Text(
+                            item['product_name'],
+                            maxLines: 1, overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)
                         ),
-                        onQtyChanged: (val) async {
-                          // Update local UI immediately
-                          setState(() {
-                            _localItems[index]['quantity'] = val;
-                          });
-                          _calculateLocalTotal();
-
-                          // Background Sync with Django
-                          SharedPreferences prefs = await SharedPreferences.getInstance();
-                          await http.post(
-                            Uri.parse(prefs.getString("ip").toString() + "/update_quantity"),
-                            body: {
-                              "id": item['id'].toString(),
-                              "qty": val.toString()
-                            },
-                          );
-                        },
                       ),
-                      const Spacer(),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                      DeleteButton(
+                        size: 30,
                         onPressed: () async {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
                           await http.post(
-                            Uri.parse(prefs.getString("ip").toString() + "/deleteFromCart"),
+                            Uri.parse("${prefs.getString("ip")}/deleteFromCart"),
                             body: {"id": item['id'].toString()},
                           );
-                          // On delete, we refresh the whole future to remove the row
                           setState(() {
                             _localItems.removeAt(index);
                             _calculateLocalTotal();
                           });
                         },
+                      ),
+                    ],
+                  ),
+                  Text("By: ${item['distributor_name']}", style: TextStyle(color: subTextColor, fontSize: 11)),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("₹${item['price']}", style: TextStyle(color: isDark ? Colors.greenAccent : Colors.green[800], fontWeight: FontWeight.w900, fontSize: 18)),
+
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white10 : Colors.grey[100],
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  int val = int.tryParse(item['quantity'].toString()) ?? 1;
+                                  if (val > 1) {
+                                    int newVal = val - 1;
+                                    setState(() => _localItems[index]['quantity'] = newVal);
+                                    _calculateLocalTotal();
+                                    _updateQtyOnServer(item['id'].toString(), newVal.toString());
+                                  }
+                                },
+                                icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor, size: 22)
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 50,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+
+                                    child: TextField(
+                                      controller: qtyCtrl,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(3),
+                                      ],
+                                      onChanged: (value) {
+                                        int? val = int.tryParse(value);
+                                        if (val != null) {
+                                          // Auto-limit to 100 on typing
+                                          if (val > 100) {
+                                            val = 100;
+                                            CustomSnackBar.show(context, "Max quantity is 100", backgroundColor: Colors.orange);
+                                          }
+                                          if (val < 1) val = 1;
+                                          _localItems[index]['quantity'] = val;
+                                          _calculateLocalTotal();
+                                          _updateQtyOnServer(item['id'].toString(), val.toString());
+                                        }
+                                      },
+                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
+                                      decoration: const InputDecoration(border: InputBorder.none, isDense: true,),
+
+                                    ),
+                                  ),
+                                ),
+                                Text(item['unit_name'] ?? "Unit", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: subTextColor)),
+                              ],
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  int val = int.tryParse(item['quantity'].toString()) ?? 1;
+                                  if (val < 100) {
+                                    int newVal = val + 1;
+                                    setState(() => _localItems[index]['quantity'] = newVal);
+                                    _calculateLocalTotal();
+                                    _updateQtyOnServer(item['id'].toString(), newVal.toString());
+                                  } else {
+                                    // 🚀 Custom SnackBar on limit reached
+                                    CustomSnackBar.show(context, "Maximum quantity reached!", backgroundColor: Colors.redAccent);
+                                  }
+                                },
+                                icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -215,13 +644,13 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
-  Widget _buildSummary(ThemeData theme, bool isDark) {
+  Widget _buildSummary(ThemeData theme, bool isDark, Color subTextColor) {
     return Container(
       padding: const EdgeInsets.fromLTRB(25, 20, 25, 35),
       decoration: BoxDecoration(
-        color: isDark ? Colors.black : Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, -5))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -229,37 +658,71 @@ class _viewCartState extends State<viewCart> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Total Amount", style: TextStyle(color: Colors.grey)),
-              Text("₹$totalValue", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+              Text("Total Amount", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w600)),
+              Text("₹$totalValue", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: theme.primaryColor)),
             ],
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 55,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: theme.primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                elevation: 0,
-              ),
-              onPressed: () async {
+          AppButton(
+            text: "PLACE ORDER",
+            icon: Icons.check_circle_outline,
+            isLoading: _isPlacingOrder,
+            // isTrailingIcon: true,
+            onPressed: () async {
+              // 🚀 VALIDATION CHECK BEFORE ORDER
+              bool hasExceededLimit = false;
+              String exceededProduct = "";
+
+              for (var item in _localItems) {
+                int qty = int.tryParse(item['quantity'].toString()) ?? 1;
+                if (qty > 100) {
+                  hasExceededLimit = true;
+                  exceededProduct = item['product_name'];
+                  break;
+                }
+              }
+
+              if (hasExceededLimit) {
+                // 🚀 SHOW YOUR CUSTOM SNACKBAR
+                CustomSnackBar.show(
+                    context,
+                    "Quantity for $exceededProduct exceeds 100!",
+                    backgroundColor: Colors.redAccent,
+                    durationMs: 2000
+                );
+                return; // Stop execution
+              }
+
+              setState(() => _isPlacingOrder = true);
+              try {
                 SharedPreferences prefs = await SharedPreferences.getInstance();
                 await http.post(
-                  Uri.parse(prefs.getString("ip").toString() + "/addFinalOrder"),
+                  Uri.parse("${prefs.getString("ip")}/addFinalOrder"),
                   body: {'cid': prefs.getString("cid"), 'total': totalValue},
                 );
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
-              },
-              child: Text("Place Order", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-            ),
+                if (mounted) {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
+                }
+              } finally {
+                if (mounted) setState(() => _isPlacingOrder = false);
+              }
+            },
           ),
         ],
       ),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(child: Text("Your cart is empty", style: TextStyle(color: Colors.grey)));
+  Widget _buildEmptyState(bool isDark, Color subTextColor) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withOpacity(0.3)),
+          const SizedBox(height: 16),
+          Text("Your cart is empty", style: TextStyle(color: subTextColor, fontSize: 16, fontWeight: FontWeight.w600)),
+        ],
+      ),
+    );
   }
 }

@@ -63,10 +63,11 @@ class AppButton extends StatelessWidget {
         )
             : Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Only show Leading Icon if icon exists AND it is not trailing
             if (!isTrailingIcon && icon != null) ...[
-              Icon(icon, color: AppColors.getTextColor2(context)),
+              Icon(icon, color: AppColors.getTextColor2(context),size: 20,),
               const SizedBox(width: 10),
             ],
 

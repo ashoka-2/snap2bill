@@ -519,7 +519,9 @@ class _editStockState extends State<editStock> {
                       textColor: textColor,
                       hintColor: hintColor,
                       borderColor: borderColor,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*')),
+                      ],
                     ),
                   ],
                 ),
@@ -561,7 +563,9 @@ class _editStockState extends State<editStock> {
         const SizedBox(height: 8),
         TextField(
           controller: controller,
-          keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+          keyboardType: isNumber
+              ? const TextInputType.numberWithOptions(decimal: true)
+              : TextInputType.text,
           inputFormatters: inputFormatters,
           style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
           decoration: InputDecoration(

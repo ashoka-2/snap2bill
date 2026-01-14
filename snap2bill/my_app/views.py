@@ -1254,7 +1254,8 @@ def get_product_details(request):
             'description': i.PRODUCT.description,
             'stock_quantity': i.quantity,
             'category': i.PRODUCT.CATEGORY.category_name,
-            'distributor': i.DISTRIBUTOR.name
+            'distributor': i.DISTRIBUTOR.name,
+            'unit_name': i.UNIT.unit_name if i.UNIT else ""
         }
         return JsonResponse({'status': 'ok', 'data': data})
     except stock.DoesNotExist:
@@ -1299,6 +1300,7 @@ def viewCart(request):
             'quantity': i.quantity,
             'image':i.STOCK.PRODUCT.image,
             'distributor_name':i.STOCK.DISTRIBUTOR.name,
+            'unit_name':i.STOCK.UNIT.unit_name,
             "total":int(i.STOCK.price) * int(i.quantity)
 
 
@@ -1553,6 +1555,7 @@ def view_orders_items(request):
             'product_name': i.STOCK.PRODUCT.product_name,
             'image': i.STOCK.PRODUCT.image,
             'description': i.STOCK.PRODUCT.description,
+            'unit_name': i.STOCK.UNIT.unit_name,
         })
 
     try:
@@ -1757,6 +1760,24 @@ def view_distributor_orders(request):
     uid = request.POST.get('uid')
     cid = request.POST.get('cid')
     data = order.objects.filter(DISTRIBUTOR_id=uid,USER_id=cid,order_type__in=["online","offline"]).select_related('USER').order_by('-id')
+    ar = []
+    for i in data:
+        p_date = str(i.payment_date)
+        if p_date in ["None", "null", "pending", ""]:
+            p_date = "Not Paid Yet"
+        ar.append({
+            'id': i.id,
+            'payment_status': i.payment_status,
+            'payment_date': p_date,
+            'date': str(i.date),
+            'amount': i.amount,
+            'username': i.USER.name,
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
+def view_distributor_allorders(request):
+    uid = request.POST.get('uid')
+    data = order.objects.filter(DISTRIBUTOR_id=uid,order_type__in=["online","offline"]).select_related('USER').order_by('-id')
     ar = []
     for i in data:
         p_date = str(i.payment_date)
@@ -1991,7 +2012,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyCzeOhvu47iO68jNM2Jq3thznmAiv_-zxA")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyBrE8ODQfG_58CIsJ64rKpnocp8uhOHl3E")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
@@ -2259,31 +2280,37 @@ def universal_search(request):
 
 
 def distributor_add_product(request):
-    uid = request.POST['uid']
-    image = request.FILES['file']
+    try:
+        uid = request.POST['uid']
+        image = request.FILES['file']
+        product_name = request.POST['product_name']
+        price = request.POST['price']
+        description = request.POST['description']
+        quantity = request.POST['quantity']
+        category_id = request.POST['category']
+        unit_id = request.POST['unit_id'] # 🚀 Received unit_id from Flutter
 
-    product_name = request.POST['product_name']
-    price = request.POST['price']
-    description = request.POST['description']
-    quantity = request.POST['quantity']
-    category_id = request.POST['category']
+        fs = FileSystemStorage()
+        file_name = fs.save(image.name, image)
+        image_url = fs.url(file_name)
 
-    fs = FileSystemStorage()
-    file_name = fs.save(image.name, image)
-    image_url = fs.url(file_name)
+        # Create Product
+        new_product = product()
+        new_product.product_name = product_name
+        new_product.image = image_url
+        new_product.description = description
+        new_product.CATEGORY_id = category_id
+        new_product.save()
 
-    new_product = product()
-    new_product.product_name = product_name
-    new_product.image = image_url
-    new_product.description = description
-    new_product.CATEGORY_id = category_id
-    new_product.save()
+        # Create Stock Entry with Unit
+        obj = stock()
+        obj.PRODUCT = new_product
+        obj.DISTRIBUTOR_id = uid
+        obj.price = price
+        obj.quantity = quantity
+        obj.UNIT_id = unit_id # 🚀 Assigning the selected unit
+        obj.save()
 
-    obj = stock()
-    obj.PRODUCT = new_product
-    obj.DISTRIBUTOR_id = uid
-    obj.price = price
-    obj.quantity = quantity
-    obj.save()
-
-    return JsonResponse({'status': 'ok'})
+        return JsonResponse({'status': 'ok'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})

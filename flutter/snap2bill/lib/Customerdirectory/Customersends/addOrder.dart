@@ -8,9 +8,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/app_button.dart';
 
 class addOrder extends StatefulWidget {
-  final String? pid; // 🚀 Add this
+  final String? pid;
   const addOrder({Key? key, this.pid}) : super(key: key);
 
   @override
@@ -21,6 +22,7 @@ class _addOrderState extends State<addOrder> {
   final TextEditingController _qtyController = TextEditingController(text: "1");
   Map<String, dynamic>? productData;
   bool _isLoading = true;
+  bool _isSubmitting = false;
   String _ip = "";
 
   @override
@@ -57,7 +59,17 @@ class _addOrderState extends State<addOrder> {
   }
 
   Future<void> _addToCart() async {
-    if (currentQty < 1) return;
+    // 🚀 VALIDATION: Ensure quantity is between 1 and 100
+    if (currentQty < 1) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Quantity cannot be less than 1")));
+      return;
+    }
+    if (currentQty > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Maximum quantity allowed is 100")));
+      return;
+    }
+
+    setState(() => _isSubmitting = true);
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
     final response = await http.post(
@@ -70,11 +82,14 @@ class _addOrderState extends State<addOrder> {
     );
 
     if (json.decode(response.body)['status'] == 'ok') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const viewCart()),
-      );
+      if (mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const viewCart()),
+        );
+      }
     }
+    setState(() => _isSubmitting = false);
   }
 
   @override
@@ -86,151 +101,187 @@ class _addOrderState extends State<addOrder> {
 
     double price = double.tryParse(productData!['price'].toString()) ?? 0.0;
     double totalPrice = price * currentQty;
+    String unit = productData!['unit_name'] ?? "Unit";
+
+    final textColor = isDark ? Colors.white : Colors.black87;
+    final cardColor = theme.cardColor;
+    final subTextColor = isDark ? Colors.white38 : Colors.grey[600];
+    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: ThemeNavbar(title: "Product Details",
+      appBar: ThemeNavbar(
+        title: "Order Product",
         leadingIcon: Icons.arrow_back_ios_rounded,
-        onLeadingPressed: ()=>{
-          if (Navigator.canPop(context)) Navigator.pop(context)
-        },
+        onLeadingPressed: () => Navigator.pop(context),
         centerTitle: true,
-
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 15),
-
-            // ✅ HERO DESTINATION: Shows PROPER FULL IMAGE
             Container(
-              height: 350, // Height increased to show full product
+              height: 320,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? Colors.white10 : Colors.grey[100],
-                borderRadius: BorderRadius.circular(25),
+                color: isDark ? const Color(0xFF2C2C2C) : Colors.blue.shade50.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5)),
+                ],
               ),
               child: Hero(
                 tag: 'prod_${productData!['pid']}',
-                child: Material(
-                  color: Colors.transparent,
-                  child: InteractiveViewer( // Allows user to zoom in/out on the full image
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      child: Image.network(
-                        _ip + productData!['image'],
-                        fit: BoxFit.contain, // ✅ Ensures full image is visible
-                        errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 50),
-                      ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: InteractiveViewer(
+                    child: Image.network(
+                      _ip + productData!['image'],
+                      fit: BoxFit.fill,
+                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 50),
                     ),
                   ),
                 ),
               ),
             ),
-
             const SizedBox(height: 25),
-
-            Text(
-                productData!['category'].toString().toUpperCase(),
-                style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12)
-            ),
-            Text(
-                productData!['product_name'],
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)
-            ),
-
-            const SizedBox(height: 20),
-
-            // Price and Dual-Input Quantity Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Unit Price", style: TextStyle(color: Colors.grey[500], fontSize: 12)),
-                    Text(
-                      "₹${productData!['price']}",
-                      style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.greenAccent : Colors.green[800]
-                      ),
-                    ),
-                  ],
-                ),
-
-                // Hybrid Quantity Selector
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white12 : Colors.grey[200],
-                    borderRadius: BorderRadius.circular(15),
+            Container(
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 20, offset: const Offset(0, 4)),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    productData!['category'].toString().toUpperCase(),
+                    style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
                   ),
-                  child: Row(
+                  const SizedBox(height: 8),
+                  Text(
+                    productData!['product_name'],
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                  ),
+                  const Divider(height: 40),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                          onPressed: () {
-                            if (currentQty > 1) {
-                              setState(() => _qtyController.text = (currentQty - 1).toString());
-                            }
-                          },
-                          icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor)
-                      ),
-                      SizedBox(
-                        width: 50,
-                        child: TextField(
-                          controller: _qtyController,
-                          keyboardType: TextInputType.number,
-                          textAlign: TextAlign.center,
-                          onChanged: (value) => setState(() {}),
-                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
-                            isDense: true,
-                            contentPadding: EdgeInsets.zero,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
+                          Text(
+                            "₹${productData!['price']}",
+                            style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.greenAccent : Colors.green[800]
+                            ),
                           ),
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
+                        ],
                       ),
-                      IconButton(
-                          onPressed: () {
-                            setState(() => _qtyController.text = (currentQty + 1).toString());
-                          },
-                          icon: Icon(Icons.add_circle_outline, color: theme.primaryColor)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: isDark ? Colors.white10 : Colors.grey[100],
+                          borderRadius: BorderRadius.circular(18),
+                          border: Border.all(color: borderColor),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                                onPressed: () {
+                                  if (currentQty > 1) setState(() => _qtyController.text = (currentQty - 1).toString());
+                                },
+                                icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor, size: 22)
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                SizedBox(
+                                  width: 55,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: TextField(
+                                      controller: _qtyController,
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.center,
+                                      onChanged: (value) {
+                                        // 🚀 Validation on manual typing
+                                        int? val = int.tryParse(value);
+                                        if (val != null && val > 100) {
+                                          _qtyController.text = "100";
+                                          _qtyController.selection = TextSelection.fromPosition(const TextPosition(offset: 3));
+                                        }
+                                        setState(() {});
+                                      },
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(3), // Prevents typing more than 3 digits
+                                      ],
+                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
+                                      decoration: const InputDecoration(border: InputBorder.none, isDense: true),
+                                    ),
+                                  ),
+                                ),
+                                Text(unit, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor)),
+                              ],
+                            ),
+                            IconButton(
+                                onPressed: () {
+                                  // 🚀 Validation on increment button
+                                  if (currentQty < 100) {
+                                    setState(() => _qtyController.text = (currentQty + 1).toString());
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Maximum limit reached"), duration: Duration(seconds: 1)));
+                                  }
+                                },
+                                icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 25),
-              child: Divider(),
-            ),
-
-            // Description
-            Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
-            Text(
-              productData!['description'] ?? "No description available.",
-              style: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey[600], height: 1.6),
+            const SizedBox(height: 20),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(25),
+              decoration: BoxDecoration(
+                color: cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+                  const SizedBox(height: 12),
+                  Text(
+                    productData!['description'] ?? "No description available.",
+                    style: TextStyle(color: subTextColor, height: 1.6, fontSize: 14),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 120),
           ],
         ),
       ),
-
-      // Bottom Bar with Total Price & Add to Cart
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
         decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))]
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 15, offset: const Offset(0, -5))]
         ),
         child: Row(
           children: [
@@ -239,25 +290,22 @@ class _addOrderState extends State<addOrder> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Total Price", style: TextStyle(color: Colors.grey[500], fontSize: 13)),
-                  Text("₹${totalPrice.toStringAsFixed(2)}",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+                  Text("Total ($currentQty $unit)",maxLines: 1, style: TextStyle(color: subTextColor, fontSize: 13)),
+                  Text("₹${totalPrice.toStringAsFixed(2)}",maxLines: 1,
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.primaryColor)),
                 ],
               ),
             ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 10),
             Expanded(
               flex: 2,
-              child: ElevatedButton(
+              child: AppButton(
+                text: "ADD TO CART",
+                icon: Icons.shopping_cart_outlined,
+                isLoading: _isSubmitting,
                 onPressed: _addToCart,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 18),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  elevation: 0,
-                ),
-                child: Text("Add to Cart",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                // isTrailingIcon: true,
+                height: 55,
               ),
             ),
           ],

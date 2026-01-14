@@ -76,7 +76,7 @@ class _CameraCaptureState extends State<CameraCapture> {
         prefs.setString("sid", decoded['sid'].toString());
         prefs.setString("pname", decoded['product_name']);
 
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const addToBill()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
         setState(() => _showAddButton = true);
         ScaffoldMessenger.of(context).showSnackBar(
