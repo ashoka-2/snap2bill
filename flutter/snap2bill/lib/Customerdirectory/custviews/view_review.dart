@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 class view_review extends StatefulWidget {
   const view_review({Key? key}) : super(key: key);
@@ -91,13 +92,13 @@ class _view_reviewState extends State<view_review> {
         await http.post(uri, body: {'id': prefs.getString("id").toString()});
 
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Review deleted")));
+        CustomSnackBar.show(context, "Review deleted.",);
 
         // Refresh the page or navigate away as per your original logic
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)));
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
+      CustomSnackBar.show(context, Text("Error: $e") as String, backgroundColor: Colors.redAccent);
     } finally {
       if (mounted) setState(() => _isDeleting = false);
     }

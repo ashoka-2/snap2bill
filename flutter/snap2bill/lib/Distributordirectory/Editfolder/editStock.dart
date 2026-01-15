@@ -287,8 +287,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class editStock extends StatefulWidget {
@@ -356,9 +358,8 @@ class _editStockState extends State<editStock> {
 
   Future<void> _updateStock() async {
     if (quantity.text.isEmpty || price.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
-      );
+      CustomSnackBar.show(context, "Please fill all fields", backgroundColor: AppColors.dangerColor);
+
       return;
     }
 

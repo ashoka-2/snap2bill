@@ -255,8 +255,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
-
+import 'package:snap2bill/theme/colors.dart';
+import 'package:snap2bill/widgets/SnackBar.dart';
 // Conditional imports for Web/Mobile Razorpay
 import '../../widgets/Navbar.dart';
 import 'mobile_razorpay_helper.dart'
@@ -316,11 +318,13 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
       razorpay_helper.openRazorpayWeb(
         options,
         onSuccess: (paymentId) {
-          _showSnackBar('Payment Successful', Colors.green);
+          CustomSnackBar.show(context, "Payment Successful", backgroundColor: AppColors.successColor);
+
           updatepaymentstatus();
         },
         onError: (error) {
-          _showSnackBar('Payment Failed: $error', Colors.red);
+          CustomSnackBar.show(context, "Payment Failed: $error ", backgroundColor: AppColors.dangerColor);
+
         },
       );
     } else {
@@ -330,23 +334,20 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
   // --- Handlers for Mobile ---
   void _handlePaymentSuccess(razorpay_flutter.PaymentSuccessResponse response) {
-    _showSnackBar("Payment Successful: ${response.paymentId}", Colors.green);
+    CustomSnackBar.show(context, "Payment Successful: ${response.paymentId}", backgroundColor: AppColors.successColor);
     updatepaymentstatus();
   }
 
   void _handlePaymentError(razorpay_flutter.PaymentFailureResponse response) {
-    _showSnackBar("Payment Failed: ${response.message}", Colors.red);
+    CustomSnackBar.show(context, "Payment Failed: ${response.message}", backgroundColor: AppColors.dangerColor);
   }
 
   void _handleExternalWallet(razorpay_flutter.ExternalWalletResponse response) {
-    _showSnackBar("Wallet Selected: ${response.walletName}", Colors.blue);
+    CustomSnackBar.show(context, "Wallet Selected: ${response.walletName}", backgroundColor: AppColors.premiumDarkBlue);
+
   }
 
-  void _showSnackBar(String message, Color color) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message), backgroundColor: color),
-    );
-  }
+
 
   Future<void> updatepaymentstatus() async {
     setState(() => _isProcessing = true);

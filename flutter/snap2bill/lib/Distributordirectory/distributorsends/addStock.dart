@@ -284,8 +284,10 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class addStock extends StatelessWidget {
@@ -351,9 +353,8 @@ class _addStockSubState extends State<addStockSub> {
   // --- API Logic ---
   Future<void> _submitStock() async {
     if (stock.text.isEmpty || price.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields")),
-      );
+      CustomSnackBar.show(context, "Please fill all fields.", backgroundColor: AppColors.dangerColor,);
+
       return;
     }
 
@@ -389,9 +390,9 @@ class _addStockSubState extends State<addStockSub> {
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+
+      CustomSnackBar.show(context,Text("Error: $e") as String, backgroundColor: AppColors.dangerColor,);
+
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

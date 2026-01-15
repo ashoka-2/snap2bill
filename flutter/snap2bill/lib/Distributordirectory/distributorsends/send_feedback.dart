@@ -67,10 +67,12 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 // Make sure these point to your actual file locations
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class send_feedback extends StatefulWidget {
@@ -88,9 +90,8 @@ class _send_feedbackState extends State<send_feedback> {
   Future<void> submitFeedback() async {
     // 1. Validation
     if (feedbackController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your feedback first')),
-      );
+      CustomSnackBar.show(context, "Please enter your feedback first.", backgroundColor: AppColors.dangerColor);
+
       return;
     }
 
@@ -116,9 +117,8 @@ class _send_feedbackState extends State<send_feedback> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Thank you! Feedback sent successfully')),
-        );
+        CustomSnackBar.show(context, "Thank you! Feedback sent successfully.", backgroundColor: AppColors.successColor, durationMs: 800);
+
         // Navigate back to Home
         Navigator.pushReplacement(
           context,

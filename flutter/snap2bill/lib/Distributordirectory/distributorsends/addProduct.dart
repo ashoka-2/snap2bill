@@ -271,7 +271,9 @@ import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:snap2bill/theme/colors.dart';
 
+import '../../widgets/SnackBar.dart';
 import '../../widgets/distributorNavigationbar.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
@@ -517,7 +519,8 @@ class _add_product_subState extends State<add_product_sub> {
   Future<void> _sendData() async {
     // 🚀 VALIDATION: Required fields check
     if (product_name.text.isEmpty || price.text.isEmpty || quantity.text.isEmpty || _selectedFile == null || selectedUnit == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Name, Price, Quantity, Unit and Image are required")));
+      CustomSnackBar.show(context, "Name, Price, Quantity, Unit are required...", backgroundColor: Colors.blue, durationMs: 800);
+
       return;
     }
 
@@ -568,12 +571,12 @@ class _add_product_subState extends State<add_product_sub> {
         }
       } else {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: ${resData['message']}")));
+          CustomSnackBar.show(context,Text("Error: ${resData['message']}") as String, backgroundColor: AppColors.dangerColor);
         }
       }
     } catch (e) {
       debugPrint("Full Error: $e");
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Connection Error")));
+      CustomSnackBar.show(context, "Connection Error.", backgroundColor: Colors.blue, durationMs: 800);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

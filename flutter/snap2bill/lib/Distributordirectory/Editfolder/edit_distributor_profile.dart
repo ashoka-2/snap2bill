@@ -511,11 +511,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'dart:typed_data';
 
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 class edit_distributor_profile_sub extends StatefulWidget {
   final dynamic id, name, email, phone, bio, address, pincode, place, post, latitude, longitude;
@@ -595,7 +597,8 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
   }
 
   bool _showErr(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: Colors.redAccent));
+    CustomSnackBar.show(context,Text(msg) as String, backgroundColor: AppColors.dangerColor);
+
     return false;
   }
 

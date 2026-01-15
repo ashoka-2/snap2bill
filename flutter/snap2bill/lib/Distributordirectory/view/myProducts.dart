@@ -688,7 +688,7 @@ class _myProductsSubState extends State<myProductsSub> {
                   children: [
                     Text(
                       "₹${i.price}",
-                      style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 16),
+                      style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 14),
                     ),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -698,7 +698,7 @@ class _myProductsSubState extends State<myProductsSub> {
                       ),
                       child: Text(
                         "Qty: ${i.quantity} ${i.unit_name}", // 🚀 3. Showing Unit Name
-                        style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 10, fontWeight: FontWeight.w600),
+                        style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 8, fontWeight: FontWeight.w600),
                       ),
                     ),
                   ],

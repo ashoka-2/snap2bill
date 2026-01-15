@@ -6,8 +6,10 @@ import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewCart.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class addOrder extends StatefulWidget {
@@ -61,11 +63,12 @@ class _addOrderState extends State<addOrder> {
   Future<void> _addToCart() async {
     // 🚀 VALIDATION: Ensure quantity is between 1 and 100
     if (currentQty < 1) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Quantity cannot be less than 1")));
+      CustomSnackBar.show(context, "Quantity cannot be less than 1.", backgroundColor: AppColors.dangerColor, durationMs: 800);
+
       return;
     }
     if (currentQty > 100) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Maximum quantity allowed is 100")));
+      CustomSnackBar.show(context, "Maximum quantity allowed is 100.", backgroundColor: AppColors.dangerColor, durationMs: 800);
       return;
     }
 
@@ -238,7 +241,7 @@ class _addOrderState extends State<addOrder> {
                                   if (currentQty < 100) {
                                     setState(() => _qtyController.text = (currentQty + 1).toString());
                                   } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Maximum limit reached"), duration: Duration(seconds: 1)));
+                                    CustomSnackBar.show(context, "Maximum limit reached.", backgroundColor: AppColors.dangerColor, durationMs: 1000);
                                   }
                                 },
                                 icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)

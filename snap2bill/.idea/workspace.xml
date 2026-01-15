@@ -36,8 +36,8 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="280">
-                  <caret line="1557" column="48" lean-forward="false" selection-start-line="1557" selection-start-column="48" selection-end-line="1557" selection-end-column="48" />
+                <state relative-caret-position="13505">
+                  <caret line="2296" column="24" lean-forward="true" selection-start-line="2296" selection-start-column="24" selection-end-line="2296" selection-end-column="24" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
                   </folding>
@@ -60,9 +60,7 @@
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="9429">
                   <caret line="449" column="7" lean-forward="false" selection-start-line="449" selection-start-column="7" selection-end-line="449" selection-end-column="7" />
-                  <folding>
-                    <element signature="e#18666#18673#1#HTML" expanded="false" />
-                  </folding>
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -98,7 +96,7 @@
           <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="314">
+                <state relative-caret-position="2541">
                   <caret line="126" column="72" lean-forward="false" selection-start-line="126" selection-start-column="72" selection-end-line="126" selection-end-column="72" />
                   <folding />
                 </state>
@@ -124,7 +122,7 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-546">
+                <state relative-caret-position="0">
                   <caret line="48" column="0" lean-forward="false" selection-start-line="48" selection-start-column="0" selection-end-line="49" selection-end-column="0" />
                   <folding>
                     <marker date="1768310711883" expanded="true" signature="3053:3266" ph="..." />
@@ -252,6 +250,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -424,24 +423,9 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="snap2bill" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="snap2bill" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="media" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
       <pane id="Scope" />
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -772,17 +756,17 @@
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1038" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21858217" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22502685" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28178695" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.28178695" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21764033" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18743287" sideWeight="0.13974799" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -816,29 +800,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/media/20260104_145509.jpg" />
-    <entry file="file://$PROJECT_DIR$/media/20260104_145540.jpg" />
-    <entry file="file://$PROJECT_DIR$/media/20260104_145526.jpg" />
-    <entry file="file://$PROJECT_DIR$/media/20260104_145939.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260104_150144.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260104_150517.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260104_150745.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/20260104_150753.jpg">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -850,11 +811,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/media/20260104_150016.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/IMG20260104150218.jpg">
       <provider selected="true" editor-type-id="images">
         <state />
       </provider>
@@ -937,7 +893,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="452">
           <caret line="1824" column="0" lean-forward="false" selection-start-line="1824" selection-start-column="0" selection-end-line="1824" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -995,7 +950,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="205">
           <caret line="330" column="0" lean-forward="false" selection-start-line="330" selection-start-column="0" selection-end-line="330" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1024,7 +978,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2100">
           <caret line="100" column="26" lean-forward="false" selection-start-line="100" selection-start-column="26" selection-end-line="103" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1083,9 +1036,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="9429">
           <caret line="449" column="7" lean-forward="false" selection-start-line="449" selection-start-column="7" selection-end-line="449" selection-end-column="7" />
-          <folding>
-            <element signature="e#18666#18673#1#HTML" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -1095,6 +1046,54 @@
           <caret line="39" column="1" lean-forward="false" selection-start-line="39" selection-start-column="1" selection-end-line="39" selection-end-column="1" />
           <folding />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2541">
+          <caret line="126" column="72" lean-forward="false" selection-start-line="126" selection-start-column="72" selection-end-line="126" selection-end-column="72" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/7a00e60a-7396-4fac-839f-0403bf499fd12540652305592064101.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/05c4fb7f-9ba6-44ef-9905-a9b8b672ec384335502338440344069.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/5c7236ae-10f8-4c00-bf31-e07774e8a7555420578870753895011.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/0aa5ea40-d29d-4187-9b58-334dcec5be256128035303956750067.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/IMG20260104150218.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/60d796e4-975c-44b9-a769-7a9e2bc1bf66731896101356097857_ww1rq61.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/1f1d9a89-a173-4304-be6a-ba7a432bac819034234961144852025.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/media/2bc577a6-fa09-4255-8186-bff6b9d046f73350736101828652638.jpg">
+      <provider selected="true" editor-type-id="images">
+        <state />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/my_app/models.py">
@@ -1107,18 +1106,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="126" column="72" lean-forward="false" selection-start-line="126" selection-start-column="72" selection-end-line="126" selection-end-column="72" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="1557" column="48" lean-forward="false" selection-start-line="1557" selection-start-column="48" selection-end-line="1557" selection-end-column="48" />
+        <state relative-caret-position="13505">
+          <caret line="2296" column="24" lean-forward="true" selection-start-line="2296" selection-start-column="24" selection-end-line="2296" selection-end-column="24" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
           </folding>

@@ -280,6 +280,7 @@ import 'package:snap2bill/Distributordirectory/scanItem.dart';
 import 'dart:convert';
 
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
 
 class addToBill extends StatefulWidget {
@@ -334,9 +335,7 @@ class _addToBillState extends State<addToBill> {
 
   Future<void> _confirmAddToBill() async {
     if (quantityController.text.isEmpty || priceController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please fill all fields"), backgroundColor: Colors.red),
-      );
+      CustomSnackBar.show(context, "Please fill all fields", backgroundColor: Colors.redAccent);
       return;
     }
 
