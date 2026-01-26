@@ -20,7 +20,9 @@ class ViewDistributors extends StatefulWidget {
 }
 
 class _ViewDistributorsState extends State<ViewDistributors> {
-  String? _currentUserId; // To store the logged-in user's ID
+  String? _currentUserId;
+
+  late Color dangerColor; // To store the logged-in user's ID
 
   @override
   void initState() {
@@ -107,6 +109,8 @@ class _ViewDistributorsState extends State<ViewDistributors> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = theme.scaffoldBackgroundColor;
@@ -263,7 +267,7 @@ class _ViewDistributorsState extends State<ViewDistributors> {
                       if (i.place.isNotEmpty)
                         Row(
                           children: [
-                            const Icon(Icons.location_on, size: 14, color: Colors.redAccent),
+                            Icon(Icons.location_on, size: 14, color: dangerColor),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(

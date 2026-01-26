@@ -35,6 +35,9 @@ class _SearchPageState extends State<SearchPage> {
   String _query = "";
   Timer? _debounce;
 
+  late Color successColor;
+  late Color dangerColor;
+
   final ScrollController _scrollController = ScrollController();
 
   String ip = "";
@@ -124,6 +127,10 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
@@ -218,7 +225,7 @@ class _SearchPageState extends State<SearchPage> {
       itemBuilder: (_, i) {
         final item = _results[i];
         final type = item['type'];
-        final color = type == 'product' ? AppColors.getPrimaryColor(context) : type == 'customer' ? Colors.green : Colors.orange;
+        final color = type == 'product' ? AppColors.getPrimaryColor(context) : type == 'customer' ? successColor : dangerColor;
 
         return Container(
           margin: const EdgeInsets.only(bottom: 12),
@@ -301,20 +308,6 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  // Future<void> _onProductTap(Map item) async {
-  //   if (cid != null && cid != "null" && cid!.isNotEmpty) {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     String productId = item['id'].toString();
-  //     await prefs.setString("pid", productId);
-  //     // await prefs.setString("uid", productId);
-  //
-  //     Navigator.push(
-  //         context,
-  //         MaterialPageRoute(builder: (_) => addOrder(pid: productId))
-  //     );
-  //   }
-  // }
-
   Future<void> _onProductTap(Map item) async {
     // 1. Agar User CUSTOMER hai (cid login hai)
     if (cid != null && cid != "null" && cid!.isNotEmpty) {
@@ -327,20 +320,13 @@ class _SearchPageState extends State<SearchPage> {
           MaterialPageRoute(builder: (_) => addOrder(pid: productId))
       );
     }
-    // 2. 🚀 AGAR USER DISTRIBUTOR HAI (uid login hai)
     else if (uid != null && uid != "null" && uid!.isNotEmpty) {
-      // Distributor ke liye logic yahan aayega
-      // Udaharan: Product ki detail dikhana ya stock edit karne ka option dena
       _showProductDetailSheet(item);
     }
   }
 
   void _showProductDetailSheet(Map item) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryColor = AppColors.getPrimaryColor(context);
-
-    // 🚀 LOGIC: Check if this product belongs to the logged-in distributor
-    // uid humne initState/init me SharedPreferences se fetch kiya tha
     final bool isMyProduct = item['distributor_id'].toString() == uid.toString();
 
     showModalBottomSheet(
@@ -384,9 +370,23 @@ class _SearchPageState extends State<SearchPage> {
 
             Row(
               children: [
-                CircleAvatar(
-                  radius: 25,
-                  backgroundImage: NetworkImage("$ip${item['distributor_image']}"),
+                InkWell(
+                  onTap:(){
+                    String distId = item['distributor_id'].toString();
+                    String distName = item['distributor_name'].toString();
+
+                    Navigator.pop(context);
+
+                    if (uid == distId) {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DistributorNavigationBar(initialIndex: 4)));
+                      return;
+                    }
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => ViewDistributorProfile(distributorId: distId, distributorName:distName)));
+                  },
+                  child: CircleAvatar(
+                    radius: 25,
+                    backgroundImage: NetworkImage("$ip${item['distributor_image']}"),
+                  ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -425,7 +425,7 @@ class _SearchPageState extends State<SearchPage> {
                       icon: const Icon(Icons.call, size: 18),
                       label: const Text("CALL"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: successColor,
                         foregroundColor: Colors.white,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
                       ),

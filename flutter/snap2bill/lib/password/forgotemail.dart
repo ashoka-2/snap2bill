@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/Login_page.dart';
+import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 import 'forgototp.dart';
@@ -19,6 +20,10 @@ class _forgotemailState extends State<forgotemail> {
   final TextEditingController emailController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+
+  late Color successColor;
+
+  late Color dangerColor;
 
   Future<void> _checkEmail() async {
     if (!_formKey.currentState!.validate()) return;
@@ -78,7 +83,7 @@ class _forgotemailState extends State<forgotemail> {
                 Icon(
                   isSuccess ? Icons.check_circle_outline : Icons.error_outline,
                   size: 60,
-                  color: isSuccess ? Colors.green : Colors.redAccent,
+                  color: isSuccess ? successColor : dangerColor,
                 ),
                 const SizedBox(height: 20),
                 Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
@@ -99,6 +104,9 @@ class _forgotemailState extends State<forgotemail> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black87;
@@ -108,7 +116,7 @@ class _forgotemailState extends State<forgotemail> {
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: ThemeNavbar(
         leadingIcon: Icons.arrow_back_ios_new,
-          onLeadingPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page())),
+          onLeadingPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage())),
         title: 'Forgot Password',
         centerTitle: true,
 
@@ -123,10 +131,10 @@ class _forgotemailState extends State<forgotemail> {
               Container(
                 height: 100, width: 100,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : Colors.red.shade50,
+                  color: isDark ? const Color(0xFF2C2C2C) : dangerColor.withValues(alpha:0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.email_outlined, size: 50, color: isDark ? Colors.white : Colors.red.shade400),
+                child: Icon(Icons.email_outlined, size: 50, color: isDark ? Colors.white : dangerColor.withValues(alpha:0.5)),
               ),
               const SizedBox(height: 30),
               Text("Forgot Password", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),

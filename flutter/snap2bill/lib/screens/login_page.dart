@@ -22,14 +22,14 @@ import '../widgets/SnackBar.dart';
 const List<Color> _blobGradient1 = AppColors.blobGradient1;
 const List<Color> _blobGradient2 = AppColors.blobGradient2;
 
-class login_page extends StatefulWidget {
-  const login_page({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  State<login_page> createState() => _login_pageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _login_pageState extends State<login_page>
+class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
 
   final TextEditingController username = TextEditingController(text: "s526@tlsy.amritavidyalayam.edu.in");
@@ -45,6 +45,9 @@ class _login_pageState extends State<login_page>
   // Simple shake animation for error feedback
   late AnimationController _shakeController;
   late Animation<double> _shakeAnim;
+
+  late Color successColor;
+  late Color dangerColor;
 
   @override
   void initState() {
@@ -114,7 +117,7 @@ class _login_pageState extends State<login_page>
 
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful",
-              backgroundColor: AppColors.successColor);
+              backgroundColor: successColor);
 
           Navigator.pushReplacement(
             context,
@@ -127,7 +130,7 @@ class _login_pageState extends State<login_page>
 
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful",
-              backgroundColor: AppColors.successColor);
+              backgroundColor: successColor);
 
           Navigator.pushReplacement(
             context,
@@ -173,6 +176,10 @@ class _login_pageState extends State<login_page>
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = theme.scaffoldBackgroundColor;
@@ -302,19 +309,19 @@ class _login_pageState extends State<login_page>
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                    color: Colors.redAccent.withValues(alpha:0.1),
+                                    color: dangerColor.withValues(alpha:0.1),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.redAccent.withValues(alpha:0.5))
+                                    border: Border.all(color: dangerColor.withValues(alpha:0.5))
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    const Icon(Icons.error_outline, color: Colors.redAccent, size: 18),
+                                     Icon(Icons.error_outline, color: dangerColor, size: 18),
                                     const SizedBox(width: 8),
                                     Text(
                                       _invalidError!,
-                                      style: const TextStyle(
-                                          color: Colors.redAccent,
+                                      style:  TextStyle(
+                                          color: dangerColor,
                                           fontWeight: FontWeight.w600,
                                           fontSize: 13
                                       ),
@@ -483,7 +490,7 @@ class _login_pageState extends State<login_page>
               color: fillColor,
               borderRadius: BorderRadius.circular(12),
               border: isError
-                  ? Border.all(color: Colors.red, width: 1.5)
+                  ? Border.all(color: dangerColor, width: 1.5)
                   : null,
             ),
             child: TextField(

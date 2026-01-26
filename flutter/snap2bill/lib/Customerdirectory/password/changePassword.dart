@@ -2,28 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/login_page.dart';
+import 'package:snap2bill/theme/colors.dart';
 
 // Make sure these point to your actual file locations
 import '../../widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 
-class changePassword extends StatelessWidget {
-  const changePassword({Key? key}) : super(key: key);
+class ChangePassword extends StatelessWidget {
+  const ChangePassword({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const changePasswordSub();
+    return const ChangePasswordSub();
   }
 }
 
-class changePasswordSub extends StatefulWidget {
-  const changePasswordSub({Key? key}) : super(key: key);
+class ChangePasswordSub extends StatefulWidget {
+  const ChangePasswordSub({Key? key}) : super(key: key);
 
   @override
-  State<changePasswordSub> createState() => _changePasswordSubState();
+  State<ChangePasswordSub> createState() => _ChangePasswordSubState();
 }
 
-class _changePasswordSubState extends State<changePasswordSub> {
+class _ChangePasswordSubState extends State<ChangePasswordSub> {
   final TextEditingController oldpassword = TextEditingController();
   final TextEditingController newpassword = TextEditingController();
   final TextEditingController confirmpassword = TextEditingController();
@@ -32,6 +33,9 @@ class _changePasswordSubState extends State<changePasswordSub> {
   bool _obscureOld = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
+
+  late Color successColor;
+  late Color dangerColor;
 
   // --- Update Logic ---
   Future<void> _updatePassword() async {
@@ -109,7 +113,7 @@ class _changePasswordSubState extends State<changePasswordSub> {
               onOkay: () {
                 Navigator.pushAndRemoveUntil(
                     context,
-                    MaterialPageRoute(builder: (context) => const login_page()),
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
                         (route) => false
                 );
               }
@@ -165,13 +169,13 @@ class _changePasswordSubState extends State<changePasswordSub> {
                   height: 70,
                   width: 70,
                   decoration: BoxDecoration(
-                    color: isSuccess ? Colors.green.shade50 : Colors.red.shade50,
+                    color: isSuccess ? successColor.withValues(alpha: 0.2): dangerColor.withValues(alpha:0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     isSuccess ? Icons.check_circle_rounded : Icons.warning_rounded,
                     size: 40,
-                    color: isSuccess ? Colors.green : Colors.red,
+                    color: isSuccess ? successColor: dangerColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -203,7 +207,7 @@ class _changePasswordSubState extends State<changePasswordSub> {
                       if (onOkay != null) onOkay();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isSuccess ? Colors.green : Colors.black,
+                      backgroundColor: isSuccess ? successColor : Colors.black,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(
@@ -222,6 +226,8 @@ class _changePasswordSubState extends State<changePasswordSub> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+    successColor = AppColors.getSuccessColor(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

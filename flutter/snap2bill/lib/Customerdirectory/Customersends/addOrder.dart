@@ -24,6 +24,7 @@ class _addOrderState extends State<addOrder> {
   bool _isLoading = true;
   bool _isSubmitting = false;
   String _ip = "";
+  late Color successColor;
 
   @override
   void initState() {
@@ -95,6 +96,8 @@ class _addOrderState extends State<addOrder> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -181,7 +184,7 @@ class _addOrderState extends State<addOrder> {
                             style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.greenAccent : Colors.green[800]
+                                color: successColor
                             ),
                           ),
                         ],

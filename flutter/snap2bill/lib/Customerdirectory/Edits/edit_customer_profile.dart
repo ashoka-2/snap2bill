@@ -50,6 +50,8 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
   Uint8List? _webFileBytes;
   bool _isLoading = false;
 
+  late Color successColor;
+
   @override
   void initState() {
     super.initState();
@@ -95,6 +97,8 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
 
 
@@ -304,7 +308,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 10),
-            const Icon(Icons.check_circle_rounded, color: Colors.green, size: 80),
+             Icon(Icons.check_circle_rounded, color: successColor, size: 80),
             const SizedBox(height: 20),
             const Text("Profile Updated", style: TextStyle(fontWeight: FontWeight.w900, fontSize: 22)),
             const SizedBox(height: 12),

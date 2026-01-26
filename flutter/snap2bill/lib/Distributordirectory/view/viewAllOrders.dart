@@ -5,26 +5,30 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Distributordirectory/view/viewOrderItems.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 
-class viewAllOrders extends StatelessWidget {
-  const viewAllOrders({Key? key}) : super(key: key);
+class ViewAllOrders extends StatelessWidget {
+  const ViewAllOrders({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const viewAllOrdersSub();
+    return const ViewAllOrdersSub();
   }
 }
 
-class viewAllOrdersSub extends StatefulWidget {
-  const viewAllOrdersSub({Key? key}) : super(key: key);
+class ViewAllOrdersSub extends StatefulWidget {
+  const ViewAllOrdersSub({Key? key}) : super(key: key);
 
   @override
-  State<viewAllOrdersSub> createState() => _viewAllOrdersSubState();
+  State<ViewAllOrdersSub> createState() => _ViewAllOrdersSubState();
 }
 
-class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
+class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
   late Future<List<Joke>> _orderFuture;
+
+  late Color successColor;
+  late Color dangerColor;
 
   @override
   void initState() {
@@ -83,6 +87,10 @@ class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -141,7 +149,7 @@ class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
   /// ---------------- ORDER CARD ----------------
   Widget _buildModernOrderCard(Joke item, ThemeData theme, bool isDark) {
     bool isPending = item.payment_status.toLowerCase() == "pending";
-    Color statusColor = isPending ? Colors.orange : Colors.green;
+    Color statusColor = isPending ? AppColors.orangeColor : successColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -160,7 +168,7 @@ class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
         onTap: () async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           prefs.setString("id", item.id); // Set the order ID for the next page
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const viewOrderItems()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrderItems()));
         },
         borderRadius: BorderRadius.circular(24),
         child: Padding(

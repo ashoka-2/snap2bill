@@ -29,6 +29,9 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
   final PageController _pageController = PageController();
   int _activeTab = 0;
 
+  late Color successColor;
+  late Color dangerColor;
+
   @override
   void initState() {
     super.initState();
@@ -52,7 +55,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete", style: TextStyle(color: Colors.red))),
+              child:  Text("Delete", style: TextStyle(color: dangerColor))),
         ],
       ),
     );
@@ -73,7 +76,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
         Navigator.pop(context);
 
         CustomSnackBar.show(context, "Product Deleted Successfully.",
-            backgroundColor: AppColors.successColor);
+            backgroundColor: successColor);
         // Refresh the products list
         _getProducts();
       }
@@ -179,6 +182,10 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black87;

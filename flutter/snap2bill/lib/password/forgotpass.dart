@@ -23,6 +23,9 @@ class _forgotpassState extends State<forgotpass> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
+  late Color successColor;
+  late Color dangerColor;
+
   Future<void> _resetPassword() async {
     String pass = password.text;
 
@@ -79,7 +82,7 @@ class _forgotpassState extends State<forgotpass> {
           onOkay: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const login_page()),
+              MaterialPageRoute(builder: (context) => const LoginPage()),
                   (route) => false,
             );
           },
@@ -120,13 +123,13 @@ class _forgotpassState extends State<forgotpass> {
                   height: 70,
                   width: 70,
                   decoration: BoxDecoration(
-                    color: isSuccess ? Colors.green.shade50 : Colors.red.shade50,
+                    color: isSuccess ? successColor.withValues(alpha: 0.2) : dangerColor.withValues(alpha:0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                     isSuccess ? Icons.check_circle_rounded : Icons.warning_rounded,
                     size: 40,
-                    color: isSuccess ? Colors.green : Colors.red,
+                    color: isSuccess ? successColor : dangerColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -143,7 +146,7 @@ class _forgotpassState extends State<forgotpass> {
                       if (onOkay != null) onOkay();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: isSuccess ? Colors.green : Colors.black,
+                      backgroundColor: isSuccess ? successColor : Colors.black,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     child: Text(isSuccess ? "Back to Login" : "Try Again", style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
@@ -159,6 +162,10 @@ class _forgotpassState extends State<forgotpass> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     // final textColor = isDark ? Colors.white : Colors.black87;

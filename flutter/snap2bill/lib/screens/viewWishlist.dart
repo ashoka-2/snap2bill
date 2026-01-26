@@ -20,7 +20,9 @@ class _ViewWishlistState extends State<ViewWishlist> {
 
   String _baseUrl = "";
   String? _cid; // customer id
-  String? _uid; // distributor id
+  String? _uid;
+
+  late Color successColor; // distributor id
 
   @override
   void initState() {
@@ -117,6 +119,8 @@ class _ViewWishlistState extends State<ViewWishlist> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
@@ -225,13 +229,13 @@ class _ViewWishlistState extends State<ViewWishlist> {
                           decoration: BoxDecoration(
                             color: AppColors.successbgColor.withValues(alpha: 0.3),
                             borderRadius: BorderRadius.circular(50),
-                            border: Border.all(width: 1,color: AppColors.successColor)
+                            border: Border.all(width: 1,color: successColor)
                           ),
                           child: IconButton(
                             icon:  Icon(
                                 size: 20,
                                 Icons.add_shopping_cart,
-                                color: AppColors.successColor),
+                                color: successColor),
                             onPressed: () async {
                               final prefs =
                               await SharedPreferences.getInstance();

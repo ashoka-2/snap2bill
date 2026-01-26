@@ -21,6 +21,8 @@ class send_feedback extends StatefulWidget {
 class _send_feedbackState extends State<send_feedback> {
   final feedbackController = TextEditingController();
   bool _isLoading = false;
+  late Color successColor;
+  late Color dangerColor;
 
   // --- API Logic ---
   Future<void> submitFeedback() async {
@@ -30,7 +32,7 @@ class _send_feedbackState extends State<send_feedback> {
       CustomSnackBar.show(
         context,
         'Please enter your feedback first',
-        backgroundColor: Colors.redAccent,
+        backgroundColor: dangerColor,
       );
       return;
     }
@@ -61,7 +63,7 @@ class _send_feedbackState extends State<send_feedback> {
         CustomSnackBar.show(
           context,
           'Thank you! Feedback sent successfully!',
-          backgroundColor: Colors.green,
+          backgroundColor: successColor,
         );
         // Navigate back to Customer Home/Nav Bar
         Navigator.pushReplacement(
@@ -76,7 +78,7 @@ class _send_feedbackState extends State<send_feedback> {
       CustomSnackBar.show(
         context,
         'Error : $e',
-        backgroundColor: Colors.redAccent,
+        backgroundColor: dangerColor,
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -85,6 +87,9 @@ class _send_feedbackState extends State<send_feedback> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+    successColor = AppColors.getSuccessColor(context);
+
     // --- Theme Handling ---
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;

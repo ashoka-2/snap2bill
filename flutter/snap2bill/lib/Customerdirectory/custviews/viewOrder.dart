@@ -1,237 +1,3 @@
-//
-// import 'dart:async';
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
-// import 'package:snap2bill/Customerdirectory/payment/RazorpayScreen.dart';
-//
-// import '../../widgets/Navbar.dart';
-//
-// class viewOrder extends StatefulWidget {
-//   const viewOrder({Key? key}) : super(key: key);
-//
-//   @override
-//   State<viewOrder> createState() => _viewOrderState();
-// }
-//
-// class _viewOrderState extends State<viewOrder> {
-//   Timer? _timer;
-//   Future<List<Joke>>? _ordersFuture;
-//
-//   Future<List<Joke>> _getJokes() async {
-//     SharedPreferences prefs = await SharedPreferences.getInstance();
-//     String ip = prefs.getString("ip") ?? "";
-//     String cid = prefs.getString("cid") ?? "";
-//     String did = prefs.getString("selected_distributor_id") ?? "";
-//
-//     try {
-//       var response = await http.post(
-//         Uri.parse("$ip/view_orders"),
-//         body: {"cid": cid, "did": did},
-//       );
-//       var jsonData = json.decode(response.body);
-//       List<Joke> list = [];
-//       if (jsonData["data"] != null) {
-//         for (var item in jsonData["data"]) {
-//           list.add(Joke(
-//             item["id"].toString(),
-//             item["payment_status"].toString(),
-//             item["payment_date"].toString(),
-//             item["date"].toString(),
-//             item["amount"].toString(),
-//             item["username"].toString(),
-//             item["distributor"].toString(),
-//             item["orderid"].toString(),
-//           ));
-//         }
-//       }
-//       return list;
-//     } catch (e) { return []; }
-//   }
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _ordersFuture = _getJokes();
-//     _timer = Timer.periodic(const Duration(seconds: 2), (timer) {
-//       if (mounted) setState(() { _ordersFuture = _getJokes(); });
-//     });
-//   }
-//
-//   @override
-//   void dispose() {
-//     _timer?.cancel();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final isDark = Theme.of(context).brightness == Brightness.dark;
-//     return Scaffold(
-//       backgroundColor: isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA),
-//       appBar: ThemeNavbar(title: "My Orders",
-//         leadingIcon: Icons.arrow_back_ios_rounded,
-//         onLeadingPressed: ()=>{
-//           if (Navigator.canPop(context)) Navigator.pop(context)
-//         },
-//         centerTitle: true,
-//
-//       ),      body: FutureBuilder<List<Joke>>(
-//         future: _ordersFuture,
-//         builder: (context, snapshot) {
-//           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-//           final items = snapshot.data!;
-//           if (items.isEmpty) return const Center(child: Text("No orders found"));
-//           return ListView.builder(
-//             padding: const EdgeInsets.all(12),
-//             itemCount: items.length,
-//             itemBuilder: (context, index) => _buildCard(items[index], isDark),
-//           );
-//         },
-//       ),
-//     );
-//   }
-//
-//   Widget _buildCard(Joke item, bool isDark) {
-//     String status = item.payment_status.toLowerCase();
-//     // ✅ Updated logic: Hide buttons if Paid, Online, OR Offline
-//     bool isCompleted = status == 'paid' || status == 'online' || status == 'offline';
-//
-//     return GestureDetector(
-//       onTap: () async {
-//         SharedPreferences prefs = await SharedPreferences.getInstance();
-//         prefs.setString("id", item.id);
-//         prefs.setString("order_payment_status", item.payment_status);
-//         Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewOrderItems()));
-//       },
-//       child: Card(
-//         margin: const EdgeInsets.only(bottom: 15),
-//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-//         child: Padding(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Text("Bill ID: ${item.orderid}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
-//                   _statusBadge(item.payment_status),
-//                 ],
-//               ),
-//               const SizedBox(height: 10),
-//               Text(item.distributor, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-//               Text("Date: ${item.date}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
-//               const Divider(height: 25),
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   const Text("Total Payable", style: TextStyle(color: Colors.grey)),
-//                   Text("₹${item.amount}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.getPrimaryColor(context))),
-//                 ],
-//               ),
-//               const SizedBox(height: 15),
-//               Row(
-//                 children: [
-//                   if (!isCompleted)
-//                     Expanded(
-//                       flex: 2,
-//                       child: ElevatedButton(
-//                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: AppColors.getPrimaryColor(context),
-//                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-//                         ),
-//                         onPressed: () async {
-//                           SharedPreferences prefs = await SharedPreferences.getInstance();
-//                           prefs.setString("amount", item.amount);
-//                           prefs.setString("id", item.id);
-//                           Navigator.push(context, MaterialPageRoute(builder: (_) => RazorpayScreen()));
-//                         },
-//                         child: const Text("Pay Now", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-//                       ),
-//                     ),
-//                   if (!isCompleted) const SizedBox(width: 8),
-//                   Expanded(
-//                     flex: 2,
-//                     child: OutlinedButton(
-//                       style: OutlinedButton.styleFrom(shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-//                       onPressed: () async {
-//                         SharedPreferences prefs = await SharedPreferences.getInstance();
-//                         prefs.setString("id", item.id);
-//                         prefs.setString("order_payment_status", item.payment_status);
-//                         Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewOrderItems()));
-//                       },
-//                       child: Text(isCompleted ? "View Items" : "Edit Order"),
-//                     ),
-//                   ),
-//                   const SizedBox(width: 8),
-//                   Container(
-//                     decoration: BoxDecoration(color: Colors.red.withValues(alpha:0.1), borderRadius: BorderRadius.circular(10)),
-//                     child: IconButton(
-//                       icon: const Icon(Icons.delete_outline, color: Colors.red),
-//                       onPressed: () => _showDeleteConfirmation(item.id),
-//                     ),
-//                   ),
-//                 ],
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   void _showDeleteConfirmation(String orderId) {
-//     showDialog(
-//       context: context,
-//       builder: (context) => AlertDialog(
-//         title: const Text("Delete Order?"),
-//         content: const Text("Do you want to remove this order record?"),
-//         actions: [
-//           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-//           TextButton(
-//             onPressed: () async {
-//               SharedPreferences prefs = await SharedPreferences.getInstance();
-//               await http.post(Uri.parse("${prefs.getString("ip")}/delete_order"), body: {"id": orderId});
-//               Navigator.pop(context);
-//             },
-//             child: const Text("Delete", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _statusBadge(String status) {
-//     Color color;
-//     String label = status.toLowerCase();
-//
-//     if (label == 'paid' || label == 'online') {
-//       color = Colors.green;
-//     } else if (label == 'offline') {
-//       color = AppColors.getPrimaryColor(context)Grey; // ✅ Pill color for Offline
-//     } else {
-//       color = Colors.orange;
-//     }
-//
-//     return Container(
-//       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-//       decoration: BoxDecoration(
-//         color: color.withValues(alpha:0.1),
-//         borderRadius: BorderRadius.circular(10),
-//       ),
-//       child: Text(status.toUpperCase(),
-//           style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 10)),
-//     );
-//   }
-// }
-//
-// class Joke {
-//   final String id, payment_status, payment_date, date, amount, username, distributor, orderid;
-//   Joke(this.id, this.payment_status, this.payment_date, this.date, this.amount, this.username, this.distributor, this.orderid);
-// }
 
 import 'dart:async';
 import 'dart:convert';
@@ -255,6 +21,10 @@ class viewOrder extends StatefulWidget {
 class _viewOrderState extends State<viewOrder> {
   Timer? _timer;
   Future<List<OrderModel>>? _ordersFuture;
+
+  late Color successColor;
+
+  late Color dangerColor;
 
   /// --- API FETCH LOGIC ---
   Future<List<OrderModel>> _getOrders() async {
@@ -301,6 +71,10 @@ class _viewOrderState extends State<viewOrder> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
 
     return Scaffold(
       backgroundColor: AppColors.getScaffoldBg(context),
@@ -476,7 +250,7 @@ class _viewOrderState extends State<viewOrder> {
                   border: Border.all(color: AppColors.dangerColor),
                   borderRadius: BorderRadius.circular(30)
                 ),
-                child: const Text("Delete", style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold))),
+                child:  Text("Delete", style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold))),
           ),
         ],
       ),
@@ -486,13 +260,14 @@ class _viewOrderState extends State<viewOrder> {
   Widget _statusBadge(String status) {
     Color color;
     String label = status.toLowerCase();
+  
 
     if (label == 'paid' || label == 'online') {
-      color = AppColors.successColor;
+      color = successColor;
     } else if (label == 'offline') {
       color = AppColors.getPrimaryColor(context);
     } else {
-      color = Colors.orange;
+      color = AppColors.orangeColor;
     }
 
     return Container(

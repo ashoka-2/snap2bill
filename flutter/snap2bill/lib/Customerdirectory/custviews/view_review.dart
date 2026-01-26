@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/SnackBar.dart';
 
@@ -16,6 +17,8 @@ class view_review extends StatefulWidget {
 
 class _view_reviewState extends State<view_review> {
   bool _isDeleting = false;
+
+  late Color dangerColor;
 
   // --- API Logic ---
   Future<List<Joke>> _getReviews() async {
@@ -73,7 +76,7 @@ class _view_reviewState extends State<view_review> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete", style: TextStyle(color: Colors.red))
+              child:  Text("Delete", style: TextStyle(color: dangerColor))
           ),
         ],
       ),
@@ -98,7 +101,7 @@ class _view_reviewState extends State<view_review> {
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)));
       }
     } catch (e) {
-      CustomSnackBar.show(context, Text("Error: $e") as String, backgroundColor: Colors.redAccent);
+      CustomSnackBar.show(context, Text("Error: $e") as String, backgroundColor: dangerColor);
     } finally {
       if (mounted) setState(() => _isDeleting = false);
     }
@@ -106,6 +109,8 @@ class _view_reviewState extends State<view_review> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+
     // --- Theme Handling ---
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -280,10 +285,10 @@ class _view_reviewState extends State<view_review> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.red.withValues(alpha:0.1),
+                        color: dangerColor.withValues(alpha:0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.delete_outline_rounded, size: 20, color: Colors.red),
+                      child:  Icon(Icons.delete_outline_rounded, size: 20, color: dangerColor),
                     ),
                   ),
                 ),

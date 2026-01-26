@@ -6,23 +6,23 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 
-class viewOrderItems extends StatelessWidget {
-  const viewOrderItems({Key? key}) : super(key: key);
+class ViewOrderItems extends StatelessWidget {
+  const ViewOrderItems({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const viewOrderItemsSub();
+    return const ViewOrderItemsSub();
   }
 }
 
-class viewOrderItemsSub extends StatefulWidget {
-  const viewOrderItemsSub({Key? key}) : super(key: key);
+class ViewOrderItemsSub extends StatefulWidget {
+  const ViewOrderItemsSub({Key? key}) : super(key: key);
 
   @override
-  State<viewOrderItemsSub> createState() => _viewOrderItemsSubState();
+  State<ViewOrderItemsSub> createState() => _ViewOrderItemsSubState();
 }
 
-class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
+class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
   Future<List<OrderItem>> _getOrderItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? ip = prefs.getString("ip");

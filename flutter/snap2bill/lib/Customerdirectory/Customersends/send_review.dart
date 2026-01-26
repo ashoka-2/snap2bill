@@ -23,6 +23,9 @@ class _send_reviewState extends State<send_review> {
   double rating = 0.0;
   bool isLoading = false;
 
+  late Color successColor;
+  late Color dangerColor;
+
   // --- API Logic ---
   Future<void> submitReview() async {
     // 1. Validation
@@ -30,7 +33,7 @@ class _send_reviewState extends State<send_review> {
       CustomSnackBar.show(
         context,
         'Please select a rating and write a review',
-        backgroundColor: Colors.redAccent,
+        backgroundColor: dangerColor,
       );
       return;
     }
@@ -85,7 +88,7 @@ class _send_reviewState extends State<send_review> {
         CustomSnackBar.show(
           context,
           'Review sent successfully!',
-          backgroundColor: Colors.green,
+          backgroundColor: successColor,
         );
 
         Navigator.pushReplacement(
@@ -115,6 +118,9 @@ class _send_reviewState extends State<send_review> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+    successColor = AppColors.getSuccessColor(context);
+
     // --- Theme Handling ---
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;

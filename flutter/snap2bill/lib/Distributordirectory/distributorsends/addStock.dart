@@ -36,6 +36,8 @@ class _AddStockSubState extends State<AddStockSub> {
   List<dynamic> _units = [];
   String? _selectedUnitId;
 
+  late Color successColor;
+
   @override
   void initState() {
     super.initState();
@@ -73,6 +75,7 @@ class _AddStockSubState extends State<AddStockSub> {
 
   // --- API Logic ---
   Future<void> _submitStock() async {
+
     if (stock.text.isEmpty || price.text.isEmpty) {
       CustomSnackBar.show(context, "Please fill all fields.", backgroundColor: AppColors.dangerColor,);
 
@@ -106,7 +109,7 @@ class _AddStockSubState extends State<AddStockSub> {
               context,
               MaterialPageRoute(builder: (context) => const MyProducts())
           );
-          CustomSnackBar.show(context, "Product added successfully", backgroundColor: AppColors.successColor);
+          CustomSnackBar.show(context, "Product added successfully", backgroundColor: successColor);
 
         } else {
           throw Exception("Server returned error");
@@ -123,8 +126,11 @@ class _AddStockSubState extends State<AddStockSub> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    
 
     final bgColor = theme.scaffoldBackgroundColor;
     final textColor = isDark ? Colors.white : Colors.black87;

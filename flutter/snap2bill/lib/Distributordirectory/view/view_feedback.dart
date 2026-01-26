@@ -9,14 +9,14 @@ import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../distributorsends/send_feedback.dart';
 
-class view_feedback extends StatefulWidget {
-  const view_feedback({Key? key}) : super(key: key);
+class ViewFeedback extends StatefulWidget {
+  const ViewFeedback({Key? key}) : super(key: key);
 
   @override
-  State<view_feedback> createState() => _view_feedbackState();
+  State<ViewFeedback> createState() => _ViewFeedbackState();
 }
 
-class _view_feedbackState extends State<view_feedback> {
+class _ViewFeedbackState extends State<ViewFeedback> {
 
   // --- API Logic ---
   Future<List<Joke>> _getJokes() async {

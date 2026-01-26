@@ -20,6 +20,8 @@ import 'package:snap2bill/widgets/category_filter_bar.dart';
 import 'package:snap2bill/widgets/product_feed.dart';
 import 'package:snap2bill/widgets/custom_drawer.dart';
 
+import '../theme/colors.dart';
+
 class CustomerHomePage extends StatefulWidget {
   const CustomerHomePage({Key? key}) : super(key: key);
 
@@ -34,6 +36,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   List<CategoryData> _categories = [];
   String _selectedCategoryId = "All";
   bool _isLoading = true;
+
+  late Color dangerColor;
 
   @override
   void initState() {
@@ -89,12 +93,12 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
       DrawerItemModel(
         icon: Icons.lock_outline,
         title: "Change Password",
-        onTap: () => const changePassword(),
+        onTap: () => const ChangePassword(),
       ),
       DrawerItemModel(
         icon: Icons.logout,
         title: "Logout",
-        color: Colors.red,
+        color: dangerColor,
         onTap: () async {
           final prefs = await SharedPreferences.getInstance();
           final ip = prefs.getString("ip");
@@ -102,7 +106,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           if (ip != null) {
             await prefs.setString("ip", ip);
           }
-          return const login_page();
+          return const LoginPage();
         },
       ),
     ];
@@ -110,6 +114,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+
     final theme = Theme.of(context);
 
     final List<ProductData> filteredProducts =

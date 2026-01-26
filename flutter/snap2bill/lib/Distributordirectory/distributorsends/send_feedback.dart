@@ -86,8 +86,11 @@ class _send_feedbackState extends State<send_feedback> {
   final feedbackController = TextEditingController();
   bool _isLoading = false;
 
+  late Color successColor;
+
   // --- API Logic ---
   Future<void> submitFeedback() async {
+
     // 1. Validation
     if (feedbackController.text.trim().isEmpty) {
       CustomSnackBar.show(context, "Please enter your feedback first.", backgroundColor: AppColors.dangerColor);
@@ -117,7 +120,7 @@ class _send_feedbackState extends State<send_feedback> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        CustomSnackBar.show(context, "Thank you! Feedback sent successfully.", backgroundColor: AppColors.successColor, durationMs: 800);
+        CustomSnackBar.show(context, "Thank you! Feedback sent successfully.", backgroundColor: successColor, durationMs: 800);
 
         // Navigate back to Home
         Navigator.pushReplacement(
@@ -139,19 +142,20 @@ class _send_feedbackState extends State<send_feedback> {
   @override
   Widget build(BuildContext context) {
     // --- Theme Handling ---
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
     // Design Colors
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
-    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
-
+    final bgColor = AppColors.getScaffoldBg(context);
+    final textColor = AppColors.getTextColor(context);
+    final cardColor = AppColors.getCardColor(context);
+    final hintColor = AppColors.getHintColor(context);
+    final borderColor = AppColors.getBorderColor(context);
     // Button Colors
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
+    final buttonColor = AppColors.getButtonColor(context);
+    final buttonTextColor = AppColors.getTextColor2(context);
 
     return Scaffold(
       backgroundColor: bgColor,

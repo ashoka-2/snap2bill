@@ -7,14 +7,14 @@ import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/SnackBar.dart';
 
-class view_category extends StatefulWidget {
-  const view_category({Key? key}) : super(key: key);
+class ViewCategory extends StatefulWidget {
+  const ViewCategory({Key? key}) : super(key: key);
 
   @override
-  State<view_category> createState() => _view_categoryState();
+  State<ViewCategory> createState() => _ViewCategoryState();
 }
 
-class _view_categoryState extends State<view_category> {
+class _ViewCategoryState extends State<ViewCategory> {
 
   // --- API Logic ---
   Future<List<Joke>> _getCategories() async {

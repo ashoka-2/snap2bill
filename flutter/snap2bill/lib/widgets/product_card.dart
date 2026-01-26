@@ -31,6 +31,8 @@ class _ProductCardState extends State<ProductCard> {
   bool showCenterHeart = false;
   bool _isProcessing = false;
 
+  late Color dangerColor;
+
   @override
   void initState() {
     super.initState();
@@ -107,7 +109,7 @@ class _ProductCardState extends State<ProductCard> {
           child: ListTile(
             leading: Icon(
               isLiked ? Icons.favorite : Icons.favorite_border,
-              color: isLiked ? Colors.red : textColor,
+              color: isLiked ? dangerColor : textColor,
             ),
             title: Text(
               isLiked ? 'Remove Wishlist' : 'Add to Wishlist',
@@ -135,6 +137,8 @@ class _ProductCardState extends State<ProductCard> {
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black87;

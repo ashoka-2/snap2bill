@@ -22,6 +22,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   String? serverIp;
   bool isPaid = false;
 
+  late Color successColor;
+  late Color dangerColor;
+
+
   @override
   void initState() {
     super.initState();
@@ -84,7 +88,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
 
     var js = json.decode(res.body);
     if (js['status'] == 'ok') {
-      CustomSnackBar.show(context, "Quantity updated successfully", backgroundColor: AppColors.successColor);
+      CustomSnackBar.show(context, "Quantity updated successfully", backgroundColor: successColor);
     } else {
       // 🚀 Revert back if server fails
       setState(() {
@@ -99,7 +103,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     SharedPreferences sp = await SharedPreferences.getInstance();
     await http.post(Uri.parse("${sp.getString("ip")}/delete_order_item"), body: {'id': id});
 
-    CustomSnackBar.show(context, "Item removed", backgroundColor: Colors.redAccent);
+    CustomSnackBar.show(context, "Item removed", backgroundColor: dangerColor);
 
     // 🚀 Partial update: Just remove from list
     setState(() {
@@ -111,6 +115,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
 
     return Scaffold(
       backgroundColor: AppColors.getScaffoldBg(context),
@@ -210,7 +218,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
         title: const Text("Delete Item?"),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-          TextButton(onPressed: () { deleteItem(index); Navigator.pop(context); }, child: const Text("Remove", style: TextStyle(color: Colors.red))),
+          TextButton(onPressed: () { deleteItem(index); Navigator.pop(context); }, child: Text("Remove", style: TextStyle(color: dangerColor))),
         ],
       ),
     );

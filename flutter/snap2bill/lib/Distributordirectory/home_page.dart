@@ -37,6 +37,8 @@ class _HomePageState extends State<HomePage> {
   String _selectedCategoryId = "All";
   bool _isLoading = true;
 
+  late Color dangerColor;
+
   @override
   void initState() {
     super.initState();
@@ -86,27 +88,27 @@ class _HomePageState extends State<HomePage> {
       DrawerItemModel(
         icon: Icons.list_alt,
         title: "Orders",
-        onTap: () => const viewAllOrders(),
+        onTap: () => const ViewAllOrders(),
       ),
       DrawerItemModel(
         icon: Icons.category_outlined,
         title: "Category",
-        onTap: () => const view_category(),
+        onTap: () => const ViewCategory(),
       ),
       DrawerItemModel(
         icon: Icons.feedback_outlined,
         title: "Feedback",
-        onTap: () => const view_feedback(),
+        onTap: () => const ViewFeedback(),
       ),
       DrawerItemModel(
         icon: Icons.lock_outline,
         title: "Change Password",
-        onTap: () => const changePassword(),
+        onTap: () => const ChangePassword(),
       ),
       DrawerItemModel(
         icon: Icons.logout,
         title: "Logout",
-        color: Colors.red,
+        color: dangerColor,
         onTap: () async {
           final prefs = await SharedPreferences.getInstance();
           final ip = prefs.getString("ip");
@@ -114,7 +116,7 @@ class _HomePageState extends State<HomePage> {
           if (ip != null) {
             await prefs.setString("ip", ip);
           }
-          return const login_page();
+          return const LoginPage();
         },
       ),
     ];
@@ -122,8 +124,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-
+    dangerColor = AppColors.getDangerColor(context);
+    
     final List<ProductData> filteredProducts =
     _selectedCategoryId == "All"
         ? _allProducts

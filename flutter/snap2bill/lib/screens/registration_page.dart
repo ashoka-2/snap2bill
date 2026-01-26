@@ -230,7 +230,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       var decoded = json.decode(responseString);
 
       if (decoded['status'] == 'ok') {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
       } else {
         _showError("Registration failed: ${decoded['status']}");
       }

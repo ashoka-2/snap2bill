@@ -38,6 +38,8 @@ class _EditStockState extends State<EditStock> {
   List<dynamic> _units = [];
   String? _selectedUnitId;
 
+  late Color successColor;
+
   @override
   void initState() {
     super.initState();
@@ -76,6 +78,7 @@ class _EditStockState extends State<EditStock> {
   }
 
   Future<void> _updateStock() async {
+
     if (quantity.text.isEmpty || price.text.isEmpty) {
       CustomSnackBar.show(context, "Please fill all fields", backgroundColor: AppColors.dangerColor);
 
@@ -102,7 +105,7 @@ class _EditStockState extends State<EditStock> {
 
         var response = await http.post(uri, body: body);
         
-        CustomSnackBar.show(context, "Product updated successfully", backgroundColor: AppColors.successColor);
+        CustomSnackBar.show(context, "Product updated successfully", backgroundColor: successColor);
 
 
         if (response.statusCode == 200) {
@@ -123,6 +126,8 @@ class _EditStockState extends State<EditStock> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -152,13 +157,13 @@ class _EditStockState extends State<EditStock> {
               Container(
                 height: 100, width: 100,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : Colors.orange.shade50,
+                  color: isDark ? const Color(0xFF2C2C2C) : AppColors.orangeColor.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                     Icons.inventory_2_outlined,
                     size: 45,
-                    color: isDark ? Colors.white : Colors.orange.shade800
+                    color: isDark ? Colors.white : AppColors.orangeColor,
                 ),
               ),
               const SizedBox(height: 40),

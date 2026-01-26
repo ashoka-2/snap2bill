@@ -59,6 +59,8 @@ class ViewCustomerProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final successColor = AppColors.getSuccessColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = AppColors.getTextColor(context);
@@ -151,7 +153,7 @@ class ViewCustomerProfile extends StatelessWidget {
                       ),
                       label: Text("Call"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: successColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
@@ -171,7 +173,7 @@ class ViewCustomerProfile extends StatelessWidget {
                       ),
                       label: const Text("Message"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: successColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 5),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),

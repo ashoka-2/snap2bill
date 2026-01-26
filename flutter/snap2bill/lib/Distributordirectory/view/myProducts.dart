@@ -34,6 +34,9 @@ class _MyProductsSubState extends State<MyProductsSub> {
   String _searchQuery = "";
   late Future<List<Joke>> _productFuture;
 
+  late Color successColor;
+  late Color dangerColor;
+
   @override
   void initState() {
     super.initState();
@@ -96,7 +99,7 @@ class _MyProductsSubState extends State<MyProductsSub> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete", style: TextStyle(color: Colors.red))),
+              child:  Text("Delete", style: TextStyle(color: dangerColor))),
         ],
       ),
     );
@@ -116,7 +119,7 @@ class _MyProductsSubState extends State<MyProductsSub> {
       if (res.statusCode == 200) {
         if (!mounted) return;
         CustomSnackBar.show(context, "Product Deleted SuccessFully",
-            backgroundColor: AppColors.successColor);
+            backgroundColor: successColor);
         setState(() {
           _productFuture = _getProducts();
         });
@@ -131,6 +134,10 @@ class _MyProductsSubState extends State<MyProductsSub> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final isDark = ThemeService.instance.isDarkMode;
     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF9F9F9);
 
@@ -156,7 +163,7 @@ class _MyProductsSubState extends State<MyProductsSub> {
               return const Center(child: CircularProgressIndicator());
             }
             if (snapshot.hasError) {
-              return Center(child: Text("Error: ${snapshot.error}", style: const TextStyle(color: Colors.red)));
+              return Center(child: Text("Error: ${snapshot.error}", style: TextStyle(color: dangerColor)));
             }
             final items = snapshot.data ?? [];
             if (items.isEmpty) {
@@ -291,11 +298,11 @@ class _MyProductsSubState extends State<MyProductsSub> {
                             ],
                           ),
                         ),
-                        const PopupMenuItem<String>(
+                         PopupMenuItem<String>(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, size: 18, color: Colors.red),
+                              Icon(Icons.delete, size: 18, color: dangerColor),
                               SizedBox(width: 8),
                               Text('Delete'),
                             ],

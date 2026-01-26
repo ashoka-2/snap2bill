@@ -264,6 +264,8 @@ import 'mobile_razorpay_helper.dart'
 if (dart.library.js) 'web_razorpay_helper.dart' as razorpay_helper;
 import 'package:razorpay_flutter/razorpay_flutter.dart' as razorpay_flutter;
 
+
+
 class RazorpayScreen extends StatefulWidget {
   const RazorpayScreen({Key? key}) : super(key: key);
 
@@ -276,6 +278,10 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   String fee = "0";
   String _paymentMode = "online"; // Default selection
   bool _isProcessing = false;
+  late Color successColor;
+
+
+
 
   @override
   void initState() {
@@ -300,7 +306,6 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   void _openCheckout() {
     // Convert amount to paisa (multiply by 100)
     int amountInPaisa = (double.parse(fee) * 100).toInt();
-
     var options = {
       'key': 'rzp_test_HKCAwYtLt0rwQe',
       'amount': amountInPaisa,
@@ -317,7 +322,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
       razorpay_helper.openRazorpayWeb(
         options,
         onSuccess: (paymentId) {
-          CustomSnackBar.show(context, "Payment Successful", backgroundColor: AppColors.successColor);
+          CustomSnackBar.show(context, "Payment Successful", backgroundColor: successColor);
 
           updatepaymentstatus();
         },
@@ -333,7 +338,8 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
 
   // --- Handlers for Mobile ---
   void _handlePaymentSuccess(razorpay_flutter.PaymentSuccessResponse response) {
-    CustomSnackBar.show(context, "Payment Successful: ${response.paymentId}", backgroundColor: AppColors.successColor);
+
+    CustomSnackBar.show(context, "Payment Successful: ${response.paymentId}", backgroundColor: successColor);
     updatepaymentstatus();
   }
 
@@ -391,6 +397,8 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
     final textColor = isDark ? Colors.white : Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
+    successColor = AppColors.getSuccessColor(context);
+
 
     return Scaffold(
       backgroundColor: isDark ? theme.scaffoldBackgroundColor : Colors.grey[50],
@@ -442,7 +450,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.verified_user_outlined, size: 16, color: Colors.green.shade400),
+                      Icon(Icons.verified_user_outlined, size: 16, color: successColor.withValues(alpha: 0.5)),
                       const SizedBox(width: 8),
                       Text("Secured by Razorpay", style: TextStyle(fontSize: 12, color: hintColor)),
                     ],

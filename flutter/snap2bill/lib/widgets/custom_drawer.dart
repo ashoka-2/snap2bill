@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // Import necessary dependencies/widgets needed for the drawer
 import '../main.dart';
+import '../theme/colors.dart';
 import '../theme/theme.dart';
 
 /// Defines the data structure for a single item in the custom drawer.
@@ -23,13 +24,17 @@ class DrawerItemModel {
 class CustomDrawer extends StatelessWidget {
   final List<DrawerItemModel> menuItems;
 
-  const CustomDrawer({
+  late Color dangerColor;
+
+   CustomDrawer({
     Key? key,
     required this.menuItems,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    dangerColor = AppColors.getDangerColor(context);
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black;
@@ -88,7 +93,7 @@ class CustomDrawer extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
                 child: Column(
                   children: menuItems.map((item) {
-                    final itemColor = item.color == Colors.red ? Colors.red : textColor;
+                    final itemColor = item.color == dangerColor? dangerColor : textColor;
                     return _drawerItem(context, isDark, item.icon, item.title, item.onTap, itemColor);
                   }).toList(),
                 ),

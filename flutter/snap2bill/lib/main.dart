@@ -193,7 +193,7 @@ class _MyApp_subState extends State<MyApp_sub> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => login_page(),
+                                      builder: (context) => LoginPage(),
                                     ),
                                   );
                                 }

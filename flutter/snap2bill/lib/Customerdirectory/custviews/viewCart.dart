@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/SnackBar.dart';
 import '../../widgets/app_button.dart';
@@ -24,6 +25,9 @@ class _viewCartState extends State<viewCart> {
   late Future<List<Map<String, dynamic>>> cartFuture;
   List<Map<String, dynamic>> _localItems = [];
   bool _isPlacingOrder = false;
+
+  late Color successColor;
+  late Color dangerColor;
 
   @override
   void initState() {
@@ -95,6 +99,10 @@ class _viewCartState extends State<viewCart> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA);
@@ -200,7 +208,7 @@ class _viewCartState extends State<viewCart> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("₹${item['price']}", style: TextStyle(color: isDark ? Colors.greenAccent : Colors.green[800], fontWeight: FontWeight.w900, fontSize: 18)),
+                      Text("₹${item['price']}", style: TextStyle(color:successColor, fontWeight: FontWeight.w900, fontSize: 18)),
 
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
@@ -245,7 +253,7 @@ class _viewCartState extends State<viewCart> {
                                           // Auto-limit to 100 on typing
                                           if (val > 100) {
                                             val = 100;
-                                            CustomSnackBar.show(context, "Max quantity is 100", backgroundColor: Colors.orange);
+                                            CustomSnackBar.show(context, "Max quantity is 100", backgroundColor: dangerColor);
                                           }
                                           if (val < 1) val = 1;
                                           _localItems[index]['quantity'] = val;
@@ -272,7 +280,7 @@ class _viewCartState extends State<viewCart> {
                                     _updateQtyOnServer(item['id'].toString(), newVal.toString());
                                   } else {
                                     // 🚀 Custom SnackBar on limit reached
-                                    CustomSnackBar.show(context, "Maximum quantity reached!", backgroundColor: Colors.redAccent);
+                                    CustomSnackBar.show(context, "Maximum quantity reached!", backgroundColor: dangerColor);
                                   }
                                 },
                                 icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
@@ -334,7 +342,7 @@ class _viewCartState extends State<viewCart> {
                 CustomSnackBar.show(
                     context,
                     "Quantity for $exceededProduct exceeds 100!",
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: dangerColor,
                     durationMs: 2000
                 );
                 return; // Stop execution

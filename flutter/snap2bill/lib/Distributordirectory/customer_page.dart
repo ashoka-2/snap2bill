@@ -134,7 +134,7 @@ class _CustomerPageSubState extends State<CustomerPageSub> {
         onTap: () async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString("selected_customer_id", item.id);
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const viewOrder()));
+          Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrder()));
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -167,7 +167,7 @@ class _CustomerPageSubState extends State<CustomerPageSub> {
                   SharedPreferences prefs = await SharedPreferences.getInstance();
                   await prefs.setString("selected_customer_id", item.id);
                   if (value == 'view_bills') {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const viewOrder()));
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrder()));
                   } else if (value == 'add_bill') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const MyProducts()));
                   } else if (value == 'view_profile') {

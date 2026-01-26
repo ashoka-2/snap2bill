@@ -29,6 +29,9 @@ class _forgototpState extends State<forgototp> {
   Timer? _expiryTimer;
   bool _isOtpExpired = false;
 
+  late Color successColor;
+  late Color dangerColor;
+
   @override
   void initState() {
     super.initState();
@@ -154,7 +157,7 @@ class _forgototpState extends State<forgototp> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(isSuccess ? Icons.check_circle : Icons.error_outline,
-                  size: 60, color: isSuccess ? Colors.green : Colors.red),
+                  size: 60, color: isSuccess ? successColor  : dangerColor),
               const SizedBox(height: 16),
               Text(title, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -170,6 +173,10 @@ class _forgototpState extends State<forgototp> {
 
   @override
   Widget build(BuildContext context) {
+    successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? Colors.white : Colors.black87;
