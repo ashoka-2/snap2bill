@@ -112,7 +112,7 @@
 //   InputDecoration _getDecoration(String label, IconData icon, bool isDark) {
 //     return InputDecoration(
 //       labelText: label,
-//       prefixIcon: Icon(icon, color: Colors.blueAccent, size: 20),
+//       prefixIcon: Icon(icon, color: AppColors.getPrimaryColor(context), size: 20),
 //       filled: true,
 //       fillColor: isDark ? Colors.white10 : Colors.grey.shade100,
 //       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
@@ -141,7 +141,7 @@
 //                 decoration: BoxDecoration(
 //                   color: isDark ? Colors.white10 : Colors.grey.shade100,
 //                   borderRadius: BorderRadius.circular(20),
-//                   border: Border.all(color: Colors.blueAccent.withOpacity(0.2)),
+//                   border: Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.2)),
 //                 ),
 //                 child: _selectedFile != null
 //                     ? ClipRRect(
@@ -270,7 +270,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:typed_data';
 import 'package:image_picker/image_picker.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:snap2bill/theme/colors.dart';
 
 import '../../widgets/SnackBar.dart';
@@ -379,7 +378,7 @@ class _add_product_subState extends State<add_product_sub> {
   InputDecoration _getDecoration(String label, IconData icon, bool isDark) {
     return InputDecoration(
       labelText: label,
-      prefixIcon: Icon(icon, color: Colors.blueAccent, size: 20),
+      prefixIcon: Icon(icon, color: AppColors.getPrimaryColor(context), size: 20),
       filled: true,
       fillColor: isDark ? Colors.white10 : Colors.grey.shade100,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
@@ -408,7 +407,7 @@ class _add_product_subState extends State<add_product_sub> {
                 decoration: BoxDecoration(
                   color: isDark ? Colors.white10 : Colors.grey.shade100,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.blueAccent.withOpacity(0.2)),
+                  border: Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.2)),
                 ),
                 child: _selectedFile != null
                     ? ClipRRect(
@@ -425,7 +424,7 @@ class _add_product_subState extends State<add_product_sub> {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                  color: Colors.grey[900]!.withOpacity(0.6),
+                  color: Colors.grey[900]!.withValues(alpha:0.6),
                   borderRadius: BorderRadius.circular(25)
               ),
               child: Column(
@@ -519,7 +518,7 @@ class _add_product_subState extends State<add_product_sub> {
   Future<void> _sendData() async {
     // 🚀 VALIDATION: Required fields check
     if (product_name.text.isEmpty || price.text.isEmpty || quantity.text.isEmpty || _selectedFile == null || selectedUnit == null) {
-      CustomSnackBar.show(context, "Name, Price, Quantity, Unit are required...", backgroundColor: Colors.blue, durationMs: 800);
+      CustomSnackBar.show(context, "Name, Price, Quantity, Unit are required...", backgroundColor: AppColors.getPrimaryColor(context), durationMs: 800);
 
       return;
     }
@@ -576,7 +575,7 @@ class _add_product_subState extends State<add_product_sub> {
       }
     } catch (e) {
       debugPrint("Full Error: $e");
-      CustomSnackBar.show(context, "Connection Error.", backgroundColor: Colors.blue, durationMs: 800);
+      CustomSnackBar.show(context, "Connection Error.", backgroundColor: AppColors.getPrimaryColor(context), durationMs: 800);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

@@ -57,7 +57,7 @@
 //     return Scaffold(
 //       appBar: AppBar(
 //         title: const Text("Upload Page"),
-//         backgroundColor: Colors.blue,
+//         backgroundColor: AppColors.getPrimaryColor(context),
 //       ),
 //       body:       Container(
 //

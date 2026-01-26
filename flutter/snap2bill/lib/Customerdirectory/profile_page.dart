@@ -7,9 +7,12 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:snap2bill/Customerdirectory/Edits/edit_customer_profile.dart';
 
+import '../theme/colors.dart';
+import '../widgets/Navbar.dart';
+
 // Main Class for Navigation
-class profile_page extends StatelessWidget {
-  const profile_page({Key? key}) : super(key: key);
+class ProfilePage extends StatelessWidget {
+  const ProfilePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class ProfilePageSub extends StatefulWidget {
 }
 
 class _ProfilePageSubState extends State<ProfilePageSub> {
+  String customerName = "Profile";
 
   // API Logic
   Future<List<CustomerProfileModel>> _getData() async {
@@ -41,6 +45,15 @@ class _ProfilePageSubState extends State<ProfilePageSub> {
     List<CustomerProfileModel> profiles = [];
 
     if (jsonData["data"] != null) {
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && customerName != jsonData["data"][0]["name"]) {
+          setState(() {
+            customerName = jsonData["data"][0]["name"].toString();
+          });
+        }
+      });
+
       for (var item in jsonData["data"]) {
         profiles.add(CustomerProfileModel(
           item["id"].toString(),
@@ -84,17 +97,11 @@ Check out my profile on Snap2Bill!
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          "Profile",
-          style: TextStyle(
-              color: textColor,
-              fontWeight: FontWeight.w900,
-              fontSize: 22
-          ),
-        ),
+      appBar: ThemeNavbar(
+        leadingIcon: Icons.lock_person_outlined,
+        onLeadingPressed: (){},
+        centerTitle: true,
+        title:customerName,
       ),
       body: FutureBuilder<List<CustomerProfileModel>>(
         future: _getData(),
@@ -140,11 +147,11 @@ Check out my profile on Snap2Bill!
         children: [
           // ✅ Theme switching border
           Container(
-            padding: const EdgeInsets.all(2),
+            padding:  EdgeInsets.all(2),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                  color: isDark ? Colors.blueAccent.withOpacity(0.6) : Colors.grey.shade300,
+                  color: isDark ? AppColors.getPrimaryColor(context).withValues(alpha:0.6) : Colors.grey.shade300,
                   width: 2.5
               ),
             ),
@@ -204,7 +211,7 @@ Check out my profile on Snap2Bill!
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => edit_customer_profile(
+                    builder: (context) => EditCustomerProfile(
                       id: i.id, name: i.name, email: i.email,
                       phone: i.phone, bio: i.bio, address: i.address,
                       pincode: i.pincode, place: i.place, post: i.post,
@@ -326,7 +333,7 @@ class _ContactTile extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
         children: [
-          Icon(icon, color: isDark ? Colors.blueAccent.withOpacity(0.7) : Colors.grey.shade700),
+          Icon(icon, color: isDark ? AppColors.getIconColor(context).withValues(alpha:0.7) : Colors.grey.shade700),
           const SizedBox(width: 15),
           Expanded(
             child: Column(

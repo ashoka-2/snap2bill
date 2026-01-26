@@ -129,7 +129,7 @@
 //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
 //                 children: [
 //                   const Text("Total Payable", style: TextStyle(color: Colors.grey)),
-//                   Text("₹${item.amount}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent)),
+//                   Text("₹${item.amount}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.getPrimaryColor(context))),
 //                 ],
 //               ),
 //               const SizedBox(height: 15),
@@ -140,7 +140,7 @@
 //                       flex: 2,
 //                       child: ElevatedButton(
 //                         style: ElevatedButton.styleFrom(
-//                           backgroundColor: Colors.blueAccent,
+//                           backgroundColor: AppColors.getPrimaryColor(context),
 //                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
 //                         ),
 //                         onPressed: () async {
@@ -168,7 +168,7 @@
 //                   ),
 //                   const SizedBox(width: 8),
 //                   Container(
-//                     decoration: BoxDecoration(color: Colors.red.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+//                     decoration: BoxDecoration(color: Colors.red.withValues(alpha:0.1), borderRadius: BorderRadius.circular(10)),
 //                     child: IconButton(
 //                       icon: const Icon(Icons.delete_outline, color: Colors.red),
 //                       onPressed: () => _showDeleteConfirmation(item.id),
@@ -211,7 +211,7 @@
 //     if (label == 'paid' || label == 'online') {
 //       color = Colors.green;
 //     } else if (label == 'offline') {
-//       color = Colors.blueGrey; // ✅ Pill color for Offline
+//       color = AppColors.getPrimaryColor(context)Grey; // ✅ Pill color for Offline
 //     } else {
 //       color = Colors.orange;
 //     }
@@ -219,7 +219,7 @@
 //     return Container(
 //       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
 //       decoration: BoxDecoration(
-//         color: color.withOpacity(0.1),
+//         color: color.withValues(alpha:0.1),
 //         borderRadius: BorderRadius.circular(10),
 //       ),
 //       child: Text(status.toUpperCase(),
@@ -355,10 +355,10 @@ class _viewOrderState extends State<viewOrder> {
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5),
+        border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 15,
             offset: const Offset(0, 5),
           ),
@@ -392,7 +392,7 @@ class _viewOrderState extends State<viewOrder> {
             children: [
               Text("Amount Payable", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w500)),
               Text("₹${item.amount}",
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: Colors.blueAccent)),
+                  style:  TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.getPrimaryColor(context))),
             ],
           ),
           const SizedBox(height: 20),
@@ -488,9 +488,9 @@ class _viewOrderState extends State<viewOrder> {
     String label = status.toLowerCase();
 
     if (label == 'paid' || label == 'online') {
-      color = Colors.green;
+      color = AppColors.successColor;
     } else if (label == 'offline') {
-      color = Colors.blueGrey;
+      color = AppColors.getPrimaryColor(context);
     } else {
       color = Colors.orange;
     }
@@ -498,9 +498,9 @@ class _viewOrderState extends State<viewOrder> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withValues(alpha:0.12),
         borderRadius: BorderRadius.circular(50),
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(color: color.withValues(alpha:0.4), width: 1),
       ),
       child: Text(
         status.toUpperCase(),

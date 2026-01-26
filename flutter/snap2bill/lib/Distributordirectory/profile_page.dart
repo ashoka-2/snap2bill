@@ -3,20 +3,25 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/theme/colors.dart';
+import 'package:snap2bill/widgets/Navbar.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 // Import your edit pages
 import 'package:snap2bill/Distributordirectory/Editfolder/edit_distributor_profile.dart';
 import 'package:snap2bill/Distributordirectory/Editfolder/editStock.dart';
 
-class distributor_profile_page extends StatefulWidget {
-  const distributor_profile_page({Key? key}) : super(key: key);
+import '../widgets/SnackBar.dart';
+
+class DistributorProfilePage extends StatefulWidget {
+  const DistributorProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<distributor_profile_page> createState() => _distributor_profile_pageState();
+  State<DistributorProfilePage> createState() => _DistributorProfilePageState();
 }
 
-class _distributor_profile_pageState extends State<distributor_profile_page> {
+class _DistributorProfilePageState extends State<DistributorProfilePage> {
   DistributorProfileModel? _profile;
   List<ProductModel> _products = [];
   bool _isLoading = true;
@@ -34,6 +39,49 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _deleteProduct(String pid) async {
+    bool? confirm = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: const Text("Delete Product"),
+        content: const Text("Are you sure? This action cannot be undone."),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
+          TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text("Delete", style: TextStyle(color: Colors.red))),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final ip = prefs.getString("ip") ?? "";
+      final senderId = prefs.getString("id") ?? prefs.getString("uid") ?? "";
+
+      final uri = Uri.parse("$ip/delete_distributor_product/$pid");
+      final res = await http.post(uri, body: {'id': senderId});
+
+      if (res.statusCode == 200) {
+        if (!mounted) return;
+        // Close the BottomSheet before showing the message
+        Navigator.pop(context);
+
+        CustomSnackBar.show(context, "Product Deleted Successfully.",
+            backgroundColor: AppColors.successColor);
+        // Refresh the products list
+        _getProducts();
+      }
+    } catch (e) {
+
+      CustomSnackBar.show(context, Text('Error: $e') as String,
+          backgroundColor: AppColors.dangerColor);
+    }
   }
 
   // ✅ SWIPE-TO-RELOAD FUNCTION
@@ -115,7 +163,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
     Navigator.of(context).push(PageRouteBuilder(
       opaque: false, barrierDismissible: true,
       pageBuilder: (context, _, __) => Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.9),
+        backgroundColor: Colors.black.withValues(alpha:0.9),
         body: Center(
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -137,12 +185,11 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        leading: const Icon(Icons.lock_person_outlined, size: 22),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(
+        leadingIcon: Icons.lock_person_outlined,
+        onLeadingPressed: (){},
         centerTitle: true,
-        title: Text(_profile?.name ?? "Profile", style: TextStyle(color: textColor, fontWeight: FontWeight.bold, fontSize: 18)),
+        title: _profile?.name ?? "Profile",
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -197,7 +244,7 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                   padding: const EdgeInsets.all(2.5),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: isDark ? Colors.blueAccent.withOpacity(0.7) : Colors.grey.shade300, width: 2),
+                    border: Border.all(color: isDark ? AppColors.getPrimaryColor(context).withValues(alpha:0.7) : Colors.grey.shade300, width: 2),
                   ),
                   child: Hero(
                     tag: 'profile_hero',
@@ -215,36 +262,45 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     _StatItem(label: "Products", count: _products.length.toString(), color: textColor),
-                    _StatItem(label: "Rating", count: "4.5", color: textColor),
+                    _StatItem(label: "Customers", count: "4", color: textColor),
                   ],
                 ),
               ),
             ],
           ),
           const SizedBox(height: 15),
-          Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: textColor)),
+          Row(
+            children: [
+              Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: textColor)),
+             SizedBox(width: 5,),
+              Icon(Icons.verified,size: 20,),
+            ],
+          ),
           if (_profile!.bio.isNotEmpty && _profile!.bio != "null")
             Text(_profile!.bio, style: const TextStyle(color: Colors.grey, fontSize: 14)),
           const SizedBox(height: 15),
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
+                child:AppButton(text: "Edit Profile",
+                  icon: Icons.edit,
+                  height: 40,
                   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => edit_distributor_profile_sub(
                     id: _profile!.id, name: _profile!.name, email: _profile!.email, phone: _profile!.phone, bio: _profile!.bio,
                     address: _profile!.address, place: _profile!.place, pincode: _profile!.pincode, post: _profile!.post,
                     latitude: _profile!.latitude, longitude: _profile!.longitude,
                   ))),
-                  style: ElevatedButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade200, foregroundColor: textColor, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                  child: const Text("Edit Profile", style: TextStyle(fontWeight: FontWeight.bold)),
+
                 ),
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: ElevatedButton(
+                child: AppButton(
+                  text: "View Proof",
+                  icon: Icons.verified,
+                  isTrailingIcon: true,
+                  height: 40,
                   onPressed: () => _showProofDialog(_profile!.proof, theme),
-                  style: ElevatedButton.styleFrom(backgroundColor: isDark ? Colors.white10 : Colors.grey.shade200, foregroundColor: textColor, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-                  child: const Text("View Proof", style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
               ),
             ],
@@ -295,11 +351,10 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
           _InfoItem(icon: Icons.local_post_office_rounded, label: "Post Office", value: _profile!.post, color: textColor),
           _InfoItem(icon: Icons.pin_drop_rounded, label: "Pincode", value: _profile!.pincode, color: textColor),
           const SizedBox(height: 25),
-          ElevatedButton.icon(
+          AppButton(
             onPressed: _launchMaps,
-            icon: const Icon(Icons.map_rounded, color: Colors.white),
-            label: const Text("Open Location in Maps", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, minimumSize: const Size(double.infinity, 50), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+            icon: Icons.map_rounded,
+            text: "Open Location in Maps",
           ),
         ],
       ),
@@ -330,21 +385,22 @@ class _distributor_profile_pageState extends State<distributor_profile_page> {
             Row(
               children: [
                 Expanded(
-                  child: ElevatedButton(
+                  child: EditButton(
+                    text: "Edit Stock",
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => editStock(id: product.id, price: product.price, quantity: product.quantity,unitId: product.unit_id,)));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => EditStock(id: product.id, price: product.price, quantity: product.quantity,unitId: product.unit_id,)));
                     },
-                    style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, foregroundColor: Colors.white),
-                    child: const Text("Edit Stock"),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Colors.red)),
-                    child: const Text("Delete"),
+                  child: DeleteButton(
+                    showText:true,
+                    onPressed: (){
+                      _deleteProduct(product.id);
+
+                    },
                   ),
                 ),
               ],
@@ -374,7 +430,7 @@ class _TabButton extends StatelessWidget {
   const _TabButton({required this.icon, required this.isActive, required this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: InkWell(onTap: onTap, child: Container(height: 50, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: isActive ? Colors.blueAccent : Colors.transparent, width: 2.5))), child: Icon(icon, color: isActive ? Colors.blueAccent : Colors.grey))));
+    return Expanded(child: InkWell(onTap: onTap, child: Container(height: 50, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: isActive ? AppColors.getPrimaryColor(context) : Colors.transparent, width: 2.5))), child: Icon(icon, color: isActive ? AppColors.getPrimaryColor(context) : Colors.grey))));
   }
 }
 
@@ -388,7 +444,7 @@ class _InfoItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 22),
       child: Row(children: [
-        Icon(icon, color: Colors.blueAccent.withOpacity(0.8), size: 24),
+        Icon(icon, color: AppColors.getIconColor(context).withValues(alpha:0.8), size: 24),
         const SizedBox(width: 18),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

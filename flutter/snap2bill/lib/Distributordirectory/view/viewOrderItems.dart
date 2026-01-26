@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 
 class viewOrderItems extends StatelessWidget {
@@ -110,7 +111,7 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -164,13 +165,13 @@ class _viewOrderItemsSubState extends State<viewOrderItemsSub> {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.1),
+                        color: AppColors.getPrimaryColor(context).withValues(alpha:0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         "Qty: ${item.quantity} ${item.unit_name}",
-                        style: const TextStyle(
-                          color: Colors.blue,
+                        style:  TextStyle(
+                          color: AppColors.getPrimaryColor(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),

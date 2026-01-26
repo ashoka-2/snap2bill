@@ -141,7 +141,7 @@
 //                   borderRadius: BorderRadius.circular(24),
 //                   boxShadow: [
 //                     BoxShadow(
-//                       color: Colors.black.withOpacity(0.05),
+//                       color: Colors.black.withValues(alpha:0.05),
 //                       blurRadius: 15,
 //                       offset: const Offset(0, 5),
 //                     ),
@@ -150,8 +150,8 @@
 //                 child: ClipRRect(
 //                   borderRadius: BorderRadius.circular(24),
 //                   child: productImage.isNotEmpty
-//                       ? Image.network(productImage, fit: BoxFit.contain, errorBuilder: (c,e,s) => Icon(Icons.inventory, size: 50, color: textColor.withOpacity(0.2)))
-//                       : Icon(Icons.inventory, size: 50, color: textColor.withOpacity(0.2)),
+//                       ? Image.network(productImage, fit: BoxFit.contain, errorBuilder: (c,e,s) => Icon(Icons.inventory, size: 50, color: textColor.withValues(alpha:0.2)))
+//                       : Icon(Icons.inventory, size: 50, color: textColor.withValues(alpha:0.2)),
 //                 ),
 //               ),
 //               const SizedBox(height: 20),
@@ -170,7 +170,7 @@
 //                   borderRadius: BorderRadius.circular(24),
 //                   boxShadow: [
 //                     BoxShadow(
-//                       color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+//                       color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
 //                       blurRadius: 20,
 //                       offset: const Offset(0, 4),
 //                     ),
@@ -244,7 +244,7 @@
 //           style: TextStyle(
 //             fontWeight: FontWeight.w600,
 //             fontSize: 14,
-//             color: textColor.withOpacity(0.7),
+//             color: textColor.withValues(alpha:0.7),
 //           ),
 //         ),
 //         const SizedBox(height: 8),
@@ -256,7 +256,7 @@
 //           decoration: InputDecoration(
 //             hintText: hint,
 //             hintStyle: TextStyle(color: hintColor, fontSize: 14),
-//             prefixIcon: Icon(icon, color: textColor.withOpacity(0.5), size: 20),
+//             prefixIcon: Icon(icon, color: textColor.withValues(alpha:0.5), size: 20),
 //             contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
 //             enabledBorder: OutlineInputBorder(
 //               borderRadius: BorderRadius.circular(16),
@@ -393,7 +393,7 @@ class _addToBillState extends State<addToBill> {
                 decoration: BoxDecoration(
                   color: cardColor,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15)],
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 15)],
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
@@ -412,7 +412,7 @@ class _addToBillState extends State<addToBill> {
                 decoration: BoxDecoration(
                   color: cardColor,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 20)],
+                  boxShadow: [BoxShadow(color:isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 20)],
                 ),
                 child: Column(
                   children: [
@@ -471,7 +471,7 @@ class _addToBillState extends State<addToBill> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor.withOpacity(0.7))),
+        Text(label, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14, color: textColor.withValues(alpha:0.7))),
         const SizedBox(height: 8),
         TextField(
           controller: controller,
@@ -480,11 +480,11 @@ class _addToBillState extends State<addToBill> {
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: hintColor, fontSize: 14),
-            prefixIcon: Icon(icon, color: textColor.withOpacity(0.5), size: 20),
+            prefixIcon: Icon(icon, color: textColor.withValues(alpha:0.5), size: 20),
             // 🚀 Show the unit name as a suffix
             suffixIcon: suffixText != null ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
-              child: Text(suffixText, style: TextStyle(color: textColor.withOpacity(0.5), fontWeight: FontWeight.bold)),
+              child: Text(suffixText, style: TextStyle(color: textColor.withValues(alpha:0.5), fontWeight: FontWeight.bold)),
             ) : null,
             contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
             enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide(color: borderColor)),

@@ -179,7 +179,7 @@ class _view_reviewState extends State<view_review> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -221,7 +221,7 @@ class _view_reviewState extends State<view_review> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.amber.withOpacity(0.2),
+                    color: Colors.amber.withValues(alpha:0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -251,7 +251,7 @@ class _view_reviewState extends State<view_review> {
             Text(
               i.reviews,
               style: TextStyle(
-                color: textColor.withOpacity(0.9),
+                color: textColor.withValues(alpha:0.9),
                 fontSize: 14,
                 height: 1.5,
               ),
@@ -280,7 +280,7 @@ class _view_reviewState extends State<view_review> {
                     child: Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: Colors.red.withOpacity(0.1),
+                        color: Colors.red.withValues(alpha:0.1),
                         shape: BoxShape.circle,
                       ),
                       child: const Icon(Icons.delete_outline_rounded, size: 20, color: Colors.red),

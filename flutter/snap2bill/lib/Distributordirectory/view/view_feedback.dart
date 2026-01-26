@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 // Import the send feedback page so we can navigate to it
 // Update the path if necessary based on your project structure
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../distributorsends/send_feedback.dart';
 
@@ -148,7 +149,7 @@ class _view_feedbackState extends State<view_feedback> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -166,13 +167,13 @@ class _view_feedbackState extends State<view_feedback> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.blue.shade50,
+                    color: isDark ? Colors.white.withValues(alpha:0.1) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
                       Icons.format_quote_rounded,
                       size: 20,
-                      color: isDark ? Colors.white70 : Colors.blue.shade700
+                      color: isDark ? Colors.white70 : AppColors.getPrimaryColor(context)
                   ),
                 ),
                 Text(

@@ -86,6 +86,9 @@ class AppColors {
   static Color getButtonBg(BuildContext context) =>
       isDarkMode(context) ? primaryDark : primaryLight;
 
+  static Color getPrimaryColor(BuildContext context) =>
+      isDarkMode(context) ? primaryDark : primaryLight;
+
   static Color getTextColor(BuildContext context) =>
       isDarkMode(context) ? textMainDark : textMainLight;
 

@@ -43,7 +43,7 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
   // Colors for tab backgrounds (keeps your original palette)
   // final List<Color> tabColors = [
   //   Colors.purple,
-  //   Colors.blue,
+  //   AppColors.getPrimaryColor(context),
   //   Colors.green,
   //   Colors.red,
   // ];
@@ -56,9 +56,9 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
     _selectedIndex = widget.initialIndex.clamp(0, 3);
     _pages = const [
       CustomerHomePage(),
-      search_page(),
-      distributor_page(),
-      profile_page(),
+      SearchPage(),
+      DistributorPage(),
+      ProfilePage(),
     ];
   }
 
@@ -77,11 +77,11 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
 
     final inactiveIconColor = isDark ? Colors.white : Colors.black;
     final borderColor = isDark
-        ? Colors.white.withOpacity(0.2)
-        : Colors.black.withOpacity(0.2);
+        ? Colors.white.withValues(alpha:0.2)
+        : Colors.black.withValues(alpha:0.2);
     final glassColor = isDark
-        ? Colors.black.withOpacity(0.4)
-        : Colors.white.withOpacity(0.1);
+        ? Colors.black.withValues(alpha:0.4)
+        : Colors.white.withValues(alpha:0.1);
 
     return Scaffold(
       extendBody: true,
@@ -103,15 +103,15 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
                   padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
                   child: GNav(
                     rippleColor:
-                    isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
+                    isDark ? Colors.white.withValues(alpha:0.1) : Colors.black.withValues(alpha:0.1),
                     hoverColor:
-                    isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.1),
+                    isDark ? Colors.white.withValues(alpha:0.1) : Colors.black.withValues(alpha:0.1),
                     gap: 5,
                     activeColor:AppColors.getTextColor(context),
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor: AppColors.getTextColor(context).withOpacity(0.15),
+                    tabBackgroundColor: AppColors.getTextColor(context).withValues(alpha:0.15),
                     color: inactiveIconColor,
                     tabs:  [
                       GButton(icon: LineIcons.home,

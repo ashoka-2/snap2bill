@@ -9,16 +9,17 @@ import 'package:snap2bill/widgets/Navbar.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 import '../../screens/viewDistributorProfile.dart';
+import '../../theme/colors.dart';
 // Import the Read-Only profile page
 
-class view_distributors extends StatefulWidget {
-  const view_distributors({Key? key}) : super(key: key);
+class ViewDistributors extends StatefulWidget {
+  const ViewDistributors({Key? key}) : super(key: key);
 
   @override
-  State<view_distributors> createState() => _view_distributorsState();
+  State<ViewDistributors> createState() => _ViewDistributorsState();
 }
 
-class _view_distributorsState extends State<view_distributors> {
+class _ViewDistributorsState extends State<ViewDistributors> {
   String? _currentUserId; // To store the logged-in user's ID
 
   @override
@@ -176,10 +177,10 @@ class _view_distributorsState extends State<view_distributors> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: isMe ? Border.all(color: Colors.blue.withOpacity(0.5), width: 1.5) : null,
+        border: isMe ? Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.5), width: 1.5) : null,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -216,7 +217,7 @@ class _view_distributorsState extends State<view_distributors> {
                 Container(
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+                    border: Border.all(color: Colors.grey.withValues(alpha:0.2), width: 1),
                   ),
                   child: CircleAvatar(
                     radius: 30,
@@ -245,16 +246,16 @@ class _view_distributorsState extends State<view_distributors> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: isMe ? Colors.blue : textColor,
+                                color: isMe ? AppColors.getPrimaryColor(context) : textColor,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
                           if (isMe)
-                            const Padding(
+                             Padding(
                               padding: EdgeInsets.only(left: 4),
-                              child: Icon(Icons.verified, size: 16, color: Colors.blue),
+                              child: Icon(Icons.verified, size: 16, color: AppColors.getPrimaryColor(context)),
                             )
                         ],
                       ),

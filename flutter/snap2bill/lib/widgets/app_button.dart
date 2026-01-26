@@ -199,77 +199,190 @@ class DeleteButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final double size;
+  final String text;
+  final bool showText; // 🚀 Added to control visibility
 
   const DeleteButton({
     super.key,
     required this.onPressed,
     this.icon = Icons.delete_outline,
-    this.size = 35.0, // Default diameter of the circle
+    this.size = 35.0,
+    this.text = "Delete",
+    this.showText = false, // 🚀 Default is false (icon only)
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(size / 2),
-      child: Container(
-        width: size,
+      borderRadius: BorderRadius.circular(showText ? 30 : size / 2),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(horizontal: showText ? 12 : 0),
+        // 🚀 Width is only fixed if it's a circle (icon only)
+        width: showText ? null : size,
         height: size,
         decoration: BoxDecoration(
-          color: AppColors.dangerbgColor, // Light red transparent background
-          shape: BoxShape.circle,
+          color: AppColors.dangerbgColor,
+          // 🚀 Change shape based on text visibility
+          borderRadius: BorderRadius.circular(showText ? 30 : size / 2),
           border: Border.all(
-            color: AppColors.dangerColor, // Deep red border
+            color: AppColors.dangerColor,
             width: 1.2,
           ),
         ),
-        child: Icon(
-          icon,
-          color: AppColors.dangerColor, // Deep red icon
-          size: size * 0.5, // Icon scales with button size
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: AppColors.dangerColor,
+              size: size * 0.55,
+            ),
+            // 🚀 Only show text if showText is true
+            if (showText) ...[
+              const SizedBox(width: 8),
+              Text(
+                text,
+                style: TextStyle(
+                  color: AppColors.dangerColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: size * 0.4,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 }
-
-
 
 class EditButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final double size;
+  final String? text; // 🚀 Nullable: If null, button is circular
 
   const EditButton({
     super.key,
     required this.onPressed,
-    this.icon = Icons.edit_outlined, // Default edit icon
+    this.icon = Icons.edit_outlined,
     this.size = 35.0,
+    this.text, // 🚀 No default value needed
   });
 
   @override
   Widget build(BuildContext context) {
+    // 🚀 Determine if we are in "Text Mode" or "Icon Mode"
+    final bool hasText = text != null && text!.isNotEmpty;
+
     return InkWell(
       onTap: onPressed,
-      borderRadius: BorderRadius.circular(size / 2),
-      child: Container(
-        width: size,
+      // Adaptive radius: Circle for icon, Rounded Rect for text
+      borderRadius: BorderRadius.circular(hasText ? 12 : size / 2),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
         height: size,
+        // 🚀 Width is null (auto) if there is text, fixed if it's a circle
+        width: hasText ? null : size,
+        padding: EdgeInsets.symmetric(horizontal: hasText ? 15 : 0),
         decoration: BoxDecoration(
-          color: AppColors.pillbgColor, // Semi-transparent blue
-          shape: BoxShape.circle,
+          color: AppColors.pillbgColor,
+          borderRadius: BorderRadius.circular(hasText ? 30 : size / 2),
           border: Border.all(
-            color: AppColors.pillColor, // Solid blue border
+            color: AppColors.pillColor,
             width: 1.2,
           ),
         ),
-        child: Icon(
-          icon,
-          color: AppColors.pillColor, // Solid blue icon
-          size: size * 0.5,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: AppColors.pillColor,
+              size: size * 0.5,
+            ),
+            if (hasText) ...[
+              const SizedBox(width: 8),
+              Text(
+                text!,
+                style: TextStyle(
+                  color: AppColors.pillColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: size * 0.4,
+                ),
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 }
 
+
+class SecondaryButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final Widget? leading;
+  final Color? color;        // 🚀 Nullable: if null, it uses default
+  final Color? textColor;    // 🚀 Nullable: if null, it uses default
+  final double height;
+  final double borderRadius;
+
+  const SecondaryButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.leading,
+    this.color,             // Optional color override
+    this.textColor,         // Optional text color override
+    this.height = 50,
+    this.borderRadius = 50,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    // 🚀 LOGIC: Use provided color, else fallback to Theme Primary, else fallback to Black/White
+    final effectiveBgColor = color ?? theme.primaryColor;
+
+
+    return SizedBox(
+      height: height,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: effectiveBgColor,
+          foregroundColor: AppColors.getTextColor(context),
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (leading != null) ...[
+              leading!,
+              const SizedBox(width: 8),
+            ],
+            Text(
+              text,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: AppColors.getTextColor(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

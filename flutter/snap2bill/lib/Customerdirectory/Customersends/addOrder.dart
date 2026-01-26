@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,10 +126,10 @@ class _addOrderState extends State<addOrder> {
               height: 320,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF2C2C2C) : Colors.blue.shade50.withOpacity(0.5),
+                color: isDark ?  Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha:0.5),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 15, offset: const Offset(0, 5)),
+                  BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
                 ],
               ),
               child: Hero(
@@ -155,7 +153,7 @@ class _addOrderState extends State<addOrder> {
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 20, offset: const Offset(0, 4)),
+                  BoxShadow(color:isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 20, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -261,7 +259,7 @@ class _addOrderState extends State<addOrder> {
               decoration: BoxDecoration(
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10)],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -284,7 +282,7 @@ class _addOrderState extends State<addOrder> {
         decoration: BoxDecoration(
             color: theme.cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 15, offset: const Offset(0, -5))]
+            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.08), blurRadius: 15, offset: const Offset(0, -5))]
         ),
         child: Row(
           children: [

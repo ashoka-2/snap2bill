@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 class view_category extends StatefulWidget {
   const view_category({Key? key}) : super(key: key);
@@ -130,7 +132,7 @@ class _view_categoryState extends State<view_category> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -142,9 +144,8 @@ class _view_categoryState extends State<view_category> {
           borderRadius: BorderRadius.circular(20),
           onTap: () {
             // Add navigation to product list by category here if needed
-            ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Selected: ${i.category_name}"))
-            );
+            CustomSnackBar.show(context, Text('Selected: ${i.category_name}') as String,
+                backgroundColor: AppColors.dangerColor);
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -154,7 +155,7 @@ class _view_categoryState extends State<view_category> {
                 height: 50,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: isDark ? Colors.white.withOpacity(0.1) : Colors.indigo.shade50,
+                  color: isDark ? Colors.white.withValues(alpha:0.1) : Colors.indigo.shade50,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(

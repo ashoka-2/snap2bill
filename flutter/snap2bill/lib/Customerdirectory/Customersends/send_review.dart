@@ -156,7 +156,7 @@ class _send_reviewState extends State<send_review> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha:0.05),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -195,7 +195,7 @@ class _send_reviewState extends State<send_review> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -243,7 +243,7 @@ class _send_reviewState extends State<send_review> {
                           style: TextStyle(
                               fontWeight: FontWeight.w600,
                               fontSize: 14,
-                              color: textColor.withOpacity(0.7)
+                              color: textColor.withValues(alpha:0.7)
                           )
                       ),
                     ),

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/Login_page.dart';
-import '../../theme/colors.dart';
+import 'package:snap2bill/widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
 import 'forgototp.dart';
 
@@ -106,13 +106,12 @@ class _forgotemailState extends State<forgotemail> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page())),
-        ),
+      appBar: ThemeNavbar(
+        leadingIcon: Icons.arrow_back_ios_new,
+          onLeadingPressed: () => Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const login_page())),
+        title: 'Forgot Password',
+        centerTitle: true,
+
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -147,7 +146,7 @@ class _forgotemailState extends State<forgotemail> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -169,7 +168,7 @@ class _forgotemailState extends State<forgotemail> {
                         decoration: InputDecoration(
                           hintText: "Email Address",
                           hintStyle: TextStyle(color: subTextColor),
-                          prefixIcon: Icon(Icons.alternate_email, color: textColor.withOpacity(0.5)),
+                          prefixIcon: Icon(Icons.alternate_email, color: textColor.withValues(alpha:0.5)),
                           filled: true,
                           fillColor: isDark ? const Color(0xFF2C2C2C) : Colors.grey[50],
                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),

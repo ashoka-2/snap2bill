@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/theme/colors.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:shimmer/shimmer.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
 import '../widgets/Navbar.dart';
 
@@ -110,7 +111,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
       opaque: false,
       barrierDismissible: true,
       pageBuilder: (context, _, __) => Scaffold(
-        backgroundColor: Colors.black.withOpacity(0.9),
+        backgroundColor: Colors.black.withValues(alpha:0.9),
         body: Center(
           child: GestureDetector(
             onTap: () => Navigator.pop(context),
@@ -182,9 +183,22 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
   Widget _buildProfileHeader(ThemeData theme, Color textColor, bool isDark) {
     if (_profile == null) return const SizedBox();
 
-    Widget profileImage = CircleAvatar(
-      radius: 40,
-      backgroundImage: NetworkImage(_profile!.profile_image),
+    Widget profileImage = Container(
+      decoration: BoxDecoration(
+        border: Border.all(width: 2,color: AppColors.getBorderColor(context),),
+            borderRadius: BorderRadius.circular(40),
+      ),
+      child: CircleAvatar(
+        backgroundColor: AppColors.WhiteColor,
+        radius: 40,
+        backgroundImage: const AssetImage('assets/images/default-avatar.png'),
+        foregroundImage: _profile?.profile_image != null
+            ? NetworkImage(_profile!.profile_image)
+            : null,
+        onForegroundImageError: (exception, stackTrace) {
+          debugPrint('Error loading profile image: $exception');
+        },
+      ),
     );
 
     return Padding(
@@ -215,26 +229,23 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           const SizedBox(height: 15),
           Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: textColor)),
           if (_profile!.bio.isNotEmpty) Text(_profile!.bio, style: const TextStyle(color: Colors.grey)),
-          const SizedBox(height: 15),
+          const SizedBox(height: 20),
           Row(
             children: [
               // --- CALL BUTTON ---
               Expanded(
-                child: ElevatedButton.icon(
+                child:SecondaryButton(
                   onPressed: () => launchUrl(Uri(scheme: 'tel', path: _profile!.phone)),
-                  icon: Lottie.asset(
+                  color: AppColors.successbgColor,
+                  leading: Lottie.asset(
                     'assets/lotties/call.json',
                     width: 35, // Slightly adjusted for better alignment with text
                     height: 35,
                     fit: BoxFit.contain,
                     repeat: true, // Set to false if you want it to play only once
                   ),
-                  label: const Text("Call"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                  ),
+                  text: "Call",
+
                 ),
               ),
 
@@ -242,23 +253,18 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
 
               // --- WHATSAPP BUTTON WITH LOTTIE ---
               Expanded(
-                child: ElevatedButton.icon(
-                  onPressed: () => launchUrl(Uri.parse("whatsapp://send?phone=${_profile!.phone}")),
-                  // 🚀 Lottie Animation replacing the standard icon
-                  icon: Lottie.asset(
+                child:SecondaryButton(text: "Whatsapp",
+                  color: AppColors.successbgColor,
+                  leading: Lottie.asset(
                     'assets/lotties/whatsapp.json',
                     width: 35, // Slightly adjusted for better alignment with text
                     height: 35,
                     fit: BoxFit.contain,
                     repeat: true, // Set to false if you want it to play only once
                   ),
-                  label: const Text("WhatsApp"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                  ),
+                  onPressed: () => launchUrl(Uri.parse("whatsapp://send?phone=${_profile!.phone}")),
                 ),
+
               ),
             ],
           )
@@ -332,15 +338,14 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           _InfoTile(icon: Icons.local_post_office_outlined, label: "Post", value: _profile!.post, color: textColor),
           _InfoTile(icon: Icons.pin_drop_outlined, label: "Pincode", value: _profile!.pincode, color: textColor),
           const SizedBox(height: 20),
-          ElevatedButton.icon(
-            onPressed: () async {
-              final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=${_profile!.latitude},${_profile!.longitude}");
-              if (await canLaunchUrl(url)) await launchUrl(url);
-            },
-            icon: const Icon(Icons.map, color: Colors.white),
-            label: const Text("Open in Maps", style: TextStyle(color: Colors.white)),
-            style: ElevatedButton.styleFrom(backgroundColor: theme.primaryColor, minimumSize: const Size(double.infinity, 50)),
-          ),
+          AppButton(
+              text: "Open in Maps",
+              icon: Icons.location_on_sharp,
+              onPressed: () async {
+                final url = Uri.parse("https://www.google.com/maps/search/?api=1&query=${_profile!.latitude},${_profile!.longitude}");
+                if (await canLaunchUrl(url)) await launchUrl(url);
+          }),
+
         ],
       ),
     );
@@ -372,23 +377,16 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
             if (_isCustomer)
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: () async {
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
-                    await prefs.setString("pid", product.id);
-                    await prefs.setString("uid", widget.distributorId);
-                    Navigator.pop(context);
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
-                  },
-                  icon: const Icon(Icons.shopping_cart),
-                  label: const Text("Add to Cart"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: theme.primaryColor,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  ),
-                ),
+                child:AppButton(text: "Add to Cart",
+                    icon: Icons.shopping_cart_rounded,
+                    onPressed: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  await prefs.setString("pid", product.id);
+                  await prefs.setString("uid", widget.distributorId);
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const addOrder()));
+                }),
+
               ),
           ],
         ),
@@ -407,16 +405,7 @@ class _StatItem extends StatelessWidget {
   }
 }
 
-class _TabButton extends StatelessWidget {
-  final IconData icon;
-  final bool isActive;
-  final VoidCallback onTap;
-  const _TabButton({required this.icon, required this.isActive, required this.onTap});
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(child: InkWell(onTap: onTap, child: Container(height: 50, child: Icon(icon, color: isActive ? Colors.blueAccent : Colors.grey))));
-  }
-}
+
 
 class _InfoTile extends StatelessWidget {
   final IconData icon;
@@ -425,7 +414,7 @@ class _InfoTile extends StatelessWidget {
   const _InfoTile({required this.icon, required this.label, required this.value, required this.color});
   @override
   Widget build(BuildContext context) {
-    return Padding(padding: const EdgeInsets.only(bottom: 20), child: Row(children: [Icon(icon, color: Colors.blueAccent), const SizedBox(width: 15), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)), Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color))])]));
+    return Padding(padding: const EdgeInsets.only(bottom: 20), child: Row(children: [Icon(icon, color: AppColors.getIconColor(context)), const SizedBox(width: 15), Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)), Text(value, style: TextStyle(fontWeight: FontWeight.bold, color: color))])]));
   }
 }
 

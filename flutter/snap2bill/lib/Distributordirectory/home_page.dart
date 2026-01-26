@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:snap2bill/Distributordirectory/view/myProducts.dart';
 import 'package:snap2bill/Distributordirectory/view/viewAllOrders.dart';
-import 'package:snap2bill/Distributordirectory/view/viewOrder.dart';
 import 'package:snap2bill/Distributordirectory/view/view_category.dart';
 import 'package:snap2bill/Distributordirectory/view/view_distributors.dart';
 import 'package:snap2bill/Distributordirectory/view/view_feedback.dart';
@@ -23,14 +22,14 @@ import 'package:snap2bill/widgets/category_filter_bar.dart';
 import 'package:snap2bill/widgets/product_feed.dart';
 import 'package:snap2bill/widgets/custom_drawer.dart';
 
-class Home_page extends StatefulWidget {
-  const Home_page({Key? key}) : super(key: key);
+class HomePage extends StatefulWidget {
+  const HomePage({Key? key}) : super(key: key);
 
   @override
-  State<Home_page> createState() => _Home_pageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _Home_pageState extends State<Home_page> {
+class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<ProductData> _allProducts = [];
@@ -72,17 +71,17 @@ class _Home_pageState extends State<Home_page> {
       DrawerItemModel(
         icon: Icons.people_alt_outlined,
         title: "Distributors",
-        onTap: () => const view_distributors(),
+        onTap: () => const ViewDistributors(),
       ),
       DrawerItemModel(
         icon: Icons.inventory_2_outlined,
         title: "My Products",
-        onTap: () => const myProducts(),
+        onTap: () => const MyProducts(),
       ),
       DrawerItemModel(
         icon: Icons.shopping_bag_outlined,
         title: "All Products",
-        onTap: () => const view_product(),
+        onTap: () => const ViewProduct(),
       ),
       DrawerItemModel(
         icon: Icons.list_alt,
@@ -123,7 +122,7 @@ class _Home_pageState extends State<Home_page> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+
 
     final List<ProductData> filteredProducts =
     _selectedCategoryId == "All"

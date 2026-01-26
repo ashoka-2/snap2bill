@@ -149,7 +149,7 @@ class _view_feedbackState extends State<view_feedback> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -169,7 +169,7 @@ class _view_feedbackState extends State<view_feedback> {
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     // Using Teal for Customer logic, or you can use your theme color
-                    color: isDark ? Colors.white.withOpacity(0.1) : Colors.teal.shade50,
+                    color: isDark ? Colors.white.withValues(alpha:0.1) : Colors.teal.shade50,
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

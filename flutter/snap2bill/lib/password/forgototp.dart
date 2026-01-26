@@ -4,9 +4,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../theme/colors.dart';
+import 'package:snap2bill/widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
-import 'forgotemail.dart';
+import '../theme/colors.dart';
 import 'forgotpass.dart';
 
 class forgototp extends StatefulWidget {
@@ -181,14 +181,12 @@ class _forgototpState extends State<forgototp> {
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
+      appBar: ThemeNavbar(
+        leadingIcon:Icons.arrow_back_ios_new,
+          onLeadingPressed: () => Navigator.pop(context), title: 'Verify OTP',
+          centerTitle: true,
         ),
-      ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
@@ -196,10 +194,10 @@ class _forgototpState extends State<forgototp> {
             Container(
               height: 100, width: 100,
               decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : Colors.blue.shade50,
+                  color: isDark ?  Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
                   shape: BoxShape.circle),
               child: Icon(Icons.mark_email_read_outlined, size: 50,
-                  color: isDark ? Colors.white : Colors.blue.shade400),
+                  color: isDark ? Colors.white : AppColors.getPrimaryColor(context)),
             ),
             const SizedBox(height: 30),
             Text("Verify OTP", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
@@ -213,7 +211,7 @@ class _forgototpState extends State<forgototp> {
               decoration: BoxDecoration(
                 color: theme.cardColor,
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 20)],
+                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 20)],
               ),
               child: Column(
                 children: [
@@ -225,7 +223,7 @@ class _forgototpState extends State<forgototp> {
                   Text(
                     _isOtpExpired ? "Code Expired" : "Expires in ${_formatTime(_otpExpirySeconds)}",
                     style: TextStyle(
-                        color: _isOtpExpired ? Colors.red : Colors.blue,
+                        color: _isOtpExpired ? AppColors.dangerColor :AppColors.getPrimaryColor(context),
                         fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -250,8 +248,8 @@ class _forgototpState extends State<forgototp> {
                 ? Text("Resend code in $_resendCooldown s", style: TextStyle(color: subTextColor))
                 : TextButton(
               onPressed: _isResending ? () {} : () => _resendOTP(),
-              child: const Text("Resend OTP",
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+              child:  Text("Resend OTP",
+                  style: TextStyle(fontWeight: FontWeight.bold, color:AppColors.getPrimaryColor(context))),
             ),
           ],
         ),
@@ -267,7 +265,7 @@ class _forgototpState extends State<forgototp> {
         color: theme.brightness == Brightness.dark ? const Color(0xFF2C2C2C) : Colors.grey[50],
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-            color: focusNodes[index].hasFocus ? Colors.blue : Colors.transparent,
+            color: focusNodes[index].hasFocus ? AppColors.getPrimaryColor(context) : Colors.transparent,
             width: 2),
       ),
       child: ClipRRect(

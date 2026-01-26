@@ -119,10 +119,10 @@
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//       backgroundColor: Colors.blueGrey[50],
+//       backgroundColor: AppColors.getPrimaryColor(context)Grey[50],
 //       appBar: AppBar(
 //         title: Text('Payment Options'),
-//         backgroundColor: Colors.blueAccent,
+//         backgroundColor: AppColors.getPrimaryColor(context),
 //         centerTitle: true,
 //         elevation: 0,
 //       ),
@@ -133,7 +133,7 @@
 //             decoration: BoxDecoration(
 //               borderRadius: BorderRadius.circular(20),
 //               gradient: LinearGradient(
-//                 colors: [Colors.white, Colors.blue[50]!],
+//                 colors: [Colors.white, AppColors.getPrimaryColor(context)[50]!],
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
 //               ),
@@ -149,17 +149,17 @@
 //             child: Column(
 //               mainAxisSize: MainAxisSize.min,
 //               children: [
-//                 Icon(Icons.account_balance_wallet, size: 60, color: Colors.blueAccent),
+//                 Icon(Icons.account_balance_wallet, size: 60, color: AppColors.getPrimaryColor(context)),
 //                 SizedBox(height: 10),
 //                 Text(
 //                   'Select Your Payment Method',
-//                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueAccent),
+//                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.getPrimaryColor(context)),
 //                 ),
 //                 SizedBox(height: 25),
 //                 AnimatedContainer(
 //                   duration: Duration(milliseconds: 300),
 //                   decoration: BoxDecoration(
-//                     color: Colors.blue[100],
+//                     color: AppColors.getPrimaryColor(context)[100],
 //                     borderRadius: BorderRadius.circular(12),
 //                   ),
 //                   child: Column(
@@ -257,7 +257,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
-import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/SnackBar.dart';
 // Conditional imports for Web/Mobile Razorpay
 import '../../widgets/Navbar.dart';
@@ -343,7 +342,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   }
 
   void _handleExternalWallet(razorpay_flutter.ExternalWalletResponse response) {
-    CustomSnackBar.show(context, "Wallet Selected: ${response.walletName}", backgroundColor: AppColors.premiumDarkBlue);
+    CustomSnackBar.show(context, "Wallet Selected: ${response.walletName}", backgroundColor: AppColors.getPrimaryColor(context));
 
   }
 
@@ -419,7 +418,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                    color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
@@ -498,7 +497,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
                   backgroundColor: theme.primaryColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 4,
-                  shadowColor: theme.primaryColor.withOpacity(0.4),
+                  shadowColor: theme.primaryColor.withValues(alpha:0.4),
                 ),
                 child: Text(
                   _paymentMode == 'online' ? "Pay Now" : "Confirm Booking",
@@ -527,7 +526,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? theme.primaryColor.withOpacity(0.08) : theme.cardColor,
+          color: isSelected ? theme.primaryColor.withValues(alpha:0.08) : theme.cardColor,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected ? theme.primaryColor : Colors.transparent,

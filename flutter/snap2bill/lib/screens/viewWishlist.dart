@@ -2,7 +2,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 import '../Customerdirectory/Customersends/addOrder.dart';
+import '../theme/colors.dart';
 import '../widgets/Navbar.dart';
 
 class ViewWishlist extends StatefulWidget {
@@ -191,15 +193,15 @@ class _ViewWishlistState extends State<ViewWishlist> {
                         Text(
                           "₹${item['price']}",
                           style: TextStyle(
-                            color: theme.primaryColor,
+                            color: AppColors.getPrimaryColor(context),
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         Text(
                           "By: ${item['distributor_name']}",
-                          style: const TextStyle(
+                          style:  TextStyle(
                               fontSize: 11,
-                              color: Colors.blueGrey),
+                              color: AppColors.getTextColor(context)),
                         ),
                       ],
                     ),
@@ -209,32 +211,41 @@ class _ViewWishlistState extends State<ViewWishlist> {
                   Column(
                     children: [
                       // REMOVE
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline,
-                            color: Colors.red),
+                      DeleteButton(
                         onPressed: () => _removeItem(
                             item['wishlist_id'].toString()),
                       ),
 
                       // 🛒 ADD TO CART (ONLY CUSTOMER)
                       if (isCustomer)
-                        IconButton(
-                          icon: const Icon(
-                              Icons.add_shopping_cart,
-                              color: Colors.green),
-                          onPressed: () async {
-                            final prefs =
-                            await SharedPreferences.getInstance();
-                            prefs.setString(
-                                "pid", item['id'].toString());
+                        Container(
+                          margin: EdgeInsets.only(top: 10),
+                          height: 35,
+                          width: 35,
+                          decoration: BoxDecoration(
+                            color: AppColors.successbgColor.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(50),
+                            border: Border.all(width: 1,color: AppColors.successColor)
+                          ),
+                          child: IconButton(
+                            icon:  Icon(
+                                size: 20,
+                                Icons.add_shopping_cart,
+                                color: AppColors.successColor),
+                            onPressed: () async {
+                              final prefs =
+                              await SharedPreferences.getInstance();
+                              prefs.setString(
+                                  "pid", item['id'].toString());
 
-                            if (!mounted) return;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => const addOrder()),
-                            ).then((_) => _fetchWishlist());
-                          },
+                              if (!mounted) return;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const addOrder()),
+                              ).then((_) => _fetchWishlist());
+                            },
+                          ),
                         ),
                     ],
                   ),

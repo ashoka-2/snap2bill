@@ -1,70 +1,6 @@
-// import 'package:flutter/material.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:snap2bill/screens//login_page.dart';
-//
-// void main(){
-//   runApp(MyApp());
-// }
-//
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(home: MyApp_sub(),);
-//   }
-// }
-//
-//
-// class MyApp_sub extends StatefulWidget {
-//   const MyApp_sub({Key? key}) : super(key: key);
-//
-//   @override
-//   State<MyApp_sub> createState() => _MyApp_subState();
-// }
-//
-// class _MyApp_subState extends State<MyApp_sub> {
-//   // TextEditingController ip = TextEditingController(text: "192.168.29.3");
-//   TextEditingController ip = TextEditingController(text: "10.218.83.28");
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//
-//
-//         body:
-//         Center(child: Container(
-//       width:400,
-//       height:400,
-//       color: Colors.blue.shade300,
-//       margin: EdgeInsets.all(10),
-//       child:Padding(padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),child:
-//       Column(children: [
-//         SizedBox(height: 8,),
-//         TextFormField(decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(10),), labelText: 'ip', fillColor: Colors.white38, filled: true,),controller: ip,),
-//
-//         SizedBox(height: 8,),
-//         ElevatedButton(onPressed: () async {
-//           SharedPreferences prefs = await SharedPreferences.getInstance();
-//
-//           prefs.setString("ip","http://${ip.text}:8000");
-//           Navigator.push(context, MaterialPageRoute(builder: (context)=>login_page()));
-//
-//         }, child: Text('submit')),
-//
-//
-//
-//
-//       ],)
-//       ),
-//
-//     )));
-//   }
-// }
+
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/login_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -156,7 +92,7 @@ class _MyApp_subState extends State<MyApp_sub> {
               padding: EdgeInsets.all(5),
 
               decoration: BoxDecoration(
-                color: AppColors.greyButton.withOpacity(0.5),
+                color: AppColors.greyButton.withValues(alpha:0.5),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: IconButton(

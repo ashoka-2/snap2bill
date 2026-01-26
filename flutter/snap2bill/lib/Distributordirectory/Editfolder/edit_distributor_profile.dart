@@ -171,7 +171,7 @@
 //         actions: [
 //           // Save Button (Icon style)
 //           IconButton(
-//             icon: Icon(Icons.check, color: Colors.blueAccent),
+//             icon: Icon(Icons.check, color: AppColors.getPrimaryColor(context)),
 //             onPressed: _isLoading ? null : _updateProfile,
 //           )
 //         ],
@@ -207,7 +207,7 @@
 //                         child: const Text(
 //                           "Change Profile Photo",
 //                           style: TextStyle(
-//                             color: Colors.blueAccent,
+//                             color: AppColors.getPrimaryColor(context),
 //                             fontSize: 14,
 //                             fontWeight: FontWeight.w600,
 //                           ),
@@ -328,7 +328,7 @@
 //                     ),
 //                     child: Row(
 //                       children: [
-//                         Icon(Icons.file_copy_outlined, color: Colors.blueAccent),
+//                         Icon(Icons.file_copy_outlined, color: AppColors.getPrimaryColor(context)),
 //                         const SizedBox(width: 10),
 //                         Expanded(
 //                           child: Text(
@@ -352,7 +352,7 @@
 //           // LOADING OVERLAY
 //           if (_isLoading)
 //             Container(
-//               color: Colors.black.withOpacity(0.5),
+//               color: Colors.black.withValues(alpha:0.5),
 //               child: const Center(
 //                 child: CircularProgressIndicator(color: Colors.white),
 //               ),
@@ -473,7 +473,7 @@
 //       child: Column(
 //         crossAxisAlignment: CrossAxisAlignment.start,
 //         children: [
-//           Text(label, style: TextStyle(color: textColor.withOpacity(0.7), fontSize: 13, fontWeight: FontWeight.w500)),
+//           Text(label, style: TextStyle(color: textColor.withValues(alpha:0.7), fontSize: 13, fontWeight: FontWeight.w500)),
 //           const SizedBox(height: 5),
 //           TextField(
 //             controller: controller,
@@ -681,14 +681,14 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.blueAccent.withOpacity(0.5), width: 2),
+              border: Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.5), width: 2),
             ),
             child: CircleAvatar(
               radius: 55,
               backgroundColor: isDark ? Colors.white10 : Colors.grey[100],
               backgroundImage: _getProfileImage(),
               child: (_selectedFile == null && _webFileBytes == null)
-                  ? Icon(Icons.add_a_photo_outlined, size: 35, color: Colors.blueAccent.withOpacity(0.5))
+                  ? Icon(Icons.add_a_photo_outlined, size: 35, color: AppColors.getPrimaryColor(context).withValues(alpha:0.5))
                   : null,
             ),
           ),
@@ -696,8 +696,8 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
             bottom: 0, right: 0,
             child: GestureDetector(
               onTap: () => _pickFile(true),
-              child: const CircleAvatar(
-                radius: 18, backgroundColor: Colors.blueAccent,
+              child:  CircleAvatar(
+                radius: 18, backgroundColor: AppColors.getPrimaryColor(context),
                 child: Icon(Icons.camera_alt, color: Colors.white, size: 16),
               ),
             ),
@@ -727,9 +727,9 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
         style: TextStyle(color: textColor, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, size: 20, color: Colors.blueAccent),
+          prefixIcon: Icon(icon, size: 20, color: AppColors.getPrimaryColor(context)),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade50,
+          fillColor: isDark ? Colors.white.withValues(alpha:0.05) : Colors.grey.shade50,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         ),
@@ -745,14 +745,14 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.blueAccent.withOpacity(0.3), style: BorderStyle.solid),
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.blue.withOpacity(0.05),
+          border: Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.3), style: BorderStyle.solid),
+          color: isDark ? Colors.white.withValues(alpha:0.05) : AppColors.getPrimaryColor(context).withValues(alpha:0.05),
         ),
         child: Row(
           children: [
-            const Icon(Icons.cloud_upload_outlined, color: Colors.blueAccent),
+             Icon(Icons.cloud_upload_outlined, color: AppColors.getPrimaryColor(context)),
             const SizedBox(width: 15),
-            Expanded(child: Text(_selectedFile1?.name ?? "Update Proof Document", style: TextStyle(color: textColor.withOpacity(0.6)))),
+            Expanded(child: Text(_selectedFile1?.name ?? "Update Proof Document", style: TextStyle(color: textColor.withValues(alpha:0.6)))),
           ],
         ),
       ),
@@ -760,7 +760,7 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
   }
 
   Widget _buildLoader() {
-    return Container(color: Colors.black45, child: const Center(child: CircularProgressIndicator(color: Colors.blueAccent)));
+    return Container(color: Colors.black45, child:  Center(child: CircularProgressIndicator(color: AppColors.getPrimaryColor(context))));
   }
 
   ImageProvider? _getProfileImage() {
@@ -816,7 +816,7 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent, foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.getPrimaryColor(context), foregroundColor: Colors.white, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
                 onPressed: () {
                   // ✅ Navigation stack cleared to remove back-button
                   Navigator.pushAndRemoveUntil(

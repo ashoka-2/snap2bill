@@ -230,7 +230,6 @@ class _changePasswordSubState extends State<changePasswordSub> {
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
-    final inputFillColor = isDark ? const Color(0xFF2C2C2C) : Colors.grey[50];
     final buttonColor = isDark ? Colors.white : Colors.black;
     final buttonTextColor = isDark ? Colors.black : Colors.white;
 
@@ -284,7 +283,7 @@ class _changePasswordSubState extends State<changePasswordSub> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -357,11 +356,11 @@ class _changePasswordSubState extends State<changePasswordSub> {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: hintColor, fontSize: 14),
-        prefixIcon: Icon(Icons.lock_outline, color: textColor.withOpacity(0.5), size: 20),
+        prefixIcon: Icon(Icons.lock_outline, color: textColor.withValues(alpha:0.5), size: 20),
         suffixIcon: IconButton(
           icon: Icon(
               isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: textColor.withOpacity(0.5),
+              color: textColor.withValues(alpha:0.5),
               size: 20
           ),
           onPressed: onToggle,

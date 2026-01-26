@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 // Import necessary dependencies/widgets needed for the drawer
 import '../main.dart';
 import '../theme/theme.dart';
-import '../screens/Login_page.dart'; // For logout navigation
 
 /// Defines the data structure for a single item in the custom drawer.
 class DrawerItemModel {
@@ -52,16 +51,16 @@ class CustomDrawer extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(children: [
-                      Icon(Icons.storefront, color:isDark?Colors.white:Colors.black.withOpacity(0.7), size: 40),
+                      Icon(Icons.storefront, color:isDark?Colors.white:Colors.black.withValues(alpha:0.7), size: 40),
                       const SizedBox(width: 10),
-                      Text("Menu", style: TextStyle(color:isDark?Colors.white:Colors.black.withOpacity(0.7), fontSize: 24)),
+                      Text("Menu", style: TextStyle(color:isDark?Colors.white:Colors.black.withValues(alpha:0.7), fontSize: 24)),
                     ],),
 
                     // Theme Toggle Button
                     Container(
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(50),
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Colors.grey.withValues(alpha:0.5),
                           border: Border.all(width: 1,color: Colors.grey)
                       ),
                       child: IconButton(

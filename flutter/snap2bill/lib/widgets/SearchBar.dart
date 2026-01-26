@@ -80,7 +80,7 @@ class SearchAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onChanged: onChanged,
                 textAlignVertical: TextAlignVertical.center,
                 style: TextStyle(color: AppColors.getTextColor(context), fontSize: 14),
-                cursorColor: Colors.blueAccent,
+                cursorColor: AppColors.getPrimaryColor(context),
                 decoration: InputDecoration(
                   isCollapsed: true,
                   filled: false,

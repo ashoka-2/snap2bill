@@ -544,20 +544,12 @@ def edit_distributor_profile(request):
 
 
 def distributor_view_customer(request):
-
-
     try:
         uid = request.POST.get('uid')
-
-        # 1. Query the Link table instead of the Order table
-        # We use select_related('CUSTOMER') to fetch customer details in one go (optimization)
         links = DistributorCustomerLink.objects.filter(DISTRIBUTOR_id=uid).select_related('CUSTOMER')
-
         ar = []
         for link in links:
-            # 'link.CUSTOMER' points to the actual customer object
             i = link.CUSTOMER
-
             ar.append({
                 'id': i.id,
                 'cid': i.id,  # Included for compatibility with your Flutter Joke model
@@ -1187,8 +1179,17 @@ def customer_view_profile(request):
     data=customer.objects.filter(id=cid)
     ar=[]
     for i in data:
-        ar.append({'id':i.id,'name':i.name,'email':i.email,'phone':i.phone,'profile_image':i.profile_image,'bio':i.bio,'address':i.address,'place':i.place,'pincode':i.pincode,'post':i.post})
-
+        ar.append({'id':i.id,
+                   'name':i.name,
+                   'email':i.email,
+                   'phone':i.phone,
+                   'profile_image':i.profile_image,
+                   'bio':i.bio,
+                   'address':i.address,
+                   'place':i.place,
+                   'pincode':i.pincode,
+                   'post':i.post
+                   })
     return JsonResponse({'status':'ok','data':ar})
 
 
@@ -2212,11 +2213,11 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 
+
 def universal_search(request):
     query = request.GET.get('q', '').strip()
     page_number = request.GET.get('page', 1)
     limit = 10
-
     results = []
 
     if not query:
@@ -2233,11 +2234,11 @@ def universal_search(request):
                 'distributor_id': s.DISTRIBUTOR.id,
                 'distributor_name': s.DISTRIBUTOR.name,
                 'distributor_phone': s.DISTRIBUTOR.phone,
-                'distributor_image': s.DISTRIBUTOR.profile_image ,
+                'distributor_image': s.DISTRIBUTOR.profile_image,
                 'is_liked': False
             })
     else:
-        # A. Search Stock via Product Name or Category
+        # A. Products Search
         stock_qs = stock.objects.filter(
             Q(PRODUCT__product_name__icontains=query) |
             Q(PRODUCT__CATEGORY__category_name__icontains=query)
@@ -2253,16 +2254,25 @@ def universal_search(request):
                 'distributor_image': s.DISTRIBUTOR.profile_image
             })
 
-        # B. Search People (Customers & Distributors)
+        # B. Customers Search (🚀 Saari fields add kar di hain)
         customers = customer.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
         for c in customers:
-            results.append({'type': 'customer', 'id': c.id, 'name': c.name, 'place': c.place,
-                            'phone': c.phone, 'image': c.profile_image})
+            results.append({
+                'type': 'customer', 'id': c.id, 'name': c.name, 'place': c.place,
+                'phone': c.phone, 'image': c.profile_image,
+                'email': c.email, 'bio': c.bio, 'address': c.address,
+                'pincode': c.pincode, 'post': c.post
+            })
 
+        # C. Distributors Search (🚀 Saari fields add kar di hain)
         distributors = distributor.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
         for d in distributors:
-            results.append({'type': 'distributor', 'id': d.id, 'name': d.name, 'place': d.place,
-                            'phone': d.phone, 'image': d.profile_image})
+            results.append({
+                'type': 'distributor', 'id': d.id, 'name': d.name, 'place': d.place,
+                'phone': d.phone, 'image': d.profile_image,
+                'email': d.email, 'bio': d.bio, 'address': d.address,
+                'pincode': d.pincode, 'post': d.post
+            })
 
     paginator = Paginator(results, limit)
     try:
@@ -2275,8 +2285,6 @@ def universal_search(request):
         'data': list(page_obj),
         'has_next': page_obj.has_next()
     })
-
-
 
 
 def distributor_add_product(request):

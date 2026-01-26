@@ -11,14 +11,15 @@ import 'package:snap2bill/theme/colors.dart';
 import 'dart:typed_data';
 
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 
 import '../../widgets/Navbar.dart';
 import '../../widgets/SnackBar.dart';
 
-class edit_customer_profile extends StatefulWidget {
+class EditCustomerProfile extends StatefulWidget {
   final dynamic id, name, email, phone, bio, address, pincode, place, post;
 
-  const edit_customer_profile({
+  const EditCustomerProfile({
     required this.id,
     required this.name,
     required this.email,
@@ -32,10 +33,10 @@ class edit_customer_profile extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<edit_customer_profile> createState() => _edit_customer_profileState();
+  State<EditCustomerProfile> createState() => _EditCustomerProfileState();
 }
 
-class _edit_customer_profileState extends State<edit_customer_profile> {
+class _EditCustomerProfileState extends State<EditCustomerProfile> {
   final name = TextEditingController();
   final email = TextEditingController();
   final phone = TextEditingController();
@@ -95,7 +96,7 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -156,14 +157,14 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.blueAccent.withOpacity(0.2), width: 4),
+              border: Border.all(color: AppColors.getPrimaryColor(context).withValues(alpha:0.2), width: 4),
             ),
             child: CircleAvatar(
               radius: 55,
               backgroundColor: isDark ? Colors.white10 : Colors.grey.shade100,
               backgroundImage: _getProfileImage(),
               child: (_selectedFile == null && _webFileBytes == null)
-                  ? Icon(Icons.person, size: 50, color: Colors.blueAccent.withOpacity(0.4))
+                  ? Icon(Icons.person, size: 50, color: AppColors.getPrimaryColor(context).withValues(alpha:0.4))
                   : null,
             ),
           ),
@@ -174,8 +175,8 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
               onTap: _pickFile,
               child: Container(
                 padding: const EdgeInsets.all(8),
-                decoration: const BoxDecoration(
-                  color: Colors.blueAccent,
+                decoration:  BoxDecoration(
+                  color: AppColors.getPrimaryColor(context),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.camera_alt_rounded, size: 20, color: Colors.white),
@@ -217,17 +218,17 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),
-          floatingLabelStyle: const TextStyle(color: Colors.blueAccent, fontWeight: FontWeight.bold),
-          prefixIcon: Icon(icon, size: 22, color: Colors.blueAccent.withOpacity(0.7)),
+          floatingLabelStyle:  TextStyle(color: AppColors.getPrimaryColor(context), fontWeight: FontWeight.bold),
+          prefixIcon: Icon(icon, size: 22, color: AppColors.getIconColor(context).withValues(alpha:0.7)),
           filled: true,
-          fillColor: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
+          fillColor: isDark ? Colors.white.withValues(alpha:0.05) : Colors.grey.shade100,
           border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: const BorderSide(color: Colors.blueAccent, width: 1),
+            borderSide:  BorderSide(color: AppColors.getPrimaryColor(context), width: 1),
           ),
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         ),
@@ -238,9 +239,9 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
   Widget _buildLoader() {
     return Container(
       color: Colors.black45,
-      child: const Center(
+      child:  Center(
         child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),
+          valueColor: AlwaysStoppedAnimation<Color>(AppColors.getPrimaryColor(context)),
         ),
       ),
     );
@@ -311,14 +312,8 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
             const SizedBox(height: 32),
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueAccent,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  elevation: 0,
-                ),
+              child: AppButton(
+                text: "Continue",
                 onPressed: () {
                   Navigator.pushAndRemoveUntil(
                     context,
@@ -326,7 +321,6 @@ class _edit_customer_profileState extends State<edit_customer_profile> {
                         (route) => false,
                   );
                 },
-                child: const Text("Continue", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
               ),
             ),
             const SizedBox(height: 10),

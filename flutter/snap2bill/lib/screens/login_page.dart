@@ -17,6 +17,7 @@ import 'package:snap2bill/widgets/app_button.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 
 import '../password/forgotemail.dart';
+import '../widgets/SnackBar.dart';
 
 const List<Color> _blobGradient1 = AppColors.blobGradient1;
 const List<Color> _blobGradient2 = AppColors.blobGradient2;
@@ -112,9 +113,8 @@ class _login_pageState extends State<login_page>
           await prefs.setString("pwd", password.text); // Note: Saving plain text password is insecure
 
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Login successful'), backgroundColor: Colors.green)
-          );
+          CustomSnackBar.show(context, "Login Successful",
+              backgroundColor: AppColors.successColor);
 
           Navigator.pushReplacement(
             context,
@@ -126,9 +126,8 @@ class _login_pageState extends State<login_page>
           await prefs.setString("pwd1", password.text);
 
           if (!mounted) return;
-          ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Login successful'), backgroundColor: Colors.green)
-          );
+          CustomSnackBar.show(context, "Login Successful",
+              backgroundColor: AppColors.successColor);
 
           Navigator.pushReplacement(
             context,
@@ -221,7 +220,7 @@ class _login_pageState extends State<login_page>
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha:0.1),
                           blurRadius: 20,
                           offset: const Offset(0, -5),
                         ),
@@ -303,9 +302,9 @@ class _login_pageState extends State<login_page>
                                 width: double.infinity,
                                 padding: const EdgeInsets.all(10),
                                 decoration: BoxDecoration(
-                                    color: Colors.redAccent.withOpacity(0.1),
+                                    color: Colors.redAccent.withValues(alpha:0.1),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.redAccent.withOpacity(0.5))
+                                    border: Border.all(color: Colors.redAccent.withValues(alpha:0.5))
                                 ),
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -361,7 +360,7 @@ class _login_pageState extends State<login_page>
                               children: [
                                 Expanded(
                                   child: Divider(
-                                    color: subTextColor.withOpacity(0.3),
+                                    color: subTextColor.withValues(alpha:0.3),
                                   ),
                                 ),
                                 Padding(
@@ -379,7 +378,7 @@ class _login_pageState extends State<login_page>
                                 ),
                                 Expanded(
                                   child: Divider(
-                                    color: subTextColor.withOpacity(0.3),
+                                    color: subTextColor.withValues(alpha:0.3),
                                   ),
                                 ),
                               ],

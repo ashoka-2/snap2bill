@@ -4,7 +4,8 @@ import 'package:lottie/lottie.dart';
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../widgets/Navbar.dart'; // ✅ Import this
+import '../theme/colors.dart';
+import '../widgets/Navbar.dart';
 
 class ViewCustomerProfile extends StatelessWidget {
   final Joke customer;
@@ -60,7 +61,8 @@ class ViewCustomerProfile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = AppColors.getTextColor(context);
+    
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -83,7 +85,7 @@ class ViewCustomerProfile extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(color: theme.primaryColor.withOpacity(0.5), width: 2),
+                border: Border.all(color: theme.primaryColor.withValues(alpha:0.5), width: 2),
               ),
               child: CircleAvatar(
                 radius: 60,
@@ -104,7 +106,7 @@ class ViewCustomerProfile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: theme.primaryColor.withOpacity(0.1),
+                color: theme.primaryColor.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -260,10 +262,10 @@ class ViewCustomerProfile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: AppColors.getPrimaryColor(context).withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: Colors.blue, size: 20),
+              child: Icon(icon, color: AppColors.getPrimaryColor(context), size: 20),
             ),
             const SizedBox(width: 15),
             Expanded(

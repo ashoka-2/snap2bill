@@ -3,7 +3,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:hugeicons/styles/stroke_rounded.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +14,9 @@ import 'package:snap2bill/Distributordirectory/view/viewBillItems.dart';
 
 // Import your custom widgets
 import '../../widgets/app_button.dart';
+import '../theme/colors.dart';
 import '../widgets/Navbar.dart';
+import '../widgets/SnackBar.dart';
 
 
 
@@ -79,17 +80,14 @@ class _CameraCaptureState extends State<CameraCapture> {
         Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
         setState(() => _showAddButton = true);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Could not recognize product"),
-            backgroundColor: Colors.red,
-          ),
-        );
+
+        CustomSnackBar.show(context,"Could not recognize Product!",
+            backgroundColor: AppColors.dangerColor);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: $e")),
-      );
+
+      CustomSnackBar.show(context, Text('Error: $e') as String,
+          backgroundColor: AppColors.dangerColor);
     } finally {
       setState(() => _isScanning = false);
     }
@@ -149,7 +147,7 @@ class _CameraCaptureState extends State<CameraCapture> {
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -161,9 +159,9 @@ class _CameraCaptureState extends State<CameraCapture> {
                       ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.camera_outlined, size: 60, color: textColor.withOpacity(0.3)),
+                      Icon(Icons.camera_outlined, size: 60, color: textColor.withValues(alpha:0.3)),
                       const SizedBox(height: 10),
-                      Text('No image captured', style: TextStyle(color: textColor.withOpacity(0.5))),
+                      Text('No image captured', style: TextStyle(color: textColor.withValues(alpha:0.5))),
                     ],
                   )
                       : kIsWeb
@@ -218,7 +216,7 @@ class _CameraCaptureState extends State<CameraCapture> {
                 "Position the product clearly in the frame\nfor a better match.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: textColor.withOpacity(0.5),
+                  color: textColor.withValues(alpha:0.5),
                   fontSize: 13,
                   height: 1.5,
                 ),
@@ -227,7 +225,7 @@ class _CameraCaptureState extends State<CameraCapture> {
               AppButton(
                 text: "View Bill",
                 onPressed: () async {
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  // SharedPreferences prefs = await SharedPreferences.getInstance();
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>viewBillItems()));
                 },
                 color: buttonColor,

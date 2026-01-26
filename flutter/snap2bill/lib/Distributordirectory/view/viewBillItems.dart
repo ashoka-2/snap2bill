@@ -144,9 +144,9 @@
 // //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
 // //         decoration: BoxDecoration(
 // //           color: AppColors.getScaffoldBg(context),
-// //           border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5)),
+// //           border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5)),
 // //           boxShadow: [
-// //             BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))
+// //             BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, -5))
 // //           ],
 // //         ),
 // //         child: SafeArea(
@@ -208,8 +208,8 @@
 // //       decoration: BoxDecoration(
 // //         color: isDark ? Colors.grey[900] : Colors.white,
 // //         borderRadius: BorderRadius.circular(20),
-// //         border: Border.all(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5),
-// //         boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+// //         border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
+// //         boxShadow: [BoxShadow(color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, 4))],
 // //       ),
 // //       child: Row(
 // //         crossAxisAlignment: CrossAxisAlignment.start,
@@ -235,7 +235,7 @@
 // //                   children: [
 // //                     Container(
 // //                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-// //                       decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+// //                       decoration: BoxDecoration(color: AppColors.getPrimaryColor(context).withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
 // //                       child: Text("Qty: ${item['quantity']}", style: const TextStyle(color: Color(0xff23afda), fontWeight: FontWeight.bold, fontSize: 12)),
 // //                     ),
 // //                     const Spacer(),
@@ -541,8 +541,8 @@
 //       decoration: BoxDecoration(
 //         color: isDark ? Colors.grey[900] : Colors.white,
 //         borderRadius: BorderRadius.circular(20),
-//         border: Border.all(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5),
-//         boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 10, offset: const Offset(0, 4))],
+//         border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
+//         boxShadow: [BoxShadow(color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, 4))],
 //       ),
 //       child: Column(
 //         children: [
@@ -570,7 +570,7 @@
 //                       children: [
 //                         Container(
 //                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-//                           decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+//                           decoration: BoxDecoration(color: AppColors.getPrimaryColor(context).withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
 //                           child: Text("Qty: ${item['quantity']} ${item['unit_name']}", style: const TextStyle(color: Color(0xff23afda), fontWeight: FontWeight.bold, fontSize: 12)),
 //                         ),
 //                         const Spacer(),
@@ -709,8 +709,8 @@
 //       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
 //       decoration: BoxDecoration(
 //         color: AppColors.getScaffoldBg(context),
-//         border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5)),
-//         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+//         border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5)),
+//         boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, -5))],
 //       ),
 //       child: SafeArea(
 //         child: Row(
@@ -956,11 +956,11 @@ class _viewBillItemsState extends State<viewBillItems> {
           Center(
             child: Column(
               children: [
-                Icon(icon, size: 80, color: color?.withOpacity(0.5)),
+                Icon(icon, size: 80, color: color?.withValues(alpha:0.5)),
                 const SizedBox(height: 15),
                 Text(title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: color)),
                 const SizedBox(height: 5),
-                Text(subTitle, style: TextStyle(color: color?.withOpacity(0.7))),
+                Text(subTitle, style: TextStyle(color: color?.withValues(alpha:0.7))),
               ],
             ),
           ),
@@ -997,8 +997,8 @@ class _viewBillItemsState extends State<viewBillItems> {
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4))],
+        border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, 4))],
       ),
       child: Column(
         children: [
@@ -1026,7 +1026,7 @@ class _viewBillItemsState extends State<viewBillItems> {
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(color: Colors.blue.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                          decoration: BoxDecoration(color: AppColors.getPrimaryColor(context).withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
                           child: Text("${item['quantity']} ${item['unit_name']}", style: const TextStyle(color: Color(0xff23afda), fontWeight: FontWeight.bold, fontSize: 12)),
                         ),
                         const Spacer(),
@@ -1150,8 +1150,8 @@ class _viewBillItemsState extends State<viewBillItems> {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
       decoration: BoxDecoration(
         color: AppColors.getScaffoldBg(context),
-        border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withOpacity(0.1), width: 1.5)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, -5))],
+        border: Border(top: BorderSide(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5)),
+        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, -5))],
       ),
       child: SafeArea(
         child: Row(

@@ -39,7 +39,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
   // final List<Color> tabColors = [
   //   Colors.purple,
   //   Colors.yellow,
-  //   Colors.blue,
+  //   AppColors.getPrimaryColor(context),
   //   Colors.green,
   //   Colors.red,
   // ];
@@ -49,11 +49,11 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
     super.initState();
     _selectedIndex = widget.initialIndex.clamp(0, 4);
     _pages =  [
-      Home_page(),
-      search_page(),
-      allCustomers(),
-      customer_page(),
-      distributor_profile_page(),
+      HomePage(),
+      SearchPage(),
+      AllCustomers(),
+      CustomerPage(),
+      DistributorProfilePage(),
     ];
   }
 
@@ -71,9 +71,9 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
 
     final inactiveIconColor = isDark ? Colors.white : Colors.black;
     final borderColor =
-    isDark ? Colors.white.withOpacity(0.2) : Colors.black.withOpacity(0.2);
+    isDark ? Colors.white.withValues(alpha:0.2) : Colors.black.withValues(alpha:0.2);
     final glassColor =
-    isDark ? Colors.black.withOpacity(0.5) : Colors.white.withOpacity(0.4);
+    isDark ? Colors.black.withValues(alpha:0.5) : Colors.white.withValues(alpha:0.4);
 
     return Scaffold(
       extendBody: true,
@@ -97,18 +97,18 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
                   const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
                   child: GNav(
                     rippleColor: isDark
-                        ? Colors.white.withOpacity(0.1)
-                        : Colors.black.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha:0.1)
+                        : Colors.black.withValues(alpha:0.1),
                     hoverColor: isDark
-                        ? Colors.white.withOpacity(0.1)
-                        : Colors.black.withOpacity(0.1),
+                        ? Colors.white.withValues(alpha:0.1)
+                        : Colors.black.withValues(alpha:0.1),
                     gap: 5,
                     activeColor: AppColors.getTextColor(context),
                     iconSize: 24,
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
                     duration: const Duration(milliseconds: 400),
-                    tabBackgroundColor:AppColors.getTextColor(context).withOpacity(0.15),
+                    tabBackgroundColor:AppColors.getTextColor(context).withValues(alpha:0.15),
                     color: inactiveIconColor,
                     tabs:  [
                       GButton(icon: Icons.home, // Dummy icon

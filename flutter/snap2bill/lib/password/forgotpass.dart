@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/screens/Login_page.dart';
-import '../../theme/colors.dart';
+import 'package:snap2bill/widgets/Navbar.dart';
 import '../../widgets/app_button.dart';
-import 'forgotemail.dart';
+import '../theme/colors.dart';
 
 class forgotpass extends StatefulWidget {
   const forgotpass({Key? key}) : super(key: key);
@@ -161,21 +161,19 @@ class _forgotpassState extends State<forgotpass> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    // final textColor = isDark ? Colors.white : Colors.black87;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
+      appBar: ThemeNavbar(
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: textColor, size: 20),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text("Reset Password", style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
+        title: "Reset Password",
+        leadingIcon: Icons.arrow_back_ios_rounded,
+        onLeadingPressed: ()=>{
+          if (Navigator.canPop(context)) Navigator.pop(context)
+        },
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -187,13 +185,13 @@ class _forgotpassState extends State<forgotpass> {
                 height: 100,
                 width: 100,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF2C2C2C) : Colors.blue.shade50,
+                  color: isDark ? const Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.lock_open_rounded, size: 50, color: isDark ? Colors.white : Colors.blue.shade400),
+                child: Icon(Icons.lock_open_rounded, size: 50, color: isDark ? Colors.white : AppColors.getPrimaryColor(context)),
               ),
               const SizedBox(height: 30),
-              Text("Create New Password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
+              Text("Create New Password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.getIconColor(context))),
               const SizedBox(height: 8),
               Text("Your new password must be different from previously used passwords.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: hintColor)),
               const SizedBox(height: 30),
@@ -202,7 +200,7 @@ class _forgotpassState extends State<forgotpass> {
                 decoration: BoxDecoration(
                   color: theme.cardColor,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.3 : 0.05), blurRadius: 20, offset: const Offset(0, 4))],
+                  boxShadow: [BoxShadow(color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 20, offset: const Offset(0, 4))],
                 ),
                 child: Column(
                   children: [
@@ -210,7 +208,7 @@ class _forgotpassState extends State<forgotpass> {
                       controller: password,
                       hint: "New Password",
                       isObscure: _obscurePassword,
-                      textColor: textColor,
+                      textColor: AppColors.getIconColor(context),
                       hintColor: hintColor!,
                       borderColor: borderColor,
                       onToggle: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -220,7 +218,7 @@ class _forgotpassState extends State<forgotpass> {
                       controller: confirmpassword,
                       hint: "Confirm Password",
                       isObscure: _obscureConfirmPassword,
-                      textColor: textColor,
+                      textColor: AppColors.getIconColor(context),
                       hintColor: hintColor,
                       borderColor: borderColor,
                       onToggle: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
@@ -233,10 +231,7 @@ class _forgotpassState extends State<forgotpass> {
                 text: "Reset Password",
                 onPressed: _resetPassword,
                 isLoading: _isLoading,
-                color: isDark ? Colors.white : Colors.black,
-                textColor: isDark ? Colors.black : Colors.white,
                 icon: Icons.vpn_key_outlined,
-                isTrailingIcon: true,
               ),
             ],
           ),
@@ -261,9 +256,9 @@ class _forgotpassState extends State<forgotpass> {
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(color: hintColor, fontSize: 14),
-        prefixIcon: Icon(Icons.lock_outline, color: textColor.withOpacity(0.5), size: 20),
+        prefixIcon: Icon(Icons.lock_outline, color: AppColors.getIconColor(context).withValues(alpha:0.5), size: 20),
         suffixIcon: IconButton(
-          icon: Icon(isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: textColor.withOpacity(0.5), size: 20),
+          icon: Icon(isObscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color:AppColors.getIconColor(context).withValues(alpha:0.5), size: 20),
           onPressed: onToggle,
         ),
         filled: true,

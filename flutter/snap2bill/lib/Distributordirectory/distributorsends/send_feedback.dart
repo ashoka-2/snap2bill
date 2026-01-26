@@ -128,9 +128,9 @@ class _send_feedbackState extends State<send_feedback> {
         throw Exception('Failed to send feedback (Status: ${res.statusCode})');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+
+      CustomSnackBar.show(context, Text('Error: $e') as String,
+          backgroundColor: AppColors.dangerColor);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -180,7 +180,7 @@ class _send_feedbackState extends State<send_feedback> {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: Colors.black.withValues(alpha:0.05),
                       blurRadius: 15,
                       offset: const Offset(0, 5),
                     ),
@@ -219,7 +219,7 @@ class _send_feedbackState extends State<send_feedback> {
                   borderRadius: BorderRadius.circular(24),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+                      color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
                       blurRadius: 20,
                       offset: const Offset(0, 4),
                     ),
@@ -233,7 +233,7 @@ class _send_feedbackState extends State<send_feedback> {
                         style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
-                            color: textColor.withOpacity(0.7)
+                            color: textColor.withValues(alpha:0.7)
                         )
                     ),
                     const SizedBox(height: 10),

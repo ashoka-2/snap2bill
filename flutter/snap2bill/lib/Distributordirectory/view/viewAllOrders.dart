@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:snap2bill/Distributordirectory/view/viewOrderItems.dart';
 
 import '../../widgets/Navbar.dart';
@@ -151,7 +150,7 @@ class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(isDark ? 0.3 : 0.05),
+            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           )
@@ -225,7 +224,7 @@ class _viewAllOrdersSubState extends State<viewAllOrdersSub> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
