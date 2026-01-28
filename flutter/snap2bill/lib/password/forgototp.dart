@@ -179,7 +179,7 @@ class _forgototpState extends State<forgototp> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
 
     // Responsive box size calculation
@@ -204,7 +204,7 @@ class _forgototpState extends State<forgototp> {
                   color: isDark ?  Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
                   shape: BoxShape.circle),
               child: Icon(Icons.mark_email_read_outlined, size: 50,
-                  color: isDark ? Colors.white : AppColors.getPrimaryColor(context)),
+                  color: isDark ? AppColors.WhiteColor: AppColors.getPrimaryColor(context)),
             ),
             const SizedBox(height: 30),
             Text("Verify OTP", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
@@ -246,8 +246,8 @@ class _forgototpState extends State<forgototp> {
                   ? () {} // Use empty function to prevent "null" error if button is non-nullable
                   : () { _verifyOTP(); },
               isLoading: _isLoading,
-              color: isDark ? Colors.white : Colors.black,
-              textColor: isDark ? Colors.black : Colors.white,
+              color: isDark ? AppColors.WhiteColor: Colors.black,
+              textColor: isDark ? AppColors.BlackColor: Colors.white,
             ),
 
             const SizedBox(height: 30),

@@ -99,7 +99,7 @@ class _addToBillState extends State<addToBill> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;

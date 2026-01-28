@@ -184,7 +184,7 @@ class _ChangePasswordSubState extends State<ChangePasswordSub> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: isDark ? Colors.white : Colors.black87,
+                    color: isDark ? AppColors.WhiteColor: Colors.black87,
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -232,12 +232,12 @@ class _ChangePasswordSubState extends State<ChangePasswordSub> {
     final isDark = theme.brightness == Brightness.dark;
 
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
+    final buttonColor = isDark ? AppColors.WhiteColor: Colors.black;
+    final buttonTextColor = isDark ? AppColors.BlackColor: Colors.white;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -266,7 +266,7 @@ class _ChangePasswordSubState extends State<ChangePasswordSub> {
                 child: Icon(
                     Icons.lock_reset_rounded,
                     size: 50,
-                    color: isDark ? Colors.white : Colors.teal.shade400
+                    color: isDark ? AppColors.WhiteColor: Colors.teal.shade400
                 ),
               ),
               const SizedBox(height: 30),

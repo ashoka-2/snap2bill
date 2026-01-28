@@ -93,17 +93,12 @@ class _send_feedbackState extends State<send_feedback> {
     // --- Theme Handling ---
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final bgColor = AppColors.getScaffoldBg(context);
+    final textColor = AppColors.getTextColor(context);
+    final cardColor = AppColors.getCardColor(context);
+    final hintColor = AppColors.getHintColor(context);
+    final borderColor = AppColors.getBorderColor(context);
 
-    // Design Colors
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
-    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
-
-    // Button Colors
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -140,7 +135,7 @@ class _send_feedbackState extends State<send_feedback> {
                 child: Icon(
                   Icons.reviews_outlined, // Using reviews icon as in your original comment
                   size: 45,
-                  color: isDark ? Colors.white : Colors.teal.shade400,
+                  color: isDark ? AppColors.WhiteColor: Colors.teal.shade400,
                 ),
               ),
               const SizedBox(height: 30),
@@ -223,11 +218,6 @@ class _send_feedbackState extends State<send_feedback> {
                 text: "Send Feedback",
                 onPressed: submitFeedback,
                 isLoading: _isLoading,
-
-                // Theme Adaptation
-                color: buttonColor,
-                textColor: buttonTextColor,
-
                 // Icon styling
                 icon: Icons.send_rounded,
                 isTrailingIcon: true,

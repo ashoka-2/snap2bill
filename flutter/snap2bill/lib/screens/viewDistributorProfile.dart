@@ -129,7 +129,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -230,43 +230,46 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: textColor)),
           if (_profile!.bio.isNotEmpty) Text(_profile!.bio, style: const TextStyle(color: Colors.grey)),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              // --- CALL BUTTON ---
-              Expanded(
-                child:SecondaryButton(
-                  onPressed: () => launchUrl(Uri(scheme: 'tel', path: _profile!.phone)),
-                  color: AppColors.successbgColor,
-                  leading: Lottie.asset(
-                    'assets/lotties/call.json',
-                    width: 35, // Slightly adjusted for better alignment with text
-                    height: 35,
-                    fit: BoxFit.contain,
-                    repeat: true, // Set to false if you want it to play only once
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            child: Row(
+              children: [
+                // --- CALL BUTTON ---
+                Expanded(
+                  child:SecondaryButton(
+                    onPressed: () => launchUrl(Uri(scheme: 'tel', path: _profile!.phone)),
+                    color: AppColors.successbgColor,
+                    leading: Lottie.asset(
+                      'assets/lotties/call.json',
+                      width: 30, // Slightly adjusted for better alignment with text
+                      height: 30,
+                      fit: BoxFit.contain,
+                      repeat: true, // Set to false if you want it to play only once
+                    ),
+                    text: "Call",
+
                   ),
-                  text: "Call",
-
-                ),
-              ),
-
-              const SizedBox(width: 10),
-
-              // --- WHATSAPP BUTTON WITH LOTTIE ---
-              Expanded(
-                child:SecondaryButton(text: "Whatsapp",
-                  color: AppColors.successbgColor,
-                  leading: Lottie.asset(
-                    'assets/lotties/whatsapp.json',
-                    width: 35, // Slightly adjusted for better alignment with text
-                    height: 35,
-                    fit: BoxFit.contain,
-                    repeat: true, // Set to false if you want it to play only once
-                  ),
-                  onPressed: () => launchUrl(Uri.parse("whatsapp://send?phone=${_profile!.phone}")),
                 ),
 
-              ),
-            ],
+                const SizedBox(width: 10),
+
+                // --- WHATSAPP BUTTON WITH LOTTIE ---
+                Expanded(
+                  child:SecondaryButton(text: "Whatsapp",
+                    color: AppColors.successbgColor,
+                    leading: Lottie.asset(
+                      'assets/lotties/whatsapp.json',
+                      width: 30, // Slightly adjusted for better alignment with text
+                      height: 30,
+                      fit: BoxFit.contain,
+                      repeat: true, // Set to false if you want it to play only once
+                    ),
+                    onPressed: () => launchUrl(Uri.parse("whatsapp://send?phone=${_profile!.phone}")),
+                  ),
+
+                ),
+              ],
+            ),
           )
         ],
       ),

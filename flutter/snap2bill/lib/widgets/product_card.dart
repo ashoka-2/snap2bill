@@ -141,7 +141,7 @@ class _ProductCardState extends State<ProductCard> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
 
     return Center(
       child: SizedBox(

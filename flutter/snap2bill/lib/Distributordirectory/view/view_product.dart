@@ -158,7 +158,7 @@ class _ViewProductSubState extends State<ViewProductSub> {
   Widget _buildPinterestCard(Joke i, bool isDark) {
     final topContainerColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF3E5D8);
     final bottomContainerColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black;
 
     return InkWell(
       onTap: () {
@@ -313,12 +313,12 @@ class _ViewProductSubState extends State<ViewProductSub> {
                       Container(
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white : Colors.black,
+                          color: isDark ? AppColors.WhiteColor: Colors.black,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.add,
-                          color: isDark ? Colors.black : Colors.white,
+                          color: isDark ? AppColors.BlackColor: Colors.white,
                           size: 20,
                         ),
                       ),
@@ -348,7 +348,7 @@ class _ViewProductSubState extends State<ViewProductSub> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        final textColor = isDark ? Colors.white : Colors.black;
+        final textColor = isDark ? AppColors.WhiteColor: Colors.black;
         return Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
@@ -372,8 +372,8 @@ class _ViewProductSubState extends State<ViewProductSub> {
                     _navigateToAddStock(i);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? Colors.white : Colors.black,
-                    foregroundColor: isDark ? Colors.black : Colors.white,
+                    backgroundColor: isDark ? AppColors.WhiteColor: Colors.black,
+                    foregroundColor: isDark ? AppColors.BlackColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),

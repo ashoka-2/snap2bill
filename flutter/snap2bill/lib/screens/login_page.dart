@@ -176,19 +176,17 @@ class _LoginPageState extends State<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    final cardColor = AppColors.getCardColor(context);
+    final textColor = AppColors.getTextColor(context);
+    final subTextColor = AppColors.getTextSubColor(context);
+    final inputFill = AppColors.getInputFieldColor(context);
+    final iconColor = AppColors.getIconColor(context);
+    final primaryColor = AppColors.getPrimaryColor(context);
 
-
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final bgColor = theme.scaffoldBackgroundColor;
-    final cardColor = theme.cardColor;
-    final textColor = isDark ? AppColors.textMainDark : AppColors.textMainLight;
-    final subTextColor = isDark ? AppColors.textSubDark : AppColors.textSubLight;
-    final inputFill = isDark ? AppColors.inputFillDark : AppColors.inputFillLight;
-    final iconColor = isDark?AppColors.iconColorDark:AppColors.iconColorLight;
-    final primaryColor = isDark?AppColors.primaryLight:AppColors.primaryDark;
     return Scaffold(
       backgroundColor: bgColor,
       body: Stack(

@@ -216,7 +216,7 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
                     style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? Colors.white : Colors.black87
+                        color: isDark ? AppColors.WhiteColor: Colors.black87
                     ),
                   ),
                 ],

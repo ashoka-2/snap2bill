@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 
 import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
@@ -98,7 +99,7 @@ class _view_reviewState extends State<view_review> {
         CustomSnackBar.show(context, "Review deleted.",);
 
         // Refresh the page or navigate away as per your original logic
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)));
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 2,)));
       }
     } catch (e) {
       CustomSnackBar.show(context, Text("Error: $e") as String, backgroundColor: dangerColor);
@@ -116,11 +117,11 @@ class _view_reviewState extends State<view_review> {
     final isDark = theme.brightness == Brightness.dark;
 
     // Design Colors
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
-    final dateColor = isDark ? Colors.white54 : Colors.grey.shade600;
+    final bgColor = AppColors.getScaffoldBg(context);
+    final textColor = AppColors.getTextColor(context);
+    final cardColor = AppColors.getCardColor(context);
+    final hintColor = AppColors.getHintColor(context);
+    final dateColor =AppColors.getTextSubColor(context);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -276,21 +277,8 @@ class _view_reviewState extends State<view_review> {
                   ),
                 ),
 
-                // Delete Icon Button
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: _isDeleting ? null : () => _deleteReview(i.id),
-                    borderRadius: BorderRadius.circular(50),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: dangerColor.withValues(alpha:0.1),
-                        shape: BoxShape.circle,
-                      ),
-                      child:  Icon(Icons.delete_outline_rounded, size: 20, color: dangerColor),
-                    ),
-                  ),
+                DeleteButton(
+                  onPressed: _isDeleting ? (){} : () => _deleteReview(i.id),
                 ),
               ],
             ),

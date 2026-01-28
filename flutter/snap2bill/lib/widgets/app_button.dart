@@ -34,16 +34,13 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: height,
       width: double.infinity, // Usually buttons in login forms take full width
       child: ElevatedButton(
 
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark?AppColors.buttonColorLight:AppColors.buttonColorDark,
-          // FIX FOR BORDER COLOR ERROR
-          // If a borderColor is passed, use it; otherwise, no border.
+          backgroundColor: AppColors.getButtonColor(context),
           side: borderColor != null ? BorderSide(color: borderColor!) : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(50),
@@ -83,7 +80,7 @@ class AppButton extends StatelessWidget {
             // Only show Trailing Icon if icon exists AND it is trailing
             if (isTrailingIcon && icon != null) ...[
               const SizedBox(width: 10),
-              Icon(icon, color: textColor),
+              Icon(icon, color: AppColors.getTextColor2(context)),
             ],
           ],
         ),
@@ -363,19 +360,19 @@ class SecondaryButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(borderRadius),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 0),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (leading != null) ...[
               leading!,
-              const SizedBox(width: 8),
+              const SizedBox(width: 5),
             ],
             Text(
               text,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: AppColors.getTextColor(context),
               ),

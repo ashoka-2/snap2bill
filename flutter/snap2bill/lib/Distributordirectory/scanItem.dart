@@ -97,10 +97,10 @@ class _CameraCaptureState extends State<CameraCapture> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
+    final buttonColor = isDark ? AppColors.WhiteColor: Colors.black;
+    final buttonTextColor = isDark ? AppColors.BlackColor: Colors.white;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -123,7 +123,7 @@ class _CameraCaptureState extends State<CameraCapture> {
               },
               icon: HugeIcon(
                   icon: HugeIcons.strokeRoundedAddSquare,
-                  color: isDark ? Colors.white : Colors.black
+                  color: isDark ? AppColors.WhiteColor: Colors.black
               ),
             )
           ]

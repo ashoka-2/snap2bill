@@ -86,7 +86,7 @@ class _forgotemailState extends State<forgotemail> {
                   color: isSuccess ? successColor : dangerColor,
                 ),
                 const SizedBox(height: 20),
-                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? AppColors.WhiteColor: Colors.black87)),
                 const SizedBox(height: 10),
                 Text(message, textAlign: TextAlign.center, style: TextStyle(color: isDark ? Colors.white70 : Colors.grey[600])),
                 const SizedBox(height: 24),
@@ -109,7 +109,7 @@ class _forgotemailState extends State<forgotemail> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
 
     return Scaffold(
@@ -134,7 +134,7 @@ class _forgotemailState extends State<forgotemail> {
                   color: isDark ? const Color(0xFF2C2C2C) : dangerColor.withValues(alpha:0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.email_outlined, size: 50, color: isDark ? Colors.white : dangerColor.withValues(alpha:0.5)),
+                child: Icon(Icons.email_outlined, size: 50, color: isDark ? AppColors.WhiteColor: dangerColor.withValues(alpha:0.5)),
               ),
               const SizedBox(height: 30),
               Text("Forgot Password", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor)),
@@ -197,8 +197,8 @@ class _forgotemailState extends State<forgotemail> {
                 text: "Send OTP",
                 onPressed: () => _checkEmail(),
                 isLoading: _isLoading,
-                color: isDark ? Colors.white : Colors.black,
-                textColor: isDark ? Colors.black : Colors.white,
+                color: isDark ? AppColors.WhiteColor: Colors.black,
+                textColor: isDark ? AppColors.BlackColor: Colors.white,
               ),
 
               const SizedBox(height: 30),

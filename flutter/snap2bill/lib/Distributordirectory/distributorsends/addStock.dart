@@ -133,13 +133,13 @@ class _AddStockSubState extends State<AddStockSub> {
     
 
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
 
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
+    final buttonColor = isDark ? AppColors.WhiteColor: Colors.black;
+    final buttonTextColor = isDark ? AppColors.BlackColor: Colors.white;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -173,7 +173,7 @@ class _AddStockSubState extends State<AddStockSub> {
                 child: Icon(
                     Icons.add_business_outlined,
                     size: 45,
-                    color: isDark ? Colors.white : AppColors.getPrimaryColor(context)
+                    color: isDark ? AppColors.WhiteColor: AppColors.getPrimaryColor(context)
                 ),
               ),
               const SizedBox(height: 40),

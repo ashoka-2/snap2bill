@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
+import 'package:flutter/services.dart';
 
 // Make sure these point to your actual file locations
 import '../../widgets/Navbar.dart';
@@ -125,16 +126,13 @@ class _send_reviewState extends State<send_review> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
+    final bgColor = AppColors.getScaffoldBg(context);
+    final cardColor = AppColors.getCardColor(context);
+    final textColor = AppColors.getTextColor(context);
     // Design Colors
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
-    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
+    final hintColor = AppColors.getHintColor(context);
+    final borderColor = AppColors.getBorderColor(context);
 
-    // Button Colors
-    final buttonColor = isDark ? Colors.white : Colors.black;
-    final buttonTextColor = isDark ? Colors.black : Colors.white;
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -258,6 +256,12 @@ class _send_reviewState extends State<send_review> {
                       controller: reviews,
                       maxLines: 4,
                       style: TextStyle(color: textColor, fontSize: 16),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.deny(
+                          RegExp(r'[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F700}-\u{1F77F}\u{1F780}-\u{1F7FF}\u{1F800}-\u{1F8FF}\u{1F900}-\u{1F9FF}\u{1FA00}-\u{1FA6F}\u{1FA70}-\u{1FAFF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]',
+                              unicode: true),
+                        ),
+                      ],
                       decoration: InputDecoration(
                         hintText: "Share your thoughts here...",
                         hintStyle: TextStyle(color: hintColor, fontSize: 14),
@@ -287,12 +291,6 @@ class _send_reviewState extends State<send_review> {
                 text: "Submit Review",
                 onPressed: submitReview,
                 isLoading: isLoading,
-
-                // Theme Adaptation
-                color: buttonColor,
-                textColor: buttonTextColor,
-
-                // Icon Styling
                 icon: Icons.check_circle_outline,
                 isTrailingIcon: true,
               ),

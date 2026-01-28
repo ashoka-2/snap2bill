@@ -37,7 +37,7 @@ class CustomDrawer extends StatelessWidget {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black;
 
     return Drawer(
       backgroundColor: isDark ? const Color(0xFF1E1E1E) : Colors.white,

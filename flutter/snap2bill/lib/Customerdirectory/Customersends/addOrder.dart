@@ -98,22 +98,20 @@ class _addOrderState extends State<addOrder> {
   Widget build(BuildContext context) {
     successColor = AppColors.getSuccessColor(context);
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     double price = double.tryParse(productData!['price'].toString()) ?? 0.0;
     double totalPrice = price * currentQty;
     String unit = productData!['unit_name'] ?? "Unit";
-
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final subTextColor = isDark ? Colors.white38 : Colors.grey[600];
-    final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
-
+    final bgColor = AppColors.getScaffoldBg(context);
+    final textColor = AppColors.getTextColor(context);
+    final cardColor = AppColors.getCardColor(context);
+    final subTextColor = AppColors.getTextSubColor(context);
+    final borderColor = AppColors.getBorderColor(context).withValues(alpha: 0.5);
+    final primaryColor = AppColors.getPrimaryColor(context);
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(
         title: "Order Product",
         leadingIcon: Icons.arrow_back_ios_rounded,
@@ -129,10 +127,9 @@ class _addOrderState extends State<addOrder> {
               height: 320,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: isDark ?  Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha:0.5),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
+                  BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
                 ],
               ),
               child: Hero(
@@ -156,7 +153,7 @@ class _addOrderState extends State<addOrder> {
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
-                  BoxShadow(color:isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 20, offset: const Offset(0, 4)),
+                  BoxShadow(color:AppColors.BlackColor.withValues(alpha: 0.09), blurRadius: 20, offset: const Offset(0, 4)),
                 ],
               ),
               child: Column(
@@ -164,12 +161,12 @@ class _addOrderState extends State<addOrder> {
                 children: [
                   Text(
                     productData!['category'].toString().toUpperCase(),
-                    style: TextStyle(color: theme.primaryColor, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
+                    style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     productData!['product_name'],
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textColor),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
                   ),
                   const Divider(height: 40),
                   Row(
@@ -182,7 +179,7 @@ class _addOrderState extends State<addOrder> {
                           Text(
                             "₹${productData!['price']}",
                             style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: successColor
                             ),
@@ -190,9 +187,9 @@ class _addOrderState extends State<addOrder> {
                         ],
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
                         decoration: BoxDecoration(
-                          color: isDark ? Colors.white10 : Colors.grey[100],
+                          color: AppColors.getPillBg(context),
                           borderRadius: BorderRadius.circular(18),
                           border: Border.all(color: borderColor),
                         ),
@@ -202,7 +199,7 @@ class _addOrderState extends State<addOrder> {
                                 onPressed: () {
                                   if (currentQty > 1) setState(() => _qtyController.text = (currentQty - 1).toString());
                                 },
-                                icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor, size: 22)
+                                icon: Icon(Icons.remove_circle_outline, color: primaryColor, size: 25)
                             ),
                             Column(
                               mainAxisSize: MainAxisSize.min,
@@ -245,7 +242,7 @@ class _addOrderState extends State<addOrder> {
                                     CustomSnackBar.show(context, "Maximum limit reached.", backgroundColor: AppColors.dangerColor, durationMs: 1000);
                                   }
                                 },
-                                icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
+                                icon: Icon(Icons.add_circle_outline, color: primaryColor, size: 25)
                             ),
                           ],
                         ),
@@ -262,8 +259,9 @@ class _addOrderState extends State<addOrder> {
               decoration: BoxDecoration(
                 color: cardColor,
                 borderRadius: BorderRadius.circular(24),
-                boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.05), blurRadius: 10)],
-              ),
+                boxShadow: [
+                  BoxShadow(color:AppColors.BlackColor.withValues(alpha: 0.09), blurRadius: 20, offset: const Offset(0, 4)),
+                ],              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -283,11 +281,12 @@ class _addOrderState extends State<addOrder> {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
         decoration: BoxDecoration(
-            color: theme.cardColor,
+            color: cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.08), blurRadius: 15, offset: const Offset(0, -5))]
+            boxShadow: [BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.09), blurRadius: 15, offset: const Offset(0, -5))]
         ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Column(
@@ -296,7 +295,7 @@ class _addOrderState extends State<addOrder> {
                 children: [
                   Text("Total ($currentQty $unit)",maxLines: 1, style: TextStyle(color: subTextColor, fontSize: 13)),
                   Text("₹${totalPrice.toStringAsFixed(2)}",maxLines: 1,
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: theme.primaryColor)),
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
                 ],
               ),
             ),
@@ -308,8 +307,7 @@ class _addOrderState extends State<addOrder> {
                 icon: Icons.shopping_cart_outlined,
                 isLoading: _isSubmitting,
                 onPressed: _addToCart,
-                // isTrailingIcon: true,
-                height: 55,
+                isTrailingIcon: true,
               ),
             ),
           ],

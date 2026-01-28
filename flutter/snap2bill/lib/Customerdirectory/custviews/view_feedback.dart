@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/Customersends/send_feedback.dart';
 
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 
 // Import your send feedback page
@@ -66,7 +67,8 @@ class _view_feedbackState extends State<view_feedback> {
 
     // Design Colors
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = AppColors.getTextColor(context);
+
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final dateColor = isDark ? Colors.white54 : Colors.grey.shade600;
@@ -90,11 +92,11 @@ class _view_feedbackState extends State<view_feedback> {
               MaterialPageRoute(builder: (context) => const send_feedback())
           );
         },
-        backgroundColor: isDark ? Colors.white : Colors.black,
-        icon: Icon(Icons.edit_outlined, color: isDark ? Colors.black : Colors.white),
+        backgroundColor: isDark ? AppColors.WhiteColor: Colors.black,
+        icon: Icon(Icons.edit_outlined, color: isDark ? AppColors.BlackColor: Colors.white),
         label: Text(
             "Write Feedback",
-            style: TextStyle(color: isDark ? Colors.black : Colors.white, fontWeight: FontWeight.bold)
+            style: TextStyle(color: isDark ? AppColors.BlackColor: Colors.white, fontWeight: FontWeight.bold)
         ),
       ),
 

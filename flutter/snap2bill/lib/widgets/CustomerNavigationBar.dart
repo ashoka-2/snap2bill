@@ -75,7 +75,7 @@ class _CustomerNavigationBarState extends State<CustomerNavigationBar> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final inactiveIconColor = isDark ? Colors.white : Colors.black;
+    final inactiveIconColor = isDark ? AppColors.WhiteColor: Colors.black;
     final borderColor = isDark
         ? Colors.white.withValues(alpha:0.2)
         : Colors.black.withValues(alpha:0.2);

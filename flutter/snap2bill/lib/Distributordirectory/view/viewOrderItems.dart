@@ -56,7 +56,7 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final subTextColor = (isDark ? Colors.white70 : Colors.grey[600]) ?? Colors.grey;
 
     return Scaffold(

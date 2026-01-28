@@ -92,7 +92,7 @@ class _MyApp_subState extends State<MyApp_sub> {
               padding: EdgeInsets.all(5),
 
               decoration: BoxDecoration(
-                color: AppColors.greyButton.withValues(alpha:0.5),
+                color: AppColors.getPillBg(context),
                 borderRadius: BorderRadius.circular(50),
               ),
               child: IconButton(

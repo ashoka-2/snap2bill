@@ -61,7 +61,7 @@ class _ViewCategoryState extends State<ViewCategory> {
 
     // Design Colors
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
 
@@ -160,7 +160,7 @@ class _ViewCategoryState extends State<ViewCategory> {
                 ),
                 child: Icon(
                   Icons.grid_view_rounded, // Generic category icon
-                  color: isDark ? Colors.white : Colors.indigo,
+                  color: isDark ? AppColors.WhiteColor: Colors.indigo,
                   size: 24,
                 ),
               ),

@@ -193,7 +193,7 @@ class _send_feedbackState extends State<send_feedback> {
                 child: Icon(
                     Icons.chat_bubble_outline_rounded,
                     size: 45,
-                    color: isDark ? Colors.white : Colors.purple.shade400
+                    color: isDark ? AppColors.WhiteColor: Colors.purple.shade400
                 ),
               ),
               const SizedBox(height: 30),
@@ -277,11 +277,6 @@ class _send_feedbackState extends State<send_feedback> {
                 text: "Send Feedback",
                 onPressed: submitFeedback,
                 isLoading: _isLoading,
-
-                // Theme Adaptation
-                color: buttonColor,
-                textColor: buttonTextColor,
-
                 // Icon styling
                 icon: Icons.send_rounded,
                 isTrailingIcon: true,

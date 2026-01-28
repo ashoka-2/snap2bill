@@ -119,17 +119,20 @@ class _ViewWishlistState extends State<ViewWishlist> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     successColor = AppColors.getSuccessColor(context);
 
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = AppColors.getTextColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    final cardColor = AppColors.getCardColor(context);
 
     // ✅ CUSTOMER ONLY
     final bool isCustomer =
         _cid != null && _cid!.isNotEmpty && (_uid == null || _uid!.isEmpty);
 
     return Scaffold(
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(title: "My Wishlist",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
@@ -141,7 +144,20 @@ class _ViewWishlistState extends State<ViewWishlist> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _wishlistItems.isEmpty
-          ? const Center(child: Text("Your wishlist is empty"))
+          ? Center(child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.getPillBg(context),
+                  borderRadius: BorderRadius.circular(100)
+                ),
+                  child: Icon(Icons.heart_broken,size: 100,)),
+              SizedBox(height: 10,),
+              Text("Your wishlist is empty",style: TextStyle(fontSize: 15,color: theme.disabledColor),),
+            ],
+          ))
           : ListView.builder(
         padding: const EdgeInsets.all(10),
         itemCount: _wishlistItems.length,
@@ -150,6 +166,7 @@ class _ViewWishlistState extends State<ViewWishlist> {
           final imageUrl = _joinUrl(_baseUrl, item['image'] ?? "");
 
           return Card(
+            color: cardColor,
             key: ValueKey(item['wishlist_id'].toString()),
             elevation: 3,
             margin: const EdgeInsets.only(bottom: 12),
@@ -184,14 +201,14 @@ class _ViewWishlistState extends State<ViewWishlist> {
                           item['product_name'] ?? "No Name",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                             color: textColor,
                           ),
                         ),
                         Text(
                           item['category_name'] ?? "",
-                          style: const TextStyle(
-                              color: Colors.grey, fontSize: 12),
+                          style:  TextStyle(
+                              color: AppColors.getTextSubColor(context), fontSize: 12),
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -204,8 +221,8 @@ class _ViewWishlistState extends State<ViewWishlist> {
                         Text(
                           "By: ${item['distributor_name']}",
                           style:  TextStyle(
-                              fontSize: 11,
-                              color: AppColors.getTextColor(context)),
+                              fontSize: 10,
+                              color: textColor ),
                         ),
                       ],
                     ),
@@ -227,7 +244,7 @@ class _ViewWishlistState extends State<ViewWishlist> {
                           height: 35,
                           width: 35,
                           decoration: BoxDecoration(
-                            color: AppColors.successbgColor.withValues(alpha: 0.3),
+                            color: AppColors.successbgColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(50),
                             border: Border.all(width: 1,color: successColor)
                           ),

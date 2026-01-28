@@ -1,12 +1,9 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'package:snap2bill/widgets/CustomerNavigationBar.dart';
-
 import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 import '../../widgets/SnackBar.dart';
@@ -102,11 +99,10 @@ class _viewCartState extends State<viewCart> {
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
 
-
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final bgColor = isDark ? const Color(0xFF121212) : const Color(0xFFF8F9FA);
-    final subTextColor = isDark ? Colors.white38 : Colors.grey[500];
+    final bgColor = AppColors.getScaffoldBg(context);
+    final subTextColor = AppColors.getTextSubColor(context);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -142,7 +138,8 @@ class _viewCartState extends State<viewCart> {
 
   Widget _buildCartItem(Map<String, dynamic> item, int index, ThemeData theme, bool isDark, Color subTextColor) {
     final cardColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = AppColors.getTextColor(context);
+
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
 
     TextEditingController qtyCtrl = TextEditingController(text: item['quantity'].toString());
@@ -153,21 +150,21 @@ class _viewCartState extends State<viewCart> {
         color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 20, offset: const Offset(0, 4))
+          BoxShadow(color: isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.05), blurRadius: 20, offset: const Offset(0, 4))
         ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: Image.network(
                 _joinUrl(item['image'].toString()),
-                width: 90, height: 100, fit: BoxFit.cover,
+                width: 80, height: 85, fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
-                  width: 90, height: 90, color: isDark ? Colors.white10 : Colors.grey[200],
+                  width: 80, height: 80, color: isDark ? Colors.white10 : Colors.grey[200],
                   child: const Icon(Icons.broken_image),
                 ),
               ),
@@ -187,9 +184,9 @@ class _viewCartState extends State<viewCart> {
                             style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)
                         ),
                       ),
-                      DeleteButton(
-                        size: 30,
-                        onPressed: () async {
+                      const SizedBox(width: 5),
+                      GestureDetector(
+                        onTap: () async {
                           SharedPreferences prefs = await SharedPreferences.getInstance();
                           await http.post(
                             Uri.parse("${prefs.getString("ip")}/deleteFromCart"),
@@ -200,6 +197,7 @@ class _viewCartState extends State<viewCart> {
                             _calculateLocalTotal();
                           });
                         },
+                        child: Icon(Icons.delete_outline_rounded, color: dangerColor, size: 22),
                       ),
                     ],
                   ),
@@ -208,83 +206,73 @@ class _viewCartState extends State<viewCart> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("₹${item['price']}", style: TextStyle(color:successColor, fontWeight: FontWeight.w900, fontSize: 18)),
+                      Text("₹${item['price']}", style: TextStyle(color: successColor, fontWeight: FontWeight.w900, fontSize: 13)),
 
+                      // --- RESPONSIVE INCREMENT/DECREMENT CONTAINER ---
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1),
                         decoration: BoxDecoration(
                           color: isDark ? Colors.white10 : Colors.grey[100],
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: borderColor),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                                onPressed: () {
-                                  int val = int.tryParse(item['quantity'].toString()) ?? 1;
-                                  if (val > 1) {
-                                    int newVal = val - 1;
-                                    setState(() => _localItems[index]['quantity'] = newVal);
-                                    _calculateLocalTotal();
-                                    _updateQtyOnServer(item['id'].toString(), newVal.toString());
-                                  }
-                                },
-                                icon: Icon(Icons.remove_circle_outline, color: theme.primaryColor, size: 22)
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 50,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
+                            _buildQtyBtn(Icons.remove, () {
+                              int val = int.tryParse(item['quantity'].toString()) ?? 1;
+                              if (val > 1) {
+                                int newVal = val - 1;
+                                setState(() => _localItems[index]['quantity'] = newVal);
+                                _calculateLocalTotal();
+                                _updateQtyOnServer(item['id'].toString(), newVal.toString());
+                              }
+                            }, theme.primaryColor),
 
-                                    child: TextField(
-                                      controller: qtyCtrl,
-                                      keyboardType: TextInputType.number,
-                                      textAlign: TextAlign.center,
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(3),
-                                      ],
-                                      onChanged: (value) {
-                                        int? val = int.tryParse(value);
-                                        if (val != null) {
-                                          // Auto-limit to 100 on typing
-                                          if (val > 100) {
-                                            val = 100;
-                                            CustomSnackBar.show(context, "Max quantity is 100", backgroundColor: dangerColor);
-                                          }
-                                          if (val < 1) val = 1;
-                                          _localItems[index]['quantity'] = val;
-                                          _calculateLocalTotal();
-                                          _updateQtyOnServer(item['id'].toString(), val.toString());
+                            SizedBox(
+                              width: 35,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                    controller: qtyCtrl,
+                                    keyboardType: TextInputType.number,
+                                    textAlign: TextAlign.center,
+                                    inputFormatters: [
+                                      FilteringTextInputFormatter.digitsOnly,
+                                      LengthLimitingTextInputFormatter(3),
+                                    ],
+                                    onChanged: (value) {
+                                      int? val = int.tryParse(value);
+                                      if (val != null) {
+                                        if (val > 100) {
+                                          val = 100;
+                                          CustomSnackBar.show(context, "Max quantity is 100", backgroundColor: dangerColor);
                                         }
-                                      },
-                                      style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: textColor),
-                                      decoration: const InputDecoration(border: InputBorder.none, isDense: true,),
-
-                                    ),
+                                        if (val < 1) val = 1;
+                                        _localItems[index]['quantity'] = val;
+                                        _calculateLocalTotal();
+                                        _updateQtyOnServer(item['id'].toString(), val.toString());
+                                      }
+                                    },
+                                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: textColor),
+                                    decoration: const InputDecoration(border: InputBorder.none, isDense: true, contentPadding: EdgeInsets.zero),
                                   ),
-                                ),
-                                Text(item['unit_name'] ?? "Unit", style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: subTextColor)),
-                              ],
+                                  Text(item['unit_name'] ?? "Unit", style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: subTextColor)),
+                                ],
+                              ),
                             ),
-                            IconButton(
-                                onPressed: () {
-                                  int val = int.tryParse(item['quantity'].toString()) ?? 1;
-                                  if (val < 100) {
-                                    int newVal = val + 1;
-                                    setState(() => _localItems[index]['quantity'] = newVal);
-                                    _calculateLocalTotal();
-                                    _updateQtyOnServer(item['id'].toString(), newVal.toString());
-                                  } else {
-                                    // 🚀 Custom SnackBar on limit reached
-                                    CustomSnackBar.show(context, "Maximum quantity reached!", backgroundColor: dangerColor);
-                                  }
-                                },
-                                icon: Icon(Icons.add_circle_outline, color: theme.primaryColor, size: 22)
-                            ),
+
+                            _buildQtyBtn(Icons.add, () {
+                              int val = int.tryParse(item['quantity'].toString()) ?? 1;
+                              if (val < 100) {
+                                int newVal = val + 1;
+                                setState(() => _localItems[index]['quantity'] = newVal);
+                                _calculateLocalTotal();
+                                _updateQtyOnServer(item['id'].toString(), newVal.toString());
+                              } else {
+                                CustomSnackBar.show(context, "Maximum quantity reached!", backgroundColor: dangerColor);
+                              }
+                            }, theme.primaryColor),
                           ],
                         ),
                       ),
@@ -299,13 +287,25 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
+  // --- COMPACT BUTTON BUILDER ---
+  Widget _buildQtyBtn(IconData icon, VoidCallback onTap, Color color) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+        child: Icon(icon, size: 18, color: color),
+      ),
+    );
+  }
+
   Widget _buildSummary(ThemeData theme, bool isDark, Color subTextColor) {
     return Container(
       padding: const EdgeInsets.fromLTRB(25, 20, 25, 35),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha:0.1), blurRadius: 20, offset: const Offset(0, -5))],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, -5))],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -314,7 +314,7 @@ class _viewCartState extends State<viewCart> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text("Total Amount", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w600)),
-              Text("₹$totalValue", style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900, color: theme.primaryColor)),
+              Text("₹$totalValue", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: theme.primaryColor)),
             ],
           ),
           const SizedBox(height: 20),
@@ -322,9 +322,7 @@ class _viewCartState extends State<viewCart> {
             text: "PLACE ORDER",
             icon: Icons.check_circle_outline,
             isLoading: _isPlacingOrder,
-            // isTrailingIcon: true,
             onPressed: () async {
-              // 🚀 VALIDATION CHECK BEFORE ORDER
               bool hasExceededLimit = false;
               String exceededProduct = "";
 
@@ -338,14 +336,8 @@ class _viewCartState extends State<viewCart> {
               }
 
               if (hasExceededLimit) {
-                // 🚀 SHOW YOUR CUSTOM SNACKBAR
-                CustomSnackBar.show(
-                    context,
-                    "Quantity for $exceededProduct exceeds 100!",
-                    backgroundColor: dangerColor,
-                    durationMs: 2000
-                );
-                return; // Stop execution
+                CustomSnackBar.show(context, "Quantity for $exceededProduct exceeds 100!", backgroundColor: dangerColor);
+                return;
               }
 
               setState(() => _isPlacingOrder = true);
@@ -373,7 +365,7 @@ class _viewCartState extends State<viewCart> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withValues(alpha:0.3)),
+          Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withOpacity(0.3)),
           const SizedBox(height: 16),
           Text("Your cart is empty", style: TextStyle(color: subTextColor, fontSize: 16, fontWeight: FontWeight.w600)),
         ],

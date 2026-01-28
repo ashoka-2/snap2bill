@@ -48,7 +48,7 @@ class AppColors {
   static const Color buttonColorLight = Color(0xFFFFFFFF);
   static const Color iconColorLight = Color(0xFF000000);
 
-  static const Color greyButton = Color(0xA1676767);
+  static const Color disabledColor = Color(0xA1676767);
   // static const Color borderColor = Color(0x212121);
   static const Color pillColor = Color(0xff23afda);
   static Color pillbgColor = const Color(0xff23afda).withValues(alpha: 0.2);
@@ -84,7 +84,7 @@ class AppColors {
       Theme.of(context).brightness == Brightness.dark;
 
   static Color getButtonColor(BuildContext context) =>
-      isDarkMode(context) ? Colors.white : Colors.black;
+      isDarkMode(context) ? AppColors.WhiteColor: Colors.black;
 
   static Color getPillBg(BuildContext context) =>
       isDarkMode(context) ? Colors.grey.shade800 : Colors.grey.shade100;
@@ -98,8 +98,14 @@ class AppColors {
   static Color getTextColor(BuildContext context) =>
       isDarkMode(context) ? textMainDark : textMainLight;
 
+  static Color getTextSubColor(BuildContext context) =>
+      isDarkMode(context) ? textSubDark : textSubLight;
+
   static Color getTextColor2(BuildContext context) =>
       isDarkMode(context) ? textMainLight : textMainDark;
+
+  static Color getTextSubColor2(BuildContext context) =>
+      isDarkMode(context) ? textSubLight : textSubDark;
 
   static Color getIconColor(BuildContext context) =>
       isDarkMode(context) ? iconColorDark : iconColorLight;
@@ -115,6 +121,10 @@ class AppColors {
 
   static Color getDangerColor(BuildContext context) =>
       isDarkMode(context) ? dangerColor : dangerColor;
+
+  static Color getInputFieldColor(BuildContext context) =>
+      isDarkMode(context) ? inputFillDark : inputFillLight;
+
 
   static Color? getHintColor(BuildContext context) =>
       isDarkMode(context) ? Colors.white38 : Colors.grey[500];

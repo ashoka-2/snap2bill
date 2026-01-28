@@ -131,7 +131,7 @@ class _EditStockState extends State<EditStock> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
@@ -163,7 +163,7 @@ class _EditStockState extends State<EditStock> {
                 child: Icon(
                     Icons.inventory_2_outlined,
                     size: 45,
-                    color: isDark ? Colors.white : AppColors.orangeColor,
+                    color: isDark ? AppColors.WhiteColor: AppColors.orangeColor,
                 ),
               ),
               const SizedBox(height: 40),
@@ -261,8 +261,8 @@ class _EditStockState extends State<EditStock> {
                 text: "Update Stock",
                 onPressed: _updateStock,
                 isLoading: _isLoading,
-                color: isDark ? Colors.white : Colors.black,
-                textColor: isDark ? Colors.black : Colors.white,
+                color: isDark ? AppColors.WhiteColor: Colors.black,
+                textColor: isDark ? AppColors.BlackColor: Colors.white,
                 icon: Icons.check_circle_outline,
                 isTrailingIcon: true,
               ),

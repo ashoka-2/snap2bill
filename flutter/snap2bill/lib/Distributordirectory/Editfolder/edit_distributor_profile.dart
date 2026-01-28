@@ -106,7 +106,7 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

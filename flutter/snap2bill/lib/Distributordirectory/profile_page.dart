@@ -188,7 +188,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

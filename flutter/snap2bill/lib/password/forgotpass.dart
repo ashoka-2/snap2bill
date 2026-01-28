@@ -133,7 +133,7 @@ class _forgotpassState extends State<forgotpass> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? Colors.white : Colors.black87)),
+                Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: isDark ? AppColors.WhiteColor: Colors.black87)),
                 const SizedBox(height: 10),
                 Text(message, textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : Colors.grey[600])),
                 const SizedBox(height: 25),
@@ -168,7 +168,7 @@ class _forgotpassState extends State<forgotpass> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    // final textColor = isDark ? Colors.white : Colors.black87;
+    // final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;
 
@@ -195,7 +195,7 @@ class _forgotpassState extends State<forgotpass> {
                   color: isDark ? const Color(0xFF2C2C2C) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.lock_open_rounded, size: 50, color: isDark ? Colors.white : AppColors.getPrimaryColor(context)),
+                child: Icon(Icons.lock_open_rounded, size: 50, color: isDark ? AppColors.WhiteColor: AppColors.getPrimaryColor(context)),
               ),
               const SizedBox(height: 30),
               Text("Create New Password", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.getIconColor(context))),

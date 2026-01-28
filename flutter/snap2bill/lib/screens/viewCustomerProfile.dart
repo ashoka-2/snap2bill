@@ -6,11 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../theme/colors.dart';
 import '../widgets/Navbar.dart';
+import '../widgets/app_button.dart';
 
 class ViewCustomerProfile extends StatelessWidget {
   final Joke customer;
+  late Color iconColor;
 
-  const ViewCustomerProfile({Key? key, required this.customer}) : super(key: key);
+   ViewCustomerProfile({Key? key, required this.customer}) : super(key: key);
 
   // ✅ Function to trigger phone dialer
   Future<void> _makeCall(String phoneNumber) async {
@@ -59,11 +61,11 @@ class ViewCustomerProfile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final successColor = AppColors.getSuccessColor(context);
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = AppColors.getTextColor(context);
+    iconColor = AppColors.getIconColor(context);
     
 
     return Scaffold(
@@ -137,51 +139,46 @@ class ViewCustomerProfile extends StatelessWidget {
 
             // ✅ IMPROVED CALL & MESSAGE BUTTONS
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child:Row(
                 children: [
+                  // --- CALL BUTTON ---
                   Expanded(
-                    child: ElevatedButton.icon(
+                    child:SecondaryButton(
                       onPressed: () => _makeCall(customer.phone),
-                      
-                      icon: Lottie.asset(
+                      color: AppColors.successbgColor,
+                      leading: Lottie.asset(
                         'assets/lotties/call.json',
-                        width: 35, // Slightly adjusted for better alignment with text
-                        height: 35,
+                        width: 30, // Slightly adjusted for better alignment with text
+                        height: 30,
                         fit: BoxFit.contain,
                         repeat: true, // Set to false if you want it to play only once
                       ),
-                      label: Text("Call"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: successColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                      ),
+                      text: "Call",
+
                     ),
                   ),
-                  const SizedBox(width: 12),
+
+                  const SizedBox(width: 10),
+
+                  // --- WHATSAPP BUTTON WITH LOTTIE ---
                   Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => _messageCustomer(customer.phone),
-                      icon: Lottie.asset(
+                    child:SecondaryButton(text: "Whatsapp",
+                      color: AppColors.successbgColor,
+                      leading: Lottie.asset(
                         'assets/lotties/whatsapp.json',
-                        width: 35, // Slightly adjusted for better alignment with text
-                        height: 35,
+                        width: 30, // Slightly adjusted for better alignment with text
+                        height: 30,
                         fit: BoxFit.contain,
                         repeat: true, // Set to false if you want it to play only once
                       ),
-                      label: const Text("Message"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: successColor,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                      ),
+                      onPressed: () => _messageCustomer(customer.phone),
                     ),
+
                   ),
                 ],
               ),
+
             ),
 
             const SizedBox(height: 20),
@@ -242,7 +239,7 @@ class ViewCustomerProfile extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+              style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
             ),
             const SizedBox(height: 4),
             Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
@@ -264,10 +261,10 @@ class ViewCustomerProfile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.getPrimaryColor(context).withValues(alpha:0.1),
+                color: iconColor.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(icon, color: AppColors.getPrimaryColor(context), size: 20),
+              child: Icon(icon, color:iconColor, size: 20),
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -276,7 +273,7 @@ class ViewCustomerProfile extends StatelessWidget {
                 children: [
                   Text(title, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
                   const SizedBox(height: 4),
-                  Text(value, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: textColor)),
+                  Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textColor)),
                 ],
               ),
             ),

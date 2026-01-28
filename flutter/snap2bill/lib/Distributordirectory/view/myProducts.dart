@@ -208,7 +208,7 @@ class _MyProductsSubState extends State<MyProductsSub> {
   Widget _buildPinterestCard(Joke i, bool isDark) {
     final topContainerColor = isDark ? const Color(0xFF2C2C2C) : const Color(0xFFF3E5D8);
     final bottomContainerColor = isDark ? const Color(0xFF1E1E1E) : Colors.white;
-    final textColor = isDark ? Colors.white : Colors.black;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black;
 
     return Container(
       decoration: BoxDecoration(
@@ -292,7 +292,7 @@ class _MyProductsSubState extends State<MyProductsSub> {
                           value: 'edit',
                           child: Row(
                             children: [
-                              Icon(Icons.edit, size: 18, color: isDark ? Colors.white : Colors.black),
+                              Icon(Icons.edit, size: 18, color: isDark ? AppColors.WhiteColor: Colors.black),
                               const SizedBox(width: 8),
                               const Text('Edit'),
                             ],

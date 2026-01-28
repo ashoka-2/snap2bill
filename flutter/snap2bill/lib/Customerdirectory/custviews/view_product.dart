@@ -9,6 +9,7 @@ import '../../data/product_service.dart';
 import 'package:snap2bill/widgets/product_card.dart';
 
 // --- NAVIGATION IMPORTS (Original) ---
+import '../../theme/colors.dart';
 import '../../widgets/Navbar.dart';
 
 class view_product extends StatelessWidget {
@@ -45,12 +46,13 @@ class _ViewProductSubState extends State<_ViewProductSub> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = AppColors.getTextColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    final primaryColor = AppColors.getPrimaryColor(context);
+
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(title: "Products",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
@@ -76,7 +78,7 @@ class _ViewProductSubState extends State<_ViewProductSub> {
           builder: (BuildContext context, AsyncSnapshot<List<ProductData>> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return Center(
-                child: CircularProgressIndicator(color: theme.primaryColor),
+                child: CircularProgressIndicator(color: primaryColor),
               );
             }
 
@@ -93,12 +95,12 @@ class _ViewProductSubState extends State<_ViewProductSub> {
                       Icon(
                         Icons.inventory_2_outlined,
                         size: 60,
-                        color: theme.disabledColor,
+                        color: AppColors.disabledColor,
                       ),
                       const SizedBox(height: 10),
                       Text(
                         "No products found",
-                        style: TextStyle(color: theme.disabledColor),
+                        style: TextStyle(color: AppColors.disabledColor),
                       ),
                     ],
                   ),

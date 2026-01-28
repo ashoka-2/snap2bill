@@ -218,7 +218,7 @@ class _EditCustomerProfileState extends State<EditCustomerProfile> {
         maxLines: maxLines,
         keyboardType: keyboard,
         inputFormatters: formatters,
-        style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? Colors.white : Colors.black87),
+        style: TextStyle(fontWeight: FontWeight.w600, color: isDark ? AppColors.WhiteColor: Colors.black87),
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontWeight: FontWeight.w500, color: Colors.grey),

@@ -17,6 +17,8 @@ class ViewFeedback extends StatefulWidget {
 }
 
 class _ViewFeedbackState extends State<ViewFeedback> {
+  late Color primaryColor;
+
 
   // --- API Logic ---
   Future<List<Joke>> _getJokes() async {
@@ -63,13 +65,14 @@ class _ViewFeedbackState extends State<ViewFeedback> {
     // --- Theme Handling ---
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-
-    // Design Colors
-    final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? Colors.white : Colors.black87;
-    final cardColor = theme.cardColor;
-    final hintColor = isDark ? Colors.white38 : Colors.grey[500];
-    final dateColor = isDark ? Colors.white54 : Colors.grey.shade600;
+    final bgColor = AppColors.getScaffoldBg(context);
+    final cardColor = AppColors.getCardColor(context);
+    final textColor = AppColors.getTextColor(context);
+    final textColor2 = AppColors.getTextColor2(context);
+    primaryColor = AppColors.getPrimaryColor(context);
+    final hintColor = AppColors.getHintColor(context);
+    final dateColor =AppColors.getTextSubColor(context);
+    final buttonColor =AppColors.getButtonColor(context);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -90,11 +93,11 @@ class _ViewFeedbackState extends State<ViewFeedback> {
               MaterialPageRoute(builder: (context) => const send_feedback())
           );
         },
-        backgroundColor: isDark ? Colors.white : Colors.black,
-        icon: Icon(Icons.edit_outlined, color: isDark ? Colors.black : Colors.white),
+        backgroundColor: buttonColor,
+        icon: Icon(Icons.edit_outlined, color: textColor2),
         label: Text(
             "Write Feedback",
-            style: TextStyle(color: isDark ? Colors.black : Colors.white, fontWeight: FontWeight.bold)
+            style: TextStyle(color:textColor2, fontWeight: FontWeight.bold)
         ),
       ),
 
@@ -167,7 +170,7 @@ class _ViewFeedbackState extends State<ViewFeedback> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isDark ? Colors.white.withValues(alpha:0.1) : AppColors.getPrimaryColor(context).withValues(alpha: 0.2),
+                    color: isDark ? AppColors.WhiteColor.withValues(alpha:0.1): primaryColor.withValues(alpha: 0.2),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

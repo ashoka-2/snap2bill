@@ -394,7 +394,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? Colors.white : Colors.black87;
+    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     successColor = AppColors.getSuccessColor(context);
@@ -545,7 +545,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
           children: [
             CircleAvatar(
               backgroundColor: isSelected ? theme.primaryColor : (isDark ? Colors.white10 : Colors.grey.shade100),
-              child: Icon(icon, color: isSelected ? Colors.white : Colors.grey),
+              child: Icon(icon, color: isSelected ? AppColors.WhiteColor: Colors.grey),
             ),
             const SizedBox(width: 16),
             Expanded(
