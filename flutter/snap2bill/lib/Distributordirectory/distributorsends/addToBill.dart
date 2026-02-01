@@ -64,35 +64,67 @@ class _addToBillState extends State<addToBill> {
   }
 
   Future<void> _confirmAddToBill() async {
+    // 1. Basic Empty Validation
     if (quantityController.text.isEmpty || priceController.text.isEmpty) {
       CustomSnackBar.show(context, "Please fill all fields", backgroundColor: dangerColor);
       return;
     }
 
+    // 🚀 2. Length Validation (Preventing "Data too long" error)
+    if (priceController.text.length > 7) {
+      CustomSnackBar.show(context, "Price is too long! Enter a valid price.", backgroundColor: dangerColor);
+      return;
+    }
+
+    if (quantityController.text.length > 3) {
+      CustomSnackBar.show(context, "Quantity is too high!", backgroundColor: dangerColor);
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String ip = prefs.getString("ip") ?? "";
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "";
 
-    final response = await http.post(
-      Uri.parse("$ip/addtobill"),
-      body: {
-        "quantity": quantityController.text,
-        "price": priceController.text,
-        'cid': prefs.getString("cid"),
-        'sid': prefs.getString("sid"),
-        'uid': prefs.getString("uid"),
-      },
-    );
+      final response = await http.post(
+        Uri.parse("$ip/addtobill"),
+        body: {
+          "quantity": quantityController.text,
+          "price": priceController.text,
+          'cid': prefs.getString("cid") ?? "",
+          'sid': prefs.getString("sid") ?? "",
+          'uid': prefs.getString("uid") ?? "",
+        },
+      );
 
-    var res = json.decode(response.body);
-    if (res['status'] == 'ok') {
-      prefs.setString("oid", res['oid'].toString());
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) =>  CameraCapture()));
+      var res = json.decode(response.body);
+
+      if (res['status'] == 'ok') {
+        // 🚀 Step 3: Success logic
+        prefs.setString("oid", res['oid'].toString());
+
+        CustomSnackBar.show(context, "Item added to bill", backgroundColor: AppColors.getSuccessColor(context));
+
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => CameraCapture())
+        );
+      } else {
+        // 🚀 Step 4: Server Error handling
+        String errorMsg = res['message'] ?? "Failed to add item";
+        if (errorMsg.toLowerCase().contains("too long")) {
+          errorMsg = "Value is too large for the system!";
+        }
+        CustomSnackBar.show(context, errorMsg, backgroundColor: dangerColor);
+      }
+    } catch (e) {
+      // Error handling for connection issues
+      CustomSnackBar.show(context, "Connection Error: $e", backgroundColor: dangerColor);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
-    setState(() => _isSubmitting = false);
   }
-
   @override
   Widget build(BuildContext context) {
     dangerColor = AppColors.getDangerColor(context);

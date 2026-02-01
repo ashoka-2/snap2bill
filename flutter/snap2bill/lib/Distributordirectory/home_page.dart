@@ -166,19 +166,7 @@ class _HomePageState extends State<HomePage> {
                 });
               },
             ),
-            // IconButton(
-            //   icon: const Icon(Icons.favorite),
-            //   onPressed: () {
-            //
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (_) => const ViewWishlist()),
-            //     ).then((_) {
-            //       /// 🔁 Sync wishlist state on return
-            //       _loadData();
-            //     });
-            //   },
-            // ),
+
           ],
         ),
 

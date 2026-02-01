@@ -76,12 +76,33 @@ class _EditStockState extends State<EditStock> {
       debugPrint("Error fetching units: $e");
     }
   }
-
   Future<void> _updateStock() async {
-
+    // 1. Empty Check
     if (quantity.text.isEmpty || price.text.isEmpty) {
-      CustomSnackBar.show(context, "Please fill all fields", backgroundColor: AppColors.dangerColor);
+      CustomSnackBar.show(
+          context,
+          "Please fill all fields",
+          backgroundColor: AppColors.dangerColor
+      );
+      return;
+    }
 
+    // 🚀 2. Length Validation (To prevent "Data too long" error)
+    if (price.text.length > 7) {
+      CustomSnackBar.show(
+          context,
+          "Price is too long! Please enter a proper price.",
+          backgroundColor: AppColors.dangerColor
+      );
+      return;
+    }
+
+    if (quantity.text.length > 3) {
+      CustomSnackBar.show(
+          context,
+          "Quantity is too high! Please enter a proper amount.",
+          backgroundColor: AppColors.dangerColor
+      );
       return;
     }
 
@@ -104,26 +125,44 @@ class _EditStockState extends State<EditStock> {
         };
 
         var response = await http.post(uri, body: body);
-        
-        CustomSnackBar.show(context, "Product updated successfully", backgroundColor: successColor);
-
 
         if (response.statusCode == 200) {
-          if (!mounted) return;
-          Navigator.pop(context, 'refresh');
+          var decoded = json.decode(response.body);
+
+          if (decoded['status'] == 'ok') {
+            if (!mounted) return;
+
+            // 🚀 Step 3: Success Snack-bar yahan dikhao jab status 'ok' ho
+            CustomSnackBar.show(
+                context,
+                "Product updated successfully",
+                backgroundColor: successColor
+            );
+
+            Navigator.pop(context, 'refresh');
+          } else {
+            // Server error handle karein
+            CustomSnackBar.show(
+                context,
+                decoded['message'] ?? "Update failed",
+                backgroundColor: AppColors.dangerColor
+            );
+          }
         } else {
           throw Exception("Failed to update");
         }
       }
     } catch (e) {
-
-      CustomSnackBar.show(context, Text("Error Updating Stock: $e") as String,
-          backgroundColor: AppColors.dangerColor);
+      // 🚀 Fixed: Text widget ko string mein convert karne wali galti
+      CustomSnackBar.show(
+          context,
+          "Error Updating Stock: $e",
+          backgroundColor: AppColors.dangerColor
+      );
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     successColor = AppColors.getSuccessColor(context);

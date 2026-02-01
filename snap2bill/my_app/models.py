@@ -83,7 +83,7 @@ class payment(models.Model):
     USER=models.ForeignKey(customer,models.CASCADE)
 
 class stock(models.Model):
-    price = models.CharField(max_length=100)
+    price = models.CharField(max_length=7)
     quantity = models.CharField(max_length=100)
     DISTRIBUTOR = models.ForeignKey(distributor,models.CASCADE)
     PRODUCT = models.ForeignKey(product,models.CASCADE)
@@ -101,7 +101,7 @@ class order(models.Model):
 class order_sub(models.Model):
     ORDER= models.ForeignKey(order,models.CASCADE)
     quantity= models.IntegerField(max_length=100)
-    price= models.CharField(max_length=100)
+    price= models.CharField(max_length=7)
     STOCK = models.ForeignKey(stock,models.CASCADE)
 
 

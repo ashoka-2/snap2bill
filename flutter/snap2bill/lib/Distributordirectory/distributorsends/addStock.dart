@@ -73,12 +73,16 @@ class _AddStockSubState extends State<AddStockSub> {
     }
   }
 
-  // --- API Logic ---
+// --- API Logic ---
   Future<void> _submitStock() async {
-
     if (stock.text.isEmpty || price.text.isEmpty) {
-      CustomSnackBar.show(context, "Please fill all fields.", backgroundColor: AppColors.dangerColor,);
+      CustomSnackBar.show(context, "Please fill all fields.", backgroundColor: AppColors.dangerColor);
+      return;
+    }
 
+    // Frontend Validation
+    if (price.text.length > 7 || stock.text.length > 3) {
+      CustomSnackBar.show(context, "Input too long!", backgroundColor: AppColors.dangerColor);
       return;
     }
 
@@ -92,33 +96,45 @@ class _AddStockSubState extends State<AddStockSub> {
 
       if (ip != null) {
         final uri = Uri.parse("$ip/add_stock");
-
         final body = {
           'pid': pid ?? "",
           'uid': uid ?? "",
           'quantity': stock.text,
           'price': price.text,
-          'unit_id': _selectedUnitId ?? "", // 🚀 Added unit_id to body
+          'unit_id': _selectedUnitId ?? "",
         };
 
         var response = await http.post(uri, body: body);
 
-        if (response.statusCode == 200) {
-          if (!mounted) return;
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const MyProducts())
-          );
-          CustomSnackBar.show(context, "Product added successfully", backgroundColor: successColor);
+        // 🚀 STEP 1: Pehle print karo ki server ne kya bheja
+        print("Server Response Status: ${response.statusCode}");
+        print("Server Response Body: ${response.body}");
 
+        if (response.statusCode == 200) {
+          var decoded = json.decode(response.body);
+
+          // 🚀 STEP 2: Status check ko handle karo (lowercase check added)
+          if (decoded['status'].toString().toLowerCase() == 'ok') {
+            if (!mounted) return;
+
+            CustomSnackBar.show(context, "Product added successfully", backgroundColor: Colors.green);
+
+            Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MyProducts())
+            );
+          } else {
+            // 🚀 STEP 3: Agar server 'ok' nahi bhej raha toh asli message dikhao
+            String errorMsg = decoded['message'] ?? "Server rejected the request";
+            CustomSnackBar.show(context, errorMsg, backgroundColor: AppColors.dangerColor);
+          }
         } else {
-          throw Exception("Server returned error");
+          CustomSnackBar.show(context, "Server Error: ${response.statusCode}", backgroundColor: AppColors.dangerColor);
         }
       }
     } catch (e) {
-
-      CustomSnackBar.show(context,Text("Error: $e") as String, backgroundColor: AppColors.dangerColor,);
-
+      print("Full Error: $e"); // Debugging ke liye
+      CustomSnackBar.show(context, "Error: $e", backgroundColor: AppColors.dangerColor);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

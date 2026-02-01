@@ -185,19 +185,25 @@ class _viewCartState extends State<viewCart> {
                         ),
                       ),
                       const SizedBox(width: 5),
-                      GestureDetector(
-                        onTap: () async {
+                      DeleteButton(
+                        size: 32.0, // Aapne size manage karne ka option diya hai
+                        showText: false, // Kyunki aapko sirf icon chahiye
+                        onPressed: () async {
+                          // 1. SharedPreferences se IP lo
                           SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                          // 2. API hit karo
                           await http.post(
                             Uri.parse("${prefs.getString("ip")}/deleteFromCart"),
                             body: {"id": item['id'].toString()},
                           );
+
+                          // 3. UI update karo
                           setState(() {
                             _localItems.removeAt(index);
                             _calculateLocalTotal();
                           });
                         },
-                        child: Icon(Icons.delete_outline_rounded, color: dangerColor, size: 22),
                       ),
                     ],
                   ),
@@ -299,76 +305,154 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
+ 
+
   Widget _buildSummary(ThemeData theme, bool isDark, Color subTextColor) {
+    // 🚀 Step 1: Media Query for orientation and dimensions
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final screenWidth = mediaQuery.size.width;
+
     return Container(
-      padding: const EdgeInsets.fromLTRB(25, 20, 25, 35),
+      // Landscape mein padding kam kar di taaki height bache
+      padding: EdgeInsets.symmetric(
+        horizontal: isLandscape ? 30 : 20,
+        vertical: isLandscape ? 10 : 20,
+      ),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, -5))],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text("Total Amount", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w600)),
-              Text("₹$totalValue", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: theme.primaryColor)),
-            ],
-          ),
-          const SizedBox(height: 20),
-          AppButton(
-            text: "PLACE ORDER",
-            icon: Icons.check_circle_outline,
-            isLoading: _isPlacingOrder,
-            onPressed: () async {
-              bool hasExceededLimit = false;
-              String exceededProduct = "";
-
-              for (var item in _localItems) {
-                int qty = int.tryParse(item['quantity'].toString()) ?? 1;
-                if (qty > 100) {
-                  hasExceededLimit = true;
-                  exceededProduct = item['product_name'];
-                  break;
-                }
-              }
-
-              if (hasExceededLimit) {
-                CustomSnackBar.show(context, "Quantity for $exceededProduct exceeds 100!", backgroundColor: dangerColor);
-                return;
-              }
-
-              setState(() => _isPlacingOrder = true);
-              try {
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                await http.post(
-                  Uri.parse("${prefs.getString("ip")}/addFinalOrder"),
-                  body: {'cid': prefs.getString("cid"), 'total': totalValue},
-                );
-                if (mounted) {
-                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
-                }
-              } finally {
-                if (mounted) setState(() => _isPlacingOrder = false);
-              }
-            },
-          ),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 20,
+              offset: const Offset(0, -5)
+          )
         ],
+      ),
+      child: SafeArea(
+        top: false, // Bottom safe area handle karne ke liye
+        child: isLandscape
+            ? _buildLandscapeLayout(theme, subTextColor) // 🚀 Landscape Layout
+            : _buildPortraitLayout(theme, subTextColor), // 🚀 Portrait Layout
       ),
     );
   }
 
+// 📱 Portrait Layout: Standard Column
+  Widget _buildPortraitLayout(ThemeData theme, Color subTextColor) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text("Total Amount", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w600)),
+            _buildPriceText(theme),
+          ],
+        ),
+        const SizedBox(height: 20),
+        _buildPlaceOrderButton(),
+      ],
+    );
+  }
+
+// 🌅 Landscape Layout: Horizontal Row to save height
+  Widget _buildLandscapeLayout(ThemeData theme, Color subTextColor) {
+    return Row(
+      children: [
+        Expanded(
+          flex: 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text("Total Amount", style: TextStyle(color: subTextColor, fontSize: 12)),
+              _buildPriceText(theme),
+            ],
+          ),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          flex: 3,
+          child: _buildPlaceOrderButton(),
+        ),
+      ],
+    );
+  }
+
+// 💰 Price Widget (Common)
+  Widget _buildPriceText(ThemeData theme) {
+    return Flexible(
+        child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: Text(
+                "₹$totalValue",
+                style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    color: theme.primaryColor
+                )
+            )
+        )
+    );
+  }
+
+// 🛒 Place Order Button Logic (Common)
+  Widget _buildPlaceOrderButton() {
+    return AppButton(
+      text: "PLACE ORDER",
+      icon: Icons.check_circle_outline,
+      height: 45, // Fixed height for consistency
+      isLoading: _isPlacingOrder,
+      onPressed: _handlePlaceOrder,
+    );
+  }
+
+// 🛠️ Order Logic separated for clean code
+  Future<void> _handlePlaceOrder() async {
+    bool hasExceededLimit = false;
+    String exceededProduct = "";
+
+    for (var item in _localItems) {
+      int qty = int.tryParse(item['quantity'].toString()) ?? 1;
+      if (qty > 100) {
+        hasExceededLimit = true;
+        exceededProduct = item['product_name'];
+        break;
+      }
+    }
+
+    if (hasExceededLimit) {
+      CustomSnackBar.show(context, "Quantity for $exceededProduct exceeds 100!", backgroundColor: dangerColor);
+      return;
+    }
+
+    setState(() => _isPlacingOrder = true);
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await http.post(
+        Uri.parse("${prefs.getString("ip")}/addFinalOrder"),
+        body: {'cid': prefs.getString("cid"), 'total': totalValue},
+      );
+      if (mounted) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
+      }
+    } finally {
+      if (mounted) setState(() => _isPlacingOrder = false);
+    }
+  }
   Widget _buildEmptyState(bool isDark, Color subTextColor) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withOpacity(0.3)),
-          const SizedBox(height: 16),
-          Text("Your cart is empty", style: TextStyle(color: subTextColor, fontSize: 16, fontWeight: FontWeight.w600)),
-        ],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Icon(Icons.shopping_cart_outlined, size: 80, color: subTextColor.withOpacity(0.3)),
+            const SizedBox(height: 16),
+            Text("Your cart is empty", style: TextStyle(color: subTextColor, fontSize: 16, fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }

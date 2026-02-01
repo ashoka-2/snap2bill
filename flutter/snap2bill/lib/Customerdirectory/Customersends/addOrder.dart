@@ -172,20 +172,28 @@ class _addOrderState extends State<addOrder> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
-                          Text(
-                            "₹${productData!['price']}",
-                            style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: successColor
-                            ),
+                      Flexible(
+                        flex: 2,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerRight,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
+                              Text(
+                                "₹${productData!['price']}",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: successColor
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
+                      const SizedBox(width: 5,),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
                         decoration: BoxDecoration(
@@ -279,7 +287,7 @@ class _addOrderState extends State<addOrder> {
         ),
       ),
       bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(20, 15, 20, 30),
+        padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
         decoration: BoxDecoration(
             color: cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
@@ -289,14 +297,18 @@ class _addOrderState extends State<addOrder> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Total ($currentQty $unit)",maxLines: 1, style: TextStyle(color: subTextColor, fontSize: 13)),
-                  Text("₹${totalPrice.toStringAsFixed(2)}",maxLines: 1,
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
-                ],
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerRight,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Total ($currentQty $unit)",maxLines: 1, style: TextStyle(color: subTextColor, fontSize: 13)),
+                    Text("₹${totalPrice.toStringAsFixed(2)}",maxLines: 1,
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
+                  ],
+                ),
               ),
             ),
             const SizedBox(width: 10),

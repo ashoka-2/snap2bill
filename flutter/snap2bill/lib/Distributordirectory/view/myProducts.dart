@@ -337,19 +337,35 @@ class _MyProductsSubState extends State<MyProductsSub> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
-                      "₹${i.price}",
-                      style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 14),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha:0.1) : Colors.grey.shade100,
-                        borderRadius: BorderRadius.circular(6),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          maxLines: 1,
+                          "₹${i.price}",
+                          style: TextStyle(color: textColor, fontWeight: FontWeight.w900, fontSize: 16),
+                        ),
+
                       ),
-                      child: Text(
-                        "Qty: ${i.quantity} ${i.unit_name}", // 🚀 3. Showing Unit Name
-                        style: TextStyle(color: textColor.withValues(alpha:0.7), fontSize: 8, fontWeight: FontWeight.w600),
+
+                    ),
+                    const SizedBox(width: 5,),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isDark ? Colors.white.withValues(alpha:0.1) : Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            "Qty: ${i.quantity} ${i.unit_name}", // 🚀 3. Showing Unit Name
+                            style: TextStyle(color: textColor.withValues(alpha:0.7), fontSize: 14, fontWeight: FontWeight.w600),
+                          ),
+                        ),
                       ),
                     ),
                   ],

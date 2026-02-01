@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 
 // Navigation targets
 import '../../theme/colors.dart';
@@ -349,38 +350,35 @@ class _ViewProductSubState extends State<ViewProductSub> {
       ),
       builder: (context) {
         final textColor = isDark ? AppColors.WhiteColor: Colors.black;
-        return Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
-              const SizedBox(height: 20),
-              Text(i.product_name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor)),
-              const SizedBox(height: 10),
-              Text("Category: ${i.CATEGORY_NAME}", style: TextStyle(color: Colors.grey)),
-              const SizedBox(height: 10),
-              Text("Description:", style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
-              Text(i.description, style: TextStyle(color: textColor.withValues(alpha:0.8))),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _navigateToAddStock(i);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: isDark ? AppColors.WhiteColor: Colors.black,
-                    foregroundColor: isDark ? AppColors.BlackColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2)))),
+                const SizedBox(height: 20),
+                Text(i.product_name, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: textColor)),
+                const SizedBox(height: 10),
+                Text("Category: ${i.CATEGORY_NAME}", style: TextStyle(color: Colors.grey)),
+                const SizedBox(height: 10),
+                Text("Description:", style: TextStyle(fontWeight: FontWeight.bold, color: textColor)),
+                Text(i.description, style: TextStyle(color: textColor.withValues(alpha:0.8))),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: AppButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _navigateToAddStock(i);
+                    },
+                    icon: Icons.add,
+                    text: 'Add Stock Now',
                   ),
-                  child: const Text("Add Stock Now"),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         );
       },

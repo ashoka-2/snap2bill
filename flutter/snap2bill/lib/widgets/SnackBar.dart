@@ -1,36 +1,65 @@
+//
+// import 'package:flutter/material.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
+//
+// class CustomSnackBar {
+//   static void show(
+//       BuildContext context,
+//       String message, {
+//         int durationMs = 2000,
+//         Color backgroundColor = Colors.black,
+//         Color textColor = Colors.white,
+//       }) {
+//
+//     Fluttertoast.showToast(
+//         msg: message,
+//         toastLength: Toast.LENGTH_SHORT,
+//         gravity: ToastGravity.SNACKBAR,
+//         timeInSecForIosWeb: 2,
+//         backgroundColor: backgroundColor,
+//         textColor: textColor,
+//         fontSize: 15.0
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class CustomSnackBar {
-  /// Displays a customizable SnackBar.
-  ///
-  /// [message] is the text to show.
-  /// [durationMs] allows overriding the default 100ms duration.
   static void show(
       BuildContext context,
       String message, {
-        int durationMs = 1000, // Default duration: 100ms
-        Color backgroundColor = Colors.black87,
+        int durationMs = 2000,
+        Color backgroundColor = Colors.black,
         Color textColor = Colors.white,
       }) {
-    final snackBar = SnackBar(
-      content: Text(
+    FToast fToast = FToast();
+    fToast.init(context);
+
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25.0),
+        color: backgroundColor, // 🚀 Web par gradient hata kar ye solid color lega
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: Text(
         message,
-        style: TextStyle(color: textColor),
+        style: TextStyle(color: textColor, fontWeight: FontWeight.bold),
       ),
-      backgroundColor: backgroundColor,
-      // Sets the display duration
-      duration: Duration(milliseconds: durationMs),
-      // Floating behavior is required to apply custom shapes and margins
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(30), // Border radius of 30
-      ),
-      // Optional: adds padding/margin to make it look "floating"
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
     );
 
-    // Clear existing SnackBars and show the new one
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    fToast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(milliseconds: durationMs),
+    );
   }
 }

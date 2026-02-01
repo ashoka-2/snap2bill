@@ -105,7 +105,7 @@ class _CustomerPageSubState extends State<CustomerPageSub> {
               ).toList();
 
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.only(top:8,bottom: 100),
                 itemCount: filteredList.length,
                 itemBuilder: (context, index) => _buildCustomerCard(filteredList[index], theme, isDark),
               );

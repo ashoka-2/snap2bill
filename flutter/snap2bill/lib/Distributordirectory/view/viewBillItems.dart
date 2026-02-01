@@ -8,6 +8,7 @@ import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/app_button.dart';
 import 'package:snap2bill/widgets/distributorNavigationbar.dart';
 import '../../widgets/Navbar.dart';
+import '../../widgets/SnackBar.dart';
 
 
 class viewBillItems extends StatefulWidget {
@@ -94,25 +95,41 @@ class _viewBillItemsState extends State<viewBillItems> {
 
   Future<void> updateItem(String itemId, String qty, String price, String unitId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    final res = await http.post(
-      Uri.parse("${prefs.getString("ip")}/update_order_item"),
-      body: {
-        'id': itemId,
-        'quantity': qty,
-        'amount': price,
-        'unit_id': unitId,
-        'role': 'distributor',
-      },
-    );
+    try {
+      final res = await http.post(
+        Uri.parse("${prefs.getString("ip")}/update_order_item"),
+        body: {
+          'id': itemId,
+          'quantity': qty,
+          'amount': price,
+          'unit_id': unitId,
+          'role': 'distributor',
+        },
+      );
 
-    var js = json.decode(res.body);
-    if (js['status'] == 'ok') {
-      _loadInitialData();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(js['message'] ?? "Error")));
+      var js = json.decode(res.body);
+      if (js['status'] == 'ok') {
+        _loadInitialData();
+      } else {
+        String errorMsg = js['message'] ?? "Error";
+        if (errorMsg.toLowerCase().contains("too long")) {
+          errorMsg = "Price is too high for the system!";
+        }
+
+        CustomSnackBar.show(
+          context,
+          errorMsg,
+          backgroundColor: AppColors.dangerColor,
+        );
+      }
+    } catch (e) {
+      CustomSnackBar.show(
+        context,
+        "Connection Error: $e",
+        backgroundColor: AppColors.dangerColor,
+      );
     }
   }
-
   Future<void> deleteItem(String id) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await http.post(Uri.parse("${prefs.getString("ip")}/delete_order_item"), body: {'id': id});
@@ -255,7 +272,7 @@ class _viewBillItemsState extends State<viewBillItems> {
                   children: [
                     Text(item['product_name'].toString(), style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor), maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: 4),
-                    Text("Rate: ₹${item['amount']} / ${item['unit_name']}", style: TextStyle(fontSize: 13, color: subTextColor)),
+                    Text("Rate: ₹${item['amount']} / ${item['unit_name']}", style: TextStyle(fontSize: 12, color: subTextColor)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -265,9 +282,18 @@ class _viewBillItemsState extends State<viewBillItems> {
                           child: Text("${item['quantity']} ${item['unit_name']}", style: const TextStyle(color: Color(0xff23afda), fontWeight: FontWeight.bold, fontSize: 12)),
                         ),
                         const Spacer(),
-                        Text(
-                          "₹${(double.tryParse(item['amount'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)}",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
+                        Flexible(
+                          flex: 3,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "₹${((double.tryParse(item['amount'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0))
+                                  .toStringAsFixed(3)
+                                  .replaceFirst(RegExp(r'\.?0*$'), '')}",
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: textColor),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -298,82 +324,108 @@ class _viewBillItemsState extends State<viewBillItems> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useRootNavigator: false,
       backgroundColor: AppColors.getScaffoldBg(context),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
       builder: (context) => StatefulBuilder(
         builder: (context, setModalState) => Padding(
           padding: EdgeInsets.fromLTRB(25, 25, 25, MediaQuery.of(context).viewInsets.bottom + 30),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text("Update Item Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
-              const SizedBox(height: 25),
-              const Text("Price (₹)", style: TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              TextField(
-                controller: priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)), prefixIcon: const Icon(Icons.currency_rupee_rounded, size: 18)),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Quantity", style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        TextField(
-                          controller: qtyController,
-                          keyboardType: TextInputType.number,
-                          maxLength: 3,
-                          decoration: InputDecoration(counterText: "", border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)), prefixIcon: const Icon(Icons.shopping_basket_outlined, size: 18)),
-                        ),
-                      ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Update Item Details", style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
+                const SizedBox(height: 25),
+                const Text("Price (₹)", style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                TextField(
+                  controller: priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)), prefixIcon: const Icon(Icons.currency_rupee_rounded, size: 18)),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Quantity", style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          TextField(
+                            controller: qtyController,
+                            keyboardType: TextInputType.number,
+                            maxLength: 3,
+                            decoration: InputDecoration(counterText: "", border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)), prefixIcon: const Icon(Icons.shopping_basket_outlined, size: 18)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Unit", style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(height: 8),
-                        DropdownButtonFormField<String>(
-                          value: (_allUnits.any((u) => u['id'].toString() == selectedUnitId)) ? selectedUnitId : null,
-                          isExpanded: true,
-                          decoration: InputDecoration(contentPadding: const EdgeInsets.symmetric(horizontal: 10), border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
-                          items: _allUnits.map((u) {
-                            return DropdownMenuItem<String>(
-                              value: u['id'].toString(),
-                              child: Text(u['unit_name'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                            );
-                          }).toList(),
-                          onChanged: (val) {
-                            setModalState(() { selectedUnitId = val; });
-                          },
-                        ),
-                      ],
+                    const SizedBox(width: 15),
+                    Expanded(
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text("Unit", style: TextStyle(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 8),
+                          DropdownButtonFormField<String>(
+                            value: (_allUnits.any((u) => u['id'].toString() == selectedUnitId)) ? selectedUnitId : null,
+                            isExpanded: true,
+                            decoration: InputDecoration(contentPadding: const EdgeInsets.symmetric(horizontal: 10), border: OutlineInputBorder(borderRadius: BorderRadius.circular(15))),
+                            items: _allUnits.map((u) {
+                              return DropdownMenuItem<String>(
+                                value: u['id'].toString(),
+                                child: Text(u['unit_name'], style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              setModalState(() { selectedUnitId = val; });
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-              AppButton(
-                text: "SAVE UPDATES",
-                onPressed: () {
-                  int? qty = int.tryParse(qtyController.text);
-                  if (qty != null && qty > 0 ) {
-                    updateItem(item['id'].toString(), qtyController.text, priceController.text, selectedUnitId ?? "");
-                    Navigator.pop(context);
-                  }
-                },
-              ),
-            ],
+                  ],
+                ),
+                const SizedBox(height: 30),
+                AppButton(
+                  text: "SAVE UPDATES",
+                  onPressed: () {
+                    int? qty = int.tryParse(qtyController.text);
+                    double? price = double.tryParse(priceController.text);
+            
+                    if (priceController.text.length > 7) {
+                      Navigator.pop(context);
+                      CustomSnackBar.show(
+                        context,
+                        "Price is too long! Please enter a proper price.",
+                        backgroundColor: AppColors.dangerColor, // Tumhara danger color
+                      );
+                      return;
+                    }
+            
+                    if (qty != null && qty > 0 && price != null) {
+                      updateItem(
+                          item['id'].toString(),
+                          qtyController.text,
+                          priceController.text,
+                          selectedUnitId ?? ""
+                      );
+                      Navigator.pop(context);
+                    } else {
+                      CustomSnackBar.show(
+                        context,
+                        "Please enter valid quantity and price",
+                        backgroundColor: AppColors.dangerColor,
+                      );
+                    }
+                  },
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -397,7 +449,12 @@ class _viewBillItemsState extends State<viewBillItems> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("Total Amount", style: TextStyle(color: subTextColor, fontSize: 12)),
-                  Text("₹$totalValue", style: TextStyle(color: AppColors.getTextColor(context), fontSize: 22, fontWeight: FontWeight.w900)),
+                  Flexible(
+                      flex: 3,
+                      child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text("₹$totalValue", style: TextStyle(color: AppColors.getTextColor(context), fontSize: 20, fontWeight: FontWeight.w900)))),
                 ],
               ),
             ),

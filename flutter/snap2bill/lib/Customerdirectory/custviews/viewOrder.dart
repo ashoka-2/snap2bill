@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/Customerdirectory/custviews/viewOrderitem.dart';
 import 'package:snap2bill/Customerdirectory/payment/RazorpayScreen.dart';
 import 'package:snap2bill/theme/colors.dart';
-import 'package:snap2bill/widgets/app_button.dart'; // Contains AppButton, EditButton, and DeleteButton
+import 'package:snap2bill/widgets/app_button.dart';
 
 import '../../widgets/Navbar.dart';
 
@@ -22,6 +22,8 @@ class _viewOrderState extends State<viewOrder> {
   Timer? _timer;
   Future<List<OrderModel>>? _ordersFuture;
 
+
+
   late Color successColor;
   late Color dangerColor;
   late Color cardColor;
@@ -29,7 +31,13 @@ class _viewOrderState extends State<viewOrder> {
   late Color subTextColor;
   late Color primaryColor;
 
-  /// --- API FETCH LOGIC ---
+  Future<void> _handleRefresh() async {
+    setState(() {
+      _ordersFuture = _getOrders();
+    });
+    await _ordersFuture;
+  }
+
   Future<List<OrderModel>> _getOrders() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ip = prefs.getString("ip") ?? "";
@@ -80,8 +88,6 @@ class _viewOrderState extends State<viewOrder> {
     subTextColor = AppColors.getTextSubColor(context);
     primaryColor = AppColors.getPrimaryColor(context);
 
-
-
     return Scaffold(
       backgroundColor: bgColor,
       appBar: ThemeNavbar(
@@ -92,39 +98,49 @@ class _viewOrderState extends State<viewOrder> {
         },
         centerTitle: true,
       ),
-      body: FutureBuilder<List<OrderModel>>(
-        future: _ordersFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.assignment_outlined, size: 70, color: subTextColor),
-                  const SizedBox(height: 10),
-                  Text("No orders found", style: TextStyle(color: subTextColor)),
-                ],
-              ),
+      body: RefreshIndicator(
+        onRefresh: _handleRefresh,
+        color: primaryColor,
+        backgroundColor: cardColor,
+        child: FutureBuilder<List<OrderModel>>(
+          future: _ordersFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final items = snapshot.data ?? [];
+            if (items.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.assignment_outlined, size: 70, color: subTextColor),
+                    const SizedBox(height: 10),
+                    Text("No orders found", style: TextStyle(color: subTextColor)),
+                  ],
+                ),
+              );
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              itemCount: items.length,
+              itemBuilder: (context, index) => _buildOrderCard(items[index]),
             );
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            itemCount: items.length,
-            itemBuilder: (context, index) => _buildOrderCard(items[index]),
-          );
-        },
+          },
+        ),
       ),
     );
   }
 
   Widget _buildOrderCard(OrderModel item) {
-
     String status = item.paymentStatus.toLowerCase();
+
+    // 🚀 Logic Definitions
     bool isCompleted = status == 'paid' || status == 'online' || status == 'offline';
+    bool isOfflineBill = item.orderType.toLowerCase().contains("offline");
+
+    String labelTitle = isOfflineBill ? "BILL ID" : "ORDER ID";
+    Color labelColor = isOfflineBill ? AppColors.premiumDarkBlue : subTextColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -143,8 +159,8 @@ class _viewOrderState extends State<viewOrder> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("BILL ID: ${item.orderId}",
-                  style: TextStyle(color: subTextColor, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
+              Text("$labelTitle: ${item.orderId}",
+                  style: TextStyle(color: labelColor, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
               _statusBadge(item.paymentStatus),
             ],
           ),
@@ -171,7 +187,7 @@ class _viewOrderState extends State<viewOrder> {
           const SizedBox(height: 20),
           Row(
             children: [
-              // 1. PRIMARY ACTION (AppButton)
+              // 1. PRIMARY ACTION (Pay Now or View Items)
               Expanded(
                 child: AppButton(
                   height: 40,
@@ -190,10 +206,9 @@ class _viewOrderState extends State<viewOrder> {
                   },
                 ),
               ),
-              const SizedBox(width: 12),
 
-              // 2. EDIT ACTION (Circular EditButton) - Only if not completed
-              if (!isCompleted) ...[
+              if (!isOfflineBill && !isCompleted) ...[
+                const SizedBox(width: 12),
                 EditButton(
                   size: 40,
                   onPressed: () async {
@@ -204,13 +219,24 @@ class _viewOrderState extends State<viewOrder> {
                   },
                 ),
                 const SizedBox(width: 12),
+                DeleteButton(
+                  size: 40,
+                  onPressed: () => _showDeleteConfirmation(item.id),
+                ),
               ],
 
-              // 3. DELETE ACTION (Circular DeleteButton)
-              DeleteButton(
-                size: 40,
-                onPressed: () => _showDeleteConfirmation(item.id),
-              ),
+              if (isOfflineBill && !isCompleted) ...[
+                const SizedBox(width: 12),
+                IconButton(
+                  onPressed: () async {
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.setString("id", item.id);
+                    prefs.setString("order_payment_status", item.paymentStatus);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ViewOrderItems()));
+                  },
+                  icon: Icon(Icons.receipt_long, color: primaryColor),
+                )
+              ]
             ],
           ),
         ],
@@ -222,34 +248,33 @@ class _viewOrderState extends State<viewOrder> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-
         backgroundColor: AppColors.WhiteColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: const Text("Remove Record?",style: TextStyle(color: AppColors.BlackColor),),
         content: const Text("Are you sure you want to delete this order? This action cannot be undone.",style: TextStyle(color: AppColors.BlackColor)),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: Container(
-              padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+              padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
               decoration: BoxDecoration(
                   color: Colors.transparent,
                   border: Border.all(color: AppColors.BlackColor),
                   borderRadius: BorderRadius.circular(30)
               ),
-              child:  Text("Cancel",style: TextStyle(color: AppColors.BlackColor),))),
+              child:  const Text("Cancel",style: TextStyle(color: AppColors.BlackColor),))),
           TextButton(
             onPressed: () async {
               SharedPreferences prefs = await SharedPreferences.getInstance();
               await http.post(Uri.parse("${prefs.getString("ip")}/delete_order"), body: {"id": orderId});
-              Navigator.pop(context);
+              if(mounted) Navigator.pop(context);
             },
             child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
+                padding: const EdgeInsets.symmetric(vertical: 10,horizontal: 15),
                 decoration: BoxDecoration(
-                  color: dangerColor,
-                  border: Border.all(color: dangerColor),
-                  borderRadius: BorderRadius.circular(30)
+                    color: dangerColor,
+                    border: Border.all(color: dangerColor),
+                    borderRadius: BorderRadius.circular(30)
                 ),
-                child:  Text("Delete", style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold))),
+                child:  const Text("Delete", style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
           ),
         ],
       ),
@@ -259,8 +284,6 @@ class _viewOrderState extends State<viewOrder> {
   Widget _statusBadge(String status) {
     Color color;
     String label = status.toLowerCase();
-  
-
     if (label == 'paid' || label == 'online') {
       color = successColor;
     } else if (label == 'offline') {
@@ -285,7 +308,7 @@ class _viewOrderState extends State<viewOrder> {
 }
 
 class OrderModel {
-  final String id, paymentStatus, paymentDate, date, amount, username, distributor, orderId;
+  final String id, paymentStatus, paymentDate, date, amount, username, distributor, orderId, orderType;
 
   OrderModel({
     required this.id,
@@ -296,6 +319,7 @@ class OrderModel {
     required this.username,
     required this.distributor,
     required this.orderId,
+    required this.orderType,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -308,6 +332,7 @@ class OrderModel {
       username: json["username"].toString(),
       distributor: json["distributor"].toString(),
       orderId: json["orderid"].toString(),
+      orderType: json["order_type"]?.toString() ?? "online",
     );
   }
 }

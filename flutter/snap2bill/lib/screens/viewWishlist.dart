@@ -244,7 +244,7 @@ class _ViewWishlistState extends State<ViewWishlist> {
                           height: 35,
                           width: 35,
                           decoration: BoxDecoration(
-                            color: AppColors.successbgColor.withValues(alpha: 0.2),
+                            color: AppColors.successbgColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(50),
                             border: Border.all(width: 1,color: successColor)
                           ),

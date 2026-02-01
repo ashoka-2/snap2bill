@@ -106,7 +106,7 @@ class _AllCustomersSubState extends State<AllCustomersSub> {
               ).toList();
 
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.only(top:8,bottom: 100),
                 itemCount: filteredList.length,
                 itemBuilder: (context, index) => _buildCustomerCard(filteredList[index], theme, isDark),
               );
@@ -136,7 +136,7 @@ class _AllCustomersSubState extends State<AllCustomersSub> {
         onTap: () async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.setString("cid", item.id);
-          await prefs.setString("oid", item.oid);
+            await prefs.setString("oid", item.oid);
           await prefs.setString("selected_customer_name", item.name);
           Navigator.push(context, MaterialPageRoute(builder: (context) =>  CameraCapture()));
         },

@@ -136,7 +136,7 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 10),
 
           // PRODUCT DETAILS
           Expanded(
@@ -162,7 +162,7 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Quantity Badge
+                    // 🚀 Flexible use kiya taaki agar text bada ho toh ye container sikud jaye
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
@@ -171,26 +171,34 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
                       ),
                       child: Text(
                         "Qty: ${item.quantity} ${item.unit_name}",
-                        style:  TextStyle(
+                        maxLines: 1, // 🚀 Overflow prevent karne ke liye
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
                           color: AppColors.getPrimaryColor(context),
                           fontWeight: FontWeight.bold,
                           fontSize: 10,
                         ),
                       ),
                     ),
-                    // Total for this item
-                    Text(
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      "₹${double.parse(item.price) * double.parse(item.quantity)}",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: textColor,
+                    const SizedBox(width: 5), // Bich mein thoda gap
+                    // 🚀 Price text ko bhi Flexible mein rakha taaki overlap na ho
+                    Flexible(
+                      flex: 3,
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "₹${(double.parse(item.price) * double.parse(item.quantity))}",
+                          style: TextStyle(
+                            fontSize: 14, // Maximum size
+                            fontWeight: FontWeight.bold,
+                            color: textColor,
+                          ),
+                        ),
                       ),
                     ),
                   ],
-                ),
+                )
               ],
             ),
           ),

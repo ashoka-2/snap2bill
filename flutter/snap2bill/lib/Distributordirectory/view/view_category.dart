@@ -143,9 +143,7 @@ class _ViewCategoryState extends State<ViewCategory> {
         child: InkWell(
           borderRadius: BorderRadius.circular(20),
           onTap: () {
-            // Add navigation to product list by category here if needed
-            CustomSnackBar.show(context, Text('Selected: ${i.category_name}') as String,
-                backgroundColor: AppColors.dangerColor);
+
           },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,

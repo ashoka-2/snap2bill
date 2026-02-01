@@ -270,17 +270,53 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildHeader(ThemeData theme) {
+    // 🚀 Check orientation
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+
     return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: theme.cardColor, boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)]),
+      // Landscape mein padding kam kar di (20 se 10)
+      padding: EdgeInsets.all(isLandscape ? 10 : 20),
+      decoration: BoxDecoration(
+          color: theme.cardColor,
+          boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)]
+      ),
       child: Column(children: [
         Row(children: [
-          IconButton(icon: const Icon(Icons.arrow_back_ios_new, size: 20), onPressed: () => _currentPage > 0 ? _prevPage() : Navigator.pop(context)),
-          Expanded(child: Center(child: Text(widget.isDistributor ? "Distributor Register" : "Customer Register",maxLines: 1, style: TextStyle(fontSize: 20,fontWeight: FontWeight.w900, color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight)))),
-          const SizedBox(width: 40),
+          IconButton(
+              icon: Icon(Icons.arrow_back_ios_new, size: isLandscape ? 18 : 20),
+              onPressed: () => _currentPage > 0 ? _prevPage() : Navigator.pop(context)
+          ),
+          Expanded(
+              child: Center(
+                  child: Text(
+                      widget.isDistributor ? "Distributor Register" : "Customer Register",
+                      maxLines: 1,
+                      style: TextStyle(
+                        // Landscape mein font size thoda chota kiya
+                          fontSize: isLandscape ? 16 : 20,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight
+                      )
+                  )
+              )
+          ),
+          SizedBox(width: isLandscape ? 30 : 40),
         ]),
-        const SizedBox(height: 15),
-        Row(children: List.generate(_totalPages, (i) => Expanded(child: Container(height: 6, margin: const EdgeInsets.symmetric(horizontal: 4), decoration: BoxDecoration(borderRadius: BorderRadius.circular(3), color: i <= _currentPage ? theme.primaryColor : theme.disabledColor.withValues(alpha:0.2)))))),
+        // Landscape mein ye gap (15 se 5) kam kar diya
+        SizedBox(height: isLandscape ? 5 : 15),
+        Row(
+            children: List.generate(_totalPages, (i) => Expanded(
+                child: Container(
+                  // Landscape mein bar ki height kam kar di
+                    height: isLandscape ? 4 : 6,
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(3),
+                        color: i <= _currentPage ? theme.primaryColor : theme.disabledColor.withValues(alpha:0.2)
+                    )
+                )
+            ))
+        ),
         const SizedBox(height: 5),
         Text("Step ${_currentPage + 1} of $_totalPages", style: theme.textTheme.bodySmall),
       ]),

@@ -75,6 +75,7 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
             joke["amount"].toString(),
             joke["username"].toString(),
             joke["distributor"] ?? "",
+            joke["order_type"].toString(),
           ));
         }
       }
@@ -93,6 +94,8 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+
+
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -150,6 +153,9 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
   Widget _buildModernOrderCard(Joke item, ThemeData theme, bool isDark) {
     bool isPending = item.payment_status.toLowerCase() == "pending";
     Color statusColor = isPending ? AppColors.orangeColor : successColor;
+    bool isOffline = item.type.toLowerCase().contains("offline");
+    String labelTitle = isOffline ? "Bill" : "Order";
+    Color labelColor = isOffline ? Colors.deepPurpleAccent : AppColors.getPrimaryColor(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -181,11 +187,11 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Order #${item.id}",
+                    "$labelTitle #${item.id}", // 🚀 Updated label here
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: theme.primaryColor
+                        color: labelColor
                     ),
                   ),
                   _buildStatusChip(item.payment_status.toUpperCase(), statusColor),
@@ -211,12 +217,19 @@ class _ViewAllOrdersSubState extends State<ViewAllOrdersSub> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text("Bill Amount", style: TextStyle(color: Colors.grey, fontSize: 13)),
-                  Text(
-                    "₹${item.amount}",
-                    style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: isDark ? AppColors.WhiteColor: Colors.black87
+                  Flexible(
+                    flex: 3,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "₹${item.amount}",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: isDark ? AppColors.WhiteColor: Colors.black87
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -276,6 +289,7 @@ class Joke {
   final String amount;
   final String username;
   final String distributor;
+  final String type;
 
-  Joke(this.id, this.payment_status, this.payment_date, this.date, this.amount, this.username, this.distributor);
+  Joke(this.id, this.payment_status, this.payment_date, this.date, this.amount, this.username, this.distributor, this.type);
 }

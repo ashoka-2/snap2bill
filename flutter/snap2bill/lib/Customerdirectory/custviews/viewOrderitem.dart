@@ -16,11 +16,12 @@ class ViewOrderItems extends StatefulWidget {
 }
 
 class _ViewOrderItemsState extends State<ViewOrderItems> {
-  // 🚀 Change 1: Maintain a local list for partial updates
   List<dynamic> _items = [];
   bool _isInitialLoading = true;
   String? serverIp;
-  bool isPaid = false;
+
+  // 🚀 Logic Variable: Buttons dikhane hain ya nahi
+  bool isLocked = false;
 
   late Color successColor;
   late Color dangerColor;
@@ -29,39 +30,35 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   late Color subTextColor;
   late Color primaryColor;
 
-
   @override
   void initState() {
     super.initState();
     _loadData();
-    _checkPaymentStatus();
   }
 
-  void _checkPaymentStatus() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    String status = sp.getString("order_payment_status") ?? "pending";
-    setState(() {
-      isPaid = (status.toLowerCase() == 'paid' ||
-          status.toLowerCase() == 'online' ||
-          status.toLowerCase() == 'offline' ||
-          status.toLowerCase() == 'delivered');
-    });
-  }
-
-  // 🚀 Change 2: Initial data fetcher that populates the list
   Future<void> _loadData() async {
     try {
       SharedPreferences sp = await SharedPreferences.getInstance();
       serverIp = sp.getString("ip") ?? "";
       String orderId = sp.getString("id") ?? "";
+
       final res = await http.post(Uri.parse("$serverIp/view_orders_items"), body: {'oid': orderId});
       var js = json.decode(res.body);
+
+      String status = (sp.getString("order_payment_status") ?? "pending").toLowerCase();
+      String orderType = (js['order_type'] ?? "online").toString().toLowerCase();
 
       setState(() {
         _items = js['data'] ?? [];
         _isInitialLoading = false;
+
+        bool isPaid = (status == 'paid' || status == 'online' || status == 'offline' || status == 'delivered');
+        bool isDistributorBill = orderType.contains("offline");
+
+        isLocked = isPaid || isDistributorBill;
       });
     } catch (e) {
+      debugPrint("Error: $e");
       setState(() => _isInitialLoading = false);
     }
   }
@@ -72,14 +69,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     return (serverIp ?? "") + (path.startsWith('/') ? path : '/$path');
   }
 
-  // 🚀 Change 3: Optimized update that only targets a specific index
   Future<void> updateItem(int index, String qty) async {
     String itemId = _items[index]['id'].toString();
-
-    // Store old qty in case API fails
     var oldQty = _items[index]['quantity'];
 
-    // 🚀 Update local UI instantly
     setState(() {
       _items[index]['quantity'] = qty;
     });
@@ -94,25 +87,27 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     if (js['status'] == 'ok') {
       CustomSnackBar.show(context, "Quantity updated successfully", backgroundColor: successColor);
     } else {
-      // 🚀 Revert back if server fails
       setState(() {
         _items[index]['quantity'] = oldQty;
       });
-      CustomSnackBar.show(context, js['message'] ?? "Error updating item", backgroundColor: AppColors.dangerColor);
+      CustomSnackBar.show(context, js['message'] ?? "Error updating item", backgroundColor: dangerColor);
     }
   }
 
   Future<void> deleteItem(int index) async {
     String id = _items[index]['id'].toString();
     SharedPreferences sp = await SharedPreferences.getInstance();
-    await http.post(Uri.parse("${sp.getString("ip")}/delete_order_item"), body: {'id': id});
+    final res = await http.post(Uri.parse("${sp.getString("ip")}/delete_order_item"), body: {'id': id});
 
-    CustomSnackBar.show(context, "Item removed", backgroundColor: dangerColor);
-
-    // 🚀 Partial update: Just remove from list
-    setState(() {
-      _items.removeAt(index);
-    });
+    var js = json.decode(res.body);
+    if (js['status'] == 'ok') {
+      CustomSnackBar.show(context, "Item removed", backgroundColor: dangerColor);
+      setState(() {
+        _items.removeAt(index);
+      });
+    } else {
+      CustomSnackBar.show(context, js['message'] ?? "Cannot delete this item", backgroundColor: dangerColor);
+    }
   }
 
   @override
@@ -125,12 +120,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     subTextColor = AppColors.getTextSubColor(context);
     primaryColor = AppColors.getPrimaryColor(context);
 
-
-
     return Scaffold(
       backgroundColor: bgColor,
       appBar: ThemeNavbar(
-        title: "Order Items",
+        title: isLocked ? "View Order" : "Edit Order",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: () => Navigator.pop(context),
         centerTitle: true,
@@ -148,16 +141,15 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   }
 
   Widget _buildItemCard(Map item, int index) {
-
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
+        border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha: 0.1), width: 1.5),
         boxShadow: [
-          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
@@ -184,20 +176,29 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: primaryColor.withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(color: primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                       child: Text(
                         "Qty: ${item['quantity']} ${item['unit_name'] ?? ''}",
-                        style:  TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
+                        style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                     ),
-                    Text(
-                      maxLines:1,
-                      "₹${(double.tryParse(item['price'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)}",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "₹${((double.tryParse(item['price'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)).toStringAsFixed(2)}",
+                          maxLines: 1,
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
+                        ),
+                      ),
                     ),
                   ],
                 ),
-                if (!isPaid) ...[
+
+                // 🚀 DYNAMIC BUTTONS LOGIC
+                // Agar isLocked false hai, tabhi buttons dikhao
+                if (!isLocked) ...[
                   const Divider(height: 24),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
@@ -221,6 +222,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Delete Item?"),
+        content: const Text("This item will be removed from your order."),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
           TextButton(onPressed: () { deleteItem(index); Navigator.pop(context); }, child: Text("Remove", style: TextStyle(color: dangerColor))),
@@ -262,12 +264,11 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                 if (qty == null || qty <= 0 || qty > 100) {
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 200), () {
-                    CustomSnackBar.show(context, "Invalid quantity", backgroundColor:dangerColor);
+                    CustomSnackBar.show(context, "Invalid quantity", backgroundColor: dangerColor);
                   });
                 } else {
                   Navigator.pop(context);
-                  CustomSnackBar.show(context, "Updating...", backgroundColor: primaryColor,);
-                  // 🚀 Pass the index to update specifically
+                  CustomSnackBar.show(context, "Updating...", backgroundColor: primaryColor);
                   updateItem(index, qtyController.text);
                 }
               },

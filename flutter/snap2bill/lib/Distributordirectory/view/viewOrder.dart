@@ -40,7 +40,7 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
     _orderFuture = _getJokes();
   }
 
-  /// ---------------- REFRESH LOGIC ----------------
+  // 🚀 Refresh Function
   Future<void> _handleRefresh() async {
     setState(() {
       _orderFuture = _getJokes();
@@ -48,13 +48,10 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
     await _orderFuture;
   }
 
-  /// ---------------- API CALL ----------------
   Future<List<Joke>> _getJokes() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ip = prefs.getString("ip") ?? "";
     String uid = prefs.getString("uid") ?? "";
-
-    // Check if we are filtering by a specific customer (sent from Customer Page)
     String? cid = prefs.getString("selected_customer_id");
 
     try {
@@ -62,7 +59,7 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
         Uri.parse("$ip/view_distributor_orders"),
         body: {
           "uid": uid,
-          "cid": cid ?? "", // Filter by customer ID if it exists
+          "cid": cid ?? "",
         },
       );
 
@@ -79,6 +76,7 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
             joke["amount"].toString(),
             joke["username"].toString(),
             joke["distributor"] ?? "",
+            joke["order_type"].toString(),
           ));
         }
       }
@@ -99,16 +97,13 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
     subTextColor = AppColors.getTextSubColor(context);
     primaryColor = AppColors.getPrimaryColor(context);
 
-
     return Scaffold(
       backgroundColor: bgColor,
-      appBar: ThemeNavbar(title: "Order History",
+      appBar: ThemeNavbar(
+        title: "Order History",
         leadingIcon: Icons.arrow_back_ios_rounded,
-        onLeadingPressed: ()=>{
-          if (Navigator.canPop(context)) Navigator.pop(context)
-        },
+        onLeadingPressed: () => Navigator.pop(context),
         centerTitle: true,
-
       ),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
@@ -119,17 +114,20 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             }
-
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return _buildEmptyState();
+              // ScrollView is needed for RefreshIndicator to work on empty state
+              return ListView(
+                children: [
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.3),
+                  _buildEmptyState(),
+                ],
+              );
             }
-
             return ListView.builder(
+              physics: const AlwaysScrollableScrollPhysics(), // 🚀 Important for Refresh
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                return _buildModernOrderCard(snapshot.data![index]);
-              },
+              itemBuilder: (context, index) => _buildModernOrderCard(snapshot.data![index]),
             );
           },
         ),
@@ -137,40 +135,50 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
     );
   }
 
-  /// ---------------- EMPTY STATE ----------------
   Widget _buildEmptyState() {
     return Center(
       child: Column(
-        mainAxisAlignment:MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(Icons.receipt_long_outlined, size: 80, color: Colors.grey[300]),
           const SizedBox(height: 16),
-          Text("No orders found",
-              style: TextStyle(color: Colors.grey, fontSize: 16)),
+          const Text("No orders found", style: TextStyle(color: Colors.grey, fontSize: 16)),
         ],
       ),
     );
   }
 
-  /// ---------------- ORDER CARD ----------------
-  Widget _buildModernOrderCard(Joke item,) {
+  Widget _buildModernOrderCard(Joke item) {
     bool isPending = item.payment_status.toLowerCase() == "pending";
     Color statusColor = isPending ? AppColors.orangeColor : successColor;
+    bool isOffline = item.type.toLowerCase().contains("offline");
+    String labelTitle = isOffline ? "BILL ID" : "ORDER ID";
+    Color labelColor = isOffline ? AppColors.premiumDarkBlue : primaryColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
         boxShadow: [
-          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: InkWell(
         onTap: () async {
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("id", item.id); // Set the order ID for the next page
-          Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrderItems()));
+          prefs.setString("id", item.id);
+
+          // 🚀 AUTO-RELOAD LOGIC:
+          // Wait for the next page to close, then refresh data
+          await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ViewOrderItems())
+          );
+
+          // Jab user wapas aayega, ye line trigger hogi
+          _handleRefresh();
         },
         borderRadius: BorderRadius.circular(24),
         child: Padding(
@@ -178,17 +186,12 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header: Order ID and Status
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Order #${item.id}",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: primaryColor
-                    ),
+                    "$labelTitle: ${item.id}",
+                    style: TextStyle(color: labelColor, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.8)
                   ),
                   _buildStatusChip(item.payment_status.toUpperCase(), statusColor),
                 ],
@@ -197,30 +200,28 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 child: Divider(height: 1, thickness: 0.5),
               ),
-
-              // Detail Rows
-              _buildInfoRow(Icons.person_outline, "Customer", item.username, ),
+              _buildInfoRow(Icons.person_outline, "Customer", item.username),
               const SizedBox(height: 5),
-              _buildInfoRow(Icons.calendar_today_outlined, "Placed on", item.date, ),
+              _buildInfoRow(Icons.calendar_today_outlined, "Placed on", item.date),
               const SizedBox(height: 5),
-              _buildInfoRow(Icons.payments_outlined, "Paid on",
-                  item.payment_date == "None" || item.payment_date == "null" ? "Awaiting" : item.payment_date,),
-
+              _buildInfoRow(
+                Icons.payments_outlined,
+                "Paid on",
+                item.payment_date == "None" || item.payment_date == "null" ? "Awaiting" : item.payment_date,
+              ),
               const SizedBox(height: 15),
-
-              // Footer: Amount
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text("Bill Amount", style: TextStyle(color: subTextColor, fontSize: 14)),
-                  Text(
-                    maxLines: 1,
-                    "₹${item.amount}",
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: textColor,
-
+                  Text("Bill Amount", style: TextStyle(color: subTextColor, fontSize: 14)),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "₹${item.amount}",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: textColor),
+                      ),
                     ),
                   ),
                 ],
@@ -235,18 +236,8 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
   Widget _buildStatusChip(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha:0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.bold,
-          color: color,
-        ),
-      ),
+      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+      child: Text(label, style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: color)),
     );
   }
 
@@ -255,18 +246,11 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
       children: [
         Icon(icon, size: 18, color: Colors.grey[400]),
         const SizedBox(width: 10),
-        Text(
-            maxLines: 1,
-            "$label: ", style:  TextStyle(color: subTextColor, fontSize: 13)),
+        Text("$label: ", style: TextStyle(color: subTextColor, fontSize: 13)),
         Expanded(
           child: Text(
-            maxLines: 1,
             value,
-            style: TextStyle(
-                color: textColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w500
-            ),
+            style: TextStyle(color: textColor, fontSize: 14, fontWeight: FontWeight.w500),
             overflow: TextOverflow.ellipsis,
           ),
         ),
@@ -283,6 +267,7 @@ class Joke {
   final String amount;
   final String username;
   final String distributor;
+  final String type; // 🚀 Added type here
 
-  Joke(this.id, this.payment_status, this.payment_date, this.date, this.amount, this.username, this.distributor);
+  Joke(this.id, this.payment_status, this.payment_date, this.date, this.amount, this.username, this.distributor, this.type);
 }

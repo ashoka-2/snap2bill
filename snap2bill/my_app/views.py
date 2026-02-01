@@ -1067,7 +1067,7 @@ def add_stock(request):
     obj.UNIT_id =unit_id
     obj.save()
 
-    return JsonResponse({'ststus':'ok'})
+    return JsonResponse({'status':'ok'})
 
 def edit_stock(request):
     if request.method == "POST":
@@ -1528,13 +1528,14 @@ def view_orders(request):
     cid = request.POST.get('cid')  # Customer ID
     did = request.POST.get('did')  # NEW: Distributor ID filter
 
-    filters = {'USER_id': cid}
-
-    # If customer clicked a specific distributor, filter orders for that distributor
+    filters = {
+        'USER_id': cid,
+        'order_type__in': ["online", "offline"]  # 🚀 Sirf finalized orders/bills dikhao
+    }
     if did and did not in ["", "null", "None"]:
         filters['DISTRIBUTOR_id'] = did
 
-    data = order.objects.filter(**filters).select_related('DISTRIBUTOR').order_by('-id')
+    data = order.objects.filter(**filters,).select_related('DISTRIBUTOR').order_by('-id')
 
     ar = []
     for i in data:
@@ -1546,6 +1547,7 @@ def view_orders(request):
             'amount': i.amount,
             'distributor': i.DISTRIBUTOR.name,  # Show distributor name instead of username
             'orderid': i.id,
+            'order_type':i.order_type
         })
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -1604,33 +1606,6 @@ def edit_order(request):
     order_sub.objects.filter(id=id).update(quantity=quantity)
     return JsonResponse({"status":"ok"})
 
-# def update_order_item(request):
-#     id = request.POST.get('id')
-#     stock_id = request.POST.get('stock_id')
-#     quantity = request.POST.get('quantity')
-#     price = request.POST.get('amount')
-#     print(id,stock_id,quantity)
-#     try:
-#         obj = order_sub.objects.get(id=id)
-#         obj.STOCK_id = stock_id
-#         obj.quantity = quantity
-#         obj.price = price
-#         obj.save()
-#     except:
-#         obj = order_sub.objects.get(id=id)
-#         obj.quantity = quantity
-#         obj.price = price
-#
-#         obj.save()
-#     orderid = order_sub.objects.get(id=id).ORDER_id
-#     allordereditem = order_sub.objects.filter(ORDER=orderid)
-#     total = 0
-#     for i in allordereditem:
-#         total += int(i.quantity) * int(i.STOCK.price)
-#     order.objects.filter(id = orderid).update(amount=total)
-#     return JsonResponse({'status': 'ok'})
-
-
 
 
 
@@ -1648,7 +1623,11 @@ def update_order_item(request):
             # 1. Fetch the order item and its parent order
             obj = order_sub.objects.get(id=item_id)
             parent_order = obj.ORDER
-
+            if parent_order.order_type == 'offline':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'This is an instant bill. Items can only be removed by the distributor.'
+                })
             # Check if payment is done (Locking the bill)
             if parent_order.payment_status != 'pending':
                 return JsonResponse({'status': 'error', 'message': 'Bill already processed'})
@@ -1781,6 +1760,7 @@ def view_distributor_orders(request):
             'date': str(i.date),
             'amount': i.amount,
             'username': i.USER.name,
+            'order_type':i.order_type
         })
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -1799,6 +1779,8 @@ def view_distributor_allorders(request):
             'date': str(i.date),
             'amount': i.amount,
             'username': i.USER.name,
+            'order_type': i.order_type
+
         })
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -2021,7 +2003,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyAqEmJsSBQiPyrZadMZNYxlVWV3zhduQR4")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyARgbKGSqLgb3EYG7aaChXI9kJYb7u8wyQ")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
