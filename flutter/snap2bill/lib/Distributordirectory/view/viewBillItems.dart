@@ -44,8 +44,8 @@ class _viewBillItemsState extends State<viewBillItems> {
 
   Future<void> _fetchUnits() async {
     try {
-      SharedPreferences sp = await SharedPreferences.getInstance();
-      String ip = sp.getString("ip") ?? "";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String ip = prefs.getString("ip") ?? "";
       final res = await http.get(Uri.parse("$ip/view_units"));
       if (res.statusCode == 200) {
         var js = json.decode(res.body);
@@ -59,9 +59,9 @@ class _viewBillItemsState extends State<viewBillItems> {
   }
 
   Future<Map<String, dynamic>> fetchBillItems() async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    serverIp = sp.getString("ip") ?? "";
-    String orderId = sp.getString("oid") ?? "";
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    serverIp = prefs.getString("ip") ?? "";
+    String orderId = prefs.getString("oid") ?? "";
 
     final res = await http.post(
       Uri.parse("$serverIp/view_distributor_ordersitems"),
@@ -93,9 +93,9 @@ class _viewBillItemsState extends State<viewBillItems> {
   }
 
   Future<void> updateItem(String itemId, String qty, String price, String unitId) async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     final res = await http.post(
-      Uri.parse("${sp.getString("ip")}/update_order_item"),
+      Uri.parse("${prefs.getString("ip")}/update_order_item"),
       body: {
         'id': itemId,
         'quantity': qty,
@@ -114,8 +114,8 @@ class _viewBillItemsState extends State<viewBillItems> {
   }
 
   Future<void> deleteItem(String id) async {
-    SharedPreferences sp = await SharedPreferences.getInstance();
-    await http.post(Uri.parse("${sp.getString("ip")}/delete_order_item"), body: {'id': id});
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await http.post(Uri.parse("${prefs.getString("ip")}/delete_order_item"), body: {'id': id});
     _loadInitialData();
   }
 

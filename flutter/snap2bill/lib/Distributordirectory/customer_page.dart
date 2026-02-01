@@ -170,11 +170,11 @@ class _CustomerPageSubState extends State<CustomerPageSub> {
                   if (value == 'view_bills') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrder()));
                   } else if (value == 'add_bill') {
-                    // SharedPreferences prefs = await SharedPreferences.getInstance();
-                    // await prefs.setString("cid", item.id);
-                    // await prefs.setString("oid", item.oid);
-                    // await prefs.setString("selected_customer_name", item.name);
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => CameraCapture()));
+                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    await prefs.setString("cid", item.id);
+                    await prefs.setString("oid", item.oid);
+                    await prefs.setString("selected_customer_name", item.name);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CameraCapture()));
                   } else if (value == 'view_profile') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ViewCustomerProfile(customer: item)));
                   }
@@ -226,7 +226,7 @@ class Joke {
       json['place']?.toString() ?? "",
       json['pincode']?.toString() ?? "",
       json['post']?.toString() ?? "",
-      json['oid']?.toString() ?? "0",
+      json['oid']?.toString() ?? "",
     );
   }
 }

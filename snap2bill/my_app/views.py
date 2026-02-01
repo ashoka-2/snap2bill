@@ -550,9 +550,15 @@ def distributor_view_customer(request):
         ar = []
         for link in links:
             i = link.CUSTOMER
+            data2 = order.objects.filter(order_type="offline_pending", USER_id=i.id, DISTRIBUTOR_id=uid)
+
+            order_id = 0
+            if data2.exists():
+                order_id = data2[0].id
+
             ar.append({
                 'id': i.id,
-                'cid': i.id,  # Included for compatibility with your Flutter Joke model
+                'cid': i.id,
                 'name': i.name,
                 'email': i.email,
                 'phone': i.phone,
@@ -561,12 +567,14 @@ def distributor_view_customer(request):
                 'place': i.place,
                 'pincode': i.pincode,
                 'post': i.post,
-                'bio': i.bio
+                'bio': i.bio,
+                'oid': order_id
             })
 
         return JsonResponse({'status': 'ok', 'data': ar})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
 
 
 
