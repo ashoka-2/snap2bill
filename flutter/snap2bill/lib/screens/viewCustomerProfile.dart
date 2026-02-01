@@ -11,6 +11,8 @@ import '../widgets/app_button.dart';
 class ViewCustomerProfile extends StatelessWidget {
   final Joke customer;
   late Color iconColor;
+  late Color subTextColor;
+  late Color textColor;
 
    ViewCustomerProfile({Key? key, required this.customer}) : super(key: key);
 
@@ -63,13 +65,15 @@ class ViewCustomerProfile extends StatelessWidget {
   Widget build(BuildContext context) {
 
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = AppColors.getTextColor(context);
+    textColor = AppColors.getTextColor(context);
     iconColor = AppColors.getIconColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    subTextColor = AppColors.getTextSubColor(context);
+    final primaryColor = AppColors.getPrimaryColor(context);
     
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar:ThemeNavbar(title: "Customer Profile ",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
@@ -110,12 +114,12 @@ class ViewCustomerProfile extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: theme.primaryColor.withValues(alpha:0.1),
+                color: primaryColor.withValues(alpha:0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 "Verified Customer",
-                style: TextStyle(color: theme.primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(color: primaryColor, fontSize: 12, fontWeight: FontWeight.bold),
               ),
             ),
 
@@ -126,11 +130,11 @@ class ViewCustomerProfile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 10.0),
               child: Row(
                 children: [
-                  Expanded(child: _buildClickableStatItem(context, "Place", customer.place, textColor)),
-                  Container(height: 30, width: 1, color: Colors.grey.shade300),
-                  Expanded(child: _buildClickableStatItem(context, "Pincode", customer.pincode, textColor)),
-                  Container(height: 30, width: 1, color: Colors.grey.shade300),
-                  Expanded(child: _buildClickableStatItem(context, "Post", customer.post, textColor)),
+                  Expanded(child: _buildClickableStatItem(context, "Place", customer.place,)),
+                  Container(height: 30, width: 1, color: subTextColor),
+                  Expanded(child: _buildClickableStatItem(context, "Pincode", customer.pincode,)),
+                  Container(height: 30, width: 1, color: subTextColor),
+                  Expanded(child: _buildClickableStatItem(context, "Post", customer.post,)),
                 ],
               ),
             ),
@@ -146,7 +150,7 @@ class ViewCustomerProfile extends StatelessWidget {
                   Expanded(
                     child:SecondaryButton(
                       onPressed: () => _makeCall(customer.phone),
-                      color: AppColors.successbgColor,
+                      color: AppColors.getSuccessColor(context),
                       leading: Lottie.asset(
                         'assets/lotties/call.json',
                         width: 30, // Slightly adjusted for better alignment with text
@@ -164,7 +168,7 @@ class ViewCustomerProfile extends StatelessWidget {
                   // --- WHATSAPP BUTTON WITH LOTTIE ---
                   Expanded(
                     child:SecondaryButton(text: "Whatsapp",
-                      color: AppColors.successbgColor,
+                      color: AppColors.getSuccessColor(context),
                       leading: Lottie.asset(
                         'assets/lotties/whatsapp.json',
                         width: 30, // Slightly adjusted for better alignment with text
@@ -194,10 +198,10 @@ class ViewCustomerProfile extends StatelessWidget {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor)),
                   const SizedBox(height: 15),
 
-                  _buildInfoTile(context, Icons.email_outlined, "Email", customer.email, textColor),
-                  _buildInfoTile(context, Icons.phone_outlined, "Phone", customer.phone, textColor),
+                  _buildInfoTile(context, Icons.email_outlined, "Email", customer.email,),
+                  _buildInfoTile(context, Icons.phone_outlined, "Phone", customer.phone,),
                   _buildInfoTile(context, Icons.location_on_outlined, "Full Address",
-                      "${customer.address}, ${customer.place}\n${customer.post}", textColor),
+                      "${customer.address}, ${customer.place}\n${customer.post}",),
 
                   const SizedBox(height: 20),
 
@@ -207,14 +211,14 @@ class ViewCustomerProfile extends StatelessWidget {
                     width: double.infinity,
                     padding: const EdgeInsets.all(15),
                     decoration: BoxDecoration(
-                      color: isDark ? Colors.white10 : Colors.grey[100],
+                      color:AppColors.disabledColor.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
                       (customer.bio == "null" || customer.bio.isEmpty)
                           ? "No bio available."
                           : customer.bio,
-                      style: TextStyle(color: isDark ? Colors.grey[300] : Colors.grey[700], height: 1.5),
+                      style: TextStyle(color: subTextColor, height: 1.5),
                     ),
                   ),
                 ],
@@ -226,7 +230,7 @@ class ViewCustomerProfile extends StatelessWidget {
     );
   }
 
-  Widget _buildClickableStatItem(BuildContext context, String label, String value, Color textColor) {
+  Widget _buildClickableStatItem(BuildContext context, String label, String value,) {
     return InkWell(
       onTap: () => _showFullTextDialog(context, label, value),
       borderRadius: BorderRadius.circular(8),
@@ -242,14 +246,14 @@ class ViewCustomerProfile extends StatelessWidget {
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
             ),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+            Text(label, style: TextStyle(fontSize: 12, color: subTextColor)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoTile(BuildContext context, IconData icon, String title, String value, Color textColor) {
+  Widget _buildInfoTile(BuildContext context, IconData icon, String title, String value,) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: InkWell(
@@ -271,7 +275,7 @@ class ViewCustomerProfile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+                  Text(title, style: TextStyle(fontSize: 12, color: subTextColor)),
                   const SizedBox(height: 4),
                   Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: textColor)),
                 ],

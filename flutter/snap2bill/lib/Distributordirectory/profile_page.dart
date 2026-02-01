@@ -286,31 +286,36 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
           if (_profile!.bio.isNotEmpty && _profile!.bio != "null")
             Text(_profile!.bio, style: const TextStyle(color: Colors.grey, fontSize: 14)),
           const SizedBox(height: 15),
-          Row(
-            children: [
-              Expanded(
-                child:AppButton(text: "Edit Profile",
-                  icon: Icons.edit,
-                  height: 40,
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => edit_distributor_profile_sub(
-                    id: _profile!.id, name: _profile!.name, email: _profile!.email, phone: _profile!.phone, bio: _profile!.bio,
-                    address: _profile!.address, place: _profile!.place, pincode: _profile!.pincode, post: _profile!.post,
-                    latitude: _profile!.latitude, longitude: _profile!.longitude,
-                  ))),
-
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+            child: Row(
+              children: [
+                Expanded(
+                  child:SecondaryButton(text: "Edit Profile",
+                    color: AppColors.getSecondaryButtonBg(context),
+                    leading: Icon(Icons.edit,color: AppColors.WhiteColor),
+                    height: 40,
+                    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => edit_distributor_profile_sub(
+                      id: _profile!.id, name: _profile!.name, email: _profile!.email, phone: _profile!.phone, bio: _profile!.bio,
+                      address: _profile!.address, place: _profile!.place, pincode: _profile!.pincode, post: _profile!.post,
+                      latitude: _profile!.latitude, longitude: _profile!.longitude,
+                    ))),
+            
+                  ),
                 ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: AppButton(
-                  text: "View Proof",
-                  icon: Icons.verified,
-                  isTrailingIcon: true,
-                  height: 40,
-                  onPressed: () => _showProofDialog(_profile!.proof, theme),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SecondaryButton(
+                    color: AppColors.getSecondaryButtonBg(context),
+                    text: "View Proof",
+                    leading: Icon(Icons.verified,color: AppColors.WhiteColor),
+                    // isTrailingIcon: true,
+                    height: 40,
+                    onPressed: () => _showProofDialog(_profile!.proof, theme),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
@@ -336,11 +341,13 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
       // Prevent internal scroll conflicts with CustomScrollView
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 2, mainAxisSpacing: 2),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
       itemCount: _products.length,
       itemBuilder: (context, index) => GestureDetector(
         onTap: () => _showProductDetails(_products[index], theme),
-        child: Image.network(_products[index].image, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(color: isDark ? Colors.grey[900] : Colors.grey[200], child: const Icon(Icons.broken_image))),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: Image.network(_products[index].image, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(color: isDark ? Colors.grey[900] : Colors.grey[200], child: const Icon(Icons.broken_image)))),
       ),
     );
   }

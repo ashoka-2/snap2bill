@@ -34,6 +34,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
   final PageController _pageController = PageController();
   int _activeTab = 0;
   bool _isCustomer = false;
+  late Color primaryColor;
+  late Color subTextColor;
+  late Color textColor;
 
   @override
   void initState() {
@@ -129,10 +132,13 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+    textColor = AppColors.getTextColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    subTextColor = AppColors.getTextSubColor(context);
+    primaryColor = AppColors.getPrimaryColor(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
 
       appBar: ThemeNavbar(title:_profile?.name ?? widget.distributorName ,
         leadingIcon: Icons.arrow_back_ios_rounded,
@@ -151,7 +157,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           slivers: [
             // ✅ Profile Header - Part of the main scroll
             SliverToBoxAdapter(
-              child: _buildProfileHeader(theme, textColor, isDark),
+              child: _buildProfileHeader(theme,  isDark),
             ),
             // ✅ Tabs - Part of the main scroll
             SliverToBoxAdapter(
@@ -180,7 +186,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
     );
   }
 
-  Widget _buildProfileHeader(ThemeData theme, Color textColor, bool isDark) {
+  Widget _buildProfileHeader(ThemeData theme, bool isDark) {
     if (_profile == null) return const SizedBox();
 
     Widget profileImage = Container(
@@ -228,7 +234,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
           ),
           const SizedBox(height: 15),
           Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: textColor)),
-          if (_profile!.bio.isNotEmpty) Text(_profile!.bio, style: const TextStyle(color: Colors.grey)),
+          if (_profile!.bio.isNotEmpty) Text(_profile!.bio, style:  TextStyle(color: subTextColor)),
           const SizedBox(height: 20),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -238,7 +244,8 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
                 Expanded(
                   child:SecondaryButton(
                     onPressed: () => launchUrl(Uri(scheme: 'tel', path: _profile!.phone)),
-                    color: AppColors.successbgColor,
+                    color: AppColors.getSuccessColor(context),
+                    height: 40,
                     leading: Lottie.asset(
                       'assets/lotties/call.json',
                       width: 30, // Slightly adjusted for better alignment with text
@@ -256,7 +263,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
                 // --- WHATSAPP BUTTON WITH LOTTIE ---
                 Expanded(
                   child:SecondaryButton(text: "Whatsapp",
-                    color: AppColors.successbgColor,
+                    color: AppColors.getSuccessColor(context),
+
+                    height: 40,
                     leading: Lottie.asset(
                       'assets/lotties/whatsapp.json',
                       width: 30, // Slightly adjusted for better alignment with text
@@ -286,9 +295,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
               child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: _activeTab == 0 ? theme.primaryColor : Colors.transparent, width: 2))
+                      border: Border(bottom: BorderSide(color: _activeTab == 0 ? primaryColor : Colors.transparent, width: 2))
                   ),
-                  child: Icon(Icons.grid_on, color: _activeTab == 0 ? theme.primaryColor : Colors.grey)
+                  child: Icon(Icons.grid_on, color: _activeTab == 0 ? primaryColor : Colors.grey)
               )
           ),
         ),
@@ -298,9 +307,9 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
               child: Container(
                   height: 50,
                   decoration: BoxDecoration(
-                      border: Border(bottom: BorderSide(color: _activeTab == 1 ? theme.primaryColor : Colors.transparent, width: 2))
+                      border: Border(bottom: BorderSide(color: _activeTab == 1 ? primaryColor : Colors.transparent, width: 2))
                   ),
-                  child: Icon(Icons.info_outline, color: _activeTab == 1 ? theme.primaryColor : Colors.grey)
+                  child: Icon(Icons.info_outline, color: _activeTab == 1 ? primaryColor : Colors.grey)
               )
           ),
         ),
@@ -316,14 +325,16 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
       physics: const NeverScrollableScrollPhysics(), // Scroll handled by CustomScrollView
       shrinkWrap: true,
       itemCount: _products.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 2, crossAxisSpacing: 2),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 5, crossAxisSpacing: 5),
       itemBuilder: (context, index) {
         final product = _products[index];
         return GestureDetector(
           onTap: () => _showProductDetails(product, theme),
           child: Container(
-            color: Colors.grey[200],
-            child: Image.network(product.image, fit: BoxFit.cover, errorBuilder: (c,e,s) => const Icon(Icons.broken_image)),
+            color: Colors.transparent,
+            child: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(product.image, fit: BoxFit.cover, errorBuilder: (c,e,s) => const Icon(Icons.broken_image))),
           ),
         );
       },
@@ -368,7 +379,7 @@ class _ViewDistributorProfileState extends State<ViewDistributorProfile> {
             ClipRRect(borderRadius: BorderRadius.circular(15), child: Image.network(product.image, height: 250, fit: BoxFit.contain)),
             const SizedBox(height: 20),
             Text(product.product_name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            Text("₹ ${product.price}", style: TextStyle(fontSize: 20, color: theme.primaryColor, fontWeight: FontWeight.bold)),
+            Text("₹ ${product.price}", style: TextStyle(fontSize: 20, color: primaryColor, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
             Text("Available Quantity: ${product.quantity}", style: const TextStyle(color: Colors.grey)),
             const SizedBox(height: 15),

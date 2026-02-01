@@ -29,6 +29,10 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
 
   late Color successColor;
   late Color dangerColor;
+  late Color cardColor;
+  late Color textColor;
+  late Color subTextColor;
+  late Color primaryColor;
 
   @override
   void initState() {
@@ -89,13 +93,15 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
   Widget build(BuildContext context) {
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    cardColor = AppColors.getCardColor(context);
+    textColor = AppColors.getTextColor(context);
+    subTextColor = AppColors.getTextSubColor(context);
+    primaryColor = AppColors.getPrimaryColor(context);
 
-
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(title: "Order History",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
@@ -106,7 +112,7 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
       ),
       body: RefreshIndicator(
         onRefresh: _handleRefresh,
-        color: theme.primaryColor,
+        color: primaryColor,
         child: FutureBuilder<List<Joke>>(
           future: _orderFuture,
           builder: (context, snapshot) {
@@ -115,14 +121,14 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
             }
 
             if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return _buildEmptyState(theme);
+              return _buildEmptyState();
             }
 
             return ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
-                return _buildModernOrderCard(snapshot.data![index], theme, isDark);
+                return _buildModernOrderCard(snapshot.data![index]);
               },
             );
           },
@@ -132,7 +138,7 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
   }
 
   /// ---------------- EMPTY STATE ----------------
-  Widget _buildEmptyState(ThemeData theme) {
+  Widget _buildEmptyState() {
     return Center(
       child: Column(
         mainAxisAlignment:MainAxisAlignment.center,
@@ -147,21 +153,17 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
   }
 
   /// ---------------- ORDER CARD ----------------
-  Widget _buildModernOrderCard(Joke item, ThemeData theme, bool isDark) {
+  Widget _buildModernOrderCard(Joke item,) {
     bool isPending = item.payment_status.toLowerCase() == "pending";
     Color statusColor = isPending ? AppColors.orangeColor : successColor;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(
-            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          )
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: InkWell(
@@ -185,38 +187,40 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
                     style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: theme.primaryColor
+                        color: primaryColor
                     ),
                   ),
                   _buildStatusChip(item.payment_status.toUpperCase(), statusColor),
                 ],
               ),
               const Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: EdgeInsets.symmetric(vertical: 10),
                 child: Divider(height: 1, thickness: 0.5),
               ),
 
               // Detail Rows
-              _buildInfoRow(Icons.person_outline, "Customer", item.username, isDark),
-              const SizedBox(height: 10),
-              _buildInfoRow(Icons.calendar_today_outlined, "Placed on", item.date, isDark),
-              const SizedBox(height: 10),
+              _buildInfoRow(Icons.person_outline, "Customer", item.username, ),
+              const SizedBox(height: 5),
+              _buildInfoRow(Icons.calendar_today_outlined, "Placed on", item.date, ),
+              const SizedBox(height: 5),
               _buildInfoRow(Icons.payments_outlined, "Paid on",
-                  item.payment_date == "None" || item.payment_date == "null" ? "Awaiting" : item.payment_date, isDark),
+                  item.payment_date == "None" || item.payment_date == "null" ? "Awaiting" : item.payment_date,),
 
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
 
               // Footer: Amount
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Bill Amount", style: TextStyle(color: Colors.grey, fontSize: 13)),
+                   Text("Bill Amount", style: TextStyle(color: subTextColor, fontSize: 14)),
                   Text(
+                    maxLines: 1,
                     "₹${item.amount}",
                     style: TextStyle(
-                        fontSize: 22,
+                        fontSize: 18,
                         fontWeight: FontWeight.w800,
-                        color: isDark ? AppColors.WhiteColor: Colors.black87
+                        color: textColor,
+
                     ),
                   ),
                 ],
@@ -246,17 +250,20 @@ class _ViewOrderSubState extends State<ViewOrderSub> {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value, bool isDark) {
+  Widget _buildInfoRow(IconData icon, String label, String value) {
     return Row(
       children: [
         Icon(icon, size: 18, color: Colors.grey[400]),
         const SizedBox(width: 10),
-        Text("$label: ", style: const TextStyle(color: Colors.grey, fontSize: 13)),
+        Text(
+            maxLines: 1,
+            "$label: ", style:  TextStyle(color: subTextColor, fontSize: 13)),
         Expanded(
           child: Text(
+            maxLines: 1,
             value,
             style: TextStyle(
-                color: isDark ? Colors.grey[300] : Colors.black87,
+                color: textColor,
                 fontSize: 14,
                 fontWeight: FontWeight.w500
             ),

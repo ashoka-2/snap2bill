@@ -30,8 +30,8 @@ class AppColors {
   static const Color dangerColor = Color(0xf0cb0101);
   static const Color dangerbgColor = Color(0x54912727);
 
-  static const Color successLightColor = Color(0xf050d724);
-  static const Color successDarkColor = Color(0xf0049839);
+  static const Color successLightColor = Color(0xf01fc43c);
+  static const Color successDarkColor = Color(0xf0027029);
   static const Color successbgColor = Color(0x6b1cff4a);
 
   static const Color orangeColor = Color(0xf0ff6d05);
@@ -129,6 +129,8 @@ class AppColors {
   static Color? getHintColor(BuildContext context) =>
       isDarkMode(context) ? Colors.white38 : Colors.grey[500];
 
+  static Color? getSecondaryButtonBg(BuildContext context) =>
+      isDarkMode(context) ? Colors.grey.shade800 : Colors.grey.shade800;
 
   static Color getScaffoldBg(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;

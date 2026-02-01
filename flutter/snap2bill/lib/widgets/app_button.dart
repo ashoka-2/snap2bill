@@ -343,41 +343,43 @@ class SecondaryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
 
     // 🚀 LOGIC: Use provided color, else fallback to Theme Primary, else fallback to Black/White
-    final effectiveBgColor = color ?? theme.primaryColor;
+    final effectiveBgColor = color ?? AppColors.getPrimaryColor(context);
 
 
     return SizedBox(
       height: height,
-      child: ElevatedButton(
-        onPressed: onPressed,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: effectiveBgColor,
-          foregroundColor: AppColors.getTextColor(context),
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(borderRadius),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (leading != null) ...[
-              leading!,
-              const SizedBox(width: 5),
-            ],
-            Text(
-              text,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: AppColors.getTextColor(context),
-              ),
+      child: Container(
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: ElevatedButton.styleFrom(
+            side: BorderSide(color: AppColors.getBorderColor(context).withValues(alpha: 0.5),width: 1),
+            backgroundColor: effectiveBgColor,
+            foregroundColor: AppColors.getTextColor(context),
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(borderRadius),
             ),
-          ],
+            padding: const EdgeInsets.symmetric(horizontal: 0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              if (leading != null) ...[
+                leading!,
+                const SizedBox(width: 5),
+              ],
+              Text(
+                text,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.WhiteColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

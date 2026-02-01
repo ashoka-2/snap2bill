@@ -23,6 +23,8 @@ class ViewOrderItemsSub extends StatefulWidget {
 }
 
 class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
+  late Color cardColor;
+
   Future<List<OrderItem>> _getOrderItems() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? ip = prefs.getString("ip");
@@ -54,13 +56,16 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
-    final subTextColor = (isDark ? Colors.white70 : Colors.grey[600]) ?? Colors.grey;
+    final bgColor = AppColors.getScaffoldBg(context);
+    cardColor = AppColors.getCardColor(context);
+    final textColor = AppColors.getTextColor(context);
+    final subTextColor = AppColors.getTextSubColor(context);
+    final inputFill = AppColors.getInputFieldColor(context);
+    final iconColor = AppColors.getIconColor(context);
+    final primaryColor = AppColors.getPrimaryColor(context);
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(title: "Order Items",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
@@ -94,7 +99,7 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             itemCount: items.length,
             itemBuilder: (context, index) {
-              return _buildProductCard(items[index], theme, isDark, textColor, subTextColor);
+              return _buildProductCard(items[index], textColor, subTextColor);
             },
           );
         },
@@ -102,19 +107,15 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
     );
   }
 
-  Widget _buildProductCard(OrderItem item, ThemeData theme, bool isDark, Color textColor, Color? subTextColor) {
+  Widget _buildProductCard(OrderItem item, Color textColor, Color? subTextColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: theme.cardColor,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
-          BoxShadow(
-            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
@@ -157,7 +158,7 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
                   "Price: ₹${item.price}",
                   style: TextStyle(fontSize: 14, color: subTextColor),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -173,15 +174,17 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
                         style:  TextStyle(
                           color: AppColors.getPrimaryColor(context),
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontSize: 10,
                         ),
                       ),
                     ),
                     // Total for this item
                     Text(
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       "₹${double.parse(item.price) * double.parse(item.quantity)}",
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.bold,
                         color: textColor,
                       ),

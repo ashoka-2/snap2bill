@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:snap2bill/Distributordirectory/scanItem.dart';
 
 // Navigation targets
 import 'package:snap2bill/screens/viewCustomerProfile.dart';
@@ -169,7 +170,11 @@ class _CustomerPageSubState extends State<CustomerPageSub> {
                   if (value == 'view_bills') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => const ViewOrder()));
                   } else if (value == 'add_bill') {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => const MyProducts()));
+                    // SharedPreferences prefs = await SharedPreferences.getInstance();
+                    // await prefs.setString("cid", item.id);
+                    // await prefs.setString("oid", item.oid);
+                    // await prefs.setString("selected_customer_name", item.name);
+                    // Navigator.push(context, MaterialPageRoute(builder: (context) => CameraCapture()));
                   } else if (value == 'view_profile') {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => ViewCustomerProfile(customer: item)));
                   }

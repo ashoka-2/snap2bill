@@ -327,7 +327,7 @@ class _RazorpayScreenState extends State<RazorpayScreen> {
           updatepaymentstatus();
         },
         onError: (error) {
-          CustomSnackBar.show(context, "Payment Failed: $error ", backgroundColor: AppColors.dangerColor);
+          CustomSnackBar.show(context, "Payment Failed ", backgroundColor: AppColors.dangerColor);
 
         },
       );

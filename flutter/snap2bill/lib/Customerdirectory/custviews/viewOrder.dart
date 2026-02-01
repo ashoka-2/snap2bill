@@ -23,8 +23,11 @@ class _viewOrderState extends State<viewOrder> {
   Future<List<OrderModel>>? _ordersFuture;
 
   late Color successColor;
-
   late Color dangerColor;
+  late Color cardColor;
+  late Color textColor;
+  late Color subTextColor;
+  late Color primaryColor;
 
   /// --- API FETCH LOGIC ---
   Future<List<OrderModel>> _getOrders() async {
@@ -69,15 +72,18 @@ class _viewOrderState extends State<viewOrder> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    cardColor = AppColors.getCardColor(context);
+    textColor = AppColors.getTextColor(context);
+    subTextColor = AppColors.getTextSubColor(context);
+    primaryColor = AppColors.getPrimaryColor(context);
 
 
 
     return Scaffold(
-      backgroundColor: AppColors.getScaffoldBg(context),
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(
         title: "My Orders",
         leadingIcon: Icons.arrow_back_ios_rounded,
@@ -116,9 +122,6 @@ class _viewOrderState extends State<viewOrder> {
   }
 
   Widget _buildOrderCard(OrderModel item) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = AppColors.getTextColor(context);
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
 
     String status = item.paymentStatus.toLowerCase();
     bool isCompleted = status == 'paid' || status == 'online' || status == 'offline';
@@ -127,15 +130,11 @@ class _viewOrderState extends State<viewOrder> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(25),
         border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
         boxShadow: [
-          BoxShadow(
-            color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-          ),
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: Column(
@@ -166,7 +165,7 @@ class _viewOrderState extends State<viewOrder> {
             children: [
               Text("Amount Payable", style: TextStyle(color: subTextColor, fontWeight: FontWeight.w500)),
               Text("₹${item.amount}",
-                  style:  TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: AppColors.getPrimaryColor(context))),
+                  style:  TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color:primaryColor)),
             ],
           ),
           const SizedBox(height: 20),
@@ -246,8 +245,8 @@ class _viewOrderState extends State<viewOrder> {
             child: Container(
                 padding: EdgeInsets.symmetric(vertical: 10,horizontal: 15),
                 decoration: BoxDecoration(
-                  color: AppColors.dangerbgColor,
-                  border: Border.all(color: AppColors.dangerColor),
+                  color: dangerColor,
+                  border: Border.all(color: dangerColor),
                   borderRadius: BorderRadius.circular(30)
                 ),
                 child:  Text("Delete", style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold))),
@@ -265,7 +264,7 @@ class _viewOrderState extends State<viewOrder> {
     if (label == 'paid' || label == 'online') {
       color = successColor;
     } else if (label == 'offline') {
-      color = AppColors.getPrimaryColor(context);
+      color = primaryColor;
     } else {
       color = AppColors.orangeColor;
     }

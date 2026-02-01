@@ -24,6 +24,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
 
   late Color successColor;
   late Color dangerColor;
+  late Color cardColor;
+  late Color textColor;
+  late Color subTextColor;
+  late Color primaryColor;
 
 
   @override
@@ -113,15 +117,18 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    cardColor = AppColors.getCardColor(context);
+    textColor = AppColors.getTextColor(context);
+    subTextColor = AppColors.getTextSubColor(context);
+    primaryColor = AppColors.getPrimaryColor(context);
 
 
 
     return Scaffold(
-      backgroundColor: AppColors.getScaffoldBg(context),
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(
         title: "Order Items",
         leadingIcon: Icons.arrow_back_ios_rounded,
@@ -141,19 +148,16 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   }
 
   Widget _buildItemCard(Map item, int index) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textColor = AppColors.getTextColor(context);
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[900] : Colors.white,
+        color: cardColor,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha:0.1), width: 1.5),
         boxShadow: [
-          BoxShadow(color: isDark? Colors.black.withValues(alpha:0.3): Colors.black.withValues(alpha:0.05), blurRadius: 10, offset: const Offset(0, 4))
+          BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
         ],
       ),
       child: Row(
@@ -180,15 +184,16 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                   children: [
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(color: AppColors.getPrimaryColor(context).withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
+                      decoration: BoxDecoration(color: primaryColor.withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
                       child: Text(
                         "Qty: ${item['quantity']} ${item['unit_name'] ?? ''}",
-                        style:  TextStyle(color: AppColors.getPrimaryColor(context), fontWeight: FontWeight.bold, fontSize: 12),
+                        style:  TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
                       ),
                     ),
                     Text(
+                      maxLines:1,
                       "₹${(double.tryParse(item['price'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)}",
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: textColor),
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
                     ),
                   ],
                 ),
@@ -257,11 +262,11 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                 if (qty == null || qty <= 0 || qty > 100) {
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 200), () {
-                    CustomSnackBar.show(context, "Invalid quantity", backgroundColor:AppColors.dangerColor);
+                    CustomSnackBar.show(context, "Invalid quantity", backgroundColor:dangerColor);
                   });
                 } else {
                   Navigator.pop(context);
-                  CustomSnackBar.show(context, "Updating...", backgroundColor: AppColors.getPrimaryColor(context), durationMs: 800);
+                  CustomSnackBar.show(context, "Updating...", backgroundColor: primaryColor,);
                   // 🚀 Pass the index to update specifically
                   updateItem(index, qtyController.text);
                 }
