@@ -2003,7 +2003,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyARgbKGSqLgb3EYG7aaChXI9kJYb7u8wyQ")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyDYgyXKKHmwqOAaxa9GcceCNJW6bhzvvmQ")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 

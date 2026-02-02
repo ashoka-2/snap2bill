@@ -1,27 +1,4 @@
-//
-// import 'package:flutter/material.dart';
-// import 'package:fluttertoast/fluttertoast.dart';
-//
-// class CustomSnackBar {
-//   static void show(
-//       BuildContext context,
-//       String message, {
-//         int durationMs = 2000,
-//         Color backgroundColor = Colors.black,
-//         Color textColor = Colors.white,
-//       }) {
-//
-//     Fluttertoast.showToast(
-//         msg: message,
-//         toastLength: Toast.LENGTH_SHORT,
-//         gravity: ToastGravity.SNACKBAR,
-//         timeInSecForIosWeb: 2,
-//         backgroundColor: backgroundColor,
-//         textColor: textColor,
-//         fontSize: 15.0
-//     );
-//   }
-// }
+
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -41,10 +18,10 @@ class CustomSnackBar {
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(25.0),
-        color: backgroundColor, // 🚀 Web par gradient hata kar ye solid color lega
+        color: backgroundColor,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.2),
+            color: Colors.black,
             blurRadius: 10,
             offset: const Offset(0, 5),
           )
