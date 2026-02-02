@@ -2003,7 +2003,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyDYgyXKKHmwqOAaxa9GcceCNJW6bhzvvmQ")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyAu3NkKc97dXZkKIlyNsD92EJDehd7yJDU")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
@@ -2207,7 +2207,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 def universal_search(request):
     query = request.GET.get('q', '').strip()
     page_number = request.GET.get('page', 1)
-    limit = 10
+    limit = 20
     results = []
 
     if not query:

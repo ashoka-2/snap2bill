@@ -276,7 +276,7 @@ class _SearchPageState extends State<SearchPage> {
       highlightColor: isDark ? Colors.grey[700]! : Colors.grey[100]!,
       child: ListView.builder(
         padding: const EdgeInsets.all(12),
-        itemCount: 10,
+        itemCount: 20,
         itemBuilder: (_, __) => Container(
           margin: const EdgeInsets.only(bottom: 12),
           height: 70,

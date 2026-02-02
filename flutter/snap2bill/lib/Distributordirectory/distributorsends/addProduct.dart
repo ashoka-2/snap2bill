@@ -264,10 +264,22 @@ class _add_product_subState extends State<add_product_sub> {
   }
 
   Future<void> _sendData() async {
-    // 🚀 VALIDATION: Required fields check
+    // 🚀 Step 1: Basic Empty Check
     if (product_name.text.isEmpty || price.text.isEmpty || quantity.text.isEmpty || _selectedFile == null || selectedUnit == null) {
-      CustomSnackBar.show(context, "Name, Price, Quantity, Unit are required...", backgroundColor: AppColors.getPrimaryColor(context), durationMs: 800);
+      CustomSnackBar.show(context, "All fields (Name, Price, Qty, Unit, File) are required", backgroundColor: AppColors.dangerColor);
+      return;
+    }
 
+    // 🚀 Step 2: Digits Length Validation
+    // Price: max 7 digits (99,99,999)
+    if (price.text.length > 7) {
+      CustomSnackBar.show(context, "Price cannot be more than 7 digits!", backgroundColor: AppColors.dangerColor);
+      return;
+    }
+
+    // Quantity: max 3 digits (999)
+    if (quantity.text.length > 3) {
+      CustomSnackBar.show(context, "Quantity cannot be more than 3 digits!", backgroundColor: AppColors.dangerColor);
       return;
     }
 
@@ -278,38 +290,35 @@ class _add_product_subState extends State<add_product_sub> {
 
       var request = http.MultipartRequest('POST', Uri.parse(url));
 
-      // 🚀 String Fields
-      request.fields['product_name'] = product_name.text;
+      // String Fields
+      request.fields['product_name'] = product_name.text.trim();
       request.fields['price'] = price.text;
       request.fields['quantity'] = quantity.text;
-      request.fields['description'] = description.text.isEmpty ? "No description provided" : description.text;
+      request.fields['description'] = description.text.isEmpty ? "No description provided" : description.text.trim();
       request.fields['unit_id'] = selectedUnit!;
       request.fields['uid'] = sh.getString('uid').toString();
 
-      // 🚀 Handle Category ID (Must be an ID or a valid string your backend handles)
+      // Category Handling
       if(selectedCategory != null) {
         request.fields['category'] = selectedCategory!;
       } else {
-        // Find a default ID or handle on backend.
-        // Sending '1' or '0' depending on your DB setup.
-        request.fields['category'] = categoryList.isNotEmpty ? categoryList[0]['id'] : "1";
+        request.fields['category'] = categoryList.isNotEmpty ? categoryList[0]['id'].toString() : "1";
       }
 
-      // 🚀 File Upload
+      // File Upload
       if (kIsWeb) {
         request.files.add(http.MultipartFile.fromBytes('file', _webFileBytes!, filename: _selectedFile!.name));
       } else {
         request.files.add(await http.MultipartFile.fromPath('file', _selectedFile!.path!));
       }
 
-      // 🚀 Send and Handle Response
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
-
       var resData = json.decode(response.body);
 
       if (resData['status'] == 'ok') {
         if (mounted) {
+          CustomSnackBar.show(context, "Product Added Successfully!", backgroundColor: AppColors.getSuccessColor(context));
           Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => DistributorNavigationBar(initialIndex: 2)),
@@ -318,12 +327,12 @@ class _add_product_subState extends State<add_product_sub> {
         }
       } else {
         if (mounted) {
-          CustomSnackBar.show(context,Text("Error: ${resData['message']}") as String, backgroundColor: AppColors.dangerColor);
+          CustomSnackBar.show(context, "Error: ${resData['message']}", backgroundColor: AppColors.dangerColor);
         }
       }
     } catch (e) {
       debugPrint("Full Error: $e");
-      CustomSnackBar.show(context, "Connection Error.", backgroundColor: AppColors.getPrimaryColor(context), durationMs: 800);
+      CustomSnackBar.show(context, "Connection Error.", backgroundColor: AppColors.dangerColor);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

@@ -270,7 +270,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
           alignment: Alignment.bottomCenter,
           child: Padding(
             padding: EdgeInsets.only(
-              bottom: 15,
+              bottom: 5,
               // 🚀 5 items hain isliye landscape mein width thodi zyada rakhi hai
               left: isLandscape ? screenWidth * 0.15 : 10,
               right: isLandscape ? screenWidth * 0.15 : 10,
@@ -287,7 +287,7 @@ class _DistributorNavigationBarState extends State<DistributorNavigationBar> {
                   ),
                   child: SafeArea(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5),
                       child: GNav(
                         rippleColor: isDark ? Colors.white.withAlpha(25) : Colors.black.withAlpha(25),
                         hoverColor: isDark ? Colors.white.withAlpha(25) : Colors.black.withAlpha(25),

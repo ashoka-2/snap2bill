@@ -145,6 +145,8 @@ class _CartButtonState extends State<CartButton>
                 AppColors.getTextColor2(context),
                 AppColors.getTextColor2(context),
                 AppColors.getTextColor(context),
+                AppColors.getTextColor(context),
+
 
 
               ],
