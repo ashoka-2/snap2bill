@@ -13,6 +13,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from difflib import get_close_matches
 import cv2
+from django.views.decorators.csrf import csrf_exempt
+import json
+
 
 from PIL import Image
 import io
@@ -25,8 +28,6 @@ def get_new_filename():
 
 #   admin@gmail.com     superuser
 
-# Create your views here
-from django.views.decorators.csrf import csrf_exempt
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
     cart, wishlist, DistributorCustomerLink, unit, recently_viewed
@@ -1464,7 +1465,7 @@ def view_wishlist(request):
     for i in data:
         ar.append({
             'wishlist_id': i.id,
-            'id': i.STOCK.id, 
+            'id': i.STOCK.id,
             'product_name': i.STOCK.PRODUCT.product_name,
             'price': i.STOCK.price,
             'image': i.STOCK.PRODUCT.image,
@@ -2463,3 +2464,127 @@ def get_counts(request):
         'wishlist_count': wishlist_count,
         'cart_count': cart_count
     })
+
+
+
+
+@csrf_exempt
+def auth_google(request):
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
+
+    try:
+        # 1. Parse Data from Flutter
+        data = json.loads(request.body)
+        email = data.get('email')
+        name = data.get('name')
+        photo = data.get('photoUrl')  # Google Profile Pic
+        user_type = data.get('type')  # 'customer' or 'distributor'
+
+        # Optional fields (might be empty if just logging in)
+        phone = data.get('phone', '')
+        address = data.get('address', '')
+        place = data.get('place', '')
+        pincode = data.get('pincode', '')
+
+        # Distributor specific
+        latitude = data.get('latitude', '')
+        longitude = data.get('longitude', '')
+
+        if not email:
+            return JsonResponse({'status': 'error', 'message': 'Email is required'}, status=400)
+
+        # 2. Check if User Exists
+        user_exists = User.objects.filter(username=email).exists()
+
+        if user_exists:
+            # === LOGIN FLOW ===
+            user = User.objects.get(username=email)
+
+            # Identify if they are Customer or Distributor
+            if user.groups.filter(name="distributor").exists():
+                try:
+                    dist = distributor.objects.get(LOGIN=user)
+
+                    # Optional: Update photo if they didn't have one
+                    if not dist.profile_image and photo:
+                        dist.profile_image = photo
+                        dist.save()
+
+                    return JsonResponse({'status': 'distok', 'uid': str(dist.id)})
+                except distributor.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no distributor profile found'})
+
+            elif user.groups.filter(name="customer").exists():
+                try:
+                    cust = customer.objects.get(LOGIN=user)
+                    # Optional: Update photo
+                    if not cust.profile_image and photo:
+                        cust.profile_image = photo
+                        cust.save()
+
+                    return JsonResponse({'status': 'custok', 'cid': str(cust.id)})
+                except customer.DoesNotExist:
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no customer profile found'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'User type unknown'})
+
+        else:
+            # === REGISTRATION FLOW ===
+
+            # A. Create Core User
+            # We set a random password because they will use Google to login
+            random_password = User.objects.make_random_password()
+            new_user = User.objects.create_user(username=email, email=email, password=random_password)
+            new_user.first_name = name
+            new_user.save()
+
+            if user_type == 'distributor':
+                # Assign Group
+                group = Group.objects.get(name='distributor')
+                new_user.groups.add(group)
+
+                # Create Distributor Profile
+                obj = distributor()
+                obj.LOGIN = new_user
+                obj.name = name
+                obj.email = email
+                obj.phone = phone
+                obj.address = address
+                obj.place = place
+                obj.pincode = pincode
+                obj.latitude = latitude
+                obj.longitude = longitude
+                obj.profile_image = photo  # Save Google Photo directly
+                obj.status = 'pending'  # Distributors usually need approval
+                obj.save()
+
+                return JsonResponse({'status': 'distok', 'uid': str(obj.id)})
+
+            elif user_type == 'customer':
+                # Assign Group
+                group = Group.objects.get(name='customer')
+                new_user.groups.add(group)
+
+                # Create Customer Profile
+                obj = customer()
+                obj.LOGIN = new_user
+                obj.name = name
+                obj.email = email
+                obj.phone = phone
+                obj.address = address
+                obj.place = place
+                obj.pincode = pincode
+                obj.profile_image = photo  # Save Google Photo
+                obj.save()
+
+                return JsonResponse({'status': 'custok', 'cid': str(obj.id)})
+
+            else:
+                # Rollback if type is invalid
+                new_user.delete()
+                return JsonResponse({'status': 'error', 'message': 'Invalid user type'})
+
+    except Exception as e:
+        print("Google Auth Error:", e)
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
