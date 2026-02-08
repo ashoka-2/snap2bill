@@ -16,12 +16,14 @@ class ProductCard extends StatefulWidget {
   final ProductData product;
   final bool showAddToCart;
   final VoidCallback? onWishlistToggle;
+  final String? refreshId;
 
   const ProductCard({
     Key? key,
     required this.product,
     required this.showAddToCart,
     this.onWishlistToggle,
+    this.refreshId,
   }) : super(key: key);
 
   @override
@@ -41,13 +43,69 @@ class _ProductCardState extends State<ProductCard> {
     isLiked = widget.product.isLiked;
   }
 
+  @override
+  void didUpdateWidget(ProductCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // LOGIC: Agar Parent se naya "Time" aaya hai, toh Local State ko Server Data se overwrite karo
+    if (widget.refreshId != oldWidget.refreshId) {
+      setState(() {
+        isLiked = widget.product.isLiked; // Force Update
+      });
+    }
+    // Backup: Agar normal data change hua ho
+    else if (widget.product.isLiked != oldWidget.product.isLiked) {
+      setState(() {
+        isLiked = widget.product.isLiked;
+      });
+    }
+  }
+
+
   /// ---------------- WISHLIST ----------------
+  // Future<void> _toggleWishlist({bool fromDoubleTap = false}) async {
+  //   if (_isProcessing) return;
+  //
+  //   // (Existing heart animation logic...)
+  //
+  //   setState(() => _isProcessing = true);
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final ip = prefs.getString("ip") ?? "";
+  //     final cid = prefs.getString("cid") ?? "";
+  //     final uid = prefs.getString("uid") ?? "";
+  //
+  //     final res = await http.post(
+  //       Uri.parse("$ip/toggle_wishlist"),
+  //       body: {'pid': widget.product.id, 'cid': cid, 'uid': uid},
+  //     );
+  //
+  //     if (res.statusCode == 200) {
+  //       final data = json.decode(res.body);
+  //       setState(() {
+  //         isLiked = data['action'] == 'added';
+  //       });
+  //
+  //       // 🚀 YE SABSE IMPORTANT HAI: Home page ko signal dena
+  //       if (widget.onWishlistToggle != null) {
+  //         widget.onWishlistToggle!();
+  //       }
+  //     }
+  //   } catch (e) {
+  //     debugPrint("Wishlist error: $e");
+  //   } finally {
+  //     if (mounted) setState(() => _isProcessing = false);
+  //   }
+  // }
   Future<void> _toggleWishlist({bool fromDoubleTap = false}) async {
     if (_isProcessing) return;
 
-    // (Existing heart animation logic...)
+    // 🚀 OPTIMISTIC UPDATE: Backend call se pehle hi UI badal do
+    setState(() {
+      isLiked = !isLiked;
+      if (fromDoubleTap && isLiked) showCenterHeart = true;
+    });
 
-    setState(() => _isProcessing = true);
     try {
       final prefs = await SharedPreferences.getInstance();
       final ip = prefs.getString("ip") ?? "";
@@ -61,22 +119,30 @@ class _ProductCardState extends State<ProductCard> {
 
       if (res.statusCode == 200) {
         final data = json.decode(res.body);
-        setState(() {
-          isLiked = data['action'] == 'added';
-        });
-
-        // 🚀 YE SABSE IMPORTANT HAI: Home page ko signal dena
-        if (widget.onWishlistToggle != null) {
-          widget.onWishlistToggle!();
+        // Backend se confirm karein final state
+        if (mounted) {
+          setState(() {
+            isLiked = data['action'] == 'added';
+          });
+          if (widget.onWishlistToggle != null) widget.onWishlistToggle!();
+        }
+      } else {
+        // 🔄 ROLLBACK: Agar backend fail ho jaye toh wapas purana state
+        if (mounted) {
+          setState(() {
+            isLiked = !isLiked;
+          });
         }
       }
     } catch (e) {
-      debugPrint("Wishlist error: $e");
-    } finally {
-      if (mounted) setState(() => _isProcessing = false);
+      // 🔄 ROLLBACK on Error
+      if (mounted) {
+        setState(() {
+          isLiked = !isLiked;
+        });
+      }
     }
   }
-
   /// ---------------- 3 DOT MENU ----------------
   void _showOptionsMenu(
       BuildContext ctx, Offset pos, Color textColor, Color bg) {
@@ -276,6 +342,11 @@ class _ProductCardState extends State<ProductCard> {
                         child: TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0.0, end: 1.0),
                           duration: const Duration(milliseconds: 700),
+                          onEnd: () {
+                            setState(() {
+                              showCenterHeart = false;
+                            });
+                          },
                           builder: (context, value, child) {
                             // 1. POP SCALE (Instagram style)
                             double scale = 0.0;
@@ -392,6 +463,7 @@ class _ProductCardState extends State<ProductCard> {
                             //     }
                             //   },
                             // ),
+                            // ProductCard.dart ke build method mein CartButton wala part
                             CartButton(
                               text: "Add to cart",
                               icon: Icons.add_shopping_cart,
@@ -401,14 +473,16 @@ class _ProductCardState extends State<ProductCard> {
                                 await prefs.setString("uid", widget.product.distributorId);
 
                                 if (context.mounted) {
-                                  // 🚀 FIX: .then() use karein taaki user jab wapas aaye tab count refresh ho
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(builder: (_) => const addOrder()),
-                                  ).then((_) {
-                                    // Jab user addOrder page se wapas aayega, ye chalega
-                                    if (widget.onWishlistToggle != null) {
-                                      widget.onWishlistToggle!();
+                                  ).then((result) {
+                                    // 🚀 Agar addOrder page se "refresh" signal aaya hai,
+                                    // toh Home page ka _refreshCountsOnly() trigger karein
+                                    if (result == "refresh" || result == null) {
+                                      if (widget.onWishlistToggle != null) {
+                                        widget.onWishlistToggle!();
+                                      }
                                     }
                                   });
                                 }
@@ -425,41 +499,20 @@ class _ProductCardState extends State<ProductCard> {
                     const SizedBox(height: 6),
 
                     if (widget.product.description.trim().isNotEmpty)
-                      ReadMoreText(
-                        widget.product.description,
-                        trimLines: 2,
-                        style:
-                        TextStyle(color:AppColors.getIconColor(context)),
+                      Container(
+                        height: 60, // 🔒 Height fix kar di (Overflow khatam)
+                        child: SingleChildScrollView(
+                          physics: BouncingScrollPhysics(),
+                          child: ReadMoreText(
+                            widget.product.description, // Original text rakha
+                            trimLines: 2,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: ' Read more',
+                            trimExpandedText: ' Show less',
+                            style: TextStyle(color: AppColors.getIconColor(context)),
+                          ),
+                        ),
                       ),
-
-                    // if (widget.showAddToCart) ...[
-                    //   const SizedBox(height: 10),
-                    //   Align(
-                    //     alignment: Alignment.centerRight,
-                    //     child: ElevatedButton.icon(
-                    //       style: ElevatedButton.styleFrom(
-                    //         backgroundColor: isDark
-                    //             ? AppColors.primaryDark
-                    //             : AppColors.primaryLight,
-                    //       ),
-                    //       onPressed: () async {
-                    //         final prefs =
-                    //         await SharedPreferences.getInstance();
-                    //         prefs.setString("pid", widget.product.id);
-                    //         prefs.setString(
-                    //             "uid", widget.product.distributorId);
-                    //
-                    //         Navigator.push(
-                    //           context,
-                    //           MaterialPageRoute(
-                    //               builder: (_) => const addOrder()),
-                    //         );
-                    //       },
-                    //       icon: const Icon(Icons.add_shopping_cart, size: 18,color: Colors.black,),
-                    //       label: const Text("Add to Cart",style: TextStyle(color: Colors.black),),
-                    //     ),
-                    //   ),
-                    // ],
                   ],
                 ),
               ),

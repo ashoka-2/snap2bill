@@ -3,9 +3,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:hugeicons/hugeicons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:snap2bill/Customerdirectory/Edits/edit_customer_profile.dart';
+import 'package:snap2bill/widgets/app_button.dart';
 
 import '../theme/colors.dart';
 import '../widgets/Navbar.dart';
@@ -200,13 +202,16 @@ Check out my profile on Snap2Bill!
       child: Row(
         children: [
           Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.white10 : Colors.grey.shade200,
-                foregroundColor: textColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: SecondaryButton(
+              text: "Edit Profile",
+              color: AppColors.getSecondaryButtonBg(context),
+              // 👇 HUGE ICON ADDED HERE
+              leading: HugeIcon(
+                  icon: HugeIcons.strokeRoundedEditUser02,
+                  color: AppColors.WhiteColor,
+                  size: 20
               ),
+              height: 40,
               onPressed: () {
                 Navigator.push(
                   context,
@@ -219,20 +224,21 @@ Check out my profile on Snap2Bill!
                   ),
                 ).then((_) => setState(() {}));
               },
-              child: const Text("Edit Profile"),
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: isDark ? Colors.white10 : Colors.grey.shade200,
-                foregroundColor: textColor,
-                elevation: 0,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            child: SecondaryButton(
+              text: "Share Profile",
+              color: AppColors.getSecondaryButtonBg(context),
+              // 👇 SYNTAX FIXED HERE (icon: parameter zaroori hai)
+              leading: HugeIcon(
+                  icon: HugeIcons.strokeRoundedSent,
+                  color: AppColors.WhiteColor,
+                  size: 20
               ),
+              height: 40,
               onPressed: () => _shareProfile(i),
-              child: const Text("Share Profile"),
             ),
           ),
         ],
@@ -247,14 +253,14 @@ Check out my profile on Snap2Bill!
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         children: [
-          _HighlightCircle(label: i.place, icon: Icons.location_city, isDark: isDark),
-          _HighlightCircle(label: i.post, icon: Icons.local_post_office, isDark: isDark),
-          _HighlightCircle(label: i.pincode, icon: Icons.pin_drop, isDark: isDark),
+          // 👇 Passing HugeIcons now
+          _HighlightCircle(label: i.place, icon: HugeIcons.strokeRoundedCity01, isDark: isDark),
+          _HighlightCircle(label: i.post, icon: HugeIcons.strokeRoundedMailbox01, isDark: isDark),
+          _HighlightCircle(label: i.pincode, icon: HugeIcons.strokeRoundedLocation01, isDark: isDark),
         ],
       ),
     );
   }
-
   Widget _buildContactSection(CustomerProfileModel i, Color textColor, bool isDark) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -264,9 +270,10 @@ Check out my profile on Snap2Bill!
           Text("Account Information",
               style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: textColor)),
           const SizedBox(height: 15),
-          _ContactTile(icon: Icons.email_outlined, title: "Email", value: i.email, isDark: isDark),
-          _ContactTile(icon: Icons.phone_iphone, title: "Phone", value: i.phone, isDark: isDark),
-          _ContactTile(icon: Icons.house_outlined, title: "Address", value: i.address, isDark: isDark),
+          // 👇 Using HugeIcons
+          _ContactTile(icon: HugeIcons.strokeRoundedMail01, title: "Email", value: i.email, isDark: isDark),
+          _ContactTile(icon: HugeIcons.strokeRoundedSmartPhone01, title: "Phone", value: i.phone, isDark: isDark),
+          _ContactTile(icon: HugeIcons.strokeRoundedHome01, title: "Address", value: i.address, isDark: isDark),
         ],
       ),
     );
@@ -296,9 +303,11 @@ class _StatItem extends StatelessWidget {
 
 class _HighlightCircle extends StatelessWidget {
   final String label;
-  final IconData icon;
+  final dynamic icon; // 👈 Change type from IconData to HugeIconData
   final bool isDark;
+
   const _HighlightCircle({required this.label, required this.icon, required this.isDark});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -312,7 +321,13 @@ class _HighlightCircle extends StatelessWidget {
               border: Border.all(color: isDark ? Colors.white24 : Colors.grey.shade300, width: 1.5),
               color: isDark ? Colors.white10 : Colors.grey.shade50,
             ),
-            child: Icon(icon, color: isDark ? Colors.white70 : Colors.black87, size: 28),
+            child: Center( // Center added for better alignment
+              child: HugeIcon( // 👈 Used HugeIcon widget
+                  icon: icon,
+                  color: isDark ? Colors.white70 : Colors.black87,
+                  size: 28
+              ),
+            ),
           ),
           const SizedBox(height: 6),
           SizedBox(width: 70, child: Text(label, style: const TextStyle(fontSize: 11), textAlign: TextAlign.center, maxLines: 1, overflow: TextOverflow.ellipsis)),
@@ -323,17 +338,24 @@ class _HighlightCircle extends StatelessWidget {
 }
 
 class _ContactTile extends StatelessWidget {
-  final IconData icon;
+  final dynamic icon; // 👈 Change type from IconData to HugeIconData
   final String title, value;
   final bool isDark;
+
   const _ContactTile({required this.icon, required this.title, required this.value, required this.isDark});
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20.0),
       child: Row(
         children: [
-          Icon(icon, color: isDark ? AppColors.getIconColor(context).withValues(alpha:0.7) : Colors.grey.shade700),
+          // 👈 Used HugeIcon widget
+          HugeIcon(
+            icon: icon,
+            color: isDark ? AppColors.getIconColor(context).withValues(alpha:0.7) : Colors.grey.shade700,
+            size: 24,
+          ),
           const SizedBox(width: 15),
           Expanded(
             child: Column(

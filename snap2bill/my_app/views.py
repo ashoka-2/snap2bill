@@ -1027,12 +1027,29 @@ def view_other_products(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
-
 def distributor_products(request):
-    uid = request.POST['uid']
+    uid = request.POST.get('uid')  # .get() use karein taaki crash na ho
+
+    # 1. Distributor Object layein (Wishlist check karne ke liye)
+    try:
+        dist_obj = distributor.objects.get(id=uid)
+    except distributor.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Distributor not found'})
+
+    # 2. Saare products layein
     data = stock.objects.filter(DISTRIBUTOR_id=uid)
+
     ar = []
     for i in data:
+        # 🚀 MAGIC STEP: Database mein column nahi hai, hum bas check kar rahe hain
+        # "Kya ye wala Stock Item (i) is Distributor (dist_obj) ki wishlist mein hai?"
+
+        is_in_wishlist = wishlist.objects.filter(
+            STOCK=i,
+            DISTRIBUTOR=dist_obj,
+            USER__isnull=True
+        ).exists()  # .exists() sirf True ya False deta hai
+
         ar.append({
             'id': i.id,
             'product_name': i.PRODUCT.product_name,
@@ -1044,9 +1061,12 @@ def distributor_products(request):
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
             'unit_id': str(i.UNIT_id) if i.UNIT_id else "",
             'unit_name': i.UNIT.unit_name if i.UNIT else "pcs",
-        })
-    return JsonResponse({'status': 'ok', 'data': ar})
 
+            # 🚀 Hum ye temporary value bhej rahe hain
+            'is_liked': is_in_wishlist,
+        })
+
+    return JsonResponse({'status': 'ok', 'data': ar})
 
 
 
@@ -1420,29 +1440,31 @@ def remove_from_wishlist(request):
 def view_wishlist(request):
     cid = request.POST.get('cid')
     uid = request.POST.get('uid')
-
+    queryset = wishlist.objects.select_related(
+        'STOCK',
+        'STOCK__PRODUCT',
+        'STOCK__PRODUCT__CATEGORY',
+        'STOCK__DISTRIBUTOR'
+    )
     # CUSTOMER
     if cid and not uid:
-        data = wishlist.objects.filter(
+        data = queryset.filter(
             USER__id=cid,
             DISTRIBUTOR__isnull=True
         )
-
     # DISTRIBUTOR
     elif uid and not cid:
-        data = wishlist.objects.filter(
+        data = queryset.filter(
             DISTRIBUTOR__id=uid,
             USER__isnull=True
         )
-
     else:
         data = []
-
     ar = []
     for i in data:
         ar.append({
             'wishlist_id': i.id,
-            'id': i.STOCK.id,
+            'id': i.STOCK.id, 
             'product_name': i.STOCK.PRODUCT.product_name,
             'price': i.STOCK.price,
             'image': i.STOCK.PRODUCT.image,
@@ -1451,7 +1473,6 @@ def view_wishlist(request):
         })
 
     return JsonResponse({'status': 'ok', 'data': ar})
-
 
 
 

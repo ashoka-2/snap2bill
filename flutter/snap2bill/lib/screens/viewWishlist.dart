@@ -131,17 +131,24 @@ class _ViewWishlistState extends State<ViewWishlist> {
     final bool isCustomer =
         _cid != null && _cid!.isNotEmpty && (_uid == null || _uid!.isEmpty);
 
-    return Scaffold(
+    return
+      WillPopScope(
+        // 🚀 FIX 1: Physical Back button dabane par bhi "refresh" bhejo
+        onWillPop: () async {
+      Navigator.pop(context, "refresh");
+      return false; // False isliye kyunki humne manually pop kar diya
+    },child:
+      Scaffold(
       backgroundColor: bgColor,
       appBar: ThemeNavbar(title: "My Wishlist",
         leadingIcon: Icons.arrow_back_ios_rounded,
         onLeadingPressed: ()=>{
-          if (Navigator.canPop(context)) Navigator.pop(context)
+        Navigator.pop(context, "refresh")
         },
         centerTitle: true,
 
       ),
-      body: _isLoading
+      body:_isLoading
           ? const Center(child: CircularProgressIndicator())
           : _wishlistItems.isEmpty
           ? Center(child: Column(
@@ -276,6 +283,6 @@ class _ViewWishlistState extends State<ViewWishlist> {
           );
         },
       ),
-    );
+    ));
   }
 }

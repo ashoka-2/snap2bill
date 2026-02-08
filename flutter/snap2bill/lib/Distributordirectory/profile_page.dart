@@ -1,7 +1,9 @@
 
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:hugeicons/hugeicons.dart'; // 🚀 IMPORTED
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/theme/colors.dart';
 import 'package:snap2bill/widgets/Navbar.dart';
@@ -55,7 +57,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
           TextButton(onPressed: () => Navigator.pop(context, false), child: const Text("Cancel")),
           TextButton(
               onPressed: () => Navigator.pop(context, true),
-              child:  Text("Delete", style: TextStyle(color: dangerColor))),
+              child: Text("Delete", style: TextStyle(color: dangerColor))),
         ],
       ),
     );
@@ -72,22 +74,17 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
 
       if (res.statusCode == 200) {
         if (!mounted) return;
-        // Close the BottomSheet before showing the message
         Navigator.pop(context);
-
         CustomSnackBar.show(context, "Product Deleted Successfully.",
             backgroundColor: successColor);
-        // Refresh the products list
         _getProducts();
       }
     } catch (e) {
-
       CustomSnackBar.show(context, Text('Error: $e') as String,
           backgroundColor: AppColors.dangerColor);
     }
   }
 
-  // ✅ SWIPE-TO-RELOAD FUNCTION
   Future<void> _fetchAllData() async {
     if (!mounted) return;
     setState(() => _isLoading = true);
@@ -139,7 +136,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
               (it["quantity"] ?? "").toString(),
               (it["CATEGORY"] ?? "").toString(),
               (it["CATEGORY_NAME"] ?? "").toString(),
-              (it["unit_id"] ?? "").toString(),    // 🚀 NEW
+              (it["unit_id"] ?? "").toString(),
               (it["unit_name"] ?? "").toString(),
             ));
           }
@@ -185,7 +182,6 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
     successColor = AppColors.getSuccessColor(context);
     dangerColor = AppColors.getDangerColor(context);
 
-
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
@@ -193,7 +189,8 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: ThemeNavbar(
-        leadingIcon: Icons.lock_person_outlined,
+        // 🚀 Note: Ensure your ThemeNavbar accepts HugeIcons (dynamic), otherwise this might error
+        leadingIcon: HugeIcons.strokeRoundedUserLock01,
         onLeadingPressed: (){},
         centerTitle: true,
         title: _profile?.name ?? "Profile",
@@ -201,21 +198,17 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-        onRefresh: _fetchAllData, // ✅ TOP-TO-DOWN SWIPE TO RELOAD
+        onRefresh: _fetchAllData,
         displacement: 40,
         child: CustomScrollView(
-          // ✅ Physics allows the bounce and ensures refresh works even if list is short
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           slivers: [
-            // 1. Profile Header Section
             SliverToBoxAdapter(
               child: _buildProfileHeader(theme, textColor, isDark),
             ),
-            // 2. Tab Switcher
             SliverToBoxAdapter(
               child: _buildTabSwitcher(theme, isDark),
             ),
-            // 3. PageView Content (Fills the rest of the screen)
             SliverFillRemaining(
               child: PageView(
                 controller: _pageController,
@@ -226,7 +219,6 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                 ],
               ),
             ),
-            // 4. Extra bottom space for Navigation Bar
             const SliverToBoxAdapter(
               child: SizedBox(height: 80),
             ),
@@ -259,7 +251,8 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                       radius: 42,
                       backgroundColor: isDark ? Colors.grey[900] : Colors.grey[100],
                       backgroundImage: _profile!.profile_image.isNotEmpty ? NetworkImage(_profile!.profile_image) : null,
-                      child: _profile!.profile_image.isEmpty ? const Icon(Icons.person, size: 40) : null,
+                      // 🚀 HUGE ICON
+                      child: _profile!.profile_image.isEmpty ? const HugeIcon(icon: HugeIcons.strokeRoundedUser, color: Colors.grey, size: 40) : null,
                     ),
                   ),
                 ),
@@ -277,10 +270,12 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
           ),
           const SizedBox(height: 15),
           Row(
+
             children: [
               Text(_profile!.name, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17, color: textColor)),
-             SizedBox(width: 5,),
-              Icon(Icons.verified,size: 20,),
+              SizedBox(width: 5,),
+              // 🚀 HUGE ICON
+              HugeIcon(icon: HugeIcons.strokeRoundedStoreVerified01, color: AppColors.getPrimaryColor(context), size: 20),
             ],
           ),
           if (_profile!.bio.isNotEmpty && _profile!.bio != "null")
@@ -293,14 +288,15 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                 Expanded(
                   child:SecondaryButton(text: "Edit Profile",
                     color: AppColors.getSecondaryButtonBg(context),
-                    leading: Icon(Icons.edit,color: AppColors.WhiteColor),
+                    // 🚀 HUGE ICON WIDGET
+                    leading: HugeIcon(icon: HugeIcons.strokeRoundedEdit02, color: AppColors.WhiteColor, size: 20),
                     height: 40,
                     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => edit_distributor_profile_sub(
                       id: _profile!.id, name: _profile!.name, email: _profile!.email, phone: _profile!.phone, bio: _profile!.bio,
                       address: _profile!.address, place: _profile!.place, pincode: _profile!.pincode, post: _profile!.post,
                       latitude: _profile!.latitude, longitude: _profile!.longitude,
                     ))),
-            
+
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -308,8 +304,8 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                   child: SecondaryButton(
                     color: AppColors.getSecondaryButtonBg(context),
                     text: "View Proof",
-                    leading: Icon(Icons.verified,color: AppColors.WhiteColor),
-                    // isTrailingIcon: true,
+                    // 🚀 HUGE ICON WIDGET
+                    leading: HugeIcon(icon: HugeIcons.strokeRoundedCheckmarkBadge01, color: AppColors.WhiteColor, size: 20),
                     height: 40,
                     onPressed: () => _showProofDialog(_profile!.proof, theme),
                   ),
@@ -326,19 +322,18 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
     return Column(children: [
       const Divider(height: 1),
       Row(children: [
-        _TabButton(icon: Icons.grid_on_rounded, isActive: _activeTab == 0, onTap: () => _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
-        _TabButton(icon: Icons.info_outline_rounded, isActive: _activeTab == 1, onTap: () => _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
+        // 🚀 PASSING HUGE ICONS
+        _TabButton(icon: HugeIcons.strokeRoundedGridView, isActive: _activeTab == 0, onTap: () => _pageController.animateToPage(0, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
+        _TabButton(icon: HugeIcons.strokeRoundedInformationCircle, isActive: _activeTab == 1, onTap: () => _pageController.animateToPage(1, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut)),
       ]),
-      const Divider(height: 1),
+      // const Divider(height: 1),
     ]);
   }
 
-  // ✅ PRODUCT GRID FIXED FOR SLIVER
   Widget _buildProductGrid(ThemeData theme, bool isDark) {
     if (_products.isEmpty) return const Center(child: Text("No products found"));
     return GridView.builder(
       padding: const EdgeInsets.all(2),
-      // Prevent internal scroll conflicts with CustomScrollView
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 5, mainAxisSpacing: 5),
@@ -347,27 +342,28 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
         onTap: () => _showProductDetails(_products[index], theme),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(10),
-            child: Image.network(_products[index].image, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(color: isDark ? Colors.grey[900] : Colors.grey[200], child: const Icon(Icons.broken_image)))),
+            child: Image.network(_products[index].image, fit: BoxFit.cover, errorBuilder: (c,e,s) => Container(color: isDark ? Colors.grey[900] : Colors.grey[200], child: const HugeIcon(icon: HugeIcons.strokeRoundedImage01, color: Colors.grey, size: 24)))),
       ),
     );
   }
 
-  // ✅ CONTACT DETAILS FIXED FOR RESPONSIVE SCROLL
   Widget _buildContactDetails(ThemeData theme, Color textColor, bool isDark) {
     return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(), // Handled by outer sliver
+      physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
       child: Column(
         children: [
-          _InfoItem(icon: Icons.alternate_email_rounded, label: "Email Address", value: _profile!.email, color: textColor),
-          _InfoItem(icon: Icons.phone_android_rounded, label: "Mobile Number", value: _profile!.phone, color: textColor),
-          _InfoItem(icon: Icons.business_rounded, label: "Business Location", value: "${_profile!.address}, ${_profile!.place}", color: textColor),
-          _InfoItem(icon: Icons.local_post_office_rounded, label: "Post Office", value: _profile!.post, color: textColor),
-          _InfoItem(icon: Icons.pin_drop_rounded, label: "Pincode", value: _profile!.pincode, color: textColor),
+          // 🚀 PASSING HUGE ICONS
+          _InfoItem(icon: HugeIcons.strokeRoundedMail01, label: "Email Address", value: _profile!.email, color: textColor),
+          _InfoItem(icon: HugeIcons.strokeRoundedSmartPhone01, label: "Mobile Number", value: _profile!.phone, color: textColor),
+          _InfoItem(icon: HugeIcons.strokeRoundedStore01, label: "Business Location", value: "${_profile!.address}, ${_profile!.place}", color: textColor),
+          _InfoItem(icon: HugeIcons.strokeRoundedMailbox01, label: "Post Office", value: _profile!.post, color: textColor),
+          _InfoItem(icon: HugeIcons.strokeRoundedLocation01, label: "Pincode", value: _profile!.pincode, color: textColor),
           const SizedBox(height: 25),
           AppButton(
             onPressed: _launchMaps,
-            icon: Icons.map_rounded,
+            // 🚀 PASSING HUGE ICON DATA
+            icon: HugeIcons.strokeRoundedMapsLocation01,
             text: "Open Location in Maps",
           ),
         ],
@@ -375,7 +371,6 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
     );
   }
 
-  // ... (Dialog and details sheet functions remain unchanged)
   void _showProofDialog(String url, ThemeData theme) {
     showDialog(context: context, builder: (_) => Dialog(child: InteractiveViewer(child: Image.network(url, errorBuilder: (c,e,s) => const Center(child: Text("No proof found"))))));
   }
@@ -401,6 +396,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                 Expanded(
                   child: EditButton(
                     text: "Edit Stock",
+                    // 🚀 DEFAULTS TO HUGE ICON (Updated in prev step)
                     onPressed: () {
                       Navigator.pop(context);
                       Navigator.push(context, MaterialPageRoute(builder: (_) => EditStock(id: product.id, price: product.price, quantity: product.quantity,unitId: product.unit_id,)));
@@ -411,9 +407,9 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
                 Expanded(
                   child: DeleteButton(
                     showText:true,
+                    // 🚀 DEFAULTS TO HUGE ICON (Updated in prev step)
                     onPressed: (){
                       _deleteProduct(product.id);
-
                     },
                   ),
                 ),
@@ -427,6 +423,7 @@ class _DistributorProfilePageState extends State<DistributorProfilePage> {
 }
 
 // Support Components
+
 class _StatItem extends StatelessWidget {
   final String label, count;
   final Color color;
@@ -438,18 +435,30 @@ class _StatItem extends StatelessWidget {
 }
 
 class _TabButton extends StatelessWidget {
-  final IconData icon;
+  final dynamic icon; // 🚀 CHANGED TO dynamic
   final bool isActive;
   final VoidCallback onTap;
   const _TabButton({required this.icon, required this.isActive, required this.onTap});
   @override
   Widget build(BuildContext context) {
-    return Expanded(child: InkWell(onTap: onTap, child: Container(height: 50, decoration: BoxDecoration(border: Border(bottom: BorderSide(color: isActive ? AppColors.getPrimaryColor(context) : Colors.transparent, width: 2.5))), child: Icon(icon, color: isActive ? AppColors.getPrimaryColor(context) : Colors.grey))));
+    return Expanded(
+        child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                height: 30,
+                // 🚀 HUGE ICON
+                child: HugeIcon(icon: icon, color: isActive ? AppColors.getPrimaryColor(context) : Colors.grey, size: 10,strokeWidth: 2,),
+              ),
+            )
+        )
+    );
   }
 }
 
 class _InfoItem extends StatelessWidget {
-  final IconData icon;
+  final dynamic icon; // 🚀 CHANGED TO dynamic
   final String label, value;
   final Color color;
   const _InfoItem({required this.icon, required this.label, required this.value, required this.color});
@@ -458,7 +467,8 @@ class _InfoItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 22),
       child: Row(children: [
-        Icon(icon, color: AppColors.getIconColor(context).withValues(alpha:0.8), size: 24),
+        // 🚀 HUGE ICON
+        HugeIcon(icon: icon, color: AppColors.getIconColor(context).withValues(alpha:0.8), size: 24),
         const SizedBox(width: 18),
         Expanded(
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [

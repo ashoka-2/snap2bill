@@ -137,7 +137,9 @@ class _viewCartState extends State<viewCart> {
       appBar: ThemeNavbar(
         title: "Shopping Cart",
         leadingIcon: Icons.arrow_back_ios_rounded,
-        onLeadingPressed: () => Navigator.pop(context),
+        onLeadingPressed: () {
+          Navigator.pop(context, "refresh");
+        },
         centerTitle: true,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(

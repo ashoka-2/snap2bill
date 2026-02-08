@@ -1,3 +1,451 @@
+//
+// import 'dart:convert';
+// import 'dart:typed_data';
+//
+// import 'package:flutter/foundation.dart';
+// import 'package:flutter/material.dart';
+// import 'package:file_picker/file_picker.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:snap2bill/screens/Login_page.dart';
+//
+// // ✅ LOCATION PACKAGES
+// import 'package:geolocator/geolocator.dart';
+// import 'package:geocoding/geocoding.dart';
+//
+// import '../theme/colors.dart';
+// import '../widgets/SnackBar.dart';
+// import '../widgets/app_button.dart';
+//
+// class RegistrationPage extends StatefulWidget {
+//   final bool isDistributor;
+//
+//   const RegistrationPage({Key? key, required this.isDistributor}) : super(key: key);
+//
+//   @override
+//   State<RegistrationPage> createState() => _RegistrationPageState();
+// }
+//
+// class _RegistrationPageState extends State<RegistrationPage> {
+//   final _formKeys = [
+//     GlobalKey<FormState>(),
+//     GlobalKey<FormState>(),
+//     GlobalKey<FormState>(),
+//     GlobalKey<FormState>(),
+//   ];
+//
+//   final name = TextEditingController();
+//   final email = TextEditingController();
+//   final phone = TextEditingController();
+//   final password = TextEditingController();
+//   final confirmpassword = TextEditingController();
+//   final address = TextEditingController();
+//   final pincode = TextEditingController();
+//   final place = TextEditingController();
+//   final post = TextEditingController();
+//   final bio = TextEditingController();
+//   final latitude = TextEditingController();
+//   final longitude = TextEditingController();
+//
+//   final PageController _pageController = PageController();
+//   int _currentPage = 0;
+//   bool _isLoading = false;
+//   bool _isLocating = false;
+//   final int _totalPages = 4;
+//   bool _obscurePass = true;
+//   bool _obscureConfirm = true;
+//
+//   PlatformFile? _file1;
+//   Uint8List? _file1Bytes;
+//   PlatformFile? _file2;
+//   Uint8List? _file2Bytes;
+//
+//   @override
+//   void dispose() {
+//     name.dispose(); email.dispose(); phone.dispose();
+//     password.dispose(); confirmpassword.dispose();
+//     address.dispose(); pincode.dispose(); place.dispose();
+//     post.dispose(); bio.dispose(); latitude.dispose(); longitude.dispose();
+//     super.dispose();
+//   }
+//
+//   // ✅ VALIDATION LOGIC
+//   String? _validateName(String? value) {
+//     if (value == null || value.trim().isEmpty) return "Name is required";
+//     if (value.trim().length < 3) return "Enter a valid name (min 3 chars)";
+//     return null;
+//   }
+//
+//   String? _validateEmail(String? value) {
+//     if (value == null || value.trim().isEmpty) return "Email is required";
+//     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+//     if (!emailRegex.hasMatch(value.trim())) return "Enter a valid email address";
+//     return null;
+//   }
+//
+//   String? _validatePhone(String? value) {
+//     if (value == null || value.trim().isEmpty) return "Phone number is required";
+//     if (value.trim().length != 10) return "Phone number must be 10 digits";
+//     if (!RegExp(r'^[0-9]+$').hasMatch(value.trim())) return "Only numbers allowed";
+//     return null;
+//   }
+//
+//   String? _validatePassword(String? value) {
+//     if (value == null || value.isEmpty) return "Password is required";
+//     if (value.length < 6) return "Password must be at least 6 characters";
+//     return null;
+//   }
+//
+//   // ✅ AUTO-DETECT LOCATION
+//   Future<void> _handleLocationDetection() async {
+//     bool serviceEnabled;
+//     LocationPermission permission;
+//
+//     setState(() => _isLocating = true);
+//
+//     try {
+//       serviceEnabled = await Geolocator.isLocationServiceEnabled();
+//       if (!serviceEnabled) {
+//         _showError("GPS is disabled. Please turn on location.");
+//         setState(() => _isLocating = false);
+//         return;
+//       }
+//
+//       permission = await Geolocator.checkPermission();
+//       if (permission == LocationPermission.denied) {
+//         permission = await Geolocator.requestPermission();
+//         if (permission == LocationPermission.denied) {
+//           _showError("Location permissions are denied.");
+//           setState(() => _isLocating = false);
+//           return;
+//         }
+//       }
+//
+//       Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+//       latitude.text = position.latitude.toString();
+//       longitude.text = position.longitude.toString();
+//
+//       List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+//
+//       if (placemarks.isNotEmpty) {
+//         Placemark p = placemarks[0];
+//         setState(() {
+//           place.text = p.locality ?? "";
+//           pincode.text = p.postalCode ?? "";
+//           post.text = p.subLocality ?? "";
+//           address.text = "${p.street}, ${p.subLocality}, ${p.locality}";
+//         });
+//       }
+//     } catch (e) {
+//       _showError("Could not fetch location.");
+//     } finally {
+//       setState(() => _isLocating = false);
+//     }
+//   }
+//
+//   Future<void> _pickFile(bool isSecondFile) async {
+//     try {
+//       FilePickerResult? result = await FilePicker.platform.pickFiles(
+//         type: FileType.image,
+//         allowMultiple: false,
+//       );
+//       if (result != null) {
+//         setState(() {
+//           if (isSecondFile) {
+//             _file2 = result.files.first;
+//             if (kIsWeb) _file2Bytes = result.files.first.bytes;
+//           } else {
+//             _file1 = result.files.first;
+//             if (kIsWeb) _file1Bytes = result.files.first.bytes;
+//           }
+//         });
+//       }
+//     } catch (e) { debugPrint("Error picking file: $e"); }
+//   }
+//
+//   void _nextPage() {
+//     if (!_formKeys[_currentPage].currentState!.validate()) return;
+//     if (_currentPage == 2) {
+//       if (_file1 == null) { _showError("Upload profile image."); return; }
+//       if (widget.isDistributor && _file2 == null) { _showError("Upload proof image."); return; }
+//     }
+//     _pageController.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+//     setState(() => _currentPage++);
+//   }
+//
+//   void _prevPage() {
+//     _pageController.previousPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+//     setState(() => _currentPage--);
+//   }
+//
+//   void _showError(String msg) {
+//
+//     CustomSnackBar.show(context, Text(msg) as String ,
+//         backgroundColor: AppColors.dangerColor);
+//   }
+//
+//   Future<void> _register() async {
+//     if (!_formKeys[3].currentState!.validate()) return;
+//     if (password.text != confirmpassword.text) { _showError("Passwords mismatch"); return; }
+//
+//     setState(() => _isLoading = true);
+//
+//     try {
+//       SharedPreferences prefs = await SharedPreferences.getInstance();
+//       String ip = prefs.getString("ip") ?? "http://10.0.2.2:8000";
+//       String endpoint = widget.isDistributor ? '/distributor_registration' : '/customer_registration';
+//
+//       var request = http.MultipartRequest('POST', Uri.parse('$ip$endpoint'));
+//
+//       request.fields.addAll({
+//         'name': name.text.trim(),
+//         'email': email.text.trim(),
+//         'phone': phone.text.trim(),
+//         'password': password.text.trim(),
+//         'confirmpassword': confirmpassword.text.trim(),
+//         'address': address.text.trim(),
+//         'pincode': pincode.text.trim(),
+//         'place': place.text.trim(),
+//         'post': post.text.trim(),
+//         'bio': bio.text.trim(),
+//       });
+//
+//       if (widget.isDistributor) {
+//         request.fields['latitude'] = latitude.text.trim();
+//         request.fields['longitude'] = longitude.text.trim();
+//       }
+//
+//       if (_file1 != null) {
+//         if (kIsWeb) request.files.add(http.MultipartFile.fromBytes('file', _file1Bytes!, filename: _file1!.name));
+//         else request.files.add(await http.MultipartFile.fromPath('file', _file1!.path!));
+//       }
+//
+//       if (widget.isDistributor && _file2 != null) {
+//         if (kIsWeb) request.files.add(http.MultipartFile.fromBytes('file1', _file2Bytes!, filename: _file2!.name));
+//         else request.files.add(await http.MultipartFile.fromPath('file1', _file2!.path!));
+//       }
+//
+//       var response = await request.send();
+//       var responseString = await response.stream.bytesToString();
+//       var decoded = json.decode(responseString);
+//
+//       if (decoded['status'] == 'ok') {
+//         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+//       } else {
+//         _showError("Registration failed: ${decoded['status']}");
+//       }
+//     } catch (e) { _showError("Connection Error: Make sure IP is correct and server is running."); }
+//     finally { if (mounted) setState(() => _isLoading = false); }
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final theme = Theme.of(context);
+//     final isDark = theme.brightness == Brightness.dark;
+//     final iconColor = isDark ? AppColors.iconColorDark : AppColors.iconColorLight;
+//
+//     return Scaffold(
+//       backgroundColor: theme.scaffoldBackgroundColor,
+//       body: SafeArea(
+//         child: Column(
+//           children: [
+//             _buildHeader(theme),
+//             Expanded(
+//               child: PageView(
+//                 controller: _pageController,
+//                 physics: const NeverScrollableScrollPhysics(),
+//                 children: [
+//                   _buildPersonalPage(iconColor),
+//                   _buildLocationPage(iconColor, theme),
+//                   _buildFilesPage(iconColor, theme),
+//                   _buildSecurityPage(iconColor),
+//                 ],
+//               ),
+//             ),
+//             if (_currentPage < _totalPages - 1) _buildBottomNav(theme),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+//
+//   Widget _buildHeader(ThemeData theme) {
+//     // 🚀 Check orientation
+//     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+//
+//     return Container(
+//       // Landscape mein padding kam kar di (20 se 10)
+//       padding: EdgeInsets.all(isLandscape ? 10 : 20),
+//       decoration: BoxDecoration(
+//           color: theme.cardColor,
+//           boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 5)]
+//       ),
+//       child: Column(children: [
+//         Row(children: [
+//           IconButton(
+//               icon: Icon(Icons.arrow_back_ios_new, size: isLandscape ? 18 : 20),
+//               onPressed: () => _currentPage > 0 ? _prevPage() : Navigator.pop(context)
+//           ),
+//           Expanded(
+//               child: Center(
+//                   child: Text(
+//                       widget.isDistributor ? "Distributor Register" : "Customer Register",
+//                       maxLines: 1,
+//                       style: TextStyle(
+//                         // Landscape mein font size thoda chota kiya
+//                           fontSize: isLandscape ? 16 : 20,
+//                           fontWeight: FontWeight.w900,
+//                           color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight
+//                       )
+//                   )
+//               )
+//           ),
+//           SizedBox(width: isLandscape ? 30 : 40),
+//         ]),
+//         // Landscape mein ye gap (15 se 5) kam kar diya
+//         SizedBox(height: isLandscape ? 5 : 15),
+//         Row(
+//             children: List.generate(_totalPages, (i) => Expanded(
+//                 child: Container(
+//                   // Landscape mein bar ki height kam kar di
+//                     height: isLandscape ? 4 : 6,
+//                     margin: const EdgeInsets.symmetric(horizontal: 4),
+//                     decoration: BoxDecoration(
+//                         borderRadius: BorderRadius.circular(3),
+//                         color: i <= _currentPage ? theme.primaryColor : theme.disabledColor.withValues(alpha:0.2)
+//                     )
+//                 )
+//             ))
+//         ),
+//         const SizedBox(height: 5),
+//         Text("Step ${_currentPage + 1} of $_totalPages", style: theme.textTheme.bodySmall),
+//       ]),
+//     );
+//   }
+//
+//   Widget _buildLocationPage(Color iconColor, ThemeData theme) {
+//     return _buildPage(
+//       title: "Location Details",
+//       subtitle: "Where are you located?",
+//       formKey: _formKeys[1],
+//       children: [
+//         SizedBox(
+//           width: double.infinity,
+//           child: OutlinedButton.icon(
+//             onPressed: _isLocating ? null : _handleLocationDetection,
+//             icon: _isLocating
+//                 ? const SizedBox(width: 15, height: 15, child: CircularProgressIndicator(strokeWidth: 2))
+//                 : const Icon(Icons.my_location),
+//             label: Text(_isLocating ? "Locating..." : "Auto-Detect My Location"),
+//             style: OutlinedButton.styleFrom(
+//               padding: const EdgeInsets.symmetric(vertical: 12),
+//               side: BorderSide(color: theme.primaryColor),
+//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+//             ),
+//           ),
+//         ),
+//         const SizedBox(height: 20),
+//         _buildField(address, "Address", Icons.home, iconColor: iconColor, maxLines: 2, v: (v) => v!.trim().isEmpty ? "Address is required" : null),
+//         const SizedBox(height: 15),
+//         Row(children: [
+//           Expanded(child: _buildField(place, "City/Place", Icons.location_city, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Place is required" : null)),
+//           const SizedBox(width: 10),
+//           Expanded(child: _buildField(pincode, "Pincode", Icons.pin_drop, iconColor: iconColor, type: TextInputType.number, maxLength: 6, v: (v) {
+//             if(v == null || v.isEmpty) return "Required";
+//             if(v.length != 6) return "Must be 6 digits";
+//             return null;
+//           })),
+//         ]),
+//         const SizedBox(height: 15),
+//         _buildField(post, "Post Office", Icons.local_post_office, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Required" : null),
+//         if (widget.isDistributor) ...[
+//           const SizedBox(height: 15),
+//           Row(children: [
+//             Expanded(child: _buildField(latitude, "Latitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
+//             const SizedBox(width: 10),
+//             Expanded(child: _buildField(longitude, "Longitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
+//           ]),
+//         ]
+//       ],
+//     );
+//   }
+//
+//   Widget _buildPersonalPage(Color iconColor) => _buildPage(title: "Personal", subtitle: "Let's get started", formKey: _formKeys[0], children: [
+//     _buildField(name, "Full Name", Icons.person, iconColor: iconColor, v: _validateName),
+//     const SizedBox(height: 15),
+//     _buildField(email, "Email", Icons.email, iconColor: iconColor, type: TextInputType.emailAddress, v: _validateEmail),
+//     const SizedBox(height: 15),
+//     _buildField(phone, "Phone", Icons.phone, iconColor: iconColor, type: TextInputType.phone, maxLength: 10, prefix: "+91 ", v: _validatePhone),
+//   ]);
+//
+//   Widget _buildFilesPage(Color iconColor, ThemeData theme) => _buildPage(title: "Proofs", subtitle: "Upload images only", formKey: _formKeys[2], children: [
+//     _buildField(bio, "Bio", Icons.description, iconColor: iconColor, maxLines: 3, v: (v) => v!.isEmpty ? "Bio is required" : null),
+//     const SizedBox(height: 25),
+//     _buildFileCard("Profile Image", _file1, () => _pickFile(false), theme),
+//     if (widget.isDistributor) ...[const SizedBox(height: 15), _buildFileCard("Proof Image", _file2, () => _pickFile(true), theme)]
+//   ]);
+//
+//   Widget _buildSecurityPage(Color iconColor) => _buildPage(title: "Security", subtitle: "Set Password", formKey: _formKeys[3], children: [
+//     _buildField(password, "Password", Icons.lock, iconColor: iconColor, isPass: true, obscure: _obscurePass, togglePass: () => setState(() => _obscurePass = !_obscurePass), v: _validatePassword),
+//     const SizedBox(height: 15),
+//     _buildField(confirmpassword, "Confirm", Icons.lock_outline, iconColor: iconColor, isPass: true, obscure: _obscureConfirm, togglePass: () => setState(() => _obscureConfirm = !_obscureConfirm), v: (v) {
+//       if(v == null || v.isEmpty) return "Confirm your password";
+//       if(v != password.text) return "Passwords do not match";
+//       return null;
+//     }),
+//     const SizedBox(height: 40),
+//     AppButton(text: "REGISTER", isLoading: _isLoading, onPressed: _register),
+//   ]);
+//
+//   Widget _buildBottomNav(ThemeData theme) => Container(padding: const EdgeInsets.all(20), color: theme.cardColor, child: AppButton(text: "Next Step", onPressed: _nextPage, isTrailingIcon: true, icon: Icons.arrow_forward));
+//
+//   Widget _buildPage({required String title, required String subtitle, required List<Widget> children, required GlobalKey<FormState> formKey}) => SingleChildScrollView(padding: const EdgeInsets.all(24), child: Form(key: formKey, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight)), const SizedBox(height: 5), Text(subtitle, style: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight)), const SizedBox(height: 30), ...children, const SizedBox(height: 100)])));
+//
+//   Widget _buildField(TextEditingController c, String label, IconData icon, {required Color iconColor, bool isPass = false, bool obscure = false, VoidCallback? togglePass, TextInputType type = TextInputType.text, int maxLines = 1, int? maxLength, String? prefix, String? Function(String?)? v}) {
+//     return TextFormField(
+//         controller: c,
+//         obscureText: isPass ? obscure : false,
+//         keyboardType: type,
+//         maxLines: maxLines,
+//         maxLength: maxLength,
+//         validator: v,
+//         style: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight),
+//         decoration: InputDecoration(
+//             labelText: label,
+//             labelStyle: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight),
+//             prefixIcon: Icon(icon, color: iconColor, size: 20),
+//             prefixText: prefix,
+//             counterText: "",
+//             suffixIcon: isPass ? IconButton(icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: iconColor), onPressed: togglePass) : null
+//         )
+//     );
+//   }
+//
+//   Widget _buildFileCard(String label, PlatformFile? file, VoidCallback onTap, ThemeData theme) {
+//     bool isSet = file != null;
+//     return InkWell(
+//         onTap: onTap,
+//         borderRadius: BorderRadius.circular(12),
+//         child: Container(
+//             padding: const EdgeInsets.all(16),
+//             decoration: BoxDecoration(
+//                 color: theme.cardColor,
+//                 border: Border.all(color: isSet ? theme.primaryColor : theme.dividerColor),
+//                 borderRadius: BorderRadius.circular(12)
+//             ),
+//             child: Row(children: [
+//               Icon(isSet ? Icons.check_circle : Icons.image, color: isSet ? theme.primaryColor : theme.disabledColor),
+//               const SizedBox(width: 15),
+//               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+//                 Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight)),
+//                 Text(file != null ? file.name : "Tap to upload image", maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight))
+//               ]))]
+//             )
+//         )
+//     );
+//   }
+// }
+
 
 import 'dart:convert';
 import 'dart:typed_data';
@@ -7,6 +455,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:hugeicons/hugeicons.dart'; // 🚀 IMPORTED
 import 'package:snap2bill/screens/Login_page.dart';
 
 // ✅ LOCATION PACKAGES
@@ -179,7 +628,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   void _showError(String msg) {
-
     CustomSnackBar.show(context, Text(msg) as String ,
         backgroundColor: AppColors.dangerColor);
   }
@@ -270,11 +718,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildHeader(ThemeData theme) {
-    // 🚀 Check orientation
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Container(
-      // Landscape mein padding kam kar di (20 se 10)
       padding: EdgeInsets.all(isLandscape ? 10 : 20),
       decoration: BoxDecoration(
           color: theme.cardColor,
@@ -283,7 +729,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
       child: Column(children: [
         Row(children: [
           IconButton(
-              icon: Icon(Icons.arrow_back_ios_new, size: isLandscape ? 18 : 20),
+            // 🚀 HUGE ICON
+              icon: HugeIcon(icon: HugeIcons.strokeRoundedArrowLeft01, size: isLandscape ? 18 : 24, color: Theme.of(context).iconTheme.color!),
               onPressed: () => _currentPage > 0 ? _prevPage() : Navigator.pop(context)
           ),
           Expanded(
@@ -292,7 +739,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       widget.isDistributor ? "Distributor Register" : "Customer Register",
                       maxLines: 1,
                       style: TextStyle(
-                        // Landscape mein font size thoda chota kiya
                           fontSize: isLandscape ? 16 : 20,
                           fontWeight: FontWeight.w900,
                           color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight
@@ -302,12 +748,10 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
           SizedBox(width: isLandscape ? 30 : 40),
         ]),
-        // Landscape mein ye gap (15 se 5) kam kar diya
         SizedBox(height: isLandscape ? 5 : 15),
         Row(
             children: List.generate(_totalPages, (i) => Expanded(
                 child: Container(
-                  // Landscape mein bar ki height kam kar di
                     height: isLandscape ? 4 : 6,
                     margin: const EdgeInsets.symmetric(horizontal: 4),
                     decoration: BoxDecoration(
@@ -335,7 +779,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
             onPressed: _isLocating ? null : _handleLocationDetection,
             icon: _isLocating
                 ? const SizedBox(width: 15, height: 15, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.my_location),
+            // 🚀 HUGE ICON
+                : const HugeIcon(icon: HugeIcons.strokeRoundedGps01, color: Colors.blue, size: 20),
             label: Text(_isLocating ? "Locating..." : "Auto-Detect My Location"),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -345,25 +790,25 @@ class _RegistrationPageState extends State<RegistrationPage> {
           ),
         ),
         const SizedBox(height: 20),
-        _buildField(address, "Address", Icons.home, iconColor: iconColor, maxLines: 2, v: (v) => v!.trim().isEmpty ? "Address is required" : null),
+        _buildField(address, "Address", HugeIcons.strokeRoundedHome01, iconColor: iconColor, maxLines: 2, v: (v) => v!.trim().isEmpty ? "Address is required" : null),
         const SizedBox(height: 15),
         Row(children: [
-          Expanded(child: _buildField(place, "City/Place", Icons.location_city, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Place is required" : null)),
+          Expanded(child: _buildField(place, "City/Place", HugeIcons.strokeRoundedCity01, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Place is required" : null)),
           const SizedBox(width: 10),
-          Expanded(child: _buildField(pincode, "Pincode", Icons.pin_drop, iconColor: iconColor, type: TextInputType.number, maxLength: 6, v: (v) {
+          Expanded(child: _buildField(pincode, "Pincode", HugeIcons.strokeRoundedPinLocation03, iconColor: iconColor, type: TextInputType.number, maxLength: 6, v: (v) {
             if(v == null || v.isEmpty) return "Required";
             if(v.length != 6) return "Must be 6 digits";
             return null;
           })),
         ]),
         const SizedBox(height: 15),
-        _buildField(post, "Post Office", Icons.local_post_office, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Required" : null),
+        _buildField(post, "Post Office", HugeIcons.strokeRoundedMailbox01, iconColor: iconColor, v: (v) => v!.trim().isEmpty ? "Required" : null),
         if (widget.isDistributor) ...[
           const SizedBox(height: 15),
           Row(children: [
-            Expanded(child: _buildField(latitude, "Latitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
+            Expanded(child: _buildField(latitude, "Latitude", HugeIcons.strokeRoundedCompass01, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
             const SizedBox(width: 10),
-            Expanded(child: _buildField(longitude, "Longitude", Icons.gps_fixed, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
+            Expanded(child: _buildField(longitude, "Longitude", HugeIcons.strokeRoundedCompass01, iconColor: iconColor, type: TextInputType.number, v: (v) => v!.isEmpty ? "Required" : null)),
           ]),
         ]
       ],
@@ -371,24 +816,24 @@ class _RegistrationPageState extends State<RegistrationPage> {
   }
 
   Widget _buildPersonalPage(Color iconColor) => _buildPage(title: "Personal", subtitle: "Let's get started", formKey: _formKeys[0], children: [
-    _buildField(name, "Full Name", Icons.person, iconColor: iconColor, v: _validateName),
+    _buildField(name, "Full Name", HugeIcons.strokeRoundedUser, iconColor: iconColor, v: _validateName),
     const SizedBox(height: 15),
-    _buildField(email, "Email", Icons.email, iconColor: iconColor, type: TextInputType.emailAddress, v: _validateEmail),
+    _buildField(email, "Email", HugeIcons.strokeRoundedMail01, iconColor: iconColor, type: TextInputType.emailAddress, v: _validateEmail),
     const SizedBox(height: 15),
-    _buildField(phone, "Phone", Icons.phone, iconColor: iconColor, type: TextInputType.phone, maxLength: 10, prefix: "+91 ", v: _validatePhone),
+    _buildField(phone, "Phone", HugeIcons.strokeRoundedSmartPhone01, iconColor: iconColor, type: TextInputType.phone, maxLength: 10, prefix: "+91 ", v: _validatePhone),
   ]);
 
   Widget _buildFilesPage(Color iconColor, ThemeData theme) => _buildPage(title: "Proofs", subtitle: "Upload images only", formKey: _formKeys[2], children: [
-    _buildField(bio, "Bio", Icons.description, iconColor: iconColor, maxLines: 3, v: (v) => v!.isEmpty ? "Bio is required" : null),
+    _buildField(bio, "Bio", HugeIcons.strokeRoundedNoteEdit, iconColor: iconColor, maxLines: 3, v: (v) => v!.isEmpty ? "Bio is required" : null),
     const SizedBox(height: 25),
     _buildFileCard("Profile Image", _file1, () => _pickFile(false), theme),
     if (widget.isDistributor) ...[const SizedBox(height: 15), _buildFileCard("Proof Image", _file2, () => _pickFile(true), theme)]
   ]);
 
   Widget _buildSecurityPage(Color iconColor) => _buildPage(title: "Security", subtitle: "Set Password", formKey: _formKeys[3], children: [
-    _buildField(password, "Password", Icons.lock, iconColor: iconColor, isPass: true, obscure: _obscurePass, togglePass: () => setState(() => _obscurePass = !_obscurePass), v: _validatePassword),
+    _buildField(password, "Password", HugeIcons.strokeRoundedSecurityPassword, iconColor: iconColor, isPass: true, obscure: _obscurePass, togglePass: () => setState(() => _obscurePass = !_obscurePass), v: _validatePassword),
     const SizedBox(height: 15),
-    _buildField(confirmpassword, "Confirm", Icons.lock_outline, iconColor: iconColor, isPass: true, obscure: _obscureConfirm, togglePass: () => setState(() => _obscureConfirm = !_obscureConfirm), v: (v) {
+    _buildField(confirmpassword, "Confirm", HugeIcons.strokeRoundedSecurityCheck, iconColor: iconColor, isPass: true, obscure: _obscureConfirm, togglePass: () => setState(() => _obscureConfirm = !_obscureConfirm), v: (v) {
       if(v == null || v.isEmpty) return "Confirm your password";
       if(v != password.text) return "Passwords do not match";
       return null;
@@ -397,11 +842,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
     AppButton(text: "REGISTER", isLoading: _isLoading, onPressed: _register),
   ]);
 
-  Widget _buildBottomNav(ThemeData theme) => Container(padding: const EdgeInsets.all(20), color: theme.cardColor, child: AppButton(text: "Next Step", onPressed: _nextPage, isTrailingIcon: true, icon: Icons.arrow_forward));
+  Widget _buildBottomNav(ThemeData theme) => Container(padding: const EdgeInsets.all(20), color: theme.cardColor, child: AppButton(text: "Next Step", onPressed: _nextPage, isTrailingIcon: true, icon: HugeIcons.strokeRoundedArrowRight01));
 
   Widget _buildPage({required String title, required String subtitle, required List<Widget> children, required GlobalKey<FormState> formKey}) => SingleChildScrollView(padding: const EdgeInsets.all(24), child: Form(key: formKey, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text(title, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight)), const SizedBox(height: 5), Text(subtitle, style: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight)), const SizedBox(height: 30), ...children, const SizedBox(height: 100)])));
 
-  Widget _buildField(TextEditingController c, String label, IconData icon, {required Color iconColor, bool isPass = false, bool obscure = false, VoidCallback? togglePass, TextInputType type = TextInputType.text, int maxLines = 1, int? maxLength, String? prefix, String? Function(String?)? v}) {
+  // 🚀 UPDATED: Accepts dynamic icon
+  Widget _buildField(TextEditingController c, String label, dynamic icon, {required Color iconColor, bool isPass = false, bool obscure = false, VoidCallback? togglePass, TextInputType type = TextInputType.text, int maxLines = 1, int? maxLength, String? prefix, String? Function(String?)? v}) {
     return TextFormField(
         controller: c,
         obscureText: isPass ? obscure : false,
@@ -413,10 +859,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
         decoration: InputDecoration(
             labelText: label,
             labelStyle: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight),
-            prefixIcon: Icon(icon, color: iconColor, size: 20),
+            // 🚀 HUGE ICON RENDERED
+            prefixIcon: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: HugeIcon(icon: icon, color: iconColor, size: 10),
+            ),
             prefixText: prefix,
             counterText: "",
-            suffixIcon: isPass ? IconButton(icon: Icon(obscure ? Icons.visibility_off : Icons.visibility, color: iconColor), onPressed: togglePass) : null
+            suffixIcon: isPass ? IconButton(
+              // 🚀 HUGE ICON FOR PASSWORD VISIBILITY
+                icon: HugeIcon(icon: obscure ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView, color: iconColor, size: 20),
+                onPressed: togglePass
+            ) : null
         )
     );
   }
@@ -434,7 +888,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 borderRadius: BorderRadius.circular(12)
             ),
             child: Row(children: [
-              Icon(isSet ? Icons.check_circle : Icons.image, color: isSet ? theme.primaryColor : theme.disabledColor),
+              // 🚀 HUGE ICON
+              HugeIcon(icon: isSet ? HugeIcons.strokeRoundedCheckmarkCircle02 : HugeIcons.strokeRoundedImage01, color: isSet ? theme.primaryColor : theme.disabledColor, size: 24),
               const SizedBox(width: 15),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Text(label, style: TextStyle(fontWeight: FontWeight.bold, color: AppColors.isDarkMode(context) ? AppColors.textMainDark : AppColors.textMainLight)),

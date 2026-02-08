@@ -118,8 +118,18 @@ class _addOrderState extends State<addOrder> {
 
     if (json.decode(response.body)['status'] == 'ok') {
       CustomSnackBar.show(context, "Added to cart!", backgroundColor: successColor);
+
       if (customPid == null) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const viewCart()));
+        // 🚀 Step 1: pushReplacement ki jagah push use karein
+        // Isse page stack mein rehta hai
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const viewCart())
+        ).then((_) {
+          // 🚀 Step 2: Jab user Cart page se wapas is page par aaye
+          // toh turant home page tak signal bhejne ke liye pop karein
+          Navigator.pop(context, "refresh");
+        });
       }
     }
     setState(() => _isSubmitting = false);
@@ -145,7 +155,7 @@ class _addOrderState extends State<addOrder> {
       appBar: ThemeNavbar(
         title: "Order Product",
         leadingIcon: Icons.arrow_back_ios_rounded,
-        onLeadingPressed: () => Navigator.pop(context),
+        onLeadingPressed: () => Navigator.pop(context, "refresh"),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

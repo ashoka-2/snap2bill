@@ -197,6 +197,7 @@
 
 import 'dart:convert'; // 🚀 Added for json decoding
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http; // 🚀 Added for counts API
 
@@ -239,6 +240,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   // 🚀 EXTRA DETAILS: Count Variables
   int _cartCount = 0;
   int _wishlistCount = 0;
+  String _refreshTrigger = "";
 
   late Color dangerColor;
 
@@ -293,31 +295,43 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
     });
   }
   // 🚀 Sirf counts refresh karne ke liye, products ko touch nahi karega
+  // CustomerHomePage.dart ke andar
   Future<void> _refreshCountsOnly() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String ip = prefs.getString("ip") ?? "";
-      String uid = prefs.getString("uid") ?? ""; // Distributor
-      String cid = prefs.getString("cid") ?? ""; // Customer
+      String cid = prefs.getString("cid") ?? "";
 
+      // 🚀 Customer ke liye hamesha cid bhejein
       final response = await http.post(
         Uri.parse("$ip/get_counts"),
-        body: uid.isNotEmpty ? {'uid': uid} : {'cid': cid},
+        body: {'cid': cid},
       );
 
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         if (mounted) {
           setState(() {
-            // 🚀 Sirf in do variables ko update karein
             _cartCount = data['cart_count'] ?? 0;
             _wishlistCount = data['wishlist_count'] ?? 0;
           });
-          // Products reload nahi honge, toh UI blink nahi karega!
         }
       }
     } catch (e) {
-      debugPrint("Count refresh error: $e");
+      debugPrint("Silent count refresh error: $e");
+    }
+  }
+
+  // CustomerHomePage.dart ke andar
+  Future<void> _syncProductsOnly() async {
+    final updatedProducts = await ProductService.customerProducts();
+    if (mounted) {
+      setState(() {
+        // 🚀 FIX 5: Yahan bhi List.from() zaroori hai
+        _allProducts = List.from(updatedProducts);
+        _refreshTrigger = DateTime.now().millisecondsSinceEpoch.toString();
+      });
+      _refreshCountsOnly();
     }
   }
   /// =============================================================
@@ -325,33 +339,44 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
   /// =============================================================
   List<DrawerItemModel> _getDrawerItems() {
     return [
+      // 1. View Products
       DrawerItemModel(
-        icon: Icons.shopping_bag_outlined,
+        icon: HugeIcons.strokeRoundedShoppingBag01,
         title: "View Products",
         onTap: () => const view_product(),
       ),
+
+      // 2. Send Feedback (Icon with 'Add' or 'Send' indicator)
       DrawerItemModel(
-        icon: Icons.feedback_outlined,
+        icon: HugeIcons.strokeRoundedCommentAdd01,
         title: "Send Feedback",
         onTap: () => const send_feedback(),
       ),
+
+      // 3. View Feedback (Standard Comment Icon)
       DrawerItemModel(
-        icon: Icons.feedback_outlined,
+        icon: HugeIcons.strokeRoundedComment01,
         title: "View Feedback",
         onTap: () => const view_feedback(),
       ),
+
+      // 4. Orders (Invoice style fits best)
       DrawerItemModel(
-        icon: Icons.list_alt,
+        icon: HugeIcons.strokeRoundedInvoice01,
         title: "Orders",
         onTap: () => const viewOrder(),
       ),
+
+      // 5. Change Password
       DrawerItemModel(
-        icon: Icons.lock_outline,
+        icon: HugeIcons.strokeRoundedSecurityPassword,
         title: "Change Password",
         onTap: () => const ChangePassword(),
       ),
+
+      // 6. Logout
       DrawerItemModel(
-        icon: Icons.logout,
+        icon: HugeIcons.strokeRoundedLogout04,
         title: "Logout",
         color: dangerColor,
         onTap: () async {
@@ -384,7 +409,9 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
       key: _scaffoldKey,
       backgroundColor: theme.scaffoldBackgroundColor,
 
-      drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
+      // drawerEdgeDragWidth: MediaQuery.of(context).size.width * 0.4,
+      drawerEnableOpenDragGesture: false,
+
       drawer: CustomDrawer(menuItems: _getDrawerItems()),
 
       appBar: ThemeNavbar(
@@ -396,6 +423,8 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
           /// ❤️ Wishlist with Badge
           Badge(
             label: Text(_wishlistCount.toString()),
+            textColor: AppColors.WhiteColor,
+
             isLabelVisible: _wishlistCount > 0, // 🚀 Only show if count > 0
             offset: const Offset(-4, 4),
             backgroundColor: primaryColor,
@@ -405,8 +434,10 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const ViewWishlist()),
-                ).then((_) {
-                  _loadData(); // 🚀 Refresh count when coming back
+                ).then((result) {
+                  if (result == "refresh") {
+                    _syncProductsOnly();
+                  }
                 });
               },
             ),
@@ -416,7 +447,10 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
 
           /// 🛒 Cart with Badge
           Badge(
-            label: Text(_cartCount.toString()),
+            label: Text(_cartCount.toString(),),
+            textColor: AppColors.WhiteColor,
+
+
             isLabelVisible: _cartCount > 0, // 🚀 Only show if count > 0
             offset: const Offset(-4, 4),
             backgroundColor: dangerColor,
@@ -427,7 +461,7 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
                   context,
                   MaterialPageRoute(builder: (_) => const viewCart()),
                 ).then((_) {
-                  _loadData(); // 🚀 Refresh count when coming back
+                  _syncProductsOnly(); // 🚀 Refresh count when coming back
                 });
               },
             ),
@@ -447,15 +481,25 @@ class _CustomerHomePageState extends State<CustomerHomePage> {
             ),
 
             Expanded(
-              child: ProductFeedWidget(
-                filteredProducts: filteredProducts,
-                showAddToCart: true,
-                isLoading: _isLoading,
-                onWishlistToggle: () {
-                  // 🚀 Ab poora data load nahi hoga, sirf badge badlega
-                  _refreshCountsOnly();
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onPanUpdate: (details) {
+                  if (details.delta.dx > 5) {
+                    _scaffoldKey.currentState?.openDrawer();
+                  }
                 },
+                child: ProductFeedWidget(
 
+                  filteredProducts: filteredProducts,
+                  showAddToCart: true,
+                  isLoading: _isLoading,
+                  onWishlistToggle: () {
+                    // 🚀 Ab poora data load nahi hoga, sirf badge badlega
+                    _refreshCountsOnly();
+                  },
+                  refreshId: _refreshTrigger,
+                
+                ),
               ),
             ),
           ],
