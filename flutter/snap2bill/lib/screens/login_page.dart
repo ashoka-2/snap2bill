@@ -384,6 +384,7 @@ import 'dart:async';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:google_sign_in/google_sign_in.dart'; // 🚀 IMPORTED
@@ -454,6 +455,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Future<void> _handleGoogleLogin() async {
     setState(() => _isGoogleLoading = true);
     try {
+
+      await _googleSignIn.signOut();
+
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         setState(() => _isGoogleLoading = false);
@@ -707,14 +711,19 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 : SizedBox(
                               width: double.infinity,
                               height: 50,
-                              child: OutlinedButton.icon(
+                              child: SecondaryButton(
                                 onPressed: _handleGoogleLogin,
-                                icon: const HugeIcon(icon: HugeIcons.strokeRoundedGoogle, color: Colors.red, size: 24),
-                                label: Text("Sign in with Google", style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-                                style: OutlinedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                                    side: BorderSide(color: subTextColor.withOpacity(0.3))
+                                leading: ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+
+                                  child: Lottie.asset(
+                                    'assets/lotties/Google Icon.json', // Apne file ka sahi path dalein
+                                    height: 30, // ⚠️ Size chhota rakhein (Button ke liye 24-30 best hai)
+                                    width: 30,
+                                    repeat: true, // Animation loop kare ya nahi
+                                  ),
                                 ),
+                                text:"Sign in with Google",
                               ),
                             ),
                           ],

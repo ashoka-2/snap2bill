@@ -12,7 +12,20 @@
           "package_name": "com.example.snap2bill"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "678033694194-4385n55ctp6ng42omb7pg1fe5pc86ql8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.snap2bill",
+            "certificate_hash": "5b4ad013634341f06af987fe85320f87b0e94919"
+          }
+        },
+        {
+          "client_id": "678033694194-6b1rb4qrs7dbnd588t9gjh515l9f1v93.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCajWMI6mA0LjPE4sljF5nHWBC1NmOtcv4"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "678033694194-6b1rb4qrs7dbnd588t9gjh515l9f1v93.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

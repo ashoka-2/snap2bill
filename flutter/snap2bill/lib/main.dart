@@ -714,7 +714,6 @@ class _SplashPageState extends State<SplashPage> {
               child: SvgPicture.asset(
                 'assets/images/snap2bill_logo.svg',
                 height: 80,
-                color: Colors.white,
               ),
             ),
             const SizedBox(height: 20),
