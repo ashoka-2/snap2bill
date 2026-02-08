@@ -122,7 +122,10 @@ class DistributorCustomerLink(models.Model):
     added_date = models.DateTimeField(auto_now_add=True)
 
 
-
+class recently_viewed(models.Model):
+    USER = models.ForeignKey(customer, on_delete=models.CASCADE)
+    STOCK = models.ForeignKey(stock, on_delete=models.CASCADE)
+    viewed_date = models.DateTimeField(auto_now=True)
 
 
 

@@ -149,7 +149,14 @@ urlpatterns = [
 
     path('manage_units',views.manage_units),
     path('delete_unit/<id>', views.delete_unit),
-    path('view_units',views.view_units)
+    path('view_units',views.view_units),
+
+
+
+    path('get_incremental_suggestions',views.get_incremental_suggestions),
+    path('add_to_recent',views.add_to_recent),
+    path('get_recent_products', views.get_recent_products),
+    path('get_counts',views.get_counts),
 
 ]
 

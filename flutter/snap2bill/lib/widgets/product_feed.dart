@@ -8,12 +8,14 @@ class ProductFeedWidget extends StatelessWidget {
   final List<ProductData> filteredProducts;
   final bool showAddToCart;
   final bool isLoading;
+  final VoidCallback? onWishlistToggle;
 
   const ProductFeedWidget({
     Key? key,
     required this.filteredProducts,
     required this.showAddToCart,
     required this.isLoading,
+    this.onWishlistToggle,
   }) : super(key: key);
 
   @override
@@ -53,6 +55,7 @@ class ProductFeedWidget extends StatelessWidget {
           key: ValueKey("${product.id}_${product.isLiked}"),
           product: product,
           showAddToCart: showAddToCart,
+          onWishlistToggle: onWishlistToggle,
         );
       },
     );

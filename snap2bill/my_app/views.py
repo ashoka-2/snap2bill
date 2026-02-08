@@ -1,7 +1,6 @@
 import os
 from datetime import datetime
-
-from django.conf import settings
+from collections import defaultdict
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
@@ -30,7 +29,7 @@ def get_new_filename():
 from django.views.decorators.csrf import csrf_exempt
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
-    cart, wishlist, DistributorCustomerLink, unit
+    cart, wishlist, DistributorCustomerLink, unit, recently_viewed
 
 print(make_password("password"))
 
@@ -1301,7 +1300,7 @@ def viewCart(request):
     data = cart.objects.filter(USER=request.POST['cid'])
     ar = []
     for i in data:
-        total += int(i.STOCK.price) * int(i.quantity)
+        total += float(i.STOCK.price) * float(i.quantity)
         ar.append({
             'id': i.id,
             'product_name': i.STOCK.PRODUCT.product_name,
@@ -1310,7 +1309,7 @@ def viewCart(request):
             'image':i.STOCK.PRODUCT.image,
             'distributor_name':i.STOCK.DISTRIBUTOR.name,
             'unit_name':i.STOCK.UNIT.unit_name,
-            "total":int(i.STOCK.price) * int(i.quantity)
+            "total":float(i.STOCK.price) * float(i.quantity)
 
 
         })
@@ -2312,3 +2311,134 @@ def distributor_add_product(request):
         return JsonResponse({'status': 'ok'})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+
+
+
+
+
+def get_incremental_suggestions(request):
+    try:
+        current_sid = request.POST.get('sid')
+        if not current_sid:
+            return JsonResponse({'status': 'error', 'message': 'sid missing'})
+
+        current_sid = int(current_sid)
+
+        # 🚀 FIX: Order IDs ki jagah User + Date ka combination use karein
+        # Isse Distributor A aur B ke products link ho jayenge
+        order_items = order_sub.objects.all().select_related('ORDER')
+
+        user_session_transactions = defaultdict(list)
+
+        for item in order_items:
+            # Ek user ne ek hi date par jo bhi kharida, use ek transaction maanein
+            # Format: "user_2_2024-02-08"
+            session_key = f"user_{item.ORDER.USER_id}_{item.ORDER.date}"
+            user_session_transactions[session_key].append(item.STOCK_id)
+
+        # Frequent Pattern Mining Logic
+        related_items_count = defaultdict(int)
+
+        for session_id in user_session_transactions:
+            product_list = user_session_transactions[session_id]
+
+            # Agar is user session mein current product maujood hai
+            if current_sid in product_list:
+                for other_item in product_list:
+                    if other_item != current_sid:
+                        related_items_count[other_item] += 1
+
+        # Most relevant items (A + B dono ke mix suggestions milenge)
+        sorted_related = sorted(related_items_count.items(), key=lambda x: x[1], reverse=True)[:5]
+
+        ar = []
+        for sid, score in sorted_related:
+            try:
+                item = stock.objects.get(id=sid)
+                ar.append({
+                    'id': item.id,
+                    'product_name': item.PRODUCT.product_name,
+                    'price': item.price,
+                    'image': item.PRODUCT.image,
+                    'unit': item.UNIT.unit_name if item.UNIT else "pcs",
+                    'distributor_name': item.DISTRIBUTOR.name,  # 🚀 Identify karne ke liye kaunsa distributor hai
+                    'confidence_score': score
+                })
+            except stock.DoesNotExist:
+                continue
+
+        return JsonResponse({'status': 'ok', 'data': ar})
+
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+from django.utils import timezone
+
+
+# 1. Product view hote hi record add ya update karein
+def add_to_recent(request):
+    try:
+        cid = request.POST.get('cid')
+        sid = request.POST.get('sid')  # Stock ID
+
+        # Agar pehle se dekha hua hai toh time update karo, warna naya banao
+        obj, created = recently_viewed.objects.update_or_create(
+            USER_id=cid, STOCK_id=sid,
+            defaults={'viewed_date': timezone.now()}
+        )
+
+        # Optimization: Sirf top 10 items rakhein (Extra delete kar dein)
+        all_recent = recently_viewed.objects.filter(USER_id=cid).order_by('-viewed_date')
+        if all_recent.count() > 10:
+            ids_to_keep = all_recent.values_list('pk', flat=True)[:10]
+            recently_viewed.objects.filter(USER_id=cid).exclude(pk__in=ids_to_keep).delete()
+
+        return JsonResponse({'status': 'ok'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+# 2. Cart page ke liye list fetch karein
+def get_recent_products(request):
+    try:
+        cid = request.POST.get('cid')
+        data = recently_viewed.objects.filter(USER_id=cid).order_by('-viewed_date')[:10]
+
+        ar = []
+        for i in data:
+            item = i.STOCK
+            ar.append({
+                'id': item.id,
+                'product_name': item.PRODUCT.product_name,
+                'price': item.price,
+                'image': item.PRODUCT.image,
+                'distributor': item.DISTRIBUTOR.name,
+                'unit': item.UNIT.unit_name if item.UNIT else "pcs"
+            })
+        return JsonResponse({'status': 'ok', 'data': ar})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+def get_counts(request):
+    uid = request.POST.get('uid')  # Distributor ID
+    cid = request.POST.get('cid')  # Customer ID
+
+    wishlist_count = 0
+    cart_count = 0
+
+    if uid:  # Agar distributor check kar raha hai
+        wishlist_count = wishlist.objects.filter(DISTRIBUTOR_id=uid, USER__isnull=True).count()
+    elif cid:  # Agar customer check kar raha hai
+        wishlist_count = wishlist.objects.filter(USER_id=cid, DISTRIBUTOR__isnull=True).count()
+        cart_count = cart.objects.filter(USER_id=cid).count()
+
+    return JsonResponse({
+        'status': 'ok',
+        'wishlist_count': wishlist_count,
+        'cart_count': cart_count
+    })

@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +22,7 @@ class addOrder extends StatefulWidget {
 class _addOrderState extends State<addOrder> {
   final TextEditingController _qtyController = TextEditingController(text: "1");
   Map<String, dynamic>? productData;
+  List<dynamic> fbtProducts = [];
   bool _isLoading = true;
   bool _isSubmitting = false;
   String _ip = "";
@@ -38,13 +40,12 @@ class _addOrderState extends State<addOrder> {
     super.dispose();
   }
 
-  // Helper to get current qty safely
   int get currentQty => int.tryParse(_qtyController.text) ?? 1;
 
   Future<void> _fetchDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _ip = prefs.getString("ip") ?? "";
-    String pid = prefs.getString("pid") ?? "";
+    String pid = widget.pid ?? prefs.getString("pid") ?? "";
 
     final response = await http.post(
       Uri.parse("$_ip/get_product_details"),
@@ -54,41 +55,71 @@ class _addOrderState extends State<addOrder> {
     if (response.statusCode == 200) {
       setState(() {
         productData = json.decode(response.body)['data'];
-        _isLoading = false;
       });
+
+      // 🚀 1. Pehle suggestions fetch karein
+      _fetchSuggestions(pid);
+
+      // 🚀 2. Backend ko batayein ki ye product dekha gaya hai (Recently Viewed)
+      _saveToRecentOnServer(pid);
     }
   }
 
-  Future<void> _addToCart() async {
-    // 🚀 VALIDATION: Ensure quantity is between 1 and 100
-    if (currentQty < 1) {
-      CustomSnackBar.show(context, "Quantity cannot be less than 1.", backgroundColor: AppColors.dangerColor, durationMs: 800);
-
-      return;
+  // 🔥 NEW FUNCTION: Backend par entry save karne ke liye
+  Future<void> _saveToRecentOnServer(String sid) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await http.post(
+        Uri.parse("$_ip/add_to_recent"), // Ensure this route is in urls.py
+        body: {
+          'cid': prefs.getString("cid"),
+          'sid': sid,
+        },
+      );
+      debugPrint("Logged to recently viewed: $sid");
+    } catch (e) {
+      debugPrint("Error logging recent view: $e");
     }
-    if (currentQty > 100) {
-      CustomSnackBar.show(context, "Maximum quantity allowed is 100.", backgroundColor: AppColors.dangerColor, durationMs: 800);
-      return;
-    }
+  }
 
+  Future<void> _fetchSuggestions(String sid) async {
+    try {
+      final response = await http.post(
+        Uri.parse("$_ip/get_incremental_suggestions"),
+        body: {'sid': sid},
+      );
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        if (data['status'] == 'ok') {
+          setState(() {
+            fbtProducts = data['data'];
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      debugPrint("FBT Fetch Error: $e");
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _addToCart({String? customPid, String? customQty}) async {
     setState(() => _isSubmitting = true);
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
+
     final response = await http.post(
       Uri.parse("$_ip/addorder"),
       body: {
-        "quantity": _qtyController.text,
+        "quantity": customQty ?? _qtyController.text,
         'cid': prefs.getString("cid"),
-        'pid': prefs.getString("pid"),
+        'pid': customPid ?? (widget.pid ?? prefs.getString("pid")),
       },
     );
 
     if (json.decode(response.body)['status'] == 'ok') {
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const viewCart()),
-        );
+      CustomSnackBar.show(context, "Added to cart!", backgroundColor: successColor);
+      if (customPid == null) {
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const viewCart()));
       }
     }
     setState(() => _isSubmitting = false);
@@ -97,8 +128,6 @@ class _addOrderState extends State<addOrder> {
   @override
   Widget build(BuildContext context) {
     successColor = AppColors.getSuccessColor(context);
-
-
     if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
 
     double price = double.tryParse(productData!['price'].toString()) ?? 0.0;
@@ -110,6 +139,7 @@ class _addOrderState extends State<addOrder> {
     final subTextColor = AppColors.getTextSubColor(context);
     final borderColor = AppColors.getBorderColor(context).withValues(alpha: 0.5);
     final primaryColor = AppColors.getPrimaryColor(context);
+
     return Scaffold(
       backgroundColor: bgColor,
       appBar: ThemeNavbar(
@@ -123,208 +153,167 @@ class _addOrderState extends State<addOrder> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              height: 320,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5)),
-                ],
+            _buildProductImage(),
+            const SizedBox(height: 25),
+            _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit),
+            const SizedBox(height: 20),
+            _buildDescription(cardColor, textColor, subTextColor),
+            const SizedBox(height: 30),
+
+            if (fbtProducts.isNotEmpty) ...[
+              Text(
+                "Frequently Bought Together",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
               ),
-              child: Hero(
-                tag: 'prod_${productData!['pid']}',
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(30),
-                  child: InteractiveViewer(
-                    child: Image.network(
-                      _ip + productData!['image'],
-                      fit: BoxFit.fill,
-                      errorBuilder: (_, __, ___) => const Icon(Icons.broken_image, size: 50),
-                    ),
-                  ),
+              const SizedBox(height: 15),
+              SizedBox(
+                height: 180,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: fbtProducts.length,
+                  itemBuilder: (context, index) {
+                    var item = fbtProducts[index];
+                    return _buildFBTCard(item, cardColor, textColor, subTextColor, primaryColor);
+                  },
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            Container(
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(color:AppColors.BlackColor.withValues(alpha: 0.09), blurRadius: 20, offset: const Offset(0, 4)),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    productData!['category'].toString().toUpperCase(),
-                    style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1.2),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    productData!['product_name'],
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
-                  ),
-                  const Divider(height: 40),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Flexible(
-                        flex: 2,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.centerRight,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
-                              Text(
-                                "₹${productData!['price']}",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: successColor
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 5,),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: AppColors.getPillBg(context),
-                          borderRadius: BorderRadius.circular(18),
-                          border: Border.all(color: borderColor),
-                        ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  if (currentQty > 1) setState(() => _qtyController.text = (currentQty - 1).toString());
-                                },
-                                icon: Icon(Icons.remove_circle_outline, color: primaryColor, size: 25)
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                SizedBox(
-                                  width: 55,
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(10),
-                                    child: TextField(
-                                      controller: _qtyController,
-                                      keyboardType: TextInputType.number,
-                                      textAlign: TextAlign.center,
-                                      onChanged: (value) {
-                                        // 🚀 Validation on manual typing
-                                        int? val = int.tryParse(value);
-                                        if (val != null && val > 100) {
-                                          _qtyController.text = "100";
-                                          _qtyController.selection = TextSelection.fromPosition(const TextPosition(offset: 3));
-                                        }
-                                        setState(() {});
-                                      },
-                                      inputFormatters: [
-                                        FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(3), // Prevents typing more than 3 digits
-                                      ],
-                                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textColor),
-                                      decoration: const InputDecoration(border: InputBorder.none, isDense: true),
-                                    ),
-                                  ),
-                                ),
-                                Text(unit, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: subTextColor)),
-                              ],
-                            ),
-                            IconButton(
-                                onPressed: () {
-                                  // 🚀 Validation on increment button
-                                  if (currentQty < 100) {
-                                    setState(() => _qtyController.text = (currentQty + 1).toString());
-                                  } else {
-                                    CustomSnackBar.show(context, "Maximum limit reached.", backgroundColor: AppColors.dangerColor, durationMs: 1000);
-                                  }
-                                },
-                                icon: Icon(Icons.add_circle_outline, color: primaryColor, size: 25)
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(25),
-              decoration: BoxDecoration(
-                color: cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(color:AppColors.BlackColor.withValues(alpha: 0.09), blurRadius: 20, offset: const Offset(0, 4)),
-                ],              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
-                  const SizedBox(height: 12),
-                  Text(
-                    productData!['description'] ?? "No description available.",
-                    style: TextStyle(color: subTextColor, height: 1.6, fontSize: 14),
-                  ),
-                ],
-              ),
-            ),
+            ],
             const SizedBox(height: 120),
           ],
         ),
       ),
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
-        decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
-            boxShadow: [BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.09), blurRadius: 15, offset: const Offset(0, -5))]
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerRight,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Total ($currentQty $unit)",maxLines: 1, style: TextStyle(color: subTextColor, fontSize: 13)),
-                    Text("₹${totalPrice.toStringAsFixed(2)}",maxLines: 1,
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              flex: 2,
-              child: AppButton(
-                text: "ADD TO CART",
-                icon: Icons.shopping_cart_outlined,
-                isLoading: _isSubmitting,
-                onPressed: _addToCart,
-                isTrailingIcon: true,
-              ),
-            ),
-          ],
+      bottomNavigationBar: _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice),
+    );
+  }
+
+  // WIDGET HELPERS
+  Widget _buildProductImage() {
+    return Container(
+      height: 320, width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [BoxShadow(color: AppColors.BlackColor.withValues(alpha:0.05), blurRadius: 15, offset: const Offset(0, 5))],
+      ),
+      child: Hero(
+        tag: 'prod_${productData!['id']}',
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(30),
+          child: InteractiveViewer(
+            child: Image.network(_ip + productData!['image'], fit: BoxFit.fill),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildFBTCard(item, cardColor, textColor, subTextColor, primaryColor) {
+    return Container(
+      width: 140,
+      margin: const EdgeInsets.only(right: 15),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: subTextColor.withOpacity(0.1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                _ip + item['image'],
+                fit: BoxFit.cover,
+                width: double.infinity,
+                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(item['product_name'], maxLines: 1, overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: textColor)),
+          Text("₹${item['price']}", style: TextStyle(fontSize: 12, color: successColor, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 5),
+          InkWell(
+            onTap: () {
+              SharedPreferences.getInstance().then((prefs) {
+                prefs.setString("pid", item['id'].toString());
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => addOrder(pid: item['id'].toString())));
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              child: const Center(child: Text("+ Add", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit) {
+    return Container(
+      padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(24)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(productData!['category'].toString().toUpperCase(), style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12)),
+          const SizedBox(height: 8),
+          Text(productData!['product_name'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: textColor)),
+          const Divider(height: 40),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
+                Text("₹${productData!['price']}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: successColor)),
+              ]),
+              _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit) {
+    return Container(
+      decoration: BoxDecoration(color: AppColors.getPillBg(context), borderRadius: BorderRadius.circular(18), border: Border.all(color: borderColor)),
+      child: Row(children: [
+        IconButton(onPressed: () { if (currentQty > 1) setState(() => _qtyController.text = (currentQty - 1).toString()); }, icon: Icon(Icons.remove_circle_outline, color: primaryColor)),
+        SizedBox(width: 55, child: TextField(controller: _qtyController, keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (v) => setState(() {}), decoration: const InputDecoration(border: InputBorder.none))),
+        IconButton(onPressed: () { if (currentQty < 100) setState(() => _qtyController.text = (currentQty + 1).toString()); }, icon: Icon(Icons.add_circle_outline, color: primaryColor)),
+      ]),
+    );
+  }
+
+  Widget _buildDescription(cardColor, textColor, subTextColor) {
+    return Container(
+      width: double.infinity, padding: const EdgeInsets.all(25),
+      decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(24)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text("Description", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: textColor)),
+        const SizedBox(height: 12),
+        Text(productData!['description'] ?? "No description available.", style: TextStyle(color: subTextColor, height: 1.6, fontSize: 14)),
+      ]),
+    );
+  }
+
+  Widget _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
+      decoration: BoxDecoration(color: cardColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text("Total ($currentQty $unit)", style: TextStyle(color: subTextColor, fontSize: 13)),
+          Text("₹${totalPrice.toStringAsFixed(2)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
+        ]),
+        const SizedBox(width: 10),
+        Expanded(child: AppButton(text: "ADD TO CART", icon: Icons.shopping_cart_outlined, isLoading: _isSubmitting, onPressed: _addToCart)),
+      ]),
     );
   }
 }

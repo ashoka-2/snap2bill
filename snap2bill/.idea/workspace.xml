@@ -33,11 +33,11 @@
     <splitter split-orientation="horizontal" split-proportion="0.48685145">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="21">
-                  <caret line="2209" column="14" lean-forward="false" selection-start-line="2209" selection-start-column="14" selection-end-line="2209" selection-end-column="14" />
+                <state relative-caret-position="208">
+                  <caret line="2382" column="17" lean-forward="false" selection-start-line="2382" selection-start-column="4" selection-end-line="2382" selection-end-column="17" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
                   </folding>
@@ -55,34 +55,6 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="manage_units.html" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/templates/admin/manage_units.html">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="9429">
-                  <caret line="449" column="7" lean-forward="false" selection-start-line="449" selection-start-column="7" selection-end-line="449" selection-end-column="7" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="navbar.js" pinned="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/static/scripts/navbar.js">
-              <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="1701">
-                  <caret line="81" column="12" lean-forward="false" selection-start-line="81" selection-start-column="12" selection-end-line="81" selection-end-column="12" />
-                  <folding>
-                    <marker date="1768311709862" expanded="true" signature="818:892" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="941:2605" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="977:2590" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="2663:3325" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="2700:3310" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="2798:3293" ph="..." />
-                    <marker date="1768311709862" expanded="true" signature="3064:3155" ph="..." />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
           <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/snap2bill/settings.py">
               <provider selected="true" editor-type-id="text-editor">
@@ -93,11 +65,11 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="urls.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2541">
-                  <caret line="126" column="72" lean-forward="false" selection-start-line="126" selection-start-column="72" selection-end-line="126" selection-end-column="72" />
+                <state relative-caret-position="325">
+                  <caret line="158" column="40" lean-forward="false" selection-start-line="158" selection-start-column="40" selection-end-line="158" selection-end-column="40" />
                   <folding />
                 </state>
               </provider>
@@ -107,9 +79,9 @@
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
                 <state relative-caret-position="2184">
-                  <caret line="105" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="139" selection-end-column="0" />
+                  <caret line="105" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="142" selection-end-column="0" />
                   <folding>
-                    <marker date="1769936539940" expanded="true" signature="3053:3264" ph="..." />
+                    <marker date="1770532230630" expanded="true" signature="3053:3264" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -119,11 +91,11 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="356">
-                  <caret line="1767" column="33" lean-forward="false" selection-start-line="1767" selection-start-column="33" selection-end-line="1767" selection-end-column="33" />
+                <state relative-caret-position="34">
+                  <caret line="2426" column="0" lean-forward="false" selection-start-line="2426" selection-start-column="0" selection-end-line="2443" selection-end-column="6" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
                   </folding>
@@ -131,13 +103,13 @@
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="101">
-                  <caret line="112" column="14" lean-forward="false" selection-start-line="112" selection-start-column="6" selection-end-line="112" selection-end-column="14" />
+                <state relative-caret-position="542">
+                  <caret line="133" column="0" lean-forward="true" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
                   <folding>
-                    <marker date="1769936539940" expanded="true" signature="3053:3264" ph="..." />
+                    <marker date="1770532230630" expanded="true" signature="3053:3264" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -158,9 +130,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>magic</find>
-      <find>card</find>
-      <find>font-family</find>
       <find>pill</find>
       <find>.chip</find>
       <find>linear</find>
@@ -188,6 +157,9 @@
       <find>scani</find>
       <find>price</find>
       <find>scanit</find>
+      <find>viewCart</find>
+      <find>from django.conf import settings</find>
+      <find>cv2</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -229,8 +201,8 @@
         <option value="$PROJECT_DIR$/static/admin/unit.css" />
         <option value="$PROJECT_DIR$/static/scripts/navbar.js" />
         <option value="$PROJECT_DIR$/templates/admin/manage_units.html" />
-        <option value="$PROJECT_DIR$/snap2bill/urls.py" />
         <option value="$PROJECT_DIR$/my_app/models.py" />
+        <option value="$PROJECT_DIR$/snap2bill/urls.py" />
         <option value="$PROJECT_DIR$/my_app/views.py" />
       </list>
     </option>
@@ -263,6 +235,7 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -329,7 +302,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -659,18 +631,19 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1038" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2518797" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2593985" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.31729668" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.42611682" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.21764033" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18743287" sideWeight="0.13974799" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18743287" sideWeight="0.13974799" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -695,7 +668,7 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/my_app/views.py</url>
-          <line>1224</line>
+          <line>1223</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
       </breakpoints>
@@ -947,14 +920,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2541">
-          <caret line="126" column="72" lean-forward="false" selection-start-line="126" selection-start-column="72" selection-end-line="126" selection-end-column="72" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/media/7a00e60a-7396-4fac-839f-0403bf499fd12540652305592064101.jpg">
       <provider selected="true" editor-type-id="images">
         <state />
@@ -1002,22 +967,30 @@
         <state />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/views.py">
+    <entry file="file://$PROJECT_DIR$/my_app/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="356">
-          <caret line="1767" column="33" lean-forward="false" selection-start-line="1767" selection-start-column="33" selection-end-line="1767" selection-end-column="33" />
+        <state relative-caret-position="542">
+          <caret line="133" column="0" lean-forward="true" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
           <folding>
-            <element signature="e#0#9#0" expanded="true" />
+            <marker date="1770532230630" expanded="true" signature="3053:3264" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/models.py">
+    <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="101">
-          <caret line="112" column="14" lean-forward="false" selection-start-line="112" selection-start-column="6" selection-end-line="112" selection-end-column="14" />
+        <state relative-caret-position="325">
+          <caret line="158" column="40" lean-forward="false" selection-start-line="158" selection-start-column="40" selection-end-line="158" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/my_app/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2426" column="0" lean-forward="false" selection-start-line="2426" selection-start-column="0" selection-end-line="2443" selection-end-column="6" />
           <folding>
-            <marker date="1769936539940" expanded="true" signature="3053:3264" ph="..." />
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>
