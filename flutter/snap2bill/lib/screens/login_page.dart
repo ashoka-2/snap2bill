@@ -163,7 +163,7 @@
 //             width: double.infinity,
 //             decoration: BoxDecoration(
 //               gradient: LinearGradient(
-//                 colors: [primaryColor, primaryColor.withOpacity(0.7)],
+//                 colors: [primaryColor, primaryColor.withValues(alpha:0.7)],
 //                 begin: Alignment.topLeft,
 //                 end: Alignment.bottomRight,
 //               ),
@@ -190,7 +190,7 @@
 //                     Container(
 //                       padding: const EdgeInsets.all(15),
 //                       decoration: BoxDecoration(
-//                         color: Colors.white.withOpacity(0.15),
+//                         color: Colors.white.withValues(alpha:0.15),
 //                         shape: BoxShape.circle,
 //                       ),
 //                       child: SvgPicture.asset(
@@ -218,7 +218,7 @@
 //                         borderRadius: BorderRadius.circular(30),
 //                         boxShadow: [
 //                           BoxShadow(
-//                             color: Colors.black.withOpacity(0.1),
+//                             color: Colors.black.withValues(alpha:0.1),
 //                             blurRadius: 20,
 //                             offset: const Offset(0, 10),
 //                           ),
@@ -252,7 +252,7 @@
 //                                 padding: const EdgeInsets.all(12),
 //                                 width: double.infinity,
 //                                 decoration: BoxDecoration(
-//                                   color: dangerColor.withOpacity(0.1),
+//                                   color: dangerColor.withValues(alpha:0.1),
 //                                   borderRadius: BorderRadius.circular(10),
 //                                 ),
 //                                 child: Text(_invalidError!, style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold)),
@@ -341,7 +341,7 @@
 //             },
 //             decoration: InputDecoration(
 //               hintText: "Enter $label",
-//               hintStyle: TextStyle(color: hint.withOpacity(0.5)),
+//               hintStyle: TextStyle(color: hint.withValues(alpha:0.5)),
 //               prefixIcon: Icon(icon, color: iconC),
 //               suffixIcon: isPass ? IconButton(
 //                 icon: Icon(_obscureText ? Icons.visibility_off_rounded : Icons.visibility_rounded, color: iconC),
@@ -364,7 +364,7 @@
 //         decoration: BoxDecoration(
 //           color: Colors.white,
 //           borderRadius: BorderRadius.circular(20),
-//           boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))],
+//           boxShadow: [BoxShadow(color: primaryColor.withValues(alpha:0.1), blurRadius: 10, offset: const Offset(0, 4))],
 //         ),
 //         child: Row(
 //           children: [
@@ -601,7 +601,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [primaryColor, primaryColor.withOpacity(0.7)],
+                colors: [primaryColor, primaryColor.withValues(alpha:0.7)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -623,7 +623,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     Container(
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.15),
+                        color: Colors.white.withValues(alpha:0.15),
                         shape: BoxShape.circle,
                       ),
                       child: SvgPicture.asset(
@@ -648,7 +648,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         color: cardColor,
                         borderRadius: BorderRadius.circular(30),
                         boxShadow: [
-                          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 20, offset: const Offset(0, 10)),
+                          BoxShadow(color: Colors.black.withValues(alpha:0.1), blurRadius: 20, offset: const Offset(0, 10)),
                         ],
                       ),
                       child: AnimatedBuilder(
@@ -675,7 +675,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 padding: const EdgeInsets.all(12),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: dangerColor.withOpacity(0.1),
+                                  color: dangerColor.withValues(alpha:0.1),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(_invalidError!, style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold)),
@@ -778,7 +778,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
             },
             decoration: InputDecoration(
               hintText: "Enter $label",
-              hintStyle: TextStyle(color: hint.withOpacity(0.5)),
+              hintStyle: TextStyle(color: hint.withValues(alpha:0.5)),
               prefixIcon: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: HugeIcon(icon: icon, color: iconC, size: 10),
@@ -804,7 +804,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: [BoxShadow(color: primaryColor.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [BoxShadow(color: primaryColor.withValues(alpha:0.1), blurRadius: 10, offset: const Offset(0, 4))],
         ),
         child: Row(
           children: [

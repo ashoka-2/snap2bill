@@ -170,7 +170,7 @@ class _EditStockState extends State<EditStock> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;

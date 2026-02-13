@@ -95,7 +95,7 @@ Check out my profile on Snap2Bill!
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

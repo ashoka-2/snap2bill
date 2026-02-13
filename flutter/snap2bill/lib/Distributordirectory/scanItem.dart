@@ -97,7 +97,7 @@ class _CameraCaptureState extends State<CameraCapture> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
     final cardColor = theme.cardColor;
     final buttonColor = isDark ? AppColors.WhiteColor: Colors.black;
     final buttonTextColor = isDark ? AppColors.BlackColor: Colors.white;

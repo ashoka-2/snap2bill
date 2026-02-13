@@ -224,7 +224,7 @@ class _addOrderState extends State<addOrder> {
       decoration: BoxDecoration(
         color: cardColor,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: subTextColor.withOpacity(0.1)),
+        border: Border.all(color: subTextColor.withValues(alpha:0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -254,7 +254,7 @@ class _addOrderState extends State<addOrder> {
             },
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 6),
-              decoration: BoxDecoration(color: primaryColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              decoration: BoxDecoration(color: primaryColor.withValues(alpha:0.1), borderRadius: BorderRadius.circular(8)),
               child: const Center(child: Text("+ Add", style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
             ),
           )

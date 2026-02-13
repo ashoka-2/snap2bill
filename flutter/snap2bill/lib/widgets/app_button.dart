@@ -250,7 +250,7 @@
 //                 borderRadius: BorderRadius.circular(50),
 //                 boxShadow: [
 //                   BoxShadow(
-//                     color: primaryColor.withOpacity(0.2),
+//                     color: primaryColor.withValues(alpha:0.2),
 //                     blurRadius: 8,
 //                     offset: const Offset(0, 4),
 //                   ),
@@ -269,11 +269,11 @@
 //                         transform: GradientRotation(_controller.value * 2 * pi),
 //                         colors: [
 //                           Colors.transparent,
-//                           primaryColor.withOpacity(0.5),
+//                           primaryColor.withValues(alpha:0.5),
 //                           primaryColor,
 //                           Colors.white,
 //                           primaryColor,
-//                           primaryColor.withOpacity(0.5),
+//                           primaryColor.withValues(alpha:0.5),
 //                           Colors.transparent,
 //                         ],
 //                         stops: const [0.0, 0.3, 0.45, 0.5, 0.55, 0.7, 1.0],
@@ -688,7 +688,7 @@ class _CartButtonState extends State<CartButton>
                 borderRadius: BorderRadius.circular(50),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryColor.withOpacity(0.2),
+                    color: primaryColor.withValues(alpha:0.2),
                     blurRadius: 8,
                     offset: const Offset(0, 4),
                   ),
@@ -707,11 +707,11 @@ class _CartButtonState extends State<CartButton>
                         transform: GradientRotation(_controller.value * 2 * pi),
                         colors: [
                           Colors.transparent,
-                          primaryColor.withOpacity(0.5),
+                          primaryColor.withValues(alpha:0.5),
                           primaryColor,
                           Colors.white,
                           primaryColor,
-                          primaryColor.withOpacity(0.5),
+                          primaryColor.withValues(alpha:0.5),
                           Colors.transparent,
                         ],
                         stops: const [0.0, 0.3, 0.45, 0.5, 0.55, 0.7, 1.0],

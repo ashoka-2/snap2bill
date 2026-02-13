@@ -179,15 +179,18 @@ class _forgototpState extends State<forgototp> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+    final textColor = AppColors.getTextColor(context);
+    final textColor2 = AppColors.getTextColor2(context);
+final subTextColor = AppColors.getTextSubColor(context);
+    final bgColor = AppColors.getScaffoldBg(context);
+    final cardColor = AppColors.getCardColor(context);
 
     // Responsive box size calculation
     double screenWidth = MediaQuery.of(context).size.width;
     double boxWidth = (screenWidth - 100) / 6;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: bgColor,
       appBar: ThemeNavbar(
         leadingIcon:Icons.arrow_back_ios_new,
           onLeadingPressed: () => Navigator.pop(context), title: 'Verify OTP',
@@ -246,8 +249,6 @@ class _forgototpState extends State<forgototp> {
                   ? () {} // Use empty function to prevent "null" error if button is non-nullable
                   : () { _verifyOTP(); },
               isLoading: _isLoading,
-              color: isDark ? AppColors.WhiteColor: Colors.black,
-              textColor: isDark ? AppColors.BlackColor: Colors.white,
             ),
 
             const SizedBox(height: 30),

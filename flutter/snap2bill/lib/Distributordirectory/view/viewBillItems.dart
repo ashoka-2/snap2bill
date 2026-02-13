@@ -141,7 +141,7 @@ class _viewBillItemsState extends State<viewBillItems> {
     dangerColor = AppColors.getDangerColor(context);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+final subTextColor = AppColors.getTextSubColor(context);
 
     return Scaffold(
       backgroundColor: AppColors.getScaffoldBg(context),
@@ -241,7 +241,7 @@ class _viewBillItemsState extends State<viewBillItems> {
   Widget _buildProductCard(Map item) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = AppColors.getTextColor(context);
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+final subTextColor = AppColors.getTextSubColor(context);
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

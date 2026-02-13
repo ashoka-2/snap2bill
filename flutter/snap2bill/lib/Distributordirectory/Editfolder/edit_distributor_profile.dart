@@ -106,7 +106,7 @@
 //
 //     final theme = Theme.of(context);
 //     final isDark = theme.brightness == Brightness.dark;
-//     final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+// final textColor = AppColors.getTextColor(context);
 //
 //     return Scaffold(
 //       backgroundColor: theme.scaffoldBackgroundColor,
@@ -439,7 +439,7 @@ class _edit_distributor_profile_subState extends State<edit_distributor_profile_
     successColor = AppColors.getSuccessColor(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

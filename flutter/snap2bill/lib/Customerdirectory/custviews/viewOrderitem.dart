@@ -140,7 +140,109 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
     );
   }
 
+  // Widget _buildItemCard(Map item, int index) {
+  //   return Container(
+  //     margin: const EdgeInsets.only(bottom: 16),
+  //     padding: const EdgeInsets.all(12),
+  //     decoration: BoxDecoration(
+  //       color: cardColor,
+  //       borderRadius: BorderRadius.circular(20),
+  //       border: Border.all(color: AppColors.getBorderColor(context).withValues(alpha: 0.1), width: 1.5),
+  //       boxShadow: [
+  //         BoxShadow(color: AppColors.BlackColor.withValues(alpha: 0.05), blurRadius: 15, offset: const Offset(0, 5)),
+  //       ],
+  //     ),
+  //     child: Row(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         ClipRRect(
+  //           borderRadius: BorderRadius.circular(15),
+  //           child: Image.network(
+  //             _getImageUrl(item['image'].toString()),
+  //             width: 90, height: 90, fit: BoxFit.cover,
+  //             errorBuilder: (c, e, s) => Container(width: 90, height: 90, color: Colors.grey[200], child: const Icon(Icons.broken_image)),
+  //           ),
+  //         ),
+  //         const SizedBox(width: 15),
+  //         Expanded(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               Text(item['product_name'] ?? "Product", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
+  //               Text("Price: ₹${item['price']}", style: TextStyle(color: subTextColor, fontSize: 13)),
+  //               const SizedBox(height: 8),
+  //               Row(
+  //                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                 children: [
+  //                   Container(
+  //                     padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+  //                     decoration: BoxDecoration(color: primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+  //                     child: Text(
+  //                       "Qty: ${item['quantity']} ${item['unit_name'] ?? ''}",
+  //                       style: TextStyle(color: primaryColor, fontWeight: FontWeight.bold, fontSize: 12),
+  //                     ),
+  //                   ),
+  //                   Flexible(
+  //                     child: FittedBox(
+  //                       fit: BoxFit.scaleDown,
+  //                       alignment: Alignment.centerRight,
+  //                       child: Text(
+  //                         "₹${((double.tryParse(item['price'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)).toStringAsFixed(2)}",
+  //                         maxLines: 1,
+  //                         style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //
+  //               // 🚀 DYNAMIC BUTTONS LOGIC
+  //               // Agar isLocked false hai, tabhi buttons dikhao
+  //               if (!isLocked) ...[
+  //                 const Divider(height: 24),
+  //                 Row(
+  //                   mainAxisAlignment: MainAxisAlignment.end,
+  //                   children: [
+  //                     EditButton(size: 40, onPressed: () => _openEditSheet(item, index)),
+  //                     const SizedBox(width: 12),
+  //                     DeleteButton(size: 40, onPressed: () => _confirmDeletion(index)),
+  //                   ],
+  //                 ),
+  //               ]
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
   Widget _buildItemCard(Map item, int index) {
+    // 1. Data Cleaning & Parsing (Debugging ke liye)
+    String rawStockPrice = item['price'].toString();
+    String rawFinalPrice = item['Discountedprice'].toString();
+
+    // Convert to Double safely
+    double stockPrice = double.tryParse(rawStockPrice) ?? 0.0;
+
+    // Agar Discountedprice null ya empty hai, toh stockPrice hi maan lo
+    double finalPrice = (rawFinalPrice != "null" && rawFinalPrice.isNotEmpty)
+        ? double.tryParse(rawFinalPrice) ?? stockPrice
+        : stockPrice;
+
+    // Quantity Parse
+    double quantity = double.tryParse(item['quantity'].toString()) ?? 0.0;
+
+    // Total calculation (Final price * Qty)
+    double totalRowPrice = finalPrice * quantity;
+
+    // 🚀 Check Logic: Discount tabhi hai jab Final Price kam ho Stock Price se
+    // (Ex: Stock=100, Final=90 -> Show Strike)
+    // (Ex: Stock=100, Final=100 -> No Strike)
+    bool hasDiscount = finalPrice < stockPrice;
+
+    // Debugging (Console mein check karein agar UI update na ho raha ho)
+    print("Item: ${item['product_name']} | Stock: $stockPrice | Final: $finalPrice | HasDiscount: $hasDiscount");
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(12),
@@ -155,6 +257,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Image Section
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: Image.network(
@@ -164,13 +267,56 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
             ),
           ),
           const SizedBox(width: 15),
+
+          // Content Section
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(item['product_name'] ?? "Product", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: textColor)),
-                Text("Price: ₹${item['price']}", style: TextStyle(color: subTextColor, fontSize: 13)),
+
+                const SizedBox(height: 6),
+
+                // 🚀 PRICE DISPLAY SECTION
+                if (hasDiscount)
+                // CASE A: DISCOUNT HAI -> Strike Old + Show New
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    children: [
+                      // OLD PRICE (Striked)
+                      Text(
+                        "₹$stockPrice",
+                        style: const TextStyle(
+                            decoration: TextDecoration.lineThrough, // 👈 Main Strike Code
+                            decorationColor: Colors.red, // Strike color
+                            decorationThickness: 2.0,
+                            color: Colors.grey,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500
+                        ),
+                      ),
+                      // NEW PRICE (Green/Highlighted)
+                      Text(
+                        "₹$finalPrice",
+                        style: TextStyle(
+                            color: successColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                // CASE B: NO DISCOUNT -> Normal Display
+                  Text(
+                      "Price: ₹$finalPrice",
+                      style: TextStyle(color: subTextColor, fontSize: 13, fontWeight: FontWeight.w600)
+                  ),
+
                 const SizedBox(height: 8),
+
+                // Quantity and Total Row
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -187,7 +333,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerRight,
                         child: Text(
-                          "₹${((double.tryParse(item['price'].toString()) ?? 0) * (double.tryParse(item['quantity'].toString()) ?? 0)).toStringAsFixed(2)}",
+                          "₹${totalRowPrice.toStringAsFixed(2)}",
                           maxLines: 1,
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: textColor),
                         ),
@@ -196,8 +342,7 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
                   ],
                 ),
 
-                // 🚀 DYNAMIC BUTTONS LOGIC
-                // Agar isLocked false hai, tabhi buttons dikhao
+                // Buttons Logic (Only if not locked)
                 if (!isLocked) ...[
                   const Divider(height: 24),
                   Row(
@@ -216,7 +361,6 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
       ),
     );
   }
-
   void _confirmDeletion(int index) {
     showDialog(
       context: context,

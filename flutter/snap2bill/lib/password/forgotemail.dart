@@ -109,8 +109,8 @@ class _forgotemailState extends State<forgotemail> {
 
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
-    final subTextColor = isDark ? Colors.white70 : Colors.grey[600];
+final textColor = AppColors.getTextColor(context);
+final subTextColor = AppColors.getTextSubColor(context);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

@@ -149,7 +149,7 @@ class _AddStockSubState extends State<AddStockSub> {
     
 
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
     final borderColor = isDark ? Colors.white12 : Colors.grey.shade200;

@@ -208,14 +208,14 @@
 //                 end: Alignment.bottomRight,
 //                 colors: isDark
 //                     ? [const Color(0xFF2C2C2C), const Color(0xFF1A1A1A)]
-//                     : [primaryColor, primaryColor.withOpacity(0.7)],
+//                     : [primaryColor, primaryColor.withValues(alpha:0.7)],
 //               ),
 //               borderRadius: const BorderRadius.only(
 //                 bottomRight: Radius.circular(30), // Stylish corner
 //               ),
 //               boxShadow: [
 //                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.1),
+//                   color: Colors.black.withValues(alpha:0.1),
 //                   blurRadius: 10,
 //                   offset: const Offset(0, 5),
 //                 )
@@ -234,9 +234,9 @@
 //                       height: 60,
 //                       width: 60,
 //                       decoration: BoxDecoration(
-//                         color: Colors.white.withOpacity(0.2),
+//                         color: Colors.white.withValues(alpha:0.2),
 //                         shape: BoxShape.circle,
-//                         border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+//                         border: Border.all(color: Colors.white.withValues(alpha:0.5), width: 1.5),
 //                       ),
 //                       child: const Icon(Icons.storefront_rounded, color: Colors.white, size: 35),
 //                     ),
@@ -250,9 +250,9 @@
 //                         child: Container(
 //                           padding: const EdgeInsets.all(8),
 //                           decoration: BoxDecoration(
-//                             color: Colors.black.withOpacity(0.1), // Glass effect
+//                             color: Colors.black.withValues(alpha:0.1), // Glass effect
 //                             shape: BoxShape.circle,
-//                             border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+//                             border: Border.all(color: Colors.white.withValues(alpha:0.3), width: 1),
 //                           ),
 //                           child: Icon(
 //                             ThemeService.instance.isDarkMode
@@ -282,7 +282,7 @@
 //                 Text(
 //                   "Smart Billing Solutions", // Tagline
 //                   style: TextStyle(
-//                     color: Colors.white.withOpacity(0.8),
+//                     color: Colors.white.withValues(alpha:0.8),
 //                     fontSize: 14,
 //                   ),
 //                 ),
@@ -345,7 +345,7 @@
 //             fontSize: 15,
 //           ),
 //         ),
-//         trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color.withOpacity(0.5)),
+//         trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color.withValues(alpha:0.5)),
 //       ),
 //     );
 //   }
@@ -408,14 +408,14 @@ class CustomDrawer extends StatelessWidget {
                 end: Alignment.bottomRight,
                 colors: isDark
                     ? [const Color(0xFF2C2C2C), const Color(0xFF1A1A1A)]
-                    : [primaryColor, primaryColor.withOpacity(0.7)],
+                    : [primaryColor, primaryColor.withValues(alpha:0.7)],
               ),
               borderRadius: const BorderRadius.only(
                 bottomRight: Radius.circular(30),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha:0.1),
                   blurRadius: 10,
                   offset: const Offset(0, 5),
                 )
@@ -434,9 +434,9 @@ class CustomDrawer extends StatelessWidget {
                       height: 60,
                       width: 60,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: Colors.white.withValues(alpha:0.2),
                         shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+                        border: Border.all(color: Colors.white.withValues(alpha:0.5), width: 1.5),
                       ),
                       // 🚀 HugeIcon for Store
                       child: Padding(
@@ -458,9 +458,9 @@ class CustomDrawer extends StatelessWidget {
                         child: Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(0.1),
+                            color: Colors.black.withValues(alpha:0.1),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white.withOpacity(0.3), width: 1),
+                            border: Border.all(color: Colors.white.withValues(alpha:0.3), width: 1),
                           ),
                           // 🚀 HugeIcon for Theme
                           child: HugeIcon(
@@ -491,7 +491,7 @@ class CustomDrawer extends StatelessWidget {
                 Text(
                   "Smart Billing Solutions",
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.8),
+                    color: Colors.white.withValues(alpha:0.8),
                     fontSize: 14,
                   ),
                 ),
@@ -557,7 +557,7 @@ class CustomDrawer extends StatelessWidget {
             fontSize: 15,
           ),
         ),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color.withOpacity(0.5)),
+        trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: color.withValues(alpha:0.5)),
       ),
     );
   }

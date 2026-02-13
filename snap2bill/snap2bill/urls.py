@@ -157,12 +157,7 @@ urlpatterns = [
     path('add_to_recent',views.add_to_recent),
     path('get_recent_products', views.get_recent_products),
     path('get_counts',views.get_counts),
-
-
-
-
-
-path('auth_google', views.auth_google, name='auth_google'),
+    path('auth_google', views.auth_google, name='auth_google'),
 ]
 
 

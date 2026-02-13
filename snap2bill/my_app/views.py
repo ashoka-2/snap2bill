@@ -1584,6 +1584,7 @@ def view_orders_items(request):
             'quantity': i.quantity,
             'sid': i.STOCK.id,
             'price': i.STOCK.price,
+            'Discountedprice': i.price,
             'product_name': i.STOCK.PRODUCT.product_name,
             'image': i.STOCK.PRODUCT.image,
             'description': i.STOCK.PRODUCT.description,
@@ -2024,7 +2025,7 @@ def scanItem(request):
     # ============================
     # 6. Gemini Configuration
     # ============================
-    genai.configure(api_key="AIzaSyAu3NkKc97dXZkKIlyNsD92EJDehd7yJDU")  # 🔐 move to settings in production
+    genai.configure(api_key="AIzaSyAnlXqmMIpse1oKCNfDkTIwGPOSEruCVHI")  # 🔐 move to settings in production
 
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 

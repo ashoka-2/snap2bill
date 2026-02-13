@@ -114,7 +114,7 @@ class _ViewDistributorsState extends State<ViewDistributors> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+    final textColor = AppColors.getTextColor(context);;
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
 

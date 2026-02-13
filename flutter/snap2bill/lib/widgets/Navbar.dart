@@ -1,18 +1,20 @@
+//
 // import 'package:flutter/material.dart';
+// import 'package:hugeicons/hugeicons.dart'; // 🚀 Import HugeIcons
 // import '../theme/colors.dart';
 //
 // class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
 //   final String title;
 //   final List<Widget>? actions;
 //
-//   // 🚀 Dynamic leading parameters
-//   final IconData? leadingIcon;
+//   // 🚀 Dynamic leading: Can be IconData OR HugeIcon data
+//   final dynamic leadingIcon;
 //   final VoidCallback? onLeadingPressed;
 //
-//   // 🚀 Title alignment parameter
+//   // Title alignment parameter
 //   final bool centerTitle;
 //
-//   // 🚀 New: Dynamic font size parameter
+//   // Dynamic font size parameter
 //   final double titleFontSize;
 //
 //   const ThemeNavbar({
@@ -21,8 +23,8 @@
 //     this.actions,
 //     this.leadingIcon,
 //     this.onLeadingPressed,
-//     this.centerTitle = false, // Default is left-aligned
-//     this.titleFontSize = 16.0, // Default is 16
+//     this.centerTitle = false,
+//     this.titleFontSize = 16.0,
 //   });
 //
 //   @override
@@ -57,11 +59,8 @@
 //           child: IconButton(
 //             padding: EdgeInsets.zero,
 //             constraints: const BoxConstraints(),
-//             icon: Icon(
-//               leadingIcon,
-//               color: AppColors.getIconColor(context),
-//               size: 20,
-//             ),
+//             // 🚀 SMART ICON BUILDER
+//             icon: _buildIcon(context, leadingIcon, 20),
 //             onPressed: onLeadingPressed,
 //           ),
 //         ),
@@ -83,7 +82,7 @@
 //           style: TextStyle(
 //             color: AppColors.getTextColor(context).withValues(alpha: 0.8),
 //             fontWeight: FontWeight.w800,
-//             fontSize: titleFontSize, // 🚀 Now uses the dynamic parameter
+//             fontSize: titleFontSize,
 //             letterSpacing: -0.5,
 //           ),
 //         ),
@@ -107,12 +106,13 @@
 //               child: Row(
 //                 mainAxisSize: MainAxisSize.min,
 //                 children: actions!.map((widget) {
+//                   // If user passes an IconButton (even with HugeIcon inside), preserve styling
 //                   if (widget is IconButton) {
 //                     return SizedBox(
 //                       width: 40,
 //                       child: IconButton(
 //                         onPressed: widget.onPressed,
-//                         icon: widget.icon,
+//                         icon: widget.icon, // This supports HugeIcon() widget naturally
 //                         padding: const EdgeInsets.symmetric(vertical: 10),
 //                         constraints: const BoxConstraints(),
 //                         iconSize: 20,
@@ -129,27 +129,42 @@
 //     );
 //   }
 //
+//   // 🚀 HELPER: Decides whether to render Icon or HugeIcon
+//   Widget _buildIcon(BuildContext context, dynamic iconData, double size) {
+//     if (iconData is IconData) {
+//       return Icon(
+//           iconData,
+//           color: AppColors.getIconColor(context),
+//           size: size
+//       );
+//     } else {
+//       return HugeIcon(
+//           icon: iconData,
+//           color: AppColors.getIconColor(context),
+//           size: size
+//       );
+//     }
+//   }
+//
 //   @override
 //   Size get preferredSize => const Size.fromHeight(60);
 // }
 
-
 import 'package:flutter/material.dart';
-import 'package:hugeicons/hugeicons.dart'; // 🚀 Import HugeIcons
+import 'package:hugeicons/hugeicons.dart';
 import '../theme/colors.dart';
 
 class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+
+  // ✅ FIX 1: Type ko 'dynamic' se 'List<Widget>?' kar diya
   final List<Widget>? actions;
 
-  // 🚀 Dynamic leading: Can be IconData OR HugeIcon data
+  // ✅ FIX 2: Leading icon can be IconData, HugeIconData, or a Widget
   final dynamic leadingIcon;
+
   final VoidCallback? onLeadingPressed;
-
-  // Title alignment parameter
   final bool centerTitle;
-
-  // Dynamic font size parameter
   final double titleFontSize;
 
   const ThemeNavbar({
@@ -172,11 +187,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       centerTitle: centerTitle,
       automaticallyImplyLeading: false,
-
-      // leadingWidth is 60 if icon exists, 0 if not
       leadingWidth: hasLeading ? 60 : 0,
-
-      // titleSpacing logic for left vs center alignment
       titleSpacing: centerTitle ? null : (hasLeading ? 2.0 : 16.0),
 
       leading: hasLeading
@@ -194,7 +205,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
           child: IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
-            // 🚀 SMART ICON BUILDER
+            // ✅ FIX 3: Robust Icon Builder called here
             icon: _buildIcon(context, leadingIcon, 20),
             onPressed: onLeadingPressed,
           ),
@@ -228,7 +239,7 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
           Padding(
             padding: const EdgeInsets.all(6.0),
             child: Container(
-              padding: EdgeInsets.symmetric(horizontal: actionCount > 1 ? 4.0 : 0),
+              padding: EdgeInsets.symmetric(horizontal: actionCount > 1 ? 8.0 : 0),
               decoration: BoxDecoration(
                 border: Border.all(
                   color: AppColors.getBorderColor(context).withValues(alpha: 0.5),
@@ -238,25 +249,12 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
                 shape: actionCount > 1 ? BoxShape.rectangle : BoxShape.circle,
                 borderRadius: actionCount > 1 ? BorderRadius.circular(30) : null,
               ),
+              // ✅ FIX 4: Simplified Actions Logic
+              // Humne map() hata diya kyunki widgets ko modify karna error create kar raha tha.
+              // Ab ye seedha widgets render karega.
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: actions!.map((widget) {
-                  // If user passes an IconButton (even with HugeIcon inside), preserve styling
-                  if (widget is IconButton) {
-                    return SizedBox(
-                      width: 40,
-                      child: IconButton(
-                        onPressed: widget.onPressed,
-                        icon: widget.icon, // This supports HugeIcon() widget naturally
-                        padding: const EdgeInsets.symmetric(vertical: 10),
-                        constraints: const BoxConstraints(),
-                        iconSize: 20,
-                        color: widget.color,
-                      ),
-                    );
-                  }
-                  return widget;
-                }).toList(),
+                children: actions!,
               ),
             ),
           ),
@@ -264,19 +262,23 @@ class ThemeNavbar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  // 🚀 HELPER: Decides whether to render Icon or HugeIcon
+  // ✅ FIX 5: Safe Icon Builder
+  // Ye check karega ki input IconData hai, Widget hai, ya HugeIconData hai
   Widget _buildIcon(BuildContext context, dynamic iconData, double size) {
+    Color iconColor = AppColors.getIconColor(context);
+
     if (iconData is IconData) {
-      return Icon(
-          iconData,
-          color: AppColors.getIconColor(context),
-          size: size
-      );
-    } else {
+      return Icon(iconData, color: iconColor, size: size);
+    }
+    else if (iconData is Widget) {
+      return iconData; // Agar already Icon widget bheja hai to wahi dikhao
+    }
+    else {
+      // Assuming it's HugeIconData
       return HugeIcon(
-          icon: iconData,
-          color: AppColors.getIconColor(context),
-          size: size
+        icon: iconData,
+        color: iconColor,
+        size: size,
       );
     }
   }

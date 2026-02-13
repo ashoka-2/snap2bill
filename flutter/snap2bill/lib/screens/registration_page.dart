@@ -872,7 +872,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             labelStyle: TextStyle(color: AppColors.isDarkMode(context) ? AppColors.textSubDark : AppColors.textSubLight),
             filled: isReadOnly, // Fill color if locked
             fillColor: isReadOnly
-                ? (AppColors.isDarkMode(context) ? Colors.white.withOpacity(0.05) : Colors.grey.withOpacity(0.1))
+                ? (AppColors.isDarkMode(context) ? Colors.white.withValues(alpha:0.05) : Colors.grey.withValues(alpha:0.1))
                 : null,
             prefixIcon: Padding(padding: const EdgeInsets.all(10.0), child: HugeIcon(icon: icon, color: isReadOnly ? Colors.grey : iconColor, size: 10)),
             prefixText: prefix,

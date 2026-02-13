@@ -61,7 +61,7 @@ class _ViewCategoryState extends State<ViewCategory> {
 
     // Design Colors
     final bgColor = theme.scaffoldBackgroundColor;
-    final textColor = isDark ? AppColors.WhiteColor: Colors.black87;
+final textColor = AppColors.getTextColor(context);
     final cardColor = theme.cardColor;
     final hintColor = isDark ? Colors.white38 : Colors.grey[500];
 
