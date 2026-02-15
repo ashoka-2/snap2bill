@@ -132,6 +132,10 @@ class AppColors {
   static Color? getSecondaryButtonBg(BuildContext context) =>
       isDarkMode(context) ? Colors.grey.shade800 : Colors.grey.shade800;
 
+
+  static Color? getPlaceHolderColor(BuildContext context)=>
+    isDarkMode(context) ? Colors.grey[800] : Colors.grey[300];
+
   static Color getScaffoldBg(BuildContext context) =>
       Theme.of(context).scaffoldBackgroundColor;
 

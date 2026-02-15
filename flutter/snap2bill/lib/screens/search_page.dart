@@ -1,6 +1,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -201,12 +202,13 @@ class _SearchPageState extends State<SearchPage> {
           onTap: () => _onItemTap(item),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(14),
-            child: Image.network(
-              "$ip${item['image']}",
+            child: CachedNetworkImage(
+              imageUrl: "$ip${item['image']}",
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
+              placeholder: (context, url) => Container(color: AppColors.getPlaceHolderColor(context)),
+              errorWidget: (context, url, error) => Container(
                 height: 100,
-                color: isDark ? Colors.grey[800] : Colors.grey[300],
+                color: AppColors.getPlaceHolderColor(context),
                 child: const Icon(Icons.broken_image),
               ),
             ),
@@ -236,7 +238,7 @@ class _SearchPageState extends State<SearchPage> {
           child: ListTile(
             onTap: () => _onItemTap(item),
             leading: CircleAvatar(
-              backgroundImage: NetworkImage("$ip${item['image']}"),
+              backgroundImage: CachedNetworkImageProvider("$ip${item['image']}"),
             ),
             title: Text(item['name'], style: const TextStyle(fontWeight: FontWeight.bold)),
             subtitle: Text(type == 'product' ? item['category'] : "${item['place']} • ${item['phone']}"),
@@ -347,7 +349,8 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network("$ip${item['image']}", width: 70, height: 70, fit: BoxFit.cover),
+                  child: CachedNetworkImage(
+                      imageUrl:"$ip${item['image']}", width: 70, height: 70, fit: BoxFit.cover),
                 ),
                 const SizedBox(width: 15),
                 Expanded(
@@ -385,7 +388,7 @@ class _SearchPageState extends State<SearchPage> {
                   },
                   child: CircleAvatar(
                     radius: 25,
-                    backgroundImage: NetworkImage("$ip${item['distributor_image']}"),
+                    backgroundImage: CachedNetworkImageProvider("$ip${item['distributor_image']}"),
                   ),
                 ),
                 const SizedBox(width: 12),

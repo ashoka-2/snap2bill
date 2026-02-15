@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -209,7 +210,8 @@ class _addOrderState extends State<addOrder> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(30),
           child: InteractiveViewer(
-            child: Image.network(_ip + productData!['image'], fit: BoxFit.fill),
+            child: CachedNetworkImage(
+  imageUrl:_ip + productData!['image'], fit: BoxFit.fill),
           ),
         ),
       ),
@@ -232,11 +234,12 @@ class _addOrderState extends State<addOrder> {
           Expanded(
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
-              child: Image.network(
+              child: CachedNetworkImage(
+  imageUrl:
                 _ip + item['image'],
                 fit: BoxFit.cover,
                 width: double.infinity,
-                errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                errorWidget: (_, __, ___) => const Icon(Icons.image_not_supported),
               ),
             ),
           ),
@@ -277,10 +280,15 @@ class _addOrderState extends State<addOrder> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
-                Text("₹${productData!['price']}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: successColor)),
-              ]),
+              Expanded(
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text("Unit Price", style: TextStyle(color: subTextColor, fontSize: 12)),
+                  FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text("₹${productData!['price']}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: successColor))),
+                ]),
+              ),
+              SizedBox(width: 10,),
               _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit),
             ],
           ),

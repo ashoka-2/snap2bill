@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -156,7 +157,7 @@ class _AllCustomersSubState extends State<AllCustomersSub> {
                         ?  Icon(Icons.person, color:AppColors.getPrimaryColor(context), size: 30)
                         : null,
                     foregroundImage: item.profile_image.isNotEmpty
-                        ? NetworkImage(item.profile_image)
+                        ? CachedNetworkImageProvider(item.profile_image)
                         : null,
                     onForegroundImageError: (exception, stackTrace) {
                       debugPrint('Profile image failed to load: $exception');

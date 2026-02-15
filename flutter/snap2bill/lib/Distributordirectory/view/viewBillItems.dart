@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -363,11 +364,12 @@ class _viewBillItemsState extends State<viewBillItems> {
             Expanded(
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-                child: Image.network(
+                child: CachedNetworkImage(
+  imageUrl:
                   "$serverIp${item['image']}",
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  errorBuilder: (c, e, s) => Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 30, color: Colors.grey)),
+                  errorWidget: (c, e, s) => Container(color: Colors.grey[200], child: const Icon(Icons.image, size: 30, color: Colors.grey)),
                 ),
               ),
             ),
@@ -447,10 +449,11 @@ class _viewBillItemsState extends State<viewBillItems> {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(15),
-                child: Image.network(
+                child: CachedNetworkImage(
+  imageUrl:
                   "$serverIp${item['image']}",
                   height: 90, width: 90, fit: BoxFit.cover,
-                  errorBuilder: (c, e, s) => Container(height: 90, width: 90, color: Colors.grey[200], child: const Icon(Icons.image_not_supported_outlined)),
+                  errorWidget: (c, e, s) => Container(height: 90, width: 90, color: Colors.grey[200], child: const Icon(Icons.image_not_supported_outlined)),
                 ),
               ),
               const SizedBox(width: 12),

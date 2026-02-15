@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -226,7 +227,7 @@ class _ViewDistributorsState extends State<ViewDistributors> {
                   child: CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.grey.shade200,
-                    backgroundImage: hasImage ? NetworkImage(i.profile_image) : null,
+                    backgroundImage: hasImage ? CachedNetworkImageProvider(i.profile_image) : null,
                     onBackgroundImageError: hasImage
                         ? (_, __) { debugPrint("Image load error"); }
                         : null,

@@ -10,16 +10,44 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Count
 from difflib import get_close_matches
+import numpy as np
+
 import cv2
 from django.views.decorators.csrf import csrf_exempt
 import json
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from io import BytesIO
+from django.core.files.base import ContentFile
+from django.utils import timezone
+
 
 
 from PIL import Image
 import io
 import google.generativeai as genai
+
+
+def compress_image(image_file):
+    try:
+        img = Image.open(image_file)
+        if img.mode != 'RGB':
+            img = img.convert('RGB')
+        img.thumbnail((1000, 1000))
+        buffer = BytesIO()
+        img.save(buffer, format="JPEG", quality=60, optimize=True)
+
+        # 5. Filename ka extension .jpg karein
+        new_filename = image_file.name.split('.')[0] + ".jpg"
+
+        return ContentFile(buffer.getvalue(), name=new_filename)
+    except Exception as e:
+        print("Compression Error:", e)
+        return image_file  # Agar koi error aaye to original image hi bhej do
+
+
+
 
 
 def get_new_filename():
@@ -453,11 +481,14 @@ def view_feedback(request):
 
 
 def distributor_registration(request):
-    profile_image = request.FILES['file']
-    proof = request.FILES['file1']
+    profile_image = compress_image(request.FILES['file'])
+    proof = compress_image(request.FILES['file1'])
     fs = FileSystemStorage()
     path = fs.save(profile_image.name,profile_image,)
     path1 = fs.save(proof.name , proof)
+
+
+
 
     name = request.POST['name']
     email = request.POST['email']
@@ -503,12 +534,27 @@ def distributor_registration(request):
 
 def distributor_view_profile(request):
     uid = request.POST['uid']
-    data = distributor.objects.filter(id=uid)
+    data = distributor.objects.filter(id=uid).annotate(
+        customer_count=Count('distributorcustomerlink')
+    )
 
     ar = []
     for i in data:
-        ar.append({'id': i.id, 'name': i.name, 'email': i.email, 'phone': i.phone, 'profile_image': i.profile_image,
-                   'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,'latitude':i.latitude,'longitude':i.longitude,'proof':i.proof})
+        ar.append({'id': i.id,
+                   'name': i.name,
+                   'email': i.email,
+                   'phone': i.phone,
+                   'profile_image': i.profile_image,
+                   'bio': i.bio,
+                   'address': i.address,
+                   'place': i.place,
+                   'pincode': i.pincode,
+                   'post': i.post,
+                   'latitude':i.latitude,
+                   'longitude':i.longitude,
+                   'proof':i.proof,
+                   'customer_count':i.customer_count
+                   })
 
     return JsonResponse({'status': 'ok', 'data': ar})
 
@@ -517,14 +563,14 @@ def distributor_view_profile(request):
 def edit_distributor_profile(request):
     uid = request.POST['uid']
     if 'file' in request.FILES:
-        profile_image = request.FILES['file']
+        profile_image = compress_image(request.FILES['file'])
         fs = FileSystemStorage()
         path = fs.save(profile_image.name, profile_image)
         distributor.objects.filter(id=uid).update(profile_image=fs.url(path))
 
 
     if 'file1' in request.FILES:
-        proof = request.FILES['file1']
+        proof = compress_image(request.FILES['file1'])
         fs = FileSystemStorage()
         path1 = fs.save(proof.name, proof)
         distributor.objects.filter(id=uid).update(proof=fs.url(path1))
@@ -922,7 +968,7 @@ def add_product(request):
 
 def add_product_post(request):
     product_name = request.POST['product_name']
-    img = request.FILES['image']
+    img = compress_image(request.FILES['image'])
     fname=get_new_filename()
     fullpath=r"D:\snap2bill\snap2bill\media\\"+fname
     fs=FileSystemStorage()
@@ -953,7 +999,7 @@ def edit_product_post(request,id):
     description = request.POST['description']
     category = request.POST['category']
     if 'image' in request.FILES:
-        img = request.FILES['image']
+        img = compress_image(request.FILES['image'])
         fs = FileSystemStorage()
         image = fs.save(img.name, img)
         product.objects.filter(id=id).update( image=fs.url(image))
@@ -980,7 +1026,7 @@ def distributor_view_product(request):
     # uid = request.POST['uid']
     # if not uid:
     #     return JsonResponse({'status': 'error', 'message': 'No distributor id'}, status=400)
-    data = product.objects.all()
+    data = product.objects.all().order_by('-id')
     ar = []
     for i in data:
         ar.append({
@@ -1000,7 +1046,7 @@ def view_other_products(request):
     uid = request.POST.get('uid')
     dist = distributor.objects.get(id=uid)
 
-    data = stock.objects.exclude(DISTRIBUTOR=dist)
+    data = stock.objects.exclude(DISTRIBUTOR=dist).order_by('-id')
     ar = []
 
     for i in data:
@@ -1038,7 +1084,7 @@ def distributor_products(request):
         return JsonResponse({'status': 'error', 'message': 'Distributor not found'})
 
     # 2. Saare products layein
-    data = stock.objects.filter(DISTRIBUTOR_id=uid)
+    data = stock.objects.filter(DISTRIBUTOR_id=uid).order_by('-id')
 
     ar = []
     for i in data:
@@ -1119,7 +1165,7 @@ def customer_view_products(request):
     cid = request.POST.get('cid')
     user = customer.objects.get(id=cid) if cid else None
 
-    data = stock.objects.all()
+    data = stock.objects.all().order_by('-id')
     ar = []
 
     for i in data:
@@ -1161,7 +1207,7 @@ def customer_view_products(request):
 
 
 def customer_registration(request):
-    profile_image = request.FILES['file']
+    profile_image = compress_image(request.FILES['file'])
     fs = FileSystemStorage()
     path = fs.save(profile_image.name, profile_image, )
 
@@ -1224,7 +1270,7 @@ def customer_view_profile(request):
 def edit_customer_profile(request):
     cid = request.POST['cid']
     if 'file' in request.FILES:
-        profile_image = request.FILES['file']
+        profile_image = compress_image(request.FILES['file'])
         fs = FileSystemStorage()
         path = fs.save(profile_image.name, profile_image)
         customer.objects.filter(id=cid).update(profile_image=fs.url(path))
@@ -1318,7 +1364,7 @@ def viewCart(request):
     # pid = request.POST['pid']
     print(request.POST)
     total = 0
-    data = cart.objects.filter(USER=request.POST['cid'])
+    data = cart.objects.filter(USER=request.POST['cid']).order_by('-id')
     ar = []
     for i in data:
         total += float(i.STOCK.price) * float(i.quantity)
@@ -1450,63 +1496,6 @@ def toggle_wishlist(request):
 
 
 
-# def toggle_wishlist(request):
-#     pid = request.POST.get('pid')
-#     cid = request.POST.get('cid')
-#     uid = request.POST.get('uid')
-#
-#     if not pid:
-#         return JsonResponse({'status': 'error', 'msg': 'pid missing'})
-#
-#     stock_obj = stock.objects.get(id=pid)
-#
-#     # ================= CUSTOMER =================
-#     if cid and not uid:
-#         print("👉 CUSTOMER WISHLIST")
-#         user = customer.objects.get(id=cid)
-#
-#         qs = wishlist.objects.filter(
-#             STOCK=stock_obj,
-#             USER=user,
-#             DISTRIBUTOR__isnull=True
-#         )
-#
-#         if qs.exists():
-#             qs.delete()
-#             return JsonResponse({'status': 'ok', 'action': 'removed'})
-#         else:
-#             wishlist.objects.create(
-#                 STOCK=stock_obj,
-#                 USER=user,
-#                 DISTRIBUTOR=None,
-#                 date=str(datetime.now())
-#             )
-#             return JsonResponse({'status': 'ok', 'action': 'added'})
-#
-#     # ================= DISTRIBUTOR =================
-#     if uid and not cid:
-#         print("👉 DISTRIBUTOR WISHLIST")
-#         dist = distributor.objects.get(id=uid)
-#
-#         qs = wishlist.objects.filter(
-#             STOCK=stock_obj,
-#             DISTRIBUTOR=dist,
-#             USER__isnull=True
-#         )
-#
-#         if qs.exists():
-#             qs.delete()
-#             return JsonResponse({'status': 'ok', 'action': 'removed'})
-#         else:
-#             wishlist.objects.create(
-#                 STOCK=stock_obj,
-#                 DISTRIBUTOR=dist,
-#                 USER=None,
-#                 date=str(datetime.now())
-#             )
-#             return JsonResponse({'status': 'ok', 'action': 'added'})
-#
-#     return JsonResponse({'status': 'error', 'msg': 'invalid request'})
 
 def remove_from_wishlist(request):
     wid = request.POST.get('wid')
@@ -1542,7 +1531,7 @@ def view_wishlist(request):
         'STOCK__PRODUCT',
         'STOCK__PRODUCT__CATEGORY',
         'STOCK__DISTRIBUTOR'
-    )
+    ).order_by('-id')
     # CUSTOMER
     if cid and not uid:
         data = queryset.filter(
@@ -1625,6 +1614,7 @@ def addFinalOrder(request):
                 sub_obj.ORDER_id = new_order.id
                 sub_obj.STOCK_id = c_item.STOCK.id
                 sub_obj.quantity = item_qty
+                sub_obj.price = item_price
                 sub_obj.save()
 
                 # Remove the item from the cart as it is now an order
@@ -1671,7 +1661,7 @@ def view_orders(request):
 
 def view_orders_items(request):
     order_id = request.POST.get('oid')
-    items_data = order_sub.objects.filter(ORDER=order_id)
+    items_data = order_sub.objects.filter(ORDER=order_id).order_by('-id')
 
     ar = []
     for i in items_data:
@@ -1924,7 +1914,7 @@ def view_distributor_ordersitems(request):
             ).first()
         if not target_order:
             return JsonResponse({'status': 'ok', 'data': [], 'oid': "0"})
-        data = order_sub.objects.filter(ORDER=target_order)
+        data = order_sub.objects.filter(ORDER=target_order).order_by('-id')
         ar = []
         for i in data:
             price_to_show = i.price if i.price else i.STOCK.price
@@ -1999,240 +1989,231 @@ def make_payment(request):
 
 
 
-#
-# def compare_images(img1_path, img2_path):
-#     img1 = cv2.imread(img1_path)
-#     img2 = cv2.imread(img2_path)
-#
-#     if img1 is None or img2 is None:
-#         return -1
-#
-#     img1 = cv2.resize(img1, (300, 300))
-#     img2 = cv2.resize(img2, (300, 300))
-#
-#     hist1 = cv2.calcHist([img1], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-#     hist2 = cv2.calcHist([img2], [0, 1, 2], None, [8, 8, 8], [0, 256, 0, 256, 0, 256])
-#
-#     cv2.normalize(hist1, hist1)
-#     cv2.normalize(hist2, hist2)
-#
-#     score = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)
-#     return score
-#
-# def scanItem(request):
-#
-#     if request.method != "POST":
-#         return JsonResponse({'status': 'error', 'message': 'Invalid request'})
-#
-#     # =========================
-#     # 1. Distributor stock
-#     # =========================
-#     uid = request.POST.get('uid')
-#     if not uid:
-#         return JsonResponse({'status': 'error', 'message': 'uid missing'})
-#
-#     allproduct = stock.objects.filter(DISTRIBUTOR_id=uid)
-#
-#     if not allproduct.exists():
-#         return JsonResponse({'status': 'error', 'message': 'No stock found'})
-#
-#     # =========================
-#     # 2. Uploaded image
-#     # =========================
-#     if 'image' not in request.FILES:
-#         return JsonResponse({'status': 'error', 'message': 'Image missing'})
-#
-#     fname=get_new_filename()
-#     full_path=r"D:\snap2bill\snap2bill\media\\" + fname
-#     image_file = request.FILES['image']
-#     fs = FileSystemStorage()
-#     saved_name = fs.save(full_path, image_file)
-#
-#     # scanned_image_path = os.path.normpath(fs.path(saved_name))
-#     scanned_image_path = full_path
-#     print("Scanned image:", scanned_image_path)
-#
-#     # =========================
-#     # 3. Compare with stock images
-#     # =========================
-#     best_score = -1
-#     matched_stock = None
-#
-#     for item in allproduct:
-#
-#         if not item.PRODUCT.image:
-#             continue
-#
-#         product_image_path = r"D:\snap2bill\snap2bill\media\\"+item.PRODUCT.image.split('/')[-1]
-#
-#         print("Comparing with:", product_image_path)
-#
-#         if not os.path.exists(product_image_path):
-#             print("❌ Image not found")
-#             continue
-#
-#         score = compare_images(scanned_image_path, product_image_path)
-#         print(item.PRODUCT.product_name, "score:", score)
-#
-#         if score > best_score:
-#             best_score = score
-#             matched_stock = item
-#
-#     # =========================
-#     # 4. Threshold + response
-#     # =========================
-#     print("Best match\n***************")
-#     print(best_score, matched_stock)
-#     if matched_stock and best_score >= 0.7:
-#         return JsonResponse({
-#             'status': 'ok',
-#             'stock_id': matched_stock.id,
-#             'product_name': matched_stock.PRODUCT.product_name,
-#             'match_score': round(best_score, 2)
-#         })
-#
-#     return JsonResponse({
-#         'status': 'not_found',
-#         'match_score': round(best_score, 2)
-#     })
-
-
 
 def scanItem(request):
     if request.method != "POST":
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Invalid request method'
-        })
+        return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
-    # ============================
-    # 1. Get Distributor ID
-    # ============================
     uid = request.POST.get('uid')
-    print(uid,"kl")
     if not uid:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'uid missing'
-        })
+        return JsonResponse({'status': 'error', 'message': 'uid missing'})
 
-    # ============================
-    # 2. Fetch Distributor Stock
-    # ============================
+    # 1. Distributor Stock Fetch
     allproduct = stock.objects.filter(DISTRIBUTOR_id=uid)
-
     if not allproduct.exists():
-        return JsonResponse({
-            'status': 'error',
-            'message': 'No stock found for distributor'
-        })
+        return JsonResponse({'status': 'error', 'message': 'No stock found'})
 
-    # ============================
-    # 3. Image Validation & Save
-    # ============================
     if 'image' not in request.FILES:
-        return JsonResponse({
-            'status': 'error',
-            'message': 'Image missing'
-        })
+        return JsonResponse({'status': 'error', 'message': 'Image missing'})
 
+    # 2. Image Handling
     image_file = request.FILES['image']
     fs = FileSystemStorage()
     saved_path = fs.save(image_file.name, image_file)
     image_path = fs.path(saved_path)
-    print(image_path,"oky")
 
-    # ============================
-    # 4. Convert Image → Bytes
-    # ============================
-    image = Image.open(image_path).convert("RGB")
-    image_bytes_io = io.BytesIO()
-    image.save(image_bytes_io, format="JPEG")
-    image_bytes = image_bytes_io.getvalue()
+    img = cv2.imread(image_path)
 
-    # ============================
-    # 5. Prepare Product List
-    # ============================
-    product_names = []
-    for item in allproduct:
-        product_names.append(item.PRODUCT.product_name)
+    height, width = img.shape[:2]
+    new_width = 640
+    new_height = int((new_width / width) * height)
+    img = cv2.resize(img, (new_width, new_height))
 
+    # 2. Simple Contrast: Heavy Denoising hata di
+    img = cv2.convertScaleAbs(img, alpha=1.1, beta=5)
+
+    # Bytes conversion
+    _, buffer = cv2.imencode(".jpg", img, [int(cv2.IMWRITE_JPEG_QUALITY), 85])
+    image_bytes = io.BytesIO(buffer).getvalue()
+
+    product_names = [item.PRODUCT.product_name for item in allproduct]
     product_list_text = ", ".join(product_names)
 
-    # ============================
-    # 6. Gemini Configuration
-    # ============================
-    genai.configure(api_key="AIzaSyAnlXqmMIpse1oKCNfDkTIwGPOSEruCVHI")  # 🔐 move to settings in production
-
+    genai.configure(api_key="AIzaSyAnlXqmMIpse1oKCNfDkTIwGPOSEruCVHI")
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
-    prompt = f"""
-You are given:
-1. An image of a product
-2. A list of product names
+    prompt = f"""Identify from: {product_list_text}. 
+    Format: PRODUCT_NAME | QUANTITY. 
+    If not found: NONE | 0."""
 
-TASK:
-- Identify the product shown in the image
-- Compare it strictly with the product list
-- Return ONLY the best matching product name from the list
-- If no product clearly matches, return ONLY: NONE
-
-RULES:
-- Output must be EXACTLY one product name from the list
-- No extra words, no punctuation, no explanation
-
-PRODUCT LIST:
-{product_list_text}
-"""
-
-    # ============================
-    # 7. Gemini Image Comparison
-    # ============================
-    response = model.generate_content(
-        [
+    try:
+        response = model.generate_content([
             prompt,
             {"mime_type": "image/jpeg", "data": image_bytes}
-        ],
-        generation_config={
-            "temperature": 0.1,
-            "max_output_tokens": 30
-        }
-    )
+        ])
 
-    detected_product = response.text.strip()
-    print("Gemini detected:", detected_product)
+        result_text = response.text.strip()
 
-    # ============================
-    # 8. Match with Stock (Exact)
-    # ============================
-    matched_stock = None
-    for item in allproduct:
-        db_name = item.PRODUCT.product_name.strip().lower()
-        ai_name = detected_product.strip().lower()
-        if ai_name == db_name or ai_name in db_name or db_name in ai_name:
-            matched_stock = item
-            break
+        # Quick Parsing
+        parts = result_text.split('|')
+        detected_name = parts[0].strip()
+        detected_qty = parts[1].strip() if len(parts) > 1 else "1"
 
-    import os
+        print(f"📦 {detected_name} | 🔢 Qty: {detected_qty}")
 
-    file_path = image_path
+        # 5. Database Match
+        matched_stock = None
+        for item in allproduct:
+            if detected_name.lower() in item.PRODUCT.product_name.lower():
+                matched_stock = item
+                break
 
-    # Check if the file exists before attempting to delete
-    if os.path.exists(file_path):
-        os.remove(file_path)
-        print(f"The file {file_path} has been removed.")
-    else:
-        print(f"The file {file_path} does not exist.")
-    if matched_stock:
-        print(f"Match found: {matched_stock}")
-        return JsonResponse({
-            'status': 'ok',
-            'sid': matched_stock.id,
-            'product_name': matched_stock.PRODUCT.product_name,
-        })
-    else:
-        print("Match failed: Stock not found in database for detected name.")
-        return JsonResponse({'status': 'not_found', 'detected': detected_product})
+        # Cleanup
+        if os.path.exists(image_path):
+            os.remove(image_path)
+
+        if matched_stock:
+            return JsonResponse({
+                'status': 'ok',
+                'sid': matched_stock.id,
+                'product_name': matched_stock.PRODUCT.product_name,
+                'detected_qty': detected_qty
+            })
+
+        return JsonResponse({'status': 'not_found', 'detected': detected_name})
+
+    except Exception as e:
+        if os.path.exists(image_path): os.remove(image_path)
+        print(f"Error: {e}")
+        return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+#
+# def scanItem(request):
+#     if request.method != "POST":
+#         return JsonResponse({
+#             'status': 'error',
+#             'message': 'Invalid request method'
+#         })
+#
+#     # ============================
+#     # 1. Get Distributor ID
+#     # ============================
+#     uid = request.POST.get('uid')
+#     print(uid,"kl")
+#     if not uid:
+#         return JsonResponse({
+#             'status': 'error',
+#             'message': 'uid missing'
+#         })
+#
+#     # ============================
+#     # 2. Fetch Distributor Stock
+#     # ============================
+#     allproduct = stock.objects.filter(DISTRIBUTOR_id=uid)
+#
+#     if not allproduct.exists():
+#         return JsonResponse({
+#             'status': 'error',
+#             'message': 'No stock found for distributor'
+#         })
+#
+#     # ============================
+#     # 3. Image Validation & Save
+#     # ============================
+#     if 'image' not in request.FILES:
+#         return JsonResponse({
+#             'status': 'error',
+#             'message': 'Image missing'
+#         })
+#
+#     image_file = request.FILES['image']
+#     fs = FileSystemStorage()
+#     saved_path = fs.save(image_file.name, image_file)
+#     image_path = fs.path(saved_path)
+#     print(image_path,"oky")
+#
+#     # ============================
+#     # 4. Convert Image → Bytes
+#     # ============================
+#     image = Image.open(image_path).convert("RGB")
+#     image_bytes_io = io.BytesIO()
+#     image.save(image_bytes_io, format="JPEG")
+#     image_bytes = image_bytes_io.getvalue()
+#
+#     # ============================
+#     # 5. Prepare Product List
+#     # ============================
+#     product_names = []
+#     for item in allproduct:
+#         product_names.append(item.PRODUCT.product_name)
+#
+#     product_list_text = ", ".join(product_names)
+#
+#     # ============================
+#     # 6. Gemini Configuration
+#     # ============================
+#     genai.configure(api_key="AIzaSyAnlXqmMIpse1oKCNfDkTIwGPOSEruCVHI")  # 🔐 move to settings in production
+#
+#     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
+#
+#     prompt = f"""
+# You are given:
+# 1. An image of a product
+# 2. A list of product names
+#
+# TASK:
+# - Identify the product shown in the image
+# - Compare it strictly with the product list
+# - Return ONLY the best matching product name from the list
+# - If no product clearly matches, return ONLY: NONE
+#
+# RULES:
+# - Output must be EXACTLY one product name from the list
+# - No extra words, no punctuation, no explanation
+#
+# PRODUCT LIST:
+# {product_list_text}
+# """
+#
+#     # ============================
+#     # 7. Gemini Image Comparison
+#     # ============================
+#     response = model.generate_content(
+#         [
+#             prompt,
+#             {"mime_type": "image/jpeg", "data": image_bytes}
+#         ],
+#         generation_config={
+#             "temperature": 0.1,
+#             "max_output_tokens": 30
+#         }
+#     )
+#
+#     detected_product = response.text.strip()
+#     print("Gemini detected:", detected_product)
+#
+#     # ============================
+#     # 8. Match with Stock (Exact)
+#     # ============================
+#     matched_stock = None
+#     for item in allproduct:
+#         db_name = item.PRODUCT.product_name.strip().lower()
+#         ai_name = detected_product.strip().lower()
+#         if ai_name == db_name or ai_name in db_name or db_name in ai_name:
+#             matched_stock = item
+#             break
+#
+#     import os
+#
+#     file_path = image_path
+#
+#     if os.path.exists(file_path):
+#         os.remove(file_path)
+#         print(f"The file {file_path} has been removed.")
+#     else:
+#         print(f"The file {file_path} does not exist.")
+#     if matched_stock:
+#         print(f"Match found: {matched_stock}")
+#         return JsonResponse({
+#             'status': 'ok',
+#             'sid': matched_stock.id,
+#             'product_name': matched_stock.PRODUCT.product_name,
+#         })
+#     else:
+#         print("Match failed: Stock not found in database for detected name.")
+#         return JsonResponse({'status': 'not_found', 'detected': detected_product})
 
 
 def viewAllCustomers(request):
@@ -2294,6 +2275,12 @@ def addtobill(request):
             if not uid or not sid:
                 return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
 
+            if cid:
+                DistributorCustomerLink.objects.get_or_create(
+                    DISTRIBUTOR_id=uid,
+                    CUSTOMER_id=cid
+                )
+
             qty_int = int(float(quantity))
             target_order = None
 
@@ -2349,87 +2336,19 @@ def addtobill(request):
 
 
 
-
-# def addtobill(request):
-#     uid = request.POST.get('uid')
-#     cid = request.POST.get('cid')
-#     sid = request.POST.get('sid')
-#     quantity = int(request.POST.get('quantity'))
-#     price = request.POST.get('price')
-#     print(uid,cid,sid)
-#
-#     data = order.objects.filter(USER=cid,order_type='offline_pending')
-#     if data.exists():
-#         data2 = order_sub.objects.filter(ORDER_id=data[0].id,STOCK_id=sid)
-#         if data2.exists():
-#
-#             obj2 = order_sub.objects.get(id=data2[0].id)
-#             obj2.quantity += int(quantity)
-#             obj2.price = price
-#             obj2.save()
-#             return JsonResponse({'status': 'ok', 'oid': data[0].id})
-#
-#         obj = order_sub()
-#         obj.quantity = quantity
-#         obj.price = price
-#         obj.ORDER_id = data[0].id
-#         obj.STOCK_id = sid
-#         obj.save()
-#         return JsonResponse({'status': 'ok','oid':data[0].id})
-#
-#     else:
-#         obj1 = order()
-#         obj1.payment_status = "pending"
-#         obj1.payment_date = "pending"
-#         obj1.date = datetime.now().date()
-#         obj1.amount = 0
-#         obj1.DISTRIBUTOR_id = uid
-#         obj1.USER_id = cid
-#         obj1.order_type = "offline_pending"
-#         obj1.save()
-#
-#         obj = order_sub()
-#         obj.ORDER_id=obj1.id
-#         obj.quantity = quantity
-#         obj.price = price
-#         obj.STOCK_id = sid
-#         obj.save()
-#         return JsonResponse({'status': 'ok','oid':obj1.id})
-#
-#
-#
-#
-#
-#     # item = order_sub.objects.all()
-#     #
-#     # if item:
-#     #     item.quantity = int(item.quantity) + quantity
-#     #     item.price = price
-#     #     item.save()
-#     # else:
-#
-#
-#     # current_amount = float(item.ORDER.amount)
-#     # item_total = float(price) * float(quantity)
-#     # item.ORDER.amount.amount = str(current_amount + item_total)
-#     # item.ORDER.amount.save()
-#
-#     return JsonResponse({'status': 'ok'})
-#
-
-
 def addFinalBill(request):
    id = request.POST['id']
 
    total = request.POST['total']
    print(id,"  total  ",total)
-   order.objects.filter(id=id).update(amount = total,order_type = "offline")
+   today = datetime.now().date()
+   order.objects.filter(id=id).update(amount = total,order_type = "offline",date=today)
 
 
    return JsonResponse({'status': 'ok'})
 
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 
 
 
@@ -2475,7 +2394,6 @@ def universal_search(request):
                 'distributor_image': s.DISTRIBUTOR.profile_image
             })
 
-        # B. Customers Search (🚀 Saari fields add kar di hain)
         customers = customer.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
         for c in customers:
             results.append({
@@ -2485,7 +2403,6 @@ def universal_search(request):
                 'pincode': c.pincode, 'post': c.post
             })
 
-        # C. Distributors Search (🚀 Saari fields add kar di hain)
         distributors = distributor.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
         for d in distributors:
             results.append({
@@ -2511,19 +2428,18 @@ def universal_search(request):
 def distributor_add_product(request):
     try:
         uid = request.POST['uid']
-        image = request.FILES['file']
+        image = compress_image(request.FILES['file'])
         product_name = request.POST['product_name']
         price = request.POST['price']
         description = request.POST['description']
         quantity = request.POST['quantity']
         category_id = request.POST['category']
-        unit_id = request.POST['unit_id'] # 🚀 Received unit_id from Flutter
+        unit_id = request.POST['unit_id']
 
         fs = FileSystemStorage()
         file_name = fs.save(image.name, image)
         image_url = fs.url(file_name)
 
-        # Create Product
         new_product = product()
         new_product.product_name = product_name
         new_product.image = image_url
@@ -2531,13 +2447,12 @@ def distributor_add_product(request):
         new_product.CATEGORY_id = category_id
         new_product.save()
 
-        # Create Stock Entry with Unit
         obj = stock()
         obj.PRODUCT = new_product
         obj.DISTRIBUTOR_id = uid
         obj.price = price
         obj.quantity = quantity
-        obj.UNIT_id = unit_id # 🚀 Assigning the selected unit
+        obj.UNIT_id = unit_id
         obj.save()
 
         return JsonResponse({'status': 'ok'})
@@ -2556,36 +2471,20 @@ def get_incremental_suggestions(request):
         current_sid = request.POST.get('sid')
         if not current_sid:
             return JsonResponse({'status': 'error', 'message': 'sid missing'})
-
         current_sid = int(current_sid)
-
-        # 🚀 FIX: Order IDs ki jagah User + Date ka combination use karein
-        # Isse Distributor A aur B ke products link ho jayenge
         order_items = order_sub.objects.all().select_related('ORDER')
-
         user_session_transactions = defaultdict(list)
-
         for item in order_items:
-            # Ek user ne ek hi date par jo bhi kharida, use ek transaction maanein
-            # Format: "user_2_2024-02-08"
             session_key = f"user_{item.ORDER.USER_id}_{item.ORDER.date}"
             user_session_transactions[session_key].append(item.STOCK_id)
-
-        # Frequent Pattern Mining Logic
         related_items_count = defaultdict(int)
-
         for session_id in user_session_transactions:
             product_list = user_session_transactions[session_id]
-
-            # Agar is user session mein current product maujood hai
             if current_sid in product_list:
                 for other_item in product_list:
                     if other_item != current_sid:
                         related_items_count[other_item] += 1
-
-        # Most relevant items (A + B dono ke mix suggestions milenge)
         sorted_related = sorted(related_items_count.items(), key=lambda x: x[1], reverse=True)[:5]
-
         ar = []
         for sid, score in sorted_related:
             try:
@@ -2596,7 +2495,7 @@ def get_incremental_suggestions(request):
                     'price': item.price,
                     'image': item.PRODUCT.image,
                     'unit': item.UNIT.unit_name if item.UNIT else "pcs",
-                    'distributor_name': item.DISTRIBUTOR.name,  # 🚀 Identify karne ke liye kaunsa distributor hai
+                    'distributor_name': item.DISTRIBUTOR.name,
                     'confidence_score': score
                 })
             except stock.DoesNotExist:
@@ -2608,22 +2507,17 @@ def get_incremental_suggestions(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
-from django.utils import timezone
 
 
-# 1. Product view hote hi record add ya update karein
 def add_to_recent(request):
     try:
         cid = request.POST.get('cid')
-        sid = request.POST.get('sid')  # Stock ID
+        sid = request.POST.get('sid')
 
-        # Agar pehle se dekha hua hai toh time update karo, warna naya banao
         obj, created = recently_viewed.objects.update_or_create(
             USER_id=cid, STOCK_id=sid,
             defaults={'viewed_date': timezone.now()}
         )
-
-        # Optimization: Sirf top 10 items rakhein (Extra delete kar dein)
         all_recent = recently_viewed.objects.filter(USER_id=cid).order_by('-viewed_date')
         if all_recent.count() > 10:
             ids_to_keep = all_recent.values_list('pk', flat=True)[:10]
@@ -2634,7 +2528,6 @@ def add_to_recent(request):
         return JsonResponse({'status': 'error', 'message': str(e)})
 
 
-# 2. Cart page ke liye list fetch karein
 def get_recent_products(request):
     try:
         cid = request.POST.get('cid')
@@ -2657,15 +2550,13 @@ def get_recent_products(request):
 
 
 def get_counts(request):
-    uid = request.POST.get('uid')  # Distributor ID
-    cid = request.POST.get('cid')  # Customer ID
-
+    uid = request.POST.get('uid')
+    cid = request.POST.get('cid')
     wishlist_count = 0
     cart_count = 0
-
-    if uid:  # Agar distributor check kar raha hai
+    if uid:
         wishlist_count = wishlist.objects.filter(DISTRIBUTOR_id=uid, USER__isnull=True).count()
-    elif cid:  # Agar customer check kar raha hai
+    elif cid:
         wishlist_count = wishlist.objects.filter(USER_id=cid, DISTRIBUTOR__isnull=True).count()
         cart_count = cart.objects.filter(USER_id=cid).count()
 
@@ -2684,39 +2575,29 @@ def auth_google(request):
         return JsonResponse({'status': 'error', 'message': 'Invalid method'}, status=405)
 
     try:
-        # 1. Parse Data from Flutter
         data = json.loads(request.body)
         email = data.get('email')
         name = data.get('name')
-        photo = data.get('photoUrl')  # Google Profile Pic
-        user_type = data.get('type')  # 'customer' or 'distributor'
-
-        # Optional fields (might be empty if just logging in)
+        photo = data.get('photoUrl')
+        user_type = data.get('type')
         phone = data.get('phone', '')
         address = data.get('address', '')
         place = data.get('place', '')
         pincode = data.get('pincode', '')
 
-        # Distributor specific
         latitude = data.get('latitude', '')
         longitude = data.get('longitude', '')
 
         if not email:
             return JsonResponse({'status': 'error', 'message': 'Email is required'}, status=400)
 
-        # 2. Check if User Exists
         user_exists = User.objects.filter(username=email).exists()
 
         if user_exists:
-            # === LOGIN FLOW ===
             user = User.objects.get(username=email)
-
-            # Identify if they are Customer or Distributor
             if user.groups.filter(name="distributor").exists():
                 try:
                     dist = distributor.objects.get(LOGIN=user)
-
-                    # Optional: Update photo if they didn't have one
                     if not dist.profile_image and photo:
                         dist.profile_image = photo
                         dist.save()
@@ -2728,7 +2609,6 @@ def auth_google(request):
             elif user.groups.filter(name="customer").exists():
                 try:
                     cust = customer.objects.get(LOGIN=user)
-                    # Optional: Update photo
                     if not cust.profile_image and photo:
                         cust.profile_image = photo
                         cust.save()
@@ -2740,21 +2620,14 @@ def auth_google(request):
                 return JsonResponse({'status': 'error', 'message': 'User type unknown'})
 
         else:
-            # === REGISTRATION FLOW ===
-
-            # A. Create Core User
-            # We set a random password because they will use Google to login
             random_password = User.objects.make_random_password()
             new_user = User.objects.create_user(username=email, email=email, password=random_password)
             new_user.first_name = name
             new_user.save()
 
             if user_type == 'distributor':
-                # Assign Group
                 group = Group.objects.get(name='distributor')
                 new_user.groups.add(group)
-
-                # Create Distributor Profile
                 obj = distributor()
                 obj.LOGIN = new_user
                 obj.name = name
@@ -2765,18 +2638,15 @@ def auth_google(request):
                 obj.pincode = pincode
                 obj.latitude = latitude
                 obj.longitude = longitude
-                obj.profile_image = photo  # Save Google Photo directly
-                obj.status = 'pending'  # Distributors usually need approval
+                obj.profile_image = photo
+                obj.status = 'pending'
                 obj.save()
 
                 return JsonResponse({'status': 'distok', 'uid': str(obj.id)})
 
             elif user_type == 'customer':
-                # Assign Group
                 group = Group.objects.get(name='customer')
                 new_user.groups.add(group)
-
-                # Create Customer Profile
                 obj = customer()
                 obj.LOGIN = new_user
                 obj.name = name
@@ -2785,13 +2655,12 @@ def auth_google(request):
                 obj.address = address
                 obj.place = place
                 obj.pincode = pincode
-                obj.profile_image = photo  # Save Google Photo
+                obj.profile_image = photo
                 obj.save()
 
                 return JsonResponse({'status': 'custok', 'cid': str(obj.id)})
 
             else:
-                # Rollback if type is invalid
                 new_user.delete()
                 return JsonResponse({'status': 'error', 'message': 'Invalid user type'})
 

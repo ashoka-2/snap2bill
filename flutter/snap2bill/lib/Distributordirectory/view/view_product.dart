@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -203,22 +204,15 @@ class _ViewProductSubState extends State<ViewProductSub> {
                       height: 120,
                       child: Icon(Icons.image_not_supported, color: Colors.grey.shade400, size: 40),
                     )
-                        : Image.network(
-                      i.image,
+                        : CachedNetworkImage(
+                        imageUrl:i.image,
                       fit: BoxFit.fitWidth,
-                      loadingBuilder: (context, child, loadingProgress) {
-                        if (loadingProgress == null) return child;
-                        return Container(
-                          height: 120,
-                          alignment: Alignment.center,
-                          child: CircularProgressIndicator(
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                : null,
-                          ),
-                        );
-                      },
-                      errorBuilder: (c, o, s) => Container(
+                      placeholder: (context, url) => Container(
+                        height: 120,
+                        alignment: Alignment.center,
+                        child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.getPrimaryColor(context)),
+                      ),
+                      errorWidget: (c, o, s) => Container(
                         height: 120,
                         child: Icon(Icons.broken_image, color: Colors.grey.shade400),
                       ),

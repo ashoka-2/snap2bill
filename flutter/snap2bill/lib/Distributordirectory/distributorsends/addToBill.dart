@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -19,7 +20,7 @@ class addToBill extends StatefulWidget {
 }
 
 class _addToBillState extends State<addToBill> {
-  final quantityController = TextEditingController(text: "1");
+  final quantityController = TextEditingController();
   final priceController = TextEditingController();
 
   String productName = "Loading...";
@@ -41,7 +42,7 @@ class _addToBillState extends State<addToBill> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String ip = prefs.getString("ip") ?? "";
       String sid = prefs.getString("sid") ?? "";
-
+      String dQty = prefs.getString("detected_qty") ?? "1";
       var response = await http.post(Uri.parse("$ip/get_product_details"), body: {
         'pid': sid,
       });
@@ -53,7 +54,9 @@ class _addToBillState extends State<addToBill> {
             productName = decoded['data']['product_name'];
             priceController.text = decoded['data']['price'].toString();
             productImage = ip + decoded['data']['image'];
-            unitName = decoded['data']['unit_name'] ?? ""; // 🚀 Extract Unit Name
+            unitName = decoded['data']['unit_name'] ?? "";
+
+            quantityController.text = dQty;
             _isLoading = false;
           });
         }
@@ -162,7 +165,8 @@ final textColor = AppColors.getTextColor(context);
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(24),
                   child: productImage.isNotEmpty
-                      ? Image.network(productImage, fit: BoxFit.fill)
+                      ? CachedNetworkImage(
+  imageUrl:productImage, fit: BoxFit.fill)
                       : const Icon(Icons.inventory, size: 50),
                 ),
               ),

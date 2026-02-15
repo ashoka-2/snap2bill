@@ -1,6 +1,7 @@
 
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:hugeicons/hugeicons.dart';
@@ -160,7 +161,7 @@ final textColor = AppColors.getTextColor(context);
             child: CircleAvatar(
               radius: 45,
               backgroundColor: theme.scaffoldBackgroundColor,
-              backgroundImage: NetworkImage(i.profile_image),
+              backgroundImage: CachedNetworkImageProvider(i.profile_image),
               onBackgroundImageError: (_, __) => const Icon(Icons.person, size: 40),
             ),
           ),

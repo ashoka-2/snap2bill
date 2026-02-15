@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -223,7 +224,7 @@ class _DistributorPageSubState extends State<DistributorPageSub> {
                       radius: 30,
                       backgroundColor: AppColors.getPrimaryColor(context),
                       backgroundImage: item.profile_image.startsWith("http")
-                          ? NetworkImage(item.profile_image)
+                          ? CachedNetworkImageProvider(item.profile_image)
                           : null,
                       child: !item.profile_image.startsWith("http")
                           ?  Icon(Icons.business, color: AppColors.getPrimaryColor(context))

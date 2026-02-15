@@ -2,6 +2,7 @@
 
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -216,7 +217,8 @@ class _viewCartState extends State<viewCart> {
                       Expanded(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
-                          child: Image.network(_joinUrl(item['image']), fit: BoxFit.cover, width: double.infinity),
+                          child: CachedNetworkImage(
+                            imageUrl:_joinUrl(item['image']), fit: BoxFit.cover, width: double.infinity),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -253,7 +255,8 @@ class _viewCartState extends State<viewCart> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
-              child: Image.network(_joinUrl(item['image'].toString()), width: 80, height: 85, fit: BoxFit.cover),
+              child: CachedNetworkImage(
+  imageUrl:_joinUrl(item['image'].toString()), width: 80, height: 85, fit: BoxFit.cover),
             ),
             const SizedBox(width: 15),
             Expanded(

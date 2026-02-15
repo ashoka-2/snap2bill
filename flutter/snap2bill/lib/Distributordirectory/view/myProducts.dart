@@ -1,6 +1,7 @@
 
 
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -246,10 +247,11 @@ class _MyProductsSubState extends State<MyProductsSub> {
                     height: 150,
                     child: Icon(Icons.image_not_supported, color: Colors.grey.shade400, size: 40),
                   )
-                      : Image.network(
+                      : CachedNetworkImage(
+                  imageUrl:
                     i.image,
                     fit: BoxFit.fitWidth,
-                    errorBuilder: (c, o, s) => SizedBox(
+                    errorWidget: (c, o, s) => SizedBox(
                       height: 150,
                       child: Icon(Icons.broken_image, color: Colors.grey.shade400),
                     ),

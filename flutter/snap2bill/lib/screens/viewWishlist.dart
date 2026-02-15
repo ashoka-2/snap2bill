@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -188,12 +189,12 @@ class _ViewWishlistState extends State<ViewWishlist> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: imageUrl.isNotEmpty
-                        ? Image.network(
-                      imageUrl,
+                        ? CachedNetworkImage(
+                        imageUrl: imageUrl,
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _errorImage(),
+                      errorWidget: (_, __, ___) => _errorImage(),
                     )
                         : _errorImage(),
                   ),

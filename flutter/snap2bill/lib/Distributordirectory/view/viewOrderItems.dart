@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -123,12 +124,13 @@ class _ViewOrderItemsSubState extends State<ViewOrderItemsSub> {
           // PRODUCT IMAGE
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
-            child: Image.network(
+            child: CachedNetworkImage(
+            imageUrl:
               item.imageUrl,
               height: 90,
               width: 90,
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
+              errorWidget: (context, error, stackTrace) => Container(
                 height: 90,
                 width: 90,
                 color: Colors.grey[200],

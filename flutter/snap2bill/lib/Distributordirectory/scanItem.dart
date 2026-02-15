@@ -1,6 +1,7 @@
 
 
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -77,6 +78,8 @@ class _CameraCaptureState extends State<CameraCapture> {
         prefs.setString("sid", decoded['sid'].toString());
         prefs.setString("pname", decoded['product_name']);
 
+        String detectedQty = decoded['detected_qty']?.toString() ?? "1";
+        prefs.setString("detected_qty", detectedQty);
         Navigator.push(context, MaterialPageRoute(builder: (context) => const addToBill()));
       } else {
         setState(() => _showAddButton = true);
@@ -165,7 +168,8 @@ final textColor = AppColors.getTextColor(context);
                     ],
                   )
                       : kIsWeb
-                      ? Image.network(_pickedFile!.path, fit: BoxFit.cover)
+                      ? CachedNetworkImage(
+  imageUrl:_pickedFile!.path, fit: BoxFit.cover)
                       : Image.file(_image!, fit: BoxFit.cover),
                 ),
               ),

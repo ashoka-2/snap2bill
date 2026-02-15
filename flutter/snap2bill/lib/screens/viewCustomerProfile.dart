@@ -1,4 +1,5 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:snap2bill/Distributordirectory/customer_page.dart';
@@ -97,7 +98,7 @@ class ViewCustomerProfile extends StatelessWidget {
               ),
               child: CircleAvatar(
                 radius: 60,
-                backgroundImage: NetworkImage(customer.profile_image),
+                backgroundImage: CachedNetworkImageProvider(customer.profile_image),
                 onBackgroundImageError: (_, __) => const Icon(Icons.person, size: 40),
               ),
             ),
