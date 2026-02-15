@@ -1354,63 +1354,159 @@ def update_quantity(request):
     cart.objects.filter(id=id).update(quantity=int(float(quantity)))
     return JsonResponse({"status":"ok"})
 
+
+
+
+
+
+
+
+
+@csrf_exempt  # Agar CSRF token issue aa raha ho
 def toggle_wishlist(request):
-    pid = request.POST.get('pid')
-    cid = request.POST.get('cid')
-    uid = request.POST.get('uid')
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'msg': 'Only POST allowed'})
 
+    pid = request.POST.get('pid') # Stock ID
+    cid = request.POST.get('cid') # Customer ID
+    uid = request.POST.get('uid') # Distributor ID
+
+    # 1. Validation
     if not pid:
-        return JsonResponse({'status': 'error', 'msg': 'pid missing'})
+        return JsonResponse({'status': 'error', 'msg': 'Product ID (pid) missing'})
 
-    stock_obj = stock.objects.get(id=pid)
+    # 2. Safe Stock Fetching
+    try:
+        stock_obj = stock.objects.get(id=pid)
+    except stock.DoesNotExist:
+        return JsonResponse({'status': 'error', 'msg': 'Product not found in stock'})
 
-    # ================= CUSTOMER =================
-    if cid and not uid:
-        print("👉 CUSTOMER WISHLIST")
-        user = customer.objects.get(id=cid)
+    try:
+        # ================= CUSTOMER LOGIC =================
+        if cid and cid not in ['null', 'None', '']:
+            try:
+                user = customer.objects.get(id=cid)
+            except customer.DoesNotExist:
+                return JsonResponse({'status': 'error', 'msg': 'Customer not found'})
 
-        qs = wishlist.objects.filter(
-            STOCK=stock_obj,
-            USER=user,
-            DISTRIBUTOR__isnull=True
-        )
-
-        if qs.exists():
-            qs.delete()
-            return JsonResponse({'status': 'ok', 'action': 'removed'})
-        else:
-            wishlist.objects.create(
+            # Check if already exists
+            wish_item = wishlist.objects.filter(
                 STOCK=stock_obj,
                 USER=user,
-                DISTRIBUTOR=None,
-                date=str(datetime.now())
-            )
-            return JsonResponse({'status': 'ok', 'action': 'added'})
+                DISTRIBUTOR__isnull=True
+            ).first()
 
-    # ================= DISTRIBUTOR =================
-    if uid and not cid:
-        print("👉 DISTRIBUTOR WISHLIST")
-        dist = distributor.objects.get(id=uid)
+            if wish_item:
+                wish_item.delete()
+                return JsonResponse({'status': 'ok', 'action': 'removed'})
+            else:
+                wishlist.objects.create(
+                    STOCK=stock_obj,
+                    USER=user,
+                    DISTRIBUTOR=None,
+                    date=str(datetime.now()) # Better to use timezone.now() if model allows
+                )
+                return JsonResponse({'status': 'ok', 'action': 'added'})
 
-        qs = wishlist.objects.filter(
-            STOCK=stock_obj,
-            DISTRIBUTOR=dist,
-            USER__isnull=True
-        )
+        # ================= DISTRIBUTOR LOGIC =================
+        elif uid and uid not in ['null', 'None', '']:
+            try:
+                dist = distributor.objects.get(id=uid)
+            except distributor.DoesNotExist:
+                return JsonResponse({'status': 'error', 'msg': 'Distributor not found'})
 
-        if qs.exists():
-            qs.delete()
-            return JsonResponse({'status': 'ok', 'action': 'removed'})
-        else:
-            wishlist.objects.create(
+            wish_item = wishlist.objects.filter(
                 STOCK=stock_obj,
                 DISTRIBUTOR=dist,
-                USER=None,
-                date=str(datetime.now())
-            )
-            return JsonResponse({'status': 'ok', 'action': 'added'})
+                USER__isnull=True
+            ).first()
 
-    return JsonResponse({'status': 'error', 'msg': 'invalid request'})
+            if wish_item:
+                wish_item.delete()
+                return JsonResponse({'status': 'ok', 'action': 'removed'})
+            else:
+                wishlist.objects.create(
+                    STOCK=stock_obj,
+                    DISTRIBUTOR=dist,
+                    USER=None,
+                    date=str(datetime.now())
+                )
+                return JsonResponse({'status': 'ok', 'action': 'added'})
+
+        else:
+            return JsonResponse({'status': 'error', 'msg': 'User ID (cid/uid) missing'})
+
+    except Exception as e:
+        print("Wishlist Error:", str(e))
+        return JsonResponse({'status': 'error', 'msg': str(e)})
+
+
+
+
+
+
+
+
+
+
+
+# def toggle_wishlist(request):
+#     pid = request.POST.get('pid')
+#     cid = request.POST.get('cid')
+#     uid = request.POST.get('uid')
+#
+#     if not pid:
+#         return JsonResponse({'status': 'error', 'msg': 'pid missing'})
+#
+#     stock_obj = stock.objects.get(id=pid)
+#
+#     # ================= CUSTOMER =================
+#     if cid and not uid:
+#         print("👉 CUSTOMER WISHLIST")
+#         user = customer.objects.get(id=cid)
+#
+#         qs = wishlist.objects.filter(
+#             STOCK=stock_obj,
+#             USER=user,
+#             DISTRIBUTOR__isnull=True
+#         )
+#
+#         if qs.exists():
+#             qs.delete()
+#             return JsonResponse({'status': 'ok', 'action': 'removed'})
+#         else:
+#             wishlist.objects.create(
+#                 STOCK=stock_obj,
+#                 USER=user,
+#                 DISTRIBUTOR=None,
+#                 date=str(datetime.now())
+#             )
+#             return JsonResponse({'status': 'ok', 'action': 'added'})
+#
+#     # ================= DISTRIBUTOR =================
+#     if uid and not cid:
+#         print("👉 DISTRIBUTOR WISHLIST")
+#         dist = distributor.objects.get(id=uid)
+#
+#         qs = wishlist.objects.filter(
+#             STOCK=stock_obj,
+#             DISTRIBUTOR=dist,
+#             USER__isnull=True
+#         )
+#
+#         if qs.exists():
+#             qs.delete()
+#             return JsonResponse({'status': 'ok', 'action': 'removed'})
+#         else:
+#             wishlist.objects.create(
+#                 STOCK=stock_obj,
+#                 DISTRIBUTOR=dist,
+#                 USER=None,
+#                 date=str(datetime.now())
+#             )
+#             return JsonResponse({'status': 'ok', 'action': 'added'})
+#
+#     return JsonResponse({'status': 'error', 'msg': 'invalid request'})
 
 def remove_from_wishlist(request):
     wid = request.POST.get('wid')
@@ -1807,38 +1903,81 @@ def view_distributor_allorders(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+@csrf_exempt
 def view_distributor_ordersitems(request):
-    id = request.POST["id"]
-    print(id,"oi")
-    data = order_sub.objects.filter(ORDER=id)
-    ar = []
-    for i in data:
-        if i.price == '':
-            ar.append({
-                'id': i.id,
-                'quantity':i.quantity,
-                'image': i.STOCK.PRODUCT.image,
-                'amount': i.STOCK.price,
-                'product_name': i.STOCK.PRODUCT.product_name,
-                'username': i.ORDER.USER.name,
-                'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
-                'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
-
-            })
-        else:
+    try:
+        oid = request.POST.get("id")
+        cid = request.POST.get("cid")
+        uid = request.POST.get("uid")
+        print(f"Fetching items for: OID={oid}, CID={cid}, UID={uid}")
+        target_order = None
+        if oid and oid not in ["0", "", "null"]:
+            try:
+                target_order = order.objects.get(id=oid)
+            except order.DoesNotExist:
+                pass
+        if not target_order and cid and uid:
+            target_order = order.objects.filter(
+                USER_id=cid,
+                DISTRIBUTOR_id=uid,
+                order_type="offline_pending"
+            ).first()
+        if not target_order:
+            return JsonResponse({'status': 'ok', 'data': [], 'oid': "0"})
+        data = order_sub.objects.filter(ORDER=target_order)
+        ar = []
+        for i in data:
+            price_to_show = i.price if i.price else i.STOCK.price
             ar.append({
                 'id': i.id,
                 'quantity': i.quantity,
                 'image': i.STOCK.PRODUCT.image,
-                'amount': i.price,
+                'amount': price_to_show,
                 'product_name': i.STOCK.PRODUCT.product_name,
                 'username': i.ORDER.USER.name,
                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
-
             })
+        return JsonResponse({'status': 'ok', 'data': ar, 'oid': str(target_order.id)})
+    except Exception as e:
+        print("Error fetching items:", e)
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
-    return JsonResponse({'status': 'ok', 'data': ar})
+
+
+
+# def view_distributor_ordersitems(request):
+#     id = request.POST["id"]
+#     print(id,"oi")
+#     data = order_sub.objects.filter(ORDER=id)
+#     ar = []
+#     for i in data:
+#         if i.price == '':
+#             ar.append({
+#                 'id': i.id,
+#                 'quantity':i.quantity,
+#                 'image': i.STOCK.PRODUCT.image,
+#                 'amount': i.STOCK.price,
+#                 'product_name': i.STOCK.PRODUCT.product_name,
+#                 'username': i.ORDER.USER.name,
+#                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
+#                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
+#
+#             })
+#         else:
+#             ar.append({
+#                 'id': i.id,
+#                 'quantity': i.quantity,
+#                 'image': i.STOCK.PRODUCT.image,
+#                 'amount': i.price,
+#                 'product_name': i.STOCK.PRODUCT.product_name,
+#                 'username': i.ORDER.USER.name,
+#                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
+#                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
+#
+#             })
+#
+#     return JsonResponse({'status': 'ok', 'data': ar})
 
 
 
@@ -1847,9 +1986,7 @@ def make_payment(request):
     cid = request.POST['cid']
     id = request.POST['id']
     amount = request.POST['amount']
-
     order.objects.filter(id=id).update(payment_status=request.POST['mode'],payment_date=datetime.now())
-
     obj = payment()
     obj.amount = amount
     obj.status = request.POST['mode']
@@ -2139,74 +2276,146 @@ def viewAllCustomers(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-
-
+@csrf_exempt
 def addtobill(request):
-    uid = request.POST.get('uid')
-    cid = request.POST.get('cid')
-    sid = request.POST.get('sid')
-    quantity = int(request.POST.get('quantity'))
-    price = request.POST.get('price')
-    print(uid,cid,sid)
+    try:
+            # Get all possible identifiers
+            uid = request.POST.get('uid')
+            cid = request.POST.get('cid')
+            sid = request.POST.get('sid')
+            oid = request.POST.get('oid')
 
-    data = order.objects.filter(USER=cid,order_type='offline_pending')
-    if data.exists():
-        data2 = order_sub.objects.filter(ORDER_id=data[0].id,STOCK_id=sid)
-        if data2.exists():
+            quantity = request.POST.get('quantity', 1)
+            price = request.POST.get('price')
 
-            obj2 = order_sub.objects.get(id=data2[0].id)
-            obj2.quantity += int(quantity)
-            obj2.price = price
-            obj2.save()
-            return JsonResponse({'status': 'ok', 'oid': data[0].id})
+            print(f"Adding to bill: UID={uid}, CID={cid}, SID={sid}, OID={oid}")
 
-        obj = order_sub()
-        obj.quantity = quantity
-        obj.price = price
-        obj.ORDER_id = data[0].id
-        obj.STOCK_id = sid
-        obj.save()
-        return JsonResponse({'status': 'ok','oid':data[0].id})
+            # 1. Basic Validation
+            if not uid or not sid:
+                return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
 
-    else:
-        obj1 = order()
-        obj1.payment_status = "pending"
-        obj1.payment_date = "pending"
-        obj1.date = datetime.now().date()
-        obj1.amount = 0
-        obj1.DISTRIBUTOR_id = uid
-        obj1.USER_id = cid
-        obj1.order_type = "offline_pending"
-        obj1.save()
+            qty_int = int(float(quantity))
+            target_order = None
 
-        obj = order_sub()
-        obj.ORDER_id=obj1.id
-        obj.quantity = quantity
-        obj.price = price
-        obj.STOCK_id = sid
-        obj.save()
-        return JsonResponse({'status': 'ok','oid':obj1.id})
+            if oid and oid not in ["", "null", "0"]:
+                try:
+                    target_order = order.objects.get(id=oid)
+                except order.DoesNotExist:
+                    pass
+
+            if not target_order and cid:
+                target_order = order.objects.filter(
+                    USER_id=cid,
+                    DISTRIBUTOR_id=uid,
+                    order_type='offline_pending'
+                ).first()
+
+            if not target_order:
+                if not cid:
+                    return JsonResponse(
+                        {'status': 'error', 'message': 'Cannot find bill. Restart the app or re-select customer.'})
+
+                # Create NEW Bill
+                target_order = order.objects.create(
+                    payment_status="pending",
+                    payment_date="pending",
+                    date=datetime.now().date(),
+                    amount=0,
+                    DISTRIBUTOR_id=uid,
+                    USER_id=cid,
+                    order_type="offline_pending"
+                )
+
+            existing_item = order_sub.objects.filter(ORDER=target_order, STOCK_id=sid).first()
+
+            if existing_item:
+                existing_item.quantity = int(existing_item.quantity) + qty_int
+                existing_item.save()
+            else:
+                order_sub.objects.create(
+                    ORDER=target_order,
+                    STOCK_id=sid,
+                    quantity=qty_int,
+                    price=price
+                )
+
+            return JsonResponse({'status': 'ok', 'oid': target_order.id})
+
+    except Exception as e:
+            print("Error in addtobill:", str(e))
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 
 
 
-    # item = order_sub.objects.all()
-    #
-    # if item:
-    #     item.quantity = int(item.quantity) + quantity
-    #     item.price = price
-    #     item.save()
-    # else:
 
-
-    # current_amount = float(item.ORDER.amount)
-    # item_total = float(price) * float(quantity)
-    # item.ORDER.amount.amount = str(current_amount + item_total)
-    # item.ORDER.amount.save()
-
-    return JsonResponse({'status': 'ok'})
-
+# def addtobill(request):
+#     uid = request.POST.get('uid')
+#     cid = request.POST.get('cid')
+#     sid = request.POST.get('sid')
+#     quantity = int(request.POST.get('quantity'))
+#     price = request.POST.get('price')
+#     print(uid,cid,sid)
+#
+#     data = order.objects.filter(USER=cid,order_type='offline_pending')
+#     if data.exists():
+#         data2 = order_sub.objects.filter(ORDER_id=data[0].id,STOCK_id=sid)
+#         if data2.exists():
+#
+#             obj2 = order_sub.objects.get(id=data2[0].id)
+#             obj2.quantity += int(quantity)
+#             obj2.price = price
+#             obj2.save()
+#             return JsonResponse({'status': 'ok', 'oid': data[0].id})
+#
+#         obj = order_sub()
+#         obj.quantity = quantity
+#         obj.price = price
+#         obj.ORDER_id = data[0].id
+#         obj.STOCK_id = sid
+#         obj.save()
+#         return JsonResponse({'status': 'ok','oid':data[0].id})
+#
+#     else:
+#         obj1 = order()
+#         obj1.payment_status = "pending"
+#         obj1.payment_date = "pending"
+#         obj1.date = datetime.now().date()
+#         obj1.amount = 0
+#         obj1.DISTRIBUTOR_id = uid
+#         obj1.USER_id = cid
+#         obj1.order_type = "offline_pending"
+#         obj1.save()
+#
+#         obj = order_sub()
+#         obj.ORDER_id=obj1.id
+#         obj.quantity = quantity
+#         obj.price = price
+#         obj.STOCK_id = sid
+#         obj.save()
+#         return JsonResponse({'status': 'ok','oid':obj1.id})
+#
+#
+#
+#
+#
+#     # item = order_sub.objects.all()
+#     #
+#     # if item:
+#     #     item.quantity = int(item.quantity) + quantity
+#     #     item.price = price
+#     #     item.save()
+#     # else:
+#
+#
+#     # current_amount = float(item.ORDER.amount)
+#     # item_total = float(price) * float(quantity)
+#     # item.ORDER.amount.amount = str(current_amount + item_total)
+#     # item.ORDER.amount.save()
+#
+#     return JsonResponse({'status': 'ok'})
+#
 
 
 def addFinalBill(request):

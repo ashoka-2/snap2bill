@@ -63,40 +63,7 @@ class _ProductCardState extends State<ProductCard> {
 
 
   /// ---------------- WISHLIST ----------------
-  // Future<void> _toggleWishlist({bool fromDoubleTap = false}) async {
-  //   if (_isProcessing) return;
-  //
-  //   // (Existing heart animation logic...)
-  //
-  //   setState(() => _isProcessing = true);
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final ip = prefs.getString("ip") ?? "";
-  //     final cid = prefs.getString("cid") ?? "";
-  //     final uid = prefs.getString("uid") ?? "";
-  //
-  //     final res = await http.post(
-  //       Uri.parse("$ip/toggle_wishlist"),
-  //       body: {'pid': widget.product.id, 'cid': cid, 'uid': uid},
-  //     );
-  //
-  //     if (res.statusCode == 200) {
-  //       final data = json.decode(res.body);
-  //       setState(() {
-  //         isLiked = data['action'] == 'added';
-  //       });
-  //
-  //       // 🚀 YE SABSE IMPORTANT HAI: Home page ko signal dena
-  //       if (widget.onWishlistToggle != null) {
-  //         widget.onWishlistToggle!();
-  //       }
-  //     }
-  //   } catch (e) {
-  //     debugPrint("Wishlist error: $e");
-  //   } finally {
-  //     if (mounted) setState(() => _isProcessing = false);
-  //   }
-  // }
+
   Future<void> _toggleWishlist({bool fromDoubleTap = false}) async {
     if (_isProcessing) return;
 
@@ -274,7 +241,7 @@ final textColor = AppColors.getTextColor(context);
                           ),
                         ),
 
-                        
+
 
                       ),
                     ),

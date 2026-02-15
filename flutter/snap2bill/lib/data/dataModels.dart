@@ -1,7 +1,3 @@
-/// =============================================================
-/// DATA MODELS
-/// Used across Customer & Distributor modules
-/// =============================================================
 
 class ProductData {
   final String id;
@@ -15,7 +11,7 @@ class ProductData {
   final String distributorName;
   final String distributorImage;
   final String distributorPhone;
-  bool isLiked; // ✅ Wishlist sync flag (mutable for UI toggle)
+  bool isLiked;
 
   ProductData({
     required this.id,
@@ -32,14 +28,12 @@ class ProductData {
     required this.isLiked,
   });
 
-  /// -----------------------------------------------------------
-  /// FACTORY: Used by both Customer & Distributor Home Pages
-  /// -----------------------------------------------------------
+
   factory ProductData.fromJson(
       Map<String, dynamic> json,
       String ip,
       ) {
-    /// 🔐 Safe URL joiner
+
     String joinUrl(String base, String path) {
       if (path.isEmpty || path == "null") return "";
       if (path.startsWith("http")) return path;
@@ -70,9 +64,7 @@ class ProductData {
   }
 }
 
-/// =============================================================
-/// CATEGORY MODEL
-/// =============================================================
+
 
 class CategoryData {
   final String id;
