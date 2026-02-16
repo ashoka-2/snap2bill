@@ -73,20 +73,12 @@ urlpatterns = [
     path('login_page',views.login_page),
     path('distributor_view_profile',views.distributor_view_profile),
     path('customer_view_profile',views.customer_view_profile),
-    path('customer_search_page',views.customer_search_page),
+
     path('customer_view_distributor', views.customer_view_distributor),
     path('edit_customer_profile', views.edit_customer_profile),
 
 
     path('get_product_details',views.get_product_details),
-  
-    path('customer_view_notifications', views.customer_view_notifications),
-    path('customer_view_bill', views.customer_view_bill),
-    path('distributor_make_bill', views.distributor_make_bill),
-    path('distributor_edit_bill', views.distributor_edit_bill),
-    path('distributor_delete_bill', views.distributor_delete_bill),
-    path('distributor_send_bill', views.distributor_send_bill),
-    path('customer_receive_bill', views.customer_receive_bill),
     path('distributor_view_product',views.distributor_view_product),
     path('distributor_view_customer',views.distributor_view_customer),
     path('distributor_view_distributor', views.distributor_view_distributor),

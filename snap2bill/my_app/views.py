@@ -18,33 +18,31 @@ import cv2
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from io import BytesIO
+# from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils import timezone
-
-
-
 from PIL import Image
+import pillow_heif
 import io
 import google.generativeai as genai
 
 
+pillow_heif.register_heif_opener()
 def compress_image(image_file):
     try:
+        original_name = image_file.name
         img = Image.open(image_file)
         if img.mode != 'RGB':
             img = img.convert('RGB')
         img.thumbnail((1000, 1000))
-        buffer = BytesIO()
+        buffer = io.BytesIO()
         img.save(buffer, format="JPEG", quality=60, optimize=True)
-
-        # 5. Filename ka extension .jpg karein
-        new_filename = image_file.name.split('.')[0] + ".jpg"
-
+        new_filename = original_name.rsplit('.', 1)[0] + ".jpg"
         return ContentFile(buffer.getvalue(), name=new_filename)
+
     except Exception as e:
-        print("Compression Error:", e)
-        return image_file  # Agar koi error aaye to original image hi bhej do
+        print(f"Compression Error for {image_file.name}: {e}")
+        return image_file
 
 
 
@@ -58,7 +56,7 @@ def get_new_filename():
 
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
-    cart, wishlist, DistributorCustomerLink, unit, recently_viewed
+    cart, wishlist, DistributorCustomerLink, unit, recently_viewed, location
 
 print(make_password("password"))
 
@@ -481,126 +479,140 @@ def view_feedback(request):
 
 
 def distributor_registration(request):
+
     profile_image = compress_image(request.FILES['file'])
     proof = compress_image(request.FILES['file1'])
     fs = FileSystemStorage()
-    path = fs.save(profile_image.name,profile_image,)
-    path1 = fs.save(proof.name , proof)
+    path = fs.save(profile_image.name, profile_image)
+    path1 = fs.save(proof.name, proof)
 
-
-
-
+    # POST data fetch kar rahe hain
     name = request.POST['name']
     email = request.POST['email']
     phone = request.POST['phone']
     password = request.POST['password']
+    bio = request.POST['bio']
+    latitude = request.POST['latitude']
+    longitude = request.POST['longitude']
+
+    # Address details jo ab 'location' table mein jayengi
     address = request.POST['address']
     pincode = request.POST['pincode']
     place = request.POST['place']
     post = request.POST['post']
-    bio = request.POST['bio']
-    latitude = request.POST['latitude']
-    longitude = request.POST['longitude']
-    print(name)
-    print(email)
-    print(phone)
-    print(address)
-    print(pincode)
-    obj=User()
-    obj.username=email
-    obj.password=make_password(password)
+
+    # 🚀 STEP 1: Pehle 'location' table mein entry create karein
+    loc_obj = location.objects.create(
+        address=address,
+        place=place,
+        pincode=pincode,
+        post=post
+    )
+
+    # STEP 2: Django User create karein (Login ke liye)
+    obj = User()
+    obj.username = email
+    obj.password = make_password(password)
     obj.save()
     obj.groups.add(Group.objects.get(name='distributor'))
 
-
+    # 🚀 STEP 3: Ab 'distributor' save karein aur upar wala 'loc_obj' link karein
     ob = distributor()
     ob.profile_image = fs.url(path)
     ob.name = name
     ob.email = email
     ob.phone = phone
-    ob.address = address
-    ob.pincode = pincode
-    ob.place = place
-    ob.post = post
     ob.bio = bio
     ob.latitude = latitude
     ob.longitude = longitude
     ob.proof = fs.url(path1)
-    ob.status='pending'
-    ob.LOGIN=obj
+    ob.status = 'pending'
+
+    ob.LOCATION = loc_obj  # 🚀 Yahan humne Foreign Key link kar di
+    ob.LOGIN = obj
     ob.save()
-    return JsonResponse({'status':'ok'})
+
+    return JsonResponse({'status': 'ok'})
 
 
 def distributor_view_profile(request):
     uid = request.POST['uid']
-    data = distributor.objects.filter(id=uid).annotate(
+
+    data = distributor.objects.select_related('LOCATION').filter(id=uid).annotate(
         customer_count=Count('distributorcustomerlink')
     )
 
     ar = []
     for i in data:
-        ar.append({'id': i.id,
-                   'name': i.name,
-                   'email': i.email,
-                   'phone': i.phone,
-                   'profile_image': i.profile_image,
-                   'bio': i.bio,
-                   'address': i.address,
-                   'place': i.place,
-                   'pincode': i.pincode,
-                   'post': i.post,
-                   'latitude':i.latitude,
-                   'longitude':i.longitude,
-                   'proof':i.proof,
-                   'customer_count':i.customer_count
-                   })
+        ar.append({
+            'id': i.id,
+            'name': i.name,
+            'email': i.email,
+            'phone': i.phone,
+            'profile_image': i.profile_image,
+            'bio': i.bio,
+            'address': i.LOCATION.address if i.LOCATION else "",
+            'place': i.LOCATION.place if i.LOCATION else "",
+            'pincode': i.LOCATION.pincode if i.LOCATION else "",
+            'post': i.LOCATION.post if i.LOCATION else "",
+            'latitude': i.latitude,
+            'longitude': i.longitude,
+            'proof': i.proof,
+            'customer_count': i.customer_count
+        })
 
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
-
 def edit_distributor_profile(request):
     uid = request.POST['uid']
+
+    # 🚀 Pehle distributor object fetch karein taaki uski location mil sake
+    dist_obj = get_object_or_404(distributor, id=uid)
+
     if 'file' in request.FILES:
         profile_image = compress_image(request.FILES['file'])
         fs = FileSystemStorage()
         path = fs.save(profile_image.name, profile_image)
-        distributor.objects.filter(id=uid).update(profile_image=fs.url(path))
-
+        dist_obj.profile_image = fs.url(path)
 
     if 'file1' in request.FILES:
         proof = compress_image(request.FILES['file1'])
         fs = FileSystemStorage()
         path1 = fs.save(proof.name, proof)
-        distributor.objects.filter(id=uid).update(proof=fs.url(path1))
+        dist_obj.proof = fs.url(path1)
 
-    name = request.POST['name']
-    phone = request.POST['phone']
-    address = request.POST['address']
-    pincode = request.POST['pincode']
-    place = request.POST['place']
-    post = request.POST['post']
-    bio = request.POST['bio']
-    latitude = request.POST['latitude']
-    longitude = request.POST['longitude']
-    uid = request.POST['uid']
-    distributor.objects.filter(id=uid).update(name=name,phone=phone,address=address,pincode=pincode,place=place,post=post,bio=bio,latitude=latitude,longitude=longitude)
-    return JsonResponse({'status':'ok'})
+    # Distributor table ke fields
+    dist_obj.name = request.POST['name']
+    dist_obj.phone = request.POST['phone']
+    dist_obj.bio = request.POST['bio']
+    dist_obj.latitude = request.POST['latitude']
+    dist_obj.longitude = request.POST['longitude']
+    dist_obj.save()
+
+    # 🚀 STEP: Linked Location table ko update karein
+    if dist_obj.LOCATION:
+        loc = dist_obj.LOCATION
+        loc.address = request.POST['address']
+        loc.pincode = request.POST['pincode']
+        loc.place = request.POST['place']
+        loc.post = request.POST['post']
+        loc.save()
+
+    return JsonResponse({'status': 'ok'})
 
 
 def distributor_view_customer(request):
     try:
         uid = request.POST.get('uid')
-        links = DistributorCustomerLink.objects.filter(DISTRIBUTOR_id=uid).select_related('CUSTOMER')
+        # 🚀 CUSTOMER__LOCATION tak join kiya taaki address details mil sakein
+        links = DistributorCustomerLink.objects.filter(DISTRIBUTOR_id=uid).select_related('CUSTOMER__LOCATION')
+
         ar = []
         for link in links:
             i = link.CUSTOMER
             data2 = order.objects.filter(order_type="offline_pending", USER_id=i.id, DISTRIBUTOR_id=uid)
-
-            order_id = 0
-            if data2.exists():
-                order_id = data2[0].id
+            order_id = data2[0].id if data2.exists() else 0
 
             ar.append({
                 'id': i.id,
@@ -609,10 +621,11 @@ def distributor_view_customer(request):
                 'email': i.email,
                 'phone': i.phone,
                 'profile_image': i.profile_image,
-                'address': i.address,
-                'place': i.place,
-                'pincode': i.pincode,
-                'post': i.post,
+                # 🚀 Accessing from LOCATION table
+                'address': i.LOCATION.address if i.LOCATION else "",
+                'place': i.LOCATION.place if i.LOCATION else "",
+                'pincode': i.LOCATION.pincode if i.LOCATION else "",
+                'post': i.LOCATION.post if i.LOCATION else "",
                 'bio': i.bio,
                 'oid': order_id
             })
@@ -625,72 +638,27 @@ def distributor_view_customer(request):
 
 
 def distributor_view_distributor(request):
-    uid = request.POST['uid']
-    data = distributor.objects.all()
+    data = distributor.objects.select_related('LOCATION').all()
 
     ar = []
     for i in data:
-        ar.append({'id': i.id, 'name': i.name, 'email': i.email, 'phone': i.phone, 'profile_image': i.profile_image,
-                   'bio': i.bio, 'address': i.address, 'place': i.place, 'pincode': i.pincode, 'post': i.post,
-                   'latitude': i.latitude, 'longitude': i.longitude, 'proof': i.proof})
+        ar.append({
+            'id': i.id,
+            'name': i.name,
+            'email': i.email,
+            'phone': i.phone,
+            'profile_image': i.profile_image,
+            'bio': i.bio,
+            'address': i.LOCATION.address if i.LOCATION else "",
+            'place': i.LOCATION.place if i.LOCATION else "",
+            'pincode': i.LOCATION.pincode if i.LOCATION else "",
+            'post': i.LOCATION.post if i.LOCATION else "",
+            'latitude': i.latitude,
+            'longitude': i.longitude,
+            'proof': i.proof
+        })
 
     return JsonResponse({'status': 'ok', 'data': ar})
-
-
-
-
-
-
-
-
-
-
-
-def customer_search_page(request):
-
-    return JsonResponse({'status':'ok'})
-
-
-
-
-
-
-
-def customer_view_notifications(request):
-    return JsonResponse({'status':'ok'})
-
-
-
-
-def customer_view_bill(request):
-    return JsonResponse({'status':'ok'})
-
-def distributor_make_bill(request):
-
-    return JsonResponse({'status':'ok'})
-
-def distributor_edit_bill(request):
-    return JsonResponse({'status':'ok'})
-
-def distributor_delete_bill(request):
-    return JsonResponse({'status':'ok'})
-
-def distributor_send_bill(request):
-    return JsonResponse({'status':'ok'})
-
-def customer_receive_bill(request):
-    return JsonResponse({'status':'ok'})
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -763,26 +731,6 @@ def customer_change_password(request):
     User.objects.filter(id=lid).update(password=make_password(newpass))
     return JsonResponse({'status':'ok'})
 
-
-#
-# def emailVerify(request):
-#     username = request.POST['username']
-#     data = User.objects.filter(username=username)
-#
-#
-#     return JsonResponse({'status':'ok'})
-#
-#
-# def forgotPasswordDistributor(request):
-#     newpass = request.POST['newpassword']
-#     confirmpass = request.POST['confirmpassword']
-#     if newpass == confirmpass:
-#         obj = User.objects.get(id=uid)
-#         obj.set_password(newpass)
-#         obj.save()
-#     return JsonResponse({'status':'ok'})
-#
-#
 
 
 
@@ -978,7 +926,7 @@ def add_product_post(request):
     description = request.POST['description']
     category = request.POST['category']
     # obj = product(product_name=product_name,image=fs.url(image),price=price,quantity=quantity,description=description,CATEGORY_id=category)
-    obj = product(product_name=product_name,image="/media/"+fname,quantity=quantity,description=description,CATEGORY_id=category)
+    obj = product(product_name=product_name,image="/media/"+fname,description=description,CATEGORY_id=category)
     obj.save()
     # messages.success(request, f"Category '{category_name}' added successfully!")
     return redirect('/view_product')
@@ -1209,16 +1157,24 @@ def customer_view_products(request):
 def customer_registration(request):
     profile_image = compress_image(request.FILES['file'])
     fs = FileSystemStorage()
-    path = fs.save(profile_image.name, profile_image, )
+    path = fs.save(profile_image.name, profile_image)
 
-    name = request.POST['name']
-    email = request.POST['email']
-    phone = request.POST['phone']
-    password = request.POST['password']
+    # Address fields fetch
     address = request.POST['address']
     pincode = request.POST['pincode']
     place = request.POST['place']
     post = request.POST['post']
+
+    # 🚀 STEP 1: Create Location
+    loc_obj = location.objects.create(
+        address=address, place=place, pincode=pincode, post=post
+    )
+
+    # User & Customer Create
+    name = request.POST['name']
+    email = request.POST['email']
+    phone = request.POST['phone']
+    password = request.POST['password']
     bio = request.POST['bio']
 
     obj = User()
@@ -1232,69 +1188,74 @@ def customer_registration(request):
     ob.name = name
     ob.email = email
     ob.phone = phone
-    ob.address = address
-    ob.pincode = pincode
-    ob.place = place
-    ob.post = post
     ob.bio = bio
+    ob.LOCATION = loc_obj  # 🚀 Linked Location
     ob.LOGIN = obj
     ob.save()
+
     return JsonResponse({'status': 'ok'})
 
 
-
-
-
-
-
-
 def customer_view_profile(request):
-    cid=request.POST['cid']
-    data=customer.objects.filter(id=cid)
-    ar=[]
+    cid = request.POST['cid']
+    # 🚀 Join query
+    data = customer.objects.select_related('LOCATION').filter(id=cid)
+
+    ar = []
     for i in data:
-        ar.append({'id':i.id,
-                   'name':i.name,
-                   'email':i.email,
-                   'phone':i.phone,
-                   'profile_image':i.profile_image,
-                   'bio':i.bio,
-                   'address':i.address,
-                   'place':i.place,
-                   'pincode':i.pincode,
-                   'post':i.post
-                   })
-    return JsonResponse({'status':'ok','data':ar})
+        ar.append({
+            'id': i.id,
+            'name': i.name,
+            'email': i.email,
+            'phone': i.phone,
+            'profile_image': i.profile_image,
+            'bio': i.bio,
+            # 🚀 Fetching from Location table
+            'address': i.LOCATION.address if i.LOCATION else "",
+            'place': i.LOCATION.place if i.LOCATION else "",
+            'pincode': i.LOCATION.pincode if i.LOCATION else "",
+            'post': i.LOCATION.post if i.LOCATION else ""
+        })
+    return JsonResponse({'status': 'ok', 'data': ar})
+
 
 
 def edit_customer_profile(request):
     cid = request.POST['cid']
+    cust_obj = customer.objects.get(id=cid)
+
     if 'file' in request.FILES:
         profile_image = compress_image(request.FILES['file'])
         fs = FileSystemStorage()
         path = fs.save(profile_image.name, profile_image)
-        customer.objects.filter(id=cid).update(profile_image=fs.url(path))
+        cust_obj.profile_image = fs.url(path)
 
+    cust_obj.name = request.POST['name']
+    cust_obj.phone = request.POST['phone']
+    cust_obj.bio = request.POST['bio']
+    cust_obj.save() # Customer saved
 
-    name = request.POST['name']
-    phone = request.POST['phone']
-    address = request.POST['address']
-    pincode = request.POST['pincode']
-    place = request.POST['place']
-    post = request.POST['post']
-    bio = request.POST['bio']
-    cid = request.POST['cid']
-    customer.objects.filter(id=cid).update(name=name,phone=phone,address=address,pincode=pincode,place=place,post=post,bio=bio)
-    return JsonResponse({'status':'ok'})
+    if cust_obj.LOCATION:
+        loc = cust_obj.LOCATION
+        loc.address = request.POST['address']
+        loc.pincode = request.POST['pincode']
+        loc.place = request.POST['place']
+        loc.post = request.POST['post']
+        loc.save() # Location saved
+
+    return JsonResponse({'status': 'ok'})
 
 
 def customer_view_distributor(request):
     try:
         cid = request.POST.get('cid')
-        links = DistributorCustomerLink.objects.filter(CUSTOMER_id=cid).select_related('DISTRIBUTOR')
+
+        links = DistributorCustomerLink.objects.filter(CUSTOMER_id=cid).select_related('DISTRIBUTOR__LOCATION')
+
         ar = []
         for link in links:
             i = link.DISTRIBUTOR
+
             ar.append({
                 'id': i.id,
                 'name': i.name,
@@ -1302,10 +1263,11 @@ def customer_view_distributor(request):
                 'phone': i.phone,
                 'profile_image': i.profile_image,
                 'bio': i.bio,
-                'address': i.address,
-                'place': i.place,
-                'pincode': i.pincode,
-                'post': i.post,
+                'address': i.LOCATION.address if i.LOCATION else "",
+                'place': i.LOCATION.place if i.LOCATION else "",
+                'pincode': i.LOCATION.pincode if i.LOCATION else "",
+                'post': i.LOCATION.post if i.LOCATION else "",
+
                 'latitude': i.latitude,
                 'longitude': i.longitude,
             })
@@ -1314,12 +1276,10 @@ def customer_view_distributor(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-
 @csrf_exempt
 def get_product_details(request):
     pid = request.POST.get('pid')
     try:
-        # Fetching from Stock model since that's where the price and current stock are
         i = stock.objects.get(id=pid)
         data = {
             'id': i.id,
@@ -1343,7 +1303,6 @@ def addorder(request):
     product_stock_id = request.POST.get('pid')
     quantity = int(request.POST.get('quantity', 1))
 
-    # Check if item already in cart
     cart_item = cart.objects.filter(STOCK_id=product_stock_id, USER_id=cid).first()
 
     if cart_item:
@@ -2029,7 +1988,7 @@ def scanItem(request):
     product_names = [item.PRODUCT.product_name for item in allproduct]
     product_list_text = ", ".join(product_names)
 
-    genai.configure(api_key="AIzaSyAnlXqmMIpse1oKCNfDkTIwGPOSEruCVHI")
+    genai.configure(api_key="AIzaSyAFfLgc8onDLKDpuKwBg6mcsSW7W8czl6g")
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
     prompt = f"""Identify from: {product_list_text}. 
@@ -2219,43 +2178,30 @@ def scanItem(request):
 def viewAllCustomers(request):
     uid = request.POST['uid']
     try:
-        data = customer.objects.all()
+        data = customer.objects.select_related('LOCATION').all()
         ar = []
         for i in data:
-            data2 = order.objects.filter(order_type="offline_pending",USER_id=i.id,DISTRIBUTOR_id=uid)
-            if data2.exists():
-                ar.append({
-                    'id': i.id,
-                    'name': i.name,
-                    'email': i.email,
-                    'phone': i.phone,
-                    'profile_image': i.profile_image,
-                    'address': i.address,
-                    'place': i.place,
-                    'pincode': i.pincode,
-                    'post': i.post,
-                    'bio': i.bio,
-                    'oid':data2[0].id
-                })
-            else:
-                ar.append({
-                    'id': i.id,
-                    'name': i.name,
-                    'email': i.email,
-                    'phone': i.phone,
-                    'profile_image': i.profile_image,
-                    'address': i.address,
-                    'place': i.place,
-                    'pincode': i.pincode,
-                    'post': i.post,
-                    'bio': i.bio,
-                    'oid': 0
-                })
-
+            data2 = order.objects.filter(order_type="offline_pending", USER_id=i.id, DISTRIBUTOR_id=uid)
+            current_oid = data2[0].id if data2.exists() else 0
+            ar.append({
+                'id': i.id,
+                'name': i.name,
+                'email': i.email,
+                'phone': i.phone,
+                'profile_image': i.profile_image,
+                'address': i.LOCATION.address if i.LOCATION else "",
+                'place': i.LOCATION.place if i.LOCATION else "",
+                'pincode': i.LOCATION.pincode if i.LOCATION else "",
+                'post': i.LOCATION.post if i.LOCATION else "",
+                'bio': i.bio,
+                'oid': current_oid
+            })
 
         return JsonResponse({'status': 'ok', 'data': ar})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
 
 @csrf_exempt
 def addtobill(request):
@@ -2394,22 +2340,44 @@ def universal_search(request):
                 'distributor_image': s.DISTRIBUTOR.profile_image
             })
 
-        customers = customer.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
+        customers = customer.objects.filter(
+            Q(name__icontains=query) |
+            Q(LOCATION__place__icontains=query)  # Foreign Key Search
+        ).select_related('LOCATION')
+
         for c in customers:
             results.append({
-                'type': 'customer', 'id': c.id, 'name': c.name, 'place': c.place,
-                'phone': c.phone, 'image': c.profile_image,
-                'email': c.email, 'bio': c.bio, 'address': c.address,
-                'pincode': c.pincode, 'post': c.post
+                'type': 'customer',
+                'id': c.id,
+                'name': c.name,
+                'place': c.LOCATION.place,
+                'phone': c.phone,
+                'image': c.profile_image,
+                'email': c.email,
+                'bio': c.bio,
+                'address': c.LOCATION.address,
+                'pincode': c.LOCATION.pincode,
+                'post': c.LOCATION.post
             })
 
-        distributors = distributor.objects.filter(Q(name__icontains=query) | Q(place__icontains=query))
+        distributors = distributor.objects.filter(
+            Q(name__icontains=query) |
+            Q(LOCATION__place__icontains=query)
+        ).select_related('LOCATION')
+
         for d in distributors:
             results.append({
-                'type': 'distributor', 'id': d.id, 'name': d.name, 'place': d.place,
-                'phone': d.phone, 'image': d.profile_image,
-                'email': d.email, 'bio': d.bio, 'address': d.address,
-                'pincode': d.pincode, 'post': d.post
+                'type': 'distributor',
+                'id': d.id,
+                'name': d.name,
+                'place': d.LOCATION.place,
+                'phone': d.phone,
+                'image': d.profile_image,
+                'email': d.email,
+                'bio': d.bio,
+                'address': d.LOCATION.address,
+                'pincode': d.LOCATION.pincode,
+                'post': d.LOCATION.post
             })
 
     paginator = Paginator(results, limit)
@@ -2567,8 +2535,6 @@ def get_counts(request):
     })
 
 
-
-
 @csrf_exempt
 def auth_google(request):
     if request.method != 'POST':
@@ -2581,30 +2547,38 @@ def auth_google(request):
         photo = data.get('photoUrl')
         user_type = data.get('type')
         phone = data.get('phone', '')
+
+        # Ye fields frontend se shayad empty aa rahe honge, koi dikkat nahi
         address = data.get('address', '')
         place = data.get('place', '')
         pincode = data.get('pincode', '')
-
+        post = data.get('post', '')
         latitude = data.get('latitude', '')
         longitude = data.get('longitude', '')
 
         if not email:
             return JsonResponse({'status': 'error', 'message': 'Email is required'}, status=400)
 
+        # 🔍 Check karte hain user pehle se hai ya nahi
         user_exists = User.objects.filter(username=email).exists()
 
         if user_exists:
+            # =================================================
+            # CASE 1: LOGIN (EXISTING USER)
+            # Yahan hum Location create NAHI karenge.
+            # =================================================
             user = User.objects.get(username=email)
+
             if user.groups.filter(name="distributor").exists():
                 try:
                     dist = distributor.objects.get(LOGIN=user)
+                    # Sirf photo update karenge agar pehle se nahi hai
                     if not dist.profile_image and photo:
                         dist.profile_image = photo
                         dist.save()
-
                     return JsonResponse({'status': 'distok', 'uid': str(dist.id)})
                 except distributor.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'User exists but no distributor profile found'})
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'})
 
             elif user.groups.filter(name="customer").exists():
                 try:
@@ -2612,14 +2586,23 @@ def auth_google(request):
                     if not cust.profile_image and photo:
                         cust.profile_image = photo
                         cust.save()
-
                     return JsonResponse({'status': 'custok', 'cid': str(cust.id)})
                 except customer.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'User exists but no customer profile found'})
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'})
             else:
                 return JsonResponse({'status': 'error', 'message': 'User type unknown'})
 
         else:
+            # =================================================
+            # CASE 2: REGISTRATION (NEW USER)
+            # Sirf yahan Location banegi
+            # =================================================
+
+            # 🚀 CHANGE: Location object ab sirf naye user ke liye banega
+            loc_obj = location.objects.create(
+                address=address, place=place, pincode=pincode, post=post
+            )
+
             random_password = User.objects.make_random_password()
             new_user = User.objects.create_user(username=email, email=email, password=random_password)
             new_user.first_name = name
@@ -2628,14 +2611,13 @@ def auth_google(request):
             if user_type == 'distributor':
                 group = Group.objects.get(name='distributor')
                 new_user.groups.add(group)
+
                 obj = distributor()
                 obj.LOGIN = new_user
                 obj.name = name
                 obj.email = email
                 obj.phone = phone
-                obj.address = address
-                obj.place = place
-                obj.pincode = pincode
+                obj.LOCATION = loc_obj  # Link Location
                 obj.latitude = latitude
                 obj.longitude = longitude
                 obj.profile_image = photo
@@ -2647,14 +2629,13 @@ def auth_google(request):
             elif user_type == 'customer':
                 group = Group.objects.get(name='customer')
                 new_user.groups.add(group)
+
                 obj = customer()
                 obj.LOGIN = new_user
                 obj.name = name
                 obj.email = email
                 obj.phone = phone
-                obj.address = address
-                obj.place = place
-                obj.pincode = pincode
+                obj.LOCATION = loc_obj  # Link Location
                 obj.profile_image = photo
                 obj.save()
 
@@ -2662,6 +2643,8 @@ def auth_google(request):
 
             else:
                 new_user.delete()
+                # Location bhi delete kar do agar user type galat hai
+                loc_obj.delete()
                 return JsonResponse({'status': 'error', 'message': 'Invalid user type'})
 
     except Exception as e:

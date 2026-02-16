@@ -294,8 +294,8 @@
            data-name="{{ i.name|default_if_none:''|escape }}"
            data-email="{{ i.email|default_if_none:''|escape }}"
            data-phone="{{ i.phone|default_if_none:''|escape }}"
-           data-place="{{ i.place|default_if_none:''|escape }}"
-           data-pincode="{{ i.pincode|default_if_none:''|escape }}"
+           data-place="{{ i.LOCATION.place|default_if_none:''|escape }}"
+           data-pincode="{{ i.LOCATION.pincode|default_if_none:''|escape }}"
            data-date="{{ i.created_at|date:'Y-m-d' }}">
 
         <div class="card-head">
@@ -316,10 +316,10 @@
 
         <div class="details">
           {% if i.email %}<span class="pill mail"><i class="ri-mail-line"></i>{{ i.email }}</span>{% endif %}
-          <p><strong>Address :</strong> {{ i.address }}</p>
-          <p><strong>Place :</strong> {{ i.place }}</p>
-          <p><strong>Pincode :</strong> {{ i.pincode }}</p>
-          <p><strong>Post :</strong> {{ i.post }}</p>
+          <p><strong>Address :</strong> {{ i.LOCATION.address }}</p>
+          <p><strong>Place :</strong> {{ i.LOCATION.place }}</p>
+          <p><strong>Pincode :</strong> {{ i.LOCATION.pincode }}</p>
+          <p><strong>Post :</strong> {{ i.LOCATION.post }}</p>
           {% if i.bio %}<p><strong>Bio :</strong> {{ i.bio }}</p>{% endif %}
 
           <div class="proof-location">
@@ -381,7 +381,7 @@
 
 <script>
 
-  /* Filters & Sorting */
+
   const normalizeForNumber = (s)=> (s||'').toString().replace(/[\s\-\.\(\)]/g,'');
   const norm = (t)=> (t||'').toString().toLowerCase().trim();
   function parseYMD(ymd){

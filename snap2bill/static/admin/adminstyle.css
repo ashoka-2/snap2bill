@@ -146,9 +146,9 @@ body::-webkit-scrollbar {
     --line:rgba(255,255,255,0.15);
     --shadow:0 0 1rem rgba(0,0,0,0.4);
 
-       --pill-border: rgb(113, 55, 255);
-    --pill-text: rgb(136, 82, 255);
-    --pill-bg: rgba(134, 58, 192, 0.1);
+       --pill-border: rgb(76, 250, 255);
+    --pill-text: rgb(66, 225, 255);
+    --pill-bg: rgba(69, 145, 192, 0.1);
 
     --icon-color: rgb(255, 255, 255);
     --border-color: rgb(189, 189, 189);
