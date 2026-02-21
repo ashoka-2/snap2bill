@@ -30,21 +30,21 @@
     <favorites_list name="snap2bill" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.5768463">
+    <splitter split-orientation="horizontal" split-proportion="0.5253078">
       <split-first>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="160">
-                  <caret line="1990" column="68" lean-forward="false" selection-start-line="1990" selection-start-column="68" selection-end-line="1990" selection-end-column="68" />
+                <state relative-caret-position="350">
+                  <caret line="1981" column="68" lean-forward="false" selection-start-line="1981" selection-start-column="68" selection-end-line="1981" selection-end-column="68" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
-                    <element signature="e#49052#51732#0" expanded="false" />
-                    <element signature="e#67255#67256#0" expanded="false" />
-                    <element signature="e#83637#88328#0" expanded="false" />
-                    <marker date="1771237650322" expanded="true" signature="34289:34312" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="48004:48073" ph="..." />
+                    <element signature="e#48323#51003#0" expanded="false" />
+                    <element signature="e#66526#66527#0" expanded="false" />
+                    <element signature="e#82908#87599#0" expanded="false" />
+                    <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
+                    <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -53,7 +53,7 @@
           <file leaf-file-name="admin_viewcustomer.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/templates/admin/admin_viewcustomer.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="252">
+                <state relative-caret-position="2142">
                   <caret line="102" column="51" lean-forward="false" selection-start-line="102" selection-start-column="51" selection-end-line="102" selection-end-column="51" />
                   <folding />
                 </state>
@@ -63,8 +63,8 @@
           <file leaf-file-name="admin_verify.html" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/templates/admin/admin_verify.html">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="378">
-                  <caret line="327" column="0" lean-forward="true" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
+                <state relative-caret-position="6867">
+                  <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
@@ -73,8 +73,8 @@
           <file leaf-file-name="adminstyle.css" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/static/admin/adminstyle.css">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="279">
-                  <caret line="149" column="35" lean-forward="true" selection-start-line="149" selection-start-column="35" selection-end-line="149" selection-end-column="35" />
+                <state relative-caret-position="3129">
+                  <caret line="149" column="35" lean-forward="false" selection-start-line="149" selection-start-column="35" selection-end-line="149" selection-end-column="35" />
                   <folding />
                 </state>
               </provider>
@@ -103,7 +103,7 @@
           <file leaf-file-name="urls.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="420">
+                <state relative-caret-position="2184">
                   <caret line="109" column="41" lean-forward="false" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
                   <folding />
                 </state>
@@ -113,7 +113,7 @@
           <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="2184">
+                <state relative-caret-position="2331">
                   <caret line="112" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
                   <folding>
                     <marker date="1771231941048" expanded="true" signature="3105:3316" ph="..." />
@@ -126,37 +126,28 @@
       </split-first>
       <split-second>
         <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-          <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+          <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="462">
-                  <caret line="22" column="33" lean-forward="false" selection-start-line="22" selection-start-column="33" selection-end-line="22" selection-end-column="33" />
+                <state relative-caret-position="399">
+                  <caret line="524" column="25" lean-forward="true" selection-start-line="524" selection-start-column="25" selection-end-line="524" selection-end-column="25" />
                   <folding>
-                    <element signature="e#49052#51732#0" expanded="false" />
-                    <element signature="e#67255#67256#0" expanded="false" />
-                    <marker date="1771237650322" expanded="true" signature="1585:1610" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="15285:15462" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="16938:16969" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="17858:17889" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="19124:19180" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="19133:19180" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="34289:34312" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="38431:38571" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="41115:41163" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="41124:41163" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="42194:42720" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="48004:48073" ph="..." />
-                    <marker date="1771237650322" expanded="true" signature="71530:72409" ph="..." />
+                    <element signature="e#0#9#0" expanded="true" />
+                    <element signature="e#48323#51003#0" expanded="false" />
+                    <element signature="e#66526#66527#0" expanded="false" />
+                    <element signature="e#82908#87599#0" expanded="false" />
+                    <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
+                    <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
                   </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="models.py" pinned="false" current-in-tab="true">
+          <file leaf-file-name="models.py" pinned="false" current-in-tab="false">
             <entry file="file://$PROJECT_DIR$/my_app/models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="-588">
-                  <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
+                <state relative-caret-position="546">
+                  <caret line="27" column="32" lean-forward="false" selection-start-line="27" selection-start-column="32" selection-end-line="27" selection-end-column="32" />
                   <folding>
                     <marker date="1771231941048" expanded="true" signature="3105:3316" ph="..." />
                   </folding>
@@ -179,9 +170,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>update</find>
-      <find>addFinalOrder</find>
-      <find>&quot;0&quot;</find>
       <find>google</find>
       <find>distributor_add_product</find>
       <find>add_pr</find>
@@ -209,6 +197,9 @@
       <find>compre</find>
       <find>viewcus</find>
       <find>customer</find>
+      <find>registration</find>
+      <find>#</find>
+      <find>scanItem</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -283,7 +274,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -414,6 +404,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -745,15 +736,15 @@
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1038" extended-state="6" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19548872" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21482277" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33218786" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33104238" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21764033" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.22016223" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.18743287" sideWeight="0.13974799" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39977092" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -782,11 +773,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/media/20260104_145902.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/my_app/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -794,25 +780,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/migrations/0003_remove_order_order_type.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/migrations/0002_order_order_type.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260104_152135.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/my_app/migrations/0003_remove_order_order_type.py" />
+    <entry file="file://$PROJECT_DIR$/my_app/migrations/0002_order_order_type.py" />
+    <entry file="file://$PROJECT_DIR$/media/20260104_152135.jpg" />
     <entry file="file://$PROJECT_DIR$/static/admin/customerpage.css">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="497">
@@ -848,56 +818,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260105_095250.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260105_095526.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/a32fac24-cfeb-46ae-bbc1-957334e0a2156869700064790902459_kV7kyVw.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/b3474f79-21c3-4d48-9e5f-2a45ce1761a71431992317839361103.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/f2feeae9-2edf-4034-b99d-7e8e85af95e79075550981577649493.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/ff140e15-b61c-4ad0-b2ce-ecbbecd456776057322241305108084.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/IMG20251230103120.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/fd6d379a-7210-4e8d-89ea-ce3ac1059f656688035783475786783_rflh45z.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/Screenshot_2026-01-03-11-14-35-03_1c337646f29875672b5a61192b9010f9.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/1b3df692-2302-48ee-8c28-fa8a90d123975166051868560806171.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/media/20260105_095250.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/20260105_095526.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/a32fac24-cfeb-46ae-bbc1-957334e0a2156869700064790902459_kV7kyVw.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/b3474f79-21c3-4d48-9e5f-2a45ce1761a71431992317839361103.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/f2feeae9-2edf-4034-b99d-7e8e85af95e79075550981577649493.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/ff140e15-b61c-4ad0-b2ce-ecbbecd456776057322241305108084.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/IMG20251230103120.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/fd6d379a-7210-4e8d-89ea-ce3ac1059f656688035783475786783_rflh45z.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/Screenshot_2026-01-03-11-14-35-03_1c337646f29875672b5a61192b9010f9.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/1b3df692-2302-48ee-8c28-fa8a90d123975166051868560806171.jpg" />
     <entry file="file://$USER_HOME$/AppData/Roaming/Python/Python310/site-packages/google/generativeai/generative_models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="205">
@@ -905,11 +835,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/20260104_145825.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/media/20260104_145825.jpg" />
     <entry file="file://$PROJECT_DIR$/static/images/404.json">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1575">
@@ -983,41 +909,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/7a00e60a-7396-4fac-839f-0403bf499fd12540652305592064101.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/05c4fb7f-9ba6-44ef-9905-a9b8b672ec384335502338440344069.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/5c7236ae-10f8-4c00-bf31-e07774e8a7555420578870753895011.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/IMG20260104150218.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/60d796e4-975c-44b9-a769-7a9e2bc1bf66731896101356097857_ww1rq61.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/1f1d9a89-a173-4304-be6a-ba7a432bac819034234961144852025.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/2bc577a6-fa09-4255-8186-bff6b9d046f73350736101828652638.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/media/7a00e60a-7396-4fac-839f-0403bf499fd12540652305592064101.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/05c4fb7f-9ba6-44ef-9905-a9b8b672ec384335502338440344069.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/5c7236ae-10f8-4c00-bf31-e07774e8a7555420578870753895011.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/IMG20260104150218.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/60d796e4-975c-44b9-a769-7a9e2bc1bf66731896101356097857_ww1rq61.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/1f1d9a89-a173-4304-be6a-ba7a432bac819034234961144852025.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/2bc577a6-fa09-4255-8186-bff6b9d046f73350736101828652638.jpg" />
     <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -1025,16 +923,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/media/0aa5ea40-d29d-4187-9b58-334dcec5be256128035303956750067.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/media/5c0b52c2-c56f-41ff-b367-eac47fb3d6314406318647851509319.jpg">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/media/0aa5ea40-d29d-4187-9b58-334dcec5be256128035303956750067.jpg" />
+    <entry file="file://$PROJECT_DIR$/media/5c0b52c2-c56f-41ff-b367-eac47fb3d6314406318647851509319.jpg" />
     <entry file="file://C:/Program Files/Python310/Lib/threading.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -1042,19 +932,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/my_app/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2184">
-          <caret line="112" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
-          <folding>
-            <marker date="1771231941048" expanded="true" signature="3105:3316" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/snap2bill/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
+        <state relative-caret-position="2184">
           <caret line="109" column="41" lean-forward="false" selection-start-line="109" selection-start-column="41" selection-end-line="109" selection-end-column="41" />
           <folding />
         </state>
@@ -1064,13 +944,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1153">
           <caret line="383" column="1" lean-forward="false" selection-start-line="383" selection-start-column="1" selection-end-line="383" selection-end-column="1" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/admin_viewcustomer.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="252">
+        <state relative-caret-position="2142">
           <caret line="102" column="51" lean-forward="false" selection-start-line="102" selection-start-column="51" selection-end-line="102" selection-end-column="51" />
           <folding />
         </state>
@@ -1078,31 +957,49 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/templates/admin/admin_verify.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="327" column="0" lean-forward="true" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
+        <state relative-caret-position="6867">
+          <caret line="327" column="0" lean-forward="false" selection-start-line="327" selection-start-column="0" selection-end-line="327" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/static/admin/adminstyle.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="279">
-          <caret line="149" column="35" lean-forward="true" selection-start-line="149" selection-start-column="35" selection-end-line="149" selection-end-column="35" />
+        <state relative-caret-position="3129">
+          <caret line="149" column="35" lean-forward="false" selection-start-line="149" selection-start-column="35" selection-end-line="149" selection-end-column="35" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/AppData/Roaming/Python/Python310/site-packages/django/contrib/auth/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="217">
+          <caret line="388" column="6" lean-forward="false" selection-start-line="388" selection-start-column="6" selection-end-line="388" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/my_app/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2331">
+          <caret line="112" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="149" selection-end-column="0" />
+          <folding>
+            <marker date="1771231941048" expanded="true" signature="3105:3316" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="160">
-          <caret line="1990" column="68" lean-forward="false" selection-start-line="1990" selection-start-column="68" selection-end-line="1990" selection-end-column="68" />
+        <state relative-caret-position="350">
+          <caret line="1981" column="68" lean-forward="false" selection-start-line="1981" selection-start-column="68" selection-end-line="1981" selection-end-column="68" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#49052#51732#0" expanded="false" />
-            <element signature="e#67255#67256#0" expanded="false" />
-            <element signature="e#83637#88328#0" expanded="false" />
-            <marker date="1771237650322" expanded="true" signature="34289:34312" ph="..." />
-            <marker date="1771237650322" expanded="true" signature="48004:48073" ph="..." />
+            <element signature="e#48323#51003#0" expanded="false" />
+            <element signature="e#66526#66527#0" expanded="false" />
+            <element signature="e#82908#87599#0" expanded="false" />
+            <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
+            <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
           </folding>
         </state>
       </provider>

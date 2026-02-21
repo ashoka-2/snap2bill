@@ -1,6 +1,4 @@
 
-
-
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +24,7 @@ class _viewCartState extends State<viewCart> {
   String _ip = "";
   late Future<List<Map<String, dynamic>>> cartFuture;
   List<Map<String, dynamic>> _localItems = [];
-  List<dynamic> _recentItems = []; // 🚀 List for Recently Viewed
+  List<dynamic> _recentItems = [];
   bool _isPlacingOrder = false;
 
   late Color successColor;
@@ -38,10 +36,9 @@ class _viewCartState extends State<viewCart> {
     _initializeData();
   }
 
-  // Helper to init both cart and recent items
   Future<void> _initializeData() async {
     cartFuture = _fetchCart();
-    _fetchRecentProducts(); // 🚀 Recently viewed items call
+    _fetchRecentProducts();
   }
 
   String _joinUrl(String path) {
@@ -78,7 +75,6 @@ class _viewCartState extends State<viewCart> {
     }
   }
 
-  // 🚀 FETCH RECENTLY VIEWED FROM BACKEND
   Future<void> _fetchRecentProducts() async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -171,7 +167,6 @@ class _viewCartState extends State<viewCart> {
                     ),
                   ),
 
-                // 🚀 RECENTLY VIEWED SECTION
                 if (_recentItems.isNotEmpty) _buildRecentlyViewedSection(subTextColor!, isDark),
               ],
             ),
@@ -182,7 +177,6 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
-  // 🚀 RECENTLY VIEWED UI
   Widget _buildRecentlyViewedSection(Color subTextColor, bool isDark) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,7 +212,7 @@ class _viewCartState extends State<viewCart> {
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(15),
                           child: CachedNetworkImage(
-                            imageUrl:_joinUrl(item['image']), fit: BoxFit.cover, width: double.infinity),
+                              imageUrl:_joinUrl(item['image']), fit: BoxFit.cover, width: double.infinity),
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -256,7 +250,7 @@ class _viewCartState extends State<viewCart> {
             ClipRRect(
               borderRadius: BorderRadius.circular(18),
               child: CachedNetworkImage(
-  imageUrl:_joinUrl(item['image'].toString()), width: 80, height: 85, fit: BoxFit.cover),
+                  imageUrl:_joinUrl(item['image'].toString()), width: 80, height: 85, fit: BoxFit.cover),
             ),
             const SizedBox(width: 15),
             Expanded(
@@ -310,6 +304,7 @@ class _viewCartState extends State<viewCart> {
             }
           }, theme.primaryColor),
           SizedBox(width: 30, child: Text(item['quantity'].toString(), textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold, color: textColor))),
+
           _buildQtyBtn(Icons.add, () {
             int val = int.tryParse(item['quantity'].toString()) ?? 1;
             if (val < 100) {
@@ -317,6 +312,12 @@ class _viewCartState extends State<viewCart> {
               setState(() => _localItems[index]['quantity'] = newVal);
               _calculateLocalTotal();
               _updateQtyOnServer(item['id'].toString(), newVal.toString());
+            } else {
+              CustomSnackBar.show(
+                  context,
+                  "Quantity must be less than or equal to 100",
+                  backgroundColor: dangerColor
+              );
             }
           }, theme.primaryColor),
         ],
@@ -351,12 +352,76 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
+  // 🔥 UPDATE: Place Order Handle Method
   Future<void> _handlePlaceOrder() async {
+    // 1. Check if Cart is empty
+    if (_localItems.isEmpty) {
+      CustomSnackBar.show(
+          context,
+          "Your cart is empty!",
+          backgroundColor: dangerColor
+      );
+      return;
+    }
+
+    // 2. Double Safety Check: Kisi item ki quantity 100 se zyada toh nahi hai?
+    bool hasExcessQty = _localItems.any((item) {
+      int qty = int.tryParse(item['quantity'].toString()) ?? 1;
+      return qty > 100;
+    });
+
+    if (hasExcessQty) {
+      CustomSnackBar.show(
+          context,
+          "Cannot place order. Maximum limit is 100 per item.",
+          backgroundColor: dangerColor
+      );
+      return; // Order place hone se rok do
+    }
+
+    // 3. Sab theek hai toh Order Place karo
     setState(() => _isPlacingOrder = true);
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await http.post(Uri.parse("${prefs.getString("ip")}/addFinalOrder"), body: {'cid': prefs.getString("cid"), 'total': totalValue});
-      if (mounted) Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)));
+      final res = await http.post(
+          Uri.parse("${prefs.getString("ip")}/addFinalOrder"),
+          body: {
+            'cid': prefs.getString("cid"),
+            'total': totalValue
+          }
+      );
+
+      if (res.statusCode == 200) {
+        if (mounted) {
+          // 🎉 4. Success SnackBar show karo
+          CustomSnackBar.show(
+              context,
+              "Order placed successfully!",
+              backgroundColor: successColor
+          );
+
+          Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0))
+          );
+        }
+      } else {
+        if (mounted) {
+          CustomSnackBar.show(
+              context,
+              "Failed to place order. Please try again.",
+              backgroundColor: dangerColor
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackBar.show(
+            context,
+            "Connection error. Check your internet.",
+            backgroundColor: dangerColor
+        );
+      }
     } finally {
       if (mounted) setState(() => _isPlacingOrder = false);
     }

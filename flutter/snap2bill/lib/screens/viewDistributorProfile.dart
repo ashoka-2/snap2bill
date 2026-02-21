@@ -599,32 +599,41 @@ class _InfoTile extends StatelessWidget {
   final IconData icon;
   final String label, value;
   final Color color;
+
   const _InfoTile({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
   });
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
       child: Row(
+        // Icon ko top par align karne ke liye (agar text multi-line ho jaye)
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, color: AppColors.getIconColor(context)),
           const SizedBox(width: 15),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
-              Text(
-                value,
-                style: TextStyle(fontWeight: FontWeight.bold, color: color),
-              ),
-            ],
+          // Expanded add kiya taaki bachi hui jagah hi use ho aur text wrap ho jaye
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(color: Colors.grey, fontSize: 12),
+                ),
+                const SizedBox(height: 2), // Label aur value ke beech thoda space
+                Text(
+                  value,
+                  style: TextStyle(fontWeight: FontWeight.bold, color: color),
+                  // Text automatically next line mein chala jayega
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'package:http/http.dart' as http; // 🚀 Required for Ping
 import 'package:flutter/material.dart';
+import 'package:responsive_framework/responsive_framework.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -18,6 +19,17 @@ import 'theme/theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ThemeService.instance.load();
+
+
+  //Render overflow error hata tha hai
+  ErrorWidget.builder = (FlutterErrorDetails details) {
+    debugPrint("UI Error Hidden: ${details.exceptionAsString()}");
+    return const SizedBox.shrink();
+  };
+  //Render overflow error hata tha hai
+
+
+
   runApp(const MyApp());
 }
 
@@ -55,6 +67,29 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _mode,
+      builder: (context, child) => ResponsiveBreakpoints.builder(
+        child: Builder(
+          builder: (context) {
+            return ResponsiveScaledBox(
+              // 🔥 FIX: <double?> use kiya aur defaultValue: null add kiya
+              width: ResponsiveValue<double?>(
+                context,
+                defaultValue: null, // Badi screens par scaling off rahegi (Normal view)
+                conditionalValues: [
+                  const Condition.smallerThan(name: TABLET, value: 400.0), // Choti screens ke liye 400.0
+                ],
+              ).value,
+              child: child!,
+            );
+          },
+        ),
+        breakpoints: [
+          const Breakpoint(start: 0, end: 450, name: MOBILE),     // Choti screens
+          const Breakpoint(start: 451, end: 800, name: TABLET),   // Medium screens
+          const Breakpoint(start: 801, end: 1920, name: DESKTOP), // Badi screens (Web/Windows)
+          const Breakpoint(start: 1921, end: double.infinity, name: '4K'), // Extra large screens
+        ],
+      ),
       home: const SplashPage(),
     );
   }

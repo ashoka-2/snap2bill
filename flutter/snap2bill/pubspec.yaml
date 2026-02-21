@@ -66,6 +66,7 @@ dependencies:
   file_picker:
   url_launcher: ^6.3.2
   razorpay_flutter: ^1.4.0
+  responsive_framework: ^1.5.1
   #  razorpay_web: ^1.0.0
   #  js: ^0.6.7
   #  web: ^0.1.4-beta

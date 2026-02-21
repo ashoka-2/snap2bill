@@ -183,20 +183,18 @@ class _viewBillItemsState extends State<viewBillItems> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final subTextColor = AppColors.getTextSubColor(context);
 
-    // 🚀 Filter Logic for Bill Items
+    // Filter Logic for Bill Items
     List<dynamic> filteredBillItems = _items.where((item) {
       return item['product_name'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
-    // 🚀 Filter Logic for Available Stock (Horizontal List)
+    // Filter Logic for Available Stock
     List<dynamic> filteredStock = _allStockProducts.where((item) {
       return item['product_name'].toString().toLowerCase().contains(_searchQuery.toLowerCase());
     }).toList();
 
     return Scaffold(
       backgroundColor: AppColors.getScaffoldBg(context),
-
-      // 🚀 Use your Custom SearchAppBar
       appBar: SearchAppBar(
         hintText: "Search products in bill or stock...",
         controller: _searchController,
@@ -208,75 +206,134 @@ class _viewBillItemsState extends State<viewBillItems> {
         },
       ),
 
-      body: Column(
-        children: [
-          // 🚀 1. HORIZONTAL PRODUCT LIST (Available Stock)
-          if (_allStockProducts.isNotEmpty)
-            SizedBox(
-              height: 165, // Fixed height for horizontal scroll
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                    child: Text("Quick Add Products", style: TextStyle(color: subTextColor, fontSize: 12, fontWeight: FontWeight.bold)),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 15),
-                      itemCount: filteredStock.length,
-                      itemBuilder: (context, index) {
-                        var stockItem = filteredStock[index];
-                        return _buildHorizontalStockCard(stockItem, isDark);
-                      },
+      // 🚀 MAGIC SHURU: Detect Screen Rotation
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          // ==========================================
+          // 📱 PORTRAIT MODE (Seedha Phone)
+          // ==========================================
+          if (orientation == Orientation.portrait) {
+            return Column(
+              children: [
+                if (_allStockProducts.isNotEmpty)
+                  SizedBox(
+                    height: 165,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                          child: Text("Quick Add Products", style: TextStyle(color: subTextColor, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 15),
+                            itemCount: filteredStock.length,
+                            itemBuilder: (context, index) {
+                              return _buildHorizontalStockCard(filteredStock[index], isDark);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ),
 
-          const Divider(height: 1),
+                const Divider(height: 1),
 
-          // 🚀 2. VERTICAL BILL ITEMS LIST (Existing Logic)
-          Expanded(
-            child: FutureBuilder<Map<String, dynamic>>(
-              future: futureData,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildShimmerLoading(isDark);
-                }
-                if (snapshot.hasError) {
-                  return _buildEmptyOrErrorState(
-                      context, Icons.cloud_off_rounded, "Server Error", "Check connection", subTextColor);
-                }
-                if (!snapshot.hasData || _items.isEmpty) {
-                  // Only show empty state if NO items and NO search query
-                  // If searching and no results, it just shows empty list
-                  if(_searchQuery.isEmpty) {
-                    return _buildEmptyOrErrorState(
-                        context, Icons.inventory_2_outlined, "No Items", "Add from above", subTextColor);
-                  }
-                }
-
-                return RefreshIndicator(
-                  onRefresh: _loadInitialData,
-                  color: AppColors.primaryLight,
-                  child: ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
-                    // 🚀 Use filtered list count
-                    itemCount: filteredBillItems.length,
-                    // 🚀 Use filtered list item
-                    itemBuilder: (context, index) => _buildProductCard(filteredBillItems[index]),
+                Expanded(
+                  child: _buildBillItemsList(filteredBillItems, isDark, subTextColor),
+                ),
+              ],
+            );
+          }
+          // ==========================================
+          // 🖥️ LANDSCAPE MODE (Teda Phone / Windows)
+          // ==========================================
+          else {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // LEFT SIDE: Available Stock (GridView mein dikhayenge kyunki jagah chodi hai)
+                if (_allStockProducts.isNotEmpty)
+                  Expanded(
+                    flex: 2, // Screen ka 40% hissa lega
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border(right: BorderSide(color: AppColors.getBorderColor(context).withValues(alpha: 0.2))),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                            child: Text("Quick Add Stock", style: TextStyle(color: subTextColor, fontSize: 14, fontWeight: FontWeight.bold)),
+                          ),
+                          Expanded(
+                            child: GridView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 10),
+                              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2, // 2 items side-by-side
+                                childAspectRatio: 0.8,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                              ),
+                              itemCount: filteredStock.length,
+                              itemBuilder: (context, index) {
+                                // Yahan hum wahi horizontal card use kar rahe hain, just grid format mein
+                                return _buildHorizontalStockCard(filteredStock[index], isDark);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+
+                // RIGHT SIDE: Bill Items
+                Expanded(
+                  flex: 3, // Screen ka 60% hissa lega
+                  child: _buildBillItemsList(filteredBillItems, isDark, subTextColor),
+                ),
+              ],
+            );
+          }
+        },
       ),
       bottomNavigationBar: _buildBottomBar(subTextColor),
+    );
+  }
+
+  // 🚀 Naya Helper Widget taaki code repeat na ho (Portrait & Landscape dono isko use karenge)
+  Widget _buildBillItemsList(List<dynamic> filteredBillItems, bool isDark, Color subTextColor) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: futureData,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildShimmerLoading(isDark);
+        }
+        if (snapshot.hasError) {
+          return _buildEmptyOrErrorState(
+              context, Icons.cloud_off_rounded, "Server Error", "Check connection", subTextColor);
+        }
+        if (!snapshot.hasData || _items.isEmpty) {
+          if (_searchQuery.isEmpty) {
+            return _buildEmptyOrErrorState(
+                context, Icons.inventory_2_outlined, "No Items", "Add from stock", subTextColor);
+          }
+        }
+
+        return RefreshIndicator(
+          onRefresh: _loadInitialData,
+          color: AppColors.primaryLight,
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
+            itemCount: filteredBillItems.length,
+            itemBuilder: (context, index) => _buildProductCard(filteredBillItems[index]),
+          ),
+        );
+      },
     );
   }
 

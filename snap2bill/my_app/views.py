@@ -495,13 +495,11 @@ def distributor_registration(request):
     latitude = request.POST['latitude']
     longitude = request.POST['longitude']
 
-    # Address details jo ab 'location' table mein jayengi
     address = request.POST['address']
     pincode = request.POST['pincode']
     place = request.POST['place']
     post = request.POST['post']
 
-    # 🚀 STEP 1: Pehle 'location' table mein entry create karein
     loc_obj = location.objects.create(
         address=address,
         place=place,
@@ -509,14 +507,12 @@ def distributor_registration(request):
         post=post
     )
 
-    # STEP 2: Django User create karein (Login ke liye)
     obj = User()
     obj.username = email
     obj.password = make_password(password)
     obj.save()
     obj.groups.add(Group.objects.get(name='distributor'))
 
-    # 🚀 STEP 3: Ab 'distributor' save karein aur upar wala 'loc_obj' link karein
     ob = distributor()
     ob.profile_image = fs.url(path)
     ob.name = name
@@ -528,7 +524,7 @@ def distributor_registration(request):
     ob.proof = fs.url(path1)
     ob.status = 'pending'
 
-    ob.LOCATION = loc_obj  # 🚀 Yahan humne Foreign Key link kar di
+    ob.LOCATION = loc_obj
     ob.LOGIN = obj
     ob.save()
 
@@ -1056,8 +1052,6 @@ def distributor_products(request):
             'CATEGORY_NAME': getattr(i.PRODUCT.CATEGORY, 'category_name', ''),
             'unit_id': str(i.UNIT_id) if i.UNIT_id else "",
             'unit_name': i.UNIT.unit_name if i.UNIT else "pcs",
-
-            # 🚀 Hum ye temporary value bhej rahe hain
             'is_liked': is_in_wishlist,
         })
 
@@ -1085,17 +1079,16 @@ def add_stock(request):
 
 def edit_stock(request):
     if request.method == "POST":
-        pid = request.POST.get('pid') # The stock ID
+        pid = request.POST.get('pid')
         quantity = request.POST.get('quantity')
         price = request.POST.get('price')
-        unit_id = request.POST.get('unit_id') # 🚀 Receive unit_id from Flutter
+        unit_id = request.POST.get('unit_id')
 
         try:
-            # We use pid to find the correct stock record and update it
             stock.objects.filter(id=pid).update(
                 price=price,
                 quantity=quantity,
-                UNIT_id=unit_id # 🚀 Update the foreign key relationship
+                UNIT_id=unit_id
             )
             return JsonResponse({'status': 'ok'})
         except Exception as e:
@@ -1159,18 +1152,18 @@ def customer_registration(request):
     fs = FileSystemStorage()
     path = fs.save(profile_image.name, profile_image)
 
-    # Address fields fetch
+
     address = request.POST['address']
     pincode = request.POST['pincode']
     place = request.POST['place']
     post = request.POST['post']
 
-    # 🚀 STEP 1: Create Location
+
     loc_obj = location.objects.create(
         address=address, place=place, pincode=pincode, post=post
     )
 
-    # User & Customer Create
+
     name = request.POST['name']
     email = request.POST['email']
     phone = request.POST['phone']
@@ -1189,7 +1182,7 @@ def customer_registration(request):
     ob.email = email
     ob.phone = phone
     ob.bio = bio
-    ob.LOCATION = loc_obj  # 🚀 Linked Location
+    ob.LOCATION = loc_obj
     ob.LOGIN = obj
     ob.save()
 
@@ -1198,7 +1191,6 @@ def customer_registration(request):
 
 def customer_view_profile(request):
     cid = request.POST['cid']
-    # 🚀 Join query
     data = customer.objects.select_related('LOCATION').filter(id=cid)
 
     ar = []
@@ -1210,7 +1202,6 @@ def customer_view_profile(request):
             'phone': i.phone,
             'profile_image': i.profile_image,
             'bio': i.bio,
-            # 🚀 Fetching from Location table
             'address': i.LOCATION.address if i.LOCATION else "",
             'place': i.LOCATION.place if i.LOCATION else "",
             'pincode': i.LOCATION.pincode if i.LOCATION else "",
@@ -1233,7 +1224,7 @@ def edit_customer_profile(request):
     cust_obj.name = request.POST['name']
     cust_obj.phone = request.POST['phone']
     cust_obj.bio = request.POST['bio']
-    cust_obj.save() # Customer saved
+    cust_obj.save()
 
     if cust_obj.LOCATION:
         loc = cust_obj.LOCATION
@@ -1241,7 +1232,7 @@ def edit_customer_profile(request):
         loc.pincode = request.POST['pincode']
         loc.place = request.POST['place']
         loc.post = request.POST['post']
-        loc.save() # Location saved
+        loc.save()
 
     return JsonResponse({'status': 'ok'})
 
@@ -1988,7 +1979,7 @@ def scanItem(request):
     product_names = [item.PRODUCT.product_name for item in allproduct]
     product_list_text = ", ".join(product_names)
 
-    genai.configure(api_key="AIzaSyAFfLgc8onDLKDpuKwBg6mcsSW7W8czl6g")
+    genai.configure(api_key="AIzaSyB-mnu57h6uvL6sLTfS91btlA_nG7qFGXI")
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
     prompt = f"""Identify from: {product_list_text}. 

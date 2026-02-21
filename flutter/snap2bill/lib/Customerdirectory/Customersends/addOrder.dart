@@ -41,6 +41,7 @@ class _addOrderState extends State<addOrder> {
     super.dispose();
   }
 
+  // Agar user poora text delete kar de toh default 1 return karega
   int get currentQty => int.tryParse(_qtyController.text) ?? 1;
 
   Future<void> _fetchDetails() async {
@@ -58,26 +59,21 @@ class _addOrderState extends State<addOrder> {
         productData = json.decode(response.body)['data'];
       });
 
-      // 🚀 1. Pehle suggestions fetch karein
       _fetchSuggestions(pid);
-
-      // 🚀 2. Backend ko batayein ki ye product dekha gaya hai (Recently Viewed)
       _saveToRecentOnServer(pid);
     }
   }
 
-  // 🔥 NEW FUNCTION: Backend par entry save karne ke liye
   Future<void> _saveToRecentOnServer(String sid) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await http.post(
-        Uri.parse("$_ip/add_to_recent"), // Ensure this route is in urls.py
+        Uri.parse("$_ip/add_to_recent"),
         body: {
           'cid': prefs.getString("cid"),
           'sid': sid,
         },
       );
-      debugPrint("Logged to recently viewed: $sid");
     } catch (e) {
       debugPrint("Error logging recent view: $e");
     }
@@ -105,6 +101,11 @@ class _addOrderState extends State<addOrder> {
   }
 
   Future<void> _addToCart({String? customPid, String? customQty}) async {
+    // Zero ya khali input submit na hone de
+    if (currentQty < 1) {
+      setState(() => _qtyController.text = "1");
+    }
+
     setState(() => _isSubmitting = true);
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -121,14 +122,10 @@ class _addOrderState extends State<addOrder> {
       CustomSnackBar.show(context, "Added to cart!", backgroundColor: successColor);
 
       if (customPid == null) {
-        // 🚀 Step 1: pushReplacement ki jagah push use karein
-        // Isse page stack mein rehta hai
         Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const viewCart())
         ).then((_) {
-          // 🚀 Step 2: Jab user Cart page se wapas is page par aaye
-          // toh turant home page tak signal bhejne ke liye pop karein
           Navigator.pop(context, "refresh");
         });
       }
@@ -211,7 +208,9 @@ class _addOrderState extends State<addOrder> {
           borderRadius: BorderRadius.circular(30),
           child: InteractiveViewer(
             child: CachedNetworkImage(
-  imageUrl:_ip + productData!['image'], fit: BoxFit.fill),
+              imageUrl: _ip + productData!['image'],
+              fit: BoxFit.cover, // 🔥 UPDATE: BoxFit.fill ki jagah cover taaki image stretch na ho
+            ),
           ),
         ),
       ),
@@ -235,9 +234,8 @@ class _addOrderState extends State<addOrder> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(15),
               child: CachedNetworkImage(
-  imageUrl:
-                _ip + item['image'],
-                fit: BoxFit.cover,
+                imageUrl: _ip + item['image'],
+                fit: BoxFit.cover, // 🔥 UPDATE: Card me bhi cover zyada premium lagta hai
                 width: double.infinity,
                 errorWidget: (_, __, ___) => const Icon(Icons.image_not_supported),
               ),
@@ -301,9 +299,49 @@ class _addOrderState extends State<addOrder> {
     return Container(
       decoration: BoxDecoration(color: AppColors.getPillBg(context), borderRadius: BorderRadius.circular(18), border: Border.all(color: borderColor)),
       child: Row(children: [
-        IconButton(onPressed: () { if (currentQty > 1) setState(() => _qtyController.text = (currentQty - 1).toString()); }, icon: Icon(Icons.remove_circle_outline, color: primaryColor)),
-        SizedBox(width: 55, child: TextField(controller: _qtyController, keyboardType: TextInputType.number, textAlign: TextAlign.center, onChanged: (v) => setState(() {}), decoration: const InputDecoration(border: InputBorder.none))),
-        IconButton(onPressed: () { if (currentQty < 100) setState(() => _qtyController.text = (currentQty + 1).toString()); }, icon: Icon(Icons.add_circle_outline, color: primaryColor)),
+        IconButton(
+            onPressed: () {
+              if (currentQty > 1) {
+                setState(() => _qtyController.text = (currentQty - 1).toString());
+              }
+            },
+            icon: Icon(Icons.remove_circle_outline, color: primaryColor)
+        ),
+        SizedBox(
+            width: 55,
+            child: TextField(
+                controller: _qtyController,
+                keyboardType: TextInputType.number,
+                textAlign: TextAlign.center,
+                // 🔥 UPDATE: User sirf numbers type kar payega
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                onChanged: (v) {
+                  if (v.isNotEmpty) {
+                    int val = int.tryParse(v) ?? 1;
+                    // 🔥 UPDATE: Agar user ne 100 se bada number type kiya toh use limit kar do
+                    if (val > 100) {
+                      _qtyController.text = "100";
+                      // Cursor ko number ke end me set karta hai
+                      _qtyController.selection = TextSelection.fromPosition(
+                          TextPosition(offset: _qtyController.text.length)
+                      );
+                    }
+                  }
+                  setState(() {});
+                },
+                decoration: const InputDecoration(border: InputBorder.none)
+            )
+        ),
+        IconButton(
+            onPressed: () {
+              if (currentQty < 100) {
+                setState(() => _qtyController.text = (currentQty + 1).toString());
+              }
+            },
+            icon: Icon(Icons.add_circle_outline, color: primaryColor)
+        ),
       ]),
     );
   }

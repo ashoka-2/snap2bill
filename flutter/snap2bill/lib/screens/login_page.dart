@@ -105,23 +105,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         String status = decoded['status'];
 
         if (status == 'custok') {
-          // 🧹 CRITICAL FIX: Clear EVERYTHING before saving new data
           await prefs.clear();
-          // Re-save IP because clear() deleted it
           await prefs.setString("ip", ip);
-
           await prefs.setString("cid", decoded['cid'].toString());
-
           if (!mounted) return;
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CustomerNavigationBar(initialIndex: 0)));
         } else if (status == 'distok') {
-          // 🧹 CRITICAL FIX: Clear EVERYTHING before saving new data
           await prefs.clear();
-          // Re-save IP because clear() deleted it
           await prefs.setString("ip", ip);
-
           await prefs.setString("uid", decoded['uid'].toString());
-
           if (!mounted) return;
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DistributorNavigationBar(initialIndex: 0)));
         } else {
@@ -137,6 +129,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       if (mounted) setState(() => _isGoogleLoading = false);
     }
   }
+
+
 
   /// ----------------------------------------------------------------
   /// STANDARD LOGIN LOGIC
@@ -169,45 +163,40 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         },
       ).timeout(const Duration(seconds: 5));
 
-      if (response.statusCode == 200) {
+      // 🛑 UPDATE: Yahan 200 ke sath 400 aur 401 ko bhi allow kiya hai
+      // taaki backend se aane wale error messages JSON se padhe ja sakein.
+      if (response.statusCode == 200 || response.statusCode == 400 || response.statusCode == 401) {
         final decoded = json.decode(response.body);
         String status = decoded['status'] ?? "";
 
         if (status == 'custok') {
-          // 🧹 CRITICAL FIX: Clear old data (uid, oid, etc.)
           await prefs.clear();
-          // Re-save IP
           await prefs.setString("ip", ip);
-
           await prefs.setString("cid", decoded['cid'].toString());
           await prefs.setString("pwd", password.text);
-
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful", backgroundColor: successColor);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CustomerNavigationBar(initialIndex: 0)));
-
         } else if (status == 'distok') {
-          // 🧹 CRITICAL FIX: Clear old data (cid, oid, etc.)
           await prefs.clear();
-          // Re-save IP
           await prefs.setString("ip", ip);
-
           await prefs.setString("uid", decoded['uid'].toString());
           await prefs.setString("pwd1", password.text);
-
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful", backgroundColor: successColor);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DistributorNavigationBar(initialIndex: 0)));
-
         } else {
+          // Backend ne error message bheja hai
           String msg = decoded['message']?.toString().toLowerCase() ?? "";
           setState(() {
             _invalidError = msg.contains("password") ? "Incorrect password" :
-            (msg.contains("email") || msg.contains("user")) ? "Account not found" : "Invalid credentials";
+            (msg.contains("email") || msg.contains("user")) ? "Account not found" :
+            (decoded['message'] ?? "Invalid credentials"); // Direct backend ka message use karega
           });
           _shakeController.forward(from: 0);
         }
       } else {
+        // Agar status 500 (Server Crash) ya 404 (Not Found) hai tabhi ye chalega
         setState(() => _invalidError = "Server Error (${response.statusCode})");
         _shakeController.forward(from: 0);
       }
