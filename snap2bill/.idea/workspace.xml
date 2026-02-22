@@ -36,15 +36,13 @@
           <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/my_app/views.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state relative-caret-position="350">
-                  <caret line="1981" column="68" lean-forward="false" selection-start-line="1981" selection-start-column="68" selection-end-line="1981" selection-end-column="68" />
+                <state relative-caret-position="-1050">
+                  <caret line="1463" column="0" lean-forward="false" selection-start-line="1463" selection-start-column="0" selection-end-line="1463" selection-end-column="0" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
-                    <element signature="e#48323#51003#0" expanded="false" />
-                    <element signature="e#66526#66527#0" expanded="false" />
-                    <element signature="e#82908#87599#0" expanded="false" />
-                    <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
-                    <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
+                    <element signature="e#64750#64751#0" expanded="false" />
+                    <element signature="e#83667#88358#0" expanded="false" />
+                    <marker date="1771741705132" expanded="true" signature="33986:34009" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -133,11 +131,9 @@
                   <caret line="524" column="25" lean-forward="true" selection-start-line="524" selection-start-column="25" selection-end-line="524" selection-end-column="25" />
                   <folding>
                     <element signature="e#0#9#0" expanded="true" />
-                    <element signature="e#48323#51003#0" expanded="false" />
-                    <element signature="e#66526#66527#0" expanded="false" />
-                    <element signature="e#82908#87599#0" expanded="false" />
-                    <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
-                    <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
+                    <element signature="e#64750#64751#0" expanded="false" />
+                    <element signature="e#83667#88358#0" expanded="false" />
+                    <marker date="1771741705132" expanded="true" signature="33986:34009" ph="..." />
                   </folding>
                 </state>
               </provider>
@@ -176,7 +172,6 @@
       <find>quan</find>
       <find>zxA</find>
       <find>update_ord</find>
-      <find>update_order_item</find>
       <find>view_distributor_orders</find>
       <find>scan</find>
       <find>scani</find>
@@ -200,6 +195,7 @@
       <find>registration</find>
       <find>#</find>
       <find>scanItem</find>
+      <find>update_order_item</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -735,8 +731,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-9" y="-9" width="1938" height="1038" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21482277" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21804512" sideWeight="0.860252" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3298969" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -768,7 +765,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="13" />
+      <option name="time" value="14" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -991,15 +988,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/my_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="350">
-          <caret line="1981" column="68" lean-forward="false" selection-start-line="1981" selection-start-column="68" selection-end-line="1981" selection-end-column="68" />
+        <state relative-caret-position="-1050">
+          <caret line="1463" column="0" lean-forward="false" selection-start-line="1463" selection-start-column="0" selection-end-line="1463" selection-end-column="0" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <element signature="e#48323#51003#0" expanded="false" />
-            <element signature="e#66526#66527#0" expanded="false" />
-            <element signature="e#82908#87599#0" expanded="false" />
-            <marker date="1771693026798" expanded="true" signature="33986:34009" ph="..." />
-            <marker date="1771693026798" expanded="true" signature="47275:47344" ph="..." />
+            <element signature="e#64750#64751#0" expanded="false" />
+            <element signature="e#83667#88358#0" expanded="false" />
+            <marker date="1771741705132" expanded="true" signature="33986:34009" ph="..." />
           </folding>
         </state>
       </provider>

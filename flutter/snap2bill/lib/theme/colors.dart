@@ -4,30 +4,11 @@ import 'package:flutter/material.dart';
 
 class AppColors {
 
-  // The Top-Left / Start Color (Bright Blue)
-  static const Color premiumBlue = Color(0xe87fbbe1);
 
-  // The Bottom-Right / End Color (Rich Purple/Magenta)
-  static const Color premiumPurple = Color(0xFFB85EE6);
-
-  // A secondary deeper variant for dark mode logic
   static const Color premiumDarkBlue = Color(0xff0377ea);
 
-  // Reusable Gradient Object
-  static const RadialGradient premiumGradient = RadialGradient(
-    // Shift center to top-left to simulate light hitting a curved surface
-    center: Alignment(-0.7, -0.1),
-    radius: 3,
-    colors: [
-      Color(0xff2388da), // 1. Light Highlight (Light Blue)
-      premiumBlue,       // 2. Main Brand Color
-      premiumDarkBlue,     // 3. Deep Edge Color (The Purple from your image)
-    ],
-    stops: [0.0, 0.4, 1.0], // Controls the spread of the "light"
-  );
-
-
   static const Color dangerColor = Color(0xf0cb0101);
+  static const Color dangerLightColor = Color(0xfff5054d);
   static const Color dangerbgColor = Color(0x54912727);
 
   static const Color successLightColor = Color(0xf01fc43c);
@@ -40,7 +21,7 @@ class AppColors {
   // Light Mode
   static const Color primaryLight = Color(0xff23afda);
   static const Color backgroundLight = Color(0xFFF0F4F8);
-  static const Color cardLight = Color(0xFFFFFFFF);
+  static const Color cardLight = Color(0xFAFFFFFF);
   static const Color textMainLight = Color(0xFF1A1D1E);
   static const Color textSubLight = Color(0xFF6A6C7B);
   static const Color inputFillLight = Color(0xFFF5F6FA);
@@ -70,14 +51,7 @@ class AppColors {
   static const Color inputFillDark = Color(0xFF2C2C2C);
   static const Color borderColorDark = Color(0xD8FFFFFF);
 
-  static const List<Color> blobGradient1 = [
-    Color(0xFF1138F5),
-    Color(0xFF2E3F8F),
-  ];
-  static const List<Color> blobGradient2 = [
-    Color(0xFF6E85FF),
-    Color(0xFF0D34F1),
-  ];
+
 
 
   static bool isDarkMode(BuildContext context) =>
@@ -120,7 +94,7 @@ class AppColors {
       isDarkMode(context) ? successDarkColor : successLightColor;
 
   static Color getDangerColor(BuildContext context) =>
-      isDarkMode(context) ? dangerColor : dangerColor;
+      isDarkMode(context) ? dangerColor : dangerLightColor;
 
   static Color getInputFieldColor(BuildContext context) =>
       isDarkMode(context) ? inputFillDark : inputFillLight;

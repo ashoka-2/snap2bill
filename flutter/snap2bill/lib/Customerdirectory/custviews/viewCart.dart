@@ -290,12 +290,19 @@ class _viewCartState extends State<viewCart> {
   }
 
   Widget _buildQuantityPicker(item, index, theme, isDark, borderColor, qtyCtrl, textColor, subTextColor) {
+    // 🚀 NEW LOGIC: Stock kitna hai?
+    int availableStock = int.tryParse(item['stock_quantity'].toString()) ?? 100;
+
+    // 🚀 MAXIMUM LIMIT KYA HAI? (Stock aur 100 mein se jo chhota ho)
+    int maxAllowed = availableStock > 100 ? 100 : availableStock;
+
     return Container(
       decoration: BoxDecoration(color: isDark ? Colors.white10 : Colors.grey[100], borderRadius: BorderRadius.circular(12), border: Border.all(color: borderColor)),
       child: Row(
         children: [
           _buildQtyBtn(Icons.remove, () {
             int val = int.tryParse(item['quantity'].toString()) ?? 1;
+            // Ye zero ya negative nahi hone dega
             if (val > 1) {
               int newVal = val - 1;
               setState(() => _localItems[index]['quantity'] = newVal);
@@ -307,15 +314,22 @@ class _viewCartState extends State<viewCart> {
 
           _buildQtyBtn(Icons.add, () {
             int val = int.tryParse(item['quantity'].toString()) ?? 1;
-            if (val < 100) {
+
+            // 🚀 USE NAYI MAX LIMIT (maxAllowed)
+            if (val < maxAllowed) {
               int newVal = val + 1;
               setState(() => _localItems[index]['quantity'] = newVal);
               _calculateLocalTotal();
               _updateQtyOnServer(item['id'].toString(), newVal.toString());
             } else {
+              // 🚀 Error message bhi condition ke hisaab se dikhega
+              String errorMsg = availableStock < 100
+                  ? "Only $availableStock items left in stock"
+                  : "Maximum limit is 100 per item";
+
               CustomSnackBar.show(
                   context,
-                  "Quantity must be less than or equal to 100",
+                  errorMsg,
                   backgroundColor: dangerColor
               );
             }
@@ -352,28 +366,27 @@ class _viewCartState extends State<viewCart> {
     );
   }
 
-  // 🔥 UPDATE: Place Order Handle Method
+
   Future<void> _handlePlaceOrder() async {
     // 1. Check if Cart is empty
     if (_localItems.isEmpty) {
-      CustomSnackBar.show(
-          context,
-          "Your cart is empty!",
-          backgroundColor: dangerColor
-      );
+      CustomSnackBar.show(context, "Your cart is empty!", backgroundColor: dangerColor);
       return;
     }
 
-    // 2. Double Safety Check: Kisi item ki quantity 100 se zyada toh nahi hai?
+    // 2. 🚀 DOUBLE SAFETY CHECK: Kya koi item Max Limit (Stock ya 100) cross kar raha hai?
     bool hasExcessQty = _localItems.any((item) {
       int qty = int.tryParse(item['quantity'].toString()) ?? 1;
-      return qty > 100;
+      int stock = int.tryParse(item['stock_quantity'].toString()) ?? 100;
+      int maxAllowed = stock > 100 ? 100 : stock;
+
+      return qty > maxAllowed; // Agar allowed se zyada hai toh true return karega
     });
 
     if (hasExcessQty) {
       CustomSnackBar.show(
           context,
-          "Cannot place order. Maximum limit is 100 per item.",
+          "Cannot place order. Some items exceed the 100 limit or available stock.",
           backgroundColor: dangerColor
       );
       return; // Order place hone se rok do
@@ -381,6 +394,7 @@ class _viewCartState extends State<viewCart> {
 
     // 3. Sab theek hai toh Order Place karo
     setState(() => _isPlacingOrder = true);
+
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       final res = await http.post(
@@ -392,35 +406,29 @@ class _viewCartState extends State<viewCart> {
       );
 
       if (res.statusCode == 200) {
-        if (mounted) {
-          // 🎉 4. Success SnackBar show karo
-          CustomSnackBar.show(
-              context,
-              "Order placed successfully!",
-              backgroundColor: successColor
-          );
+        if (!mounted) return;
 
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0))
-          );
-        }
+        // 🎉 4. Success SnackBar show karo
+        CustomSnackBar.show(context, "Order placed successfully!", backgroundColor: successColor);
+
+        // 🚀 5. CRASH FIX: Black screen se bachne ke liye safe navigation (delay ke sath)
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => const CustomerNavigationBar(initialIndex: 0)),
+                  (Route<dynamic> route) => false,
+            );
+          }
+        });
+
       } else {
         if (mounted) {
-          CustomSnackBar.show(
-              context,
-              "Failed to place order. Please try again.",
-              backgroundColor: dangerColor
-          );
+          CustomSnackBar.show(context, "Failed to place order. Please try again.", backgroundColor: dangerColor);
         }
       }
     } catch (e) {
       if (mounted) {
-        CustomSnackBar.show(
-            context,
-            "Connection error. Check your internet.",
-            backgroundColor: dangerColor
-        );
+        CustomSnackBar.show(context, "Connection error. Check your internet.", backgroundColor: dangerColor);
       }
     } finally {
       if (mounted) setState(() => _isPlacingOrder = false);

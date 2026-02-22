@@ -27,7 +27,9 @@ class _addOrderState extends State<addOrder> {
   bool _isLoading = true;
   bool _isSubmitting = false;
   String _ip = "";
-  late Color successColor;
+  late Color successColor, dangerColor;
+
+
 
   @override
   void initState() {
@@ -101,7 +103,6 @@ class _addOrderState extends State<addOrder> {
   }
 
   Future<void> _addToCart({String? customPid, String? customQty}) async {
-    // Zero ya khali input submit na hone de
     if (currentQty < 1) {
       setState(() => _qtyController.text = "1");
     }
@@ -122,7 +123,7 @@ class _addOrderState extends State<addOrder> {
       CustomSnackBar.show(context, "Added to cart!", backgroundColor: successColor);
 
       if (customPid == null) {
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const viewCart())
         ).then((_) {
@@ -134,13 +135,20 @@ class _addOrderState extends State<addOrder> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     successColor = AppColors.getSuccessColor(context);
+    dangerColor = AppColors.getDangerColor(context);
+
     if (_isLoading) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
+    int availableStock = int.tryParse(productData!['stock_quantity'].toString()) ?? 0;
+    bool isOutOfStock = availableStock <= 0;
 
     double price = double.tryParse(productData!['price'].toString()) ?? 0.0;
     double totalPrice = price * currentQty;
     String unit = productData!['unit_name'] ?? "Unit";
+
     final bgColor = AppColors.getScaffoldBg(context);
     final textColor = AppColors.getTextColor(context);
     final cardColor = AppColors.getCardColor(context);
@@ -163,7 +171,24 @@ class _addOrderState extends State<addOrder> {
           children: [
             _buildProductImage(),
             const SizedBox(height: 25),
-            _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit),
+
+            // 🔥 Stock Status Badge (Optional but looks premium)
+            if (isOutOfStock)
+              Container(
+                margin: const EdgeInsets.only(bottom: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: dangerColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: Text("Currently Out of Stock", style: TextStyle(color: dangerColor, fontWeight: FontWeight.bold, fontSize: 12)),
+              )
+            else
+              Container(
+                margin: const EdgeInsets.only(bottom: 15),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(color: successColor.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                child: Text("In Stock: $availableStock", style: TextStyle(color: successColor, fontWeight: FontWeight.bold, fontSize: 12)),
+              ),
+
+            _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit, availableStock, isOutOfStock),
             const SizedBox(height: 20),
             _buildDescription(cardColor, textColor, subTextColor),
             const SizedBox(height: 30),
@@ -190,7 +215,7 @@ class _addOrderState extends State<addOrder> {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice),
+      bottomNavigationBar: _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice, isOutOfStock),
     );
   }
 
@@ -264,7 +289,7 @@ class _addOrderState extends State<addOrder> {
     );
   }
 
-  Widget _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit) {
+  Widget _buildMainInfo(cardColor, primaryColor, textColor, subTextColor, borderColor, unit, int availableStock, bool isOutOfStock) {
     return Container(
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(24)),
@@ -286,8 +311,10 @@ class _addOrderState extends State<addOrder> {
                       child: Text("₹${productData!['price']}", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: successColor))),
                 ]),
               ),
-              SizedBox(width: 10,),
-              _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit),
+              const SizedBox(width: 10,),
+              // 🚀 Agar Out of Stock hai, toh selector hide kar do
+              if (!isOutOfStock)
+                _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit, availableStock),
             ],
           ),
         ],
@@ -295,7 +322,7 @@ class _addOrderState extends State<addOrder> {
     );
   }
 
-  Widget _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit) {
+  Widget _buildQtySelector(primaryColor, borderColor, textColor, subTextColor, unit, int availableStock) {
     return Container(
       decoration: BoxDecoration(color: AppColors.getPillBg(context), borderRadius: BorderRadius.circular(18), border: Border.all(color: borderColor)),
       child: Row(children: [
@@ -313,20 +340,19 @@ class _addOrderState extends State<addOrder> {
                 controller: _qtyController,
                 keyboardType: TextInputType.number,
                 textAlign: TextAlign.center,
-                // 🔥 UPDATE: User sirf numbers type kar payega
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 onChanged: (v) {
                   if (v.isNotEmpty) {
                     int val = int.tryParse(v) ?? 1;
-                    // 🔥 UPDATE: Agar user ne 100 se bada number type kiya toh use limit kar do
-                    if (val > 100) {
-                      _qtyController.text = "100";
-                      // Cursor ko number ke end me set karta hai
+                    // 🔥 UPDATE: User stock limit (ya max 100) se upar type nahi kar sakta
+                    int maxAllowed = availableStock > 100 ? 100 : availableStock;
+
+                    if (val > maxAllowed) {
+                      _qtyController.text = maxAllowed.toString();
                       _qtyController.selection = TextSelection.fromPosition(
                           TextPosition(offset: _qtyController.text.length)
                       );
+                      CustomSnackBar.show(context, "Only $maxAllowed items in stock", backgroundColor: dangerColor);
                     }
                   }
                   setState(() {});
@@ -336,8 +362,12 @@ class _addOrderState extends State<addOrder> {
         ),
         IconButton(
             onPressed: () {
-              if (currentQty < 100) {
+              // 🔥 UPDATE: Plus button bhi stock se upar nahi jayega
+              int maxAllowed = availableStock > 100 ? 100 : availableStock;
+              if (currentQty < maxAllowed) {
                 setState(() => _qtyController.text = (currentQty + 1).toString());
+              } else {
+                CustomSnackBar.show(context, "Maximum stock reached", backgroundColor: dangerColor);
               }
             },
             icon: Icon(Icons.add_circle_outline, color: primaryColor)
@@ -358,17 +388,39 @@ class _addOrderState extends State<addOrder> {
     );
   }
 
-  Widget _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice) {
+  Widget _buildBottomBar(cardColor, subTextColor, unit, primaryColor, totalPrice, bool isOutOfStock) {
     return Container(
       padding: const EdgeInsets.fromLTRB(15, 10, 15, 20),
       decoration: BoxDecoration(color: cardColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(30))),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text("Total ($currentQty $unit)", style: TextStyle(color: subTextColor, fontSize: 13)),
-          Text("₹${totalPrice.toStringAsFixed(2)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: primaryColor)),
+          Text("₹${totalPrice.toStringAsFixed(2)}", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: isOutOfStock ? Colors.grey : primaryColor)),
         ]),
         const SizedBox(width: 10),
-        Expanded(child: AppButton(text: "ADD TO CART", icon: Icons.shopping_cart_outlined, isLoading: _isSubmitting, onPressed: _addToCart)),
+        Expanded(
+            child: InkWell(
+              onTap: isOutOfStock ? null : _addToCart, // 🛑 Disable click if out of stock
+              child: Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: isOutOfStock ? Colors.grey.withOpacity(0.5) : primaryColor,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(isOutOfStock ? Icons.remove_shopping_cart : Icons.shopping_cart_outlined, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Text(
+                      isOutOfStock ? "OUT OF STOCK" : "ADD TO CART",
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            )
+        ),
       ]),
     );
   }

@@ -139,12 +139,16 @@ class _SplashPageState extends State<SplashPage> {
         debugPrint("Server unreachable. Redirecting to IP Config.");
         _navigateTo(const IpConfigPage());
       }
-    } else {
-      // ✅ Server Alive -> Check Login Status
-      if (cid != null && cid.isNotEmpty) {
+    }
+    else {
+      // ✅ Server Alive -> Check Login Status (🚀 WITH "null" STRING PROTECTION)
+      bool isCustomer = cid != null && cid.trim().isNotEmpty && cid != "null";
+      bool isDistributor = uid != null && uid.trim().isNotEmpty && uid != "null";
+
+      if (isCustomer) {
         _navigateTo(const CustomerNavigationBar(initialIndex: 0));
-      } else if (uid != null && uid.isNotEmpty) {
-        _navigateTo( DistributorNavigationBar(initialIndex: 0));
+      } else if (isDistributor) {
+        _navigateTo(DistributorNavigationBar(initialIndex: 0));
       } else {
         _navigateTo(const LoginPage());
       }
@@ -364,11 +368,14 @@ class _IpConfigPageState extends State<IpConfigPage> {
                                 String? cid = prefs.getString("cid");
                                 String? uid = prefs.getString("uid");
 
+                                bool isCustomer = cid != null && cid.trim().isNotEmpty && cid != "null";
+                                bool isDistributor = uid != null && uid.trim().isNotEmpty && uid != "null";
+
                                 if (!mounted) return;
 
-                                if (cid != null) {
+                                if (isCustomer) {
                                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const CustomerNavigationBar(initialIndex: 0)));
-                                } else if (uid != null) {
+                                } else if (isDistributor) {
                                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  DistributorNavigationBar(initialIndex: 0)));
                                 } else {
                                   Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginPage()));

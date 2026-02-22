@@ -1310,9 +1310,31 @@ def addorder(request):
 
 
 
+# def viewCart(request):
+#     # pid = request.POST['pid']
+#     print(request.POST)
+#     total = 0
+#     data = cart.objects.filter(USER=request.POST['cid']).order_by('-id')
+#     ar = []
+#     for i in data:
+#         total += float(i.STOCK.price) * float(i.quantity)
+#         ar.append({
+#             'id': i.id,
+#             'product_name': i.STOCK.PRODUCT.product_name,
+#             'price': i.STOCK.price,
+#             'quantity': i.quantity,
+#             'image':i.STOCK.PRODUCT.image,
+#             'distributor_name':i.STOCK.DISTRIBUTOR.name,
+#             'unit_name':i.STOCK.UNIT.unit_name,
+#             "total":float(i.STOCK.price) * float(i.quantity)
+#
+#
+#         })
+#     return JsonResponse({'status':'ok','data':ar,"total":total})
+
+
+
 def viewCart(request):
-    # pid = request.POST['pid']
-    print(request.POST)
     total = 0
     data = cart.objects.filter(USER=request.POST['cid']).order_by('-id')
     ar = []
@@ -1326,13 +1348,10 @@ def viewCart(request):
             'image':i.STOCK.PRODUCT.image,
             'distributor_name':i.STOCK.DISTRIBUTOR.name,
             'unit_name':i.STOCK.UNIT.unit_name,
-            "total":float(i.STOCK.price) * float(i.quantity)
-
-
+            "total":float(i.STOCK.price) * float(i.quantity),
+            'stock_quantity': i.STOCK.quantity
         })
     return JsonResponse({'status':'ok','data':ar,"total":total})
-
-
 
 
 
@@ -1437,65 +1456,28 @@ def toggle_wishlist(request):
         return JsonResponse({'status': 'error', 'msg': str(e)})
 
 
-
-
-
-
-
-
-
-
-
-
-def remove_from_wishlist(request):
-    wid = request.POST.get('wid')
-    cid = request.POST.get('cid')
-    uid = request.POST.get('uid')
-
-    if not wid:
-        return JsonResponse({'status': 'error', 'msg': 'wid missing'})
-
-    # CUSTOMER
-    if cid and not uid:
-        wishlist.objects.filter(
-            id=wid,
-            USER_id=cid,
-            DISTRIBUTOR__isnull=True
-        ).delete()
-
-    # DISTRIBUTOR
-    elif uid and not cid:
-        wishlist.objects.filter(
-            id=wid,
-            DISTRIBUTOR_id=uid,
-            USER__isnull=True
-        ).delete()
-
-    return JsonResponse({'status': 'ok'})
-
+@csrf_exempt
 def view_wishlist(request):
     cid = request.POST.get('cid')
     uid = request.POST.get('uid')
+
+    if cid in ['null', 'None', '']: cid = None
+    if uid in ['null', 'None', '']: uid = None
+
     queryset = wishlist.objects.select_related(
         'STOCK',
         'STOCK__PRODUCT',
         'STOCK__PRODUCT__CATEGORY',
         'STOCK__DISTRIBUTOR'
     ).order_by('-id')
-    # CUSTOMER
-    if cid and not uid:
-        data = queryset.filter(
-            USER__id=cid,
-            DISTRIBUTOR__isnull=True
-        )
-    # DISTRIBUTOR
-    elif uid and not cid:
-        data = queryset.filter(
-            DISTRIBUTOR__id=uid,
-            USER__isnull=True
-        )
+
+    if cid:
+        data = queryset.filter(USER__id=cid, DISTRIBUTOR__isnull=True)
+    elif uid:
+        data = queryset.filter(DISTRIBUTOR__id=uid, USER__isnull=True)
     else:
         data = []
+
     ar = []
     for i in data:
         ar.append({
@@ -1511,55 +1493,67 @@ def view_wishlist(request):
     return JsonResponse({'status': 'ok', 'data': ar})
 
 
+@csrf_exempt
+def remove_from_wishlist(request):
+    wid = request.POST.get('wid')
+    cid = request.POST.get('cid')
+    uid = request.POST.get('uid')
+
+    if cid in ['null', 'None', '']: cid = None
+    if uid in ['null', 'None', '']: uid = None
+
+    if not wid:
+        return JsonResponse({'status': 'error', 'msg': 'wid missing'})
+
+    if cid:
+        wishlist.objects.filter(id=wid, USER_id=cid, DISTRIBUTOR__isnull=True).delete()
+    elif uid:
+        wishlist.objects.filter(id=wid, DISTRIBUTOR_id=uid, USER__isnull=True).delete()
+
+    return JsonResponse({'status': 'ok'})
+
+
+
+
+
 
 def addFinalOrder(request):
     try:
         cid = request.POST['cid']
-        # Fetch all items in the customer's cart
         cart_items = cart.objects.filter(USER_id=cid)
 
         if not cart_items.exists():
             return JsonResponse({'status': 'error', 'message': 'Cart is empty'})
 
-        # Get a list of unique distributor IDs from the cart items
         distributor_list = []
         for item in cart_items:
             dist_id = str(item.STOCK.DISTRIBUTOR_id)
             if dist_id not in distributor_list:
                 distributor_list.append(dist_id)
 
-        # Iterate through each distributor to create separate orders
         for d_id in distributor_list:
-
-            # --- PERMANENT LINK LOGIC ---
-            # This creates a record in DistributorCustomerLink if it doesn't exist.
-            # This is why the customer will never disappear from the distributor's list.
             DistributorCustomerLink.objects.get_or_create(
                 DISTRIBUTOR_id=d_id,
                 CUSTOMER_id=cid
             )
 
-            # Create the main Order header for this distributor
             new_order = order()
             new_order.USER_id = cid
             new_order.DISTRIBUTOR_id = d_id
             new_order.payment_status = 'pending'
-            new_order.payment_date = "pending"  # or datetime.now().date()
+            new_order.payment_date = "pending"
             new_order.date = datetime.now().date()
-            new_order.amount = 0  # Will update this after calculating total
+            new_order.amount = 0
             new_order.save()
 
-            # Filter cart items belonging to THIS specific distributor
             specific_dist_items = cart.objects.filter(USER_id=cid, STOCK__DISTRIBUTOR_id=d_id)
 
             order_total = 0
             for c_item in specific_dist_items:
-                # Calculate subtotal for this item
                 item_price = float(c_item.STOCK.price)
                 item_qty = int(c_item.quantity)
                 order_total += (item_price * item_qty)
 
-                # Create Order Sub entry (the specific product in the order)
                 sub_obj = order_sub()
                 sub_obj.ORDER_id = new_order.id
                 sub_obj.STOCK_id = c_item.STOCK.id
@@ -1567,10 +1561,13 @@ def addFinalOrder(request):
                 sub_obj.price = item_price
                 sub_obj.save()
 
-                # Remove the item from the cart as it is now an order
+                # 🔥 NEW LOGIC: Stock Minus Karo
+                stk = c_item.STOCK
+                stk.quantity = int(stk.quantity) - item_qty
+                stk.save()
+
                 c_item.delete()
 
-            # Update the main order with the correct total amount
             new_order.amount = order_total
             new_order.save()
 
@@ -1579,6 +1576,11 @@ def addFinalOrder(request):
     except Exception as e:
         print(f"Error in addFinalOrder: {e}")
         return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+
+
 
 
 def view_orders(request):
@@ -1625,6 +1627,7 @@ def view_orders_items(request):
             'image': i.STOCK.PRODUCT.image,
             'description': i.STOCK.PRODUCT.description,
             'unit_name': i.STOCK.UNIT.unit_name,
+            'stock_quantity': i.STOCK.quantity
         })
 
     try:
@@ -1665,20 +1668,15 @@ def edit_order(request):
     return JsonResponse({"status":"ok"})
 
 
-
-
-
 def update_order_item(request):
     if request.method == 'POST':
         item_id = request.POST.get('id')
         quantity = request.POST.get('quantity')
-        # Fields for distributor only
         price_override = request.POST.get('amount')
         unit_id = request.POST.get('unit_id')
-        role = request.POST.get('role')  # "customer" or "distributor"
+        role = request.POST.get('role')
 
         try:
-            # 1. Fetch the order item and its parent order
             obj = order_sub.objects.get(id=item_id)
             parent_order = obj.ORDER
             if parent_order.order_type == 'offline':
@@ -1686,46 +1684,39 @@ def update_order_item(request):
                     'status': 'error',
                     'message': 'This is an instant bill. Items can only be removed by the distributor.'
                 })
-            # Check if payment is done (Locking the bill)
+
             if parent_order.payment_status != 'pending':
                 return JsonResponse({'status': 'error', 'message': 'Bill already processed'})
 
-            # ---------------------------------------------------------
-            # 👤 ROLE: CUSTOMER (Only Quantity)
-            # ---------------------------------------------------------
+            # 🔥 NEW LOGIC: Difference nikaal kar Stock Update karo
+            old_qty = int(obj.quantity)
+            new_qty = int(quantity)
+            qty_diff = new_qty - old_qty  # Puran 5 tha, Naya 8 kiya. Diff = 3. Stock se 3 katega.
+
+            stk = obj.STOCK
+            stk.quantity = int(stk.quantity) - qty_diff
+            stk.save()
+
             if role == "customer":
                 obj.quantity = quantity
                 obj.save()
 
-            # ---------------------------------------------------------
-            # 🧑‍💼 ROLE: DISTRIBUTOR (Quantity, Price, and Unit)
-            # ---------------------------------------------------------
             elif role == "distributor":
                 obj.quantity = quantity
-
-                # Update specific price if provided by distributor
                 if price_override:
                     obj.price = price_override
-
-                # Update unit on the Stock object
                 if unit_id:
                     stock_item = obj.STOCK
                     stock_item.UNIT_id = unit_id
                     stock_item.save()
-
                 obj.save()
 
-            # ---------------------------------------------------------
-            # 🔄 RECALCULATE TOTAL
-            # ---------------------------------------------------------
             all_items = order_sub.objects.filter(ORDER=parent_order)
             new_total = 0
             for item in all_items:
-                # Use overridden price if exists, else fallback to stock price
                 current_price = item.price if item.price else item.STOCK.price
                 new_total += int(item.quantity) * float(current_price)
 
-            # Update the main order total
             parent_order.amount = new_total
             parent_order.save()
 
@@ -1739,40 +1730,38 @@ def update_order_item(request):
     return JsonResponse({'status': 'error', 'message': 'Invalid request'})
 
 
+
+
+
 def delete_order_item(request):
     try:
         id = request.POST['id']
-
-        # 1. Fetch the item and its parent order
         item = order_sub.objects.get(id=id)
         parent_order = item.ORDER
         orderid = parent_order.id
 
-        # 2. Block deletion if the bill was generated by a Distributor (Instant)
         if parent_order.order_type == 'offline':
             return JsonResponse({
                 'status': 'error',
                 'message': 'This is an instant bill. Items can only be removed by the distributor.'
             })
 
-        # 3. Proceed with deletion if it's a standard 'online' order
-        item.delete()
-        print(orderid, "Item deleted successfully")
+        # 🔥 NEW LOGIC: Item delete hone se pehle stock wapas add karo
+        stk = item.STOCK
+        stk.quantity = int(stk.quantity) + int(item.quantity)
+        stk.save()
 
-        # 4. Recalculate the total amount for the remaining items
+        item.delete()
+
         all_ordered_items = order_sub.objects.filter(ORDER=orderid)
         total = 0
         for i in all_ordered_items:
             total += int(i.quantity) * int(i.STOCK.price)
 
-        print("New total amount:", total)
-
-        # 5. Update order total or delete order if empty
         if all_ordered_items.exists():
             order.objects.filter(id=orderid).update(amount=str(total))
         else:
             order.objects.filter(id=orderid).delete()
-            print("Order deleted as it became empty")
 
         return JsonResponse({'status': 'ok'})
 
@@ -1781,26 +1770,36 @@ def delete_order_item(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)})
 
-
 def delete_order(request):
     try:
-        id = request.POST.get('id')
-        order_obj = order.objects.get(id=id)
+            id = request.POST.get('id')
+            order_obj = order.objects.get(id=id)
 
-        # Block deletion if it's an instant bill
-        if order_obj.order_type == 'offline':
-            return JsonResponse({
-                'status': 'error',
-                'message': 'Instant bills cannot be deleted. Please contact the distributor.'
-            })
+            if order_obj.order_type == 'offline':
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Instant bills cannot be deleted. Please contact the distributor.'
+                })
 
-        order_obj.delete()
-        return JsonResponse({"status": "ok"})
+            # 🔥 NEW LOGIC: Order delete hone se pehle uske saare items ka stock wapas karo
+            order_items = order_sub.objects.filter(ORDER=order_obj)
+            for item in order_items:
+                stk = item.STOCK
+                stk.quantity = int(stk.quantity) + int(item.quantity)
+                stk.save()
+
+            order_obj.delete()
+            return JsonResponse({"status": "ok"})
 
     except order.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Order not found'})
+            return JsonResponse({'status': 'error', 'message': 'Order not found'})
     except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)})
+            return JsonResponse({'status': 'error', 'message': str(e)})
+
+
+
+
+
 
 def view_distributor_orders(request):
     uid = request.POST.get('uid')
@@ -1877,48 +1876,12 @@ def view_distributor_ordersitems(request):
                 'username': i.ORDER.USER.name,
                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
+                'stock_quantity': i.STOCK.quantity
             })
         return JsonResponse({'status': 'ok', 'data': ar, 'oid': str(target_order.id)})
     except Exception as e:
         print("Error fetching items:", e)
         return JsonResponse({'status': 'error', 'message': str(e)})
-
-
-
-
-# def view_distributor_ordersitems(request):
-#     id = request.POST["id"]
-#     print(id,"oi")
-#     data = order_sub.objects.filter(ORDER=id)
-#     ar = []
-#     for i in data:
-#         if i.price == '':
-#             ar.append({
-#                 'id': i.id,
-#                 'quantity':i.quantity,
-#                 'image': i.STOCK.PRODUCT.image,
-#                 'amount': i.STOCK.price,
-#                 'product_name': i.STOCK.PRODUCT.product_name,
-#                 'username': i.ORDER.USER.name,
-#                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
-#                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
-#
-#             })
-#         else:
-#             ar.append({
-#                 'id': i.id,
-#                 'quantity': i.quantity,
-#                 'image': i.STOCK.PRODUCT.image,
-#                 'amount': i.price,
-#                 'product_name': i.STOCK.PRODUCT.product_name,
-#                 'username': i.ORDER.USER.name,
-#                 'unit_id': str(i.STOCK.UNIT.id) if i.STOCK.UNIT else "",
-#                 'unit_name': i.STOCK.UNIT.unit_name if i.STOCK.UNIT else "pcs",
-#
-#             })
-#
-#     return JsonResponse({'status': 'ok', 'data': ar})
-
 
 
 
@@ -1934,8 +1897,6 @@ def make_payment(request):
     obj.USER_id = cid
     obj.save()
     return JsonResponse({'status':'ok',})
-
-
 
 
 
@@ -1979,7 +1940,7 @@ def scanItem(request):
     product_names = [item.PRODUCT.product_name for item in allproduct]
     product_list_text = ", ".join(product_names)
 
-    genai.configure(api_key="AIzaSyB-mnu57h6uvL6sLTfS91btlA_nG7qFGXI")
+    genai.configure(api_key="AIzaSyBa8o8boGMxupOmBOk8sMW9Lmzr40LahFg")
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
     prompt = f"""Identify from: {product_list_text}. 
@@ -2194,83 +2155,150 @@ def viewAllCustomers(request):
 
 
 
+# @csrf_exempt
+# def addtobill(request):
+#     try:
+#             # Get all possible identifiers
+#             uid = request.POST.get('uid')
+#             cid = request.POST.get('cid')
+#             sid = request.POST.get('sid')
+#             oid = request.POST.get('oid')
+#
+#             quantity = request.POST.get('quantity', 1)
+#             price = request.POST.get('price')
+#
+#             print(f"Adding to bill: UID={uid}, CID={cid}, SID={sid}, OID={oid}")
+#
+#             # 1. Basic Validation
+#             if not uid or not sid:
+#                 return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
+#
+#             if cid:
+#                 DistributorCustomerLink.objects.get_or_create(
+#                     DISTRIBUTOR_id=uid,
+#                     CUSTOMER_id=cid
+#                 )
+#
+#             qty_int = int(float(quantity))
+#             target_order = None
+#
+#             if oid and oid not in ["", "null", "0"]:
+#                 try:
+#                     target_order = order.objects.get(id=oid)
+#                 except order.DoesNotExist:
+#                     pass
+#
+#             if not target_order and cid:
+#                 target_order = order.objects.filter(
+#                     USER_id=cid,
+#                     DISTRIBUTOR_id=uid,
+#                     order_type='offline_pending'
+#                 ).first()
+#
+#             if not target_order:
+#                 if not cid:
+#                     return JsonResponse(
+#                         {'status': 'error', 'message': 'Cannot find bill. Restart the app or re-select customer.'})
+#
+#                 # Create NEW Bill
+#                 target_order = order.objects.create(
+#                     payment_status="pending",
+#                     payment_date="pending",
+#                     date=datetime.now().date(),
+#                     amount=0,
+#                     DISTRIBUTOR_id=uid,
+#                     USER_id=cid,
+#                     order_type="offline_pending"
+#                 )
+#
+#             existing_item = order_sub.objects.filter(ORDER=target_order, STOCK_id=sid).first()
+#
+#             if existing_item:
+#                 existing_item.quantity = int(existing_item.quantity) + qty_int
+#                 existing_item.save()
+#             else:
+#                 order_sub.objects.create(
+#                     ORDER=target_order,
+#                     STOCK_id=sid,
+#                     quantity=qty_int,
+#                     price=price
+#                 )
+#
+#             return JsonResponse({'status': 'ok', 'oid': target_order.id})
+#
+#     except Exception as e:
+#             print("Error in addtobill:", str(e))
+#             return JsonResponse({'status': 'error', 'message': str(e)})
+
+
 @csrf_exempt
 def addtobill(request):
     try:
-            # Get all possible identifiers
-            uid = request.POST.get('uid')
-            cid = request.POST.get('cid')
-            sid = request.POST.get('sid')
-            oid = request.POST.get('oid')
+        uid = request.POST.get('uid')
+        cid = request.POST.get('cid')
+        sid = request.POST.get('sid')
+        oid = request.POST.get('oid')
+        quantity = request.POST.get('quantity', 1)
+        price = request.POST.get('price')
 
-            quantity = request.POST.get('quantity', 1)
-            price = request.POST.get('price')
+        if not uid or not sid:
+            return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
 
-            print(f"Adding to bill: UID={uid}, CID={cid}, SID={sid}, OID={oid}")
+        if cid:
+            DistributorCustomerLink.objects.get_or_create(
+                DISTRIBUTOR_id=uid,
+                CUSTOMER_id=cid
+            )
 
-            # 1. Basic Validation
-            if not uid or not sid:
-                return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
+        qty_int = int(float(quantity))
 
-            if cid:
-                DistributorCustomerLink.objects.get_or_create(
-                    DISTRIBUTOR_id=uid,
-                    CUSTOMER_id=cid
-                )
+        # 🔥 NEW LOGIC: Pehle check karo ki stock hai ya nahi, aur fir minus karo
+        stk = stock.objects.get(id=sid)
+        if int(stk.quantity) < qty_int:
+            return JsonResponse({'status': 'error', 'message': 'Not enough stock!'})
 
-            qty_int = int(float(quantity))
-            target_order = None
+        stk.quantity = int(stk.quantity) - qty_int
+        stk.save()
+        # 🔥 =======================================
 
-            if oid and oid not in ["", "null", "0"]:
-                try:
-                    target_order = order.objects.get(id=oid)
-                except order.DoesNotExist:
-                    pass
+        target_order = None
+        if oid and oid not in ["", "null", "0"]:
+            try:
+                target_order = order.objects.get(id=oid)
+            except order.DoesNotExist:
+                pass
 
-            if not target_order and cid:
-                target_order = order.objects.filter(
-                    USER_id=cid,
-                    DISTRIBUTOR_id=uid,
-                    order_type='offline_pending'
-                ).first()
+        if not target_order and cid:
+            target_order = order.objects.filter(
+                USER_id=cid, DISTRIBUTOR_id=uid, order_type='offline_pending'
+            ).first()
 
-            if not target_order:
-                if not cid:
-                    return JsonResponse(
-                        {'status': 'error', 'message': 'Cannot find bill. Restart the app or re-select customer.'})
+        if not target_order:
+            if not cid:
+                return JsonResponse({'status': 'error', 'message': 'Cannot find bill. Restart the app.'})
 
-                # Create NEW Bill
-                target_order = order.objects.create(
-                    payment_status="pending",
-                    payment_date="pending",
-                    date=datetime.now().date(),
-                    amount=0,
-                    DISTRIBUTOR_id=uid,
-                    USER_id=cid,
-                    order_type="offline_pending"
-                )
+            target_order = order.objects.create(
+                payment_status="pending", payment_date="pending",
+                date=datetime.now().date(), amount=0,
+                DISTRIBUTOR_id=uid, USER_id=cid, order_type="offline_pending"
+            )
 
-            existing_item = order_sub.objects.filter(ORDER=target_order, STOCK_id=sid).first()
+        existing_item = order_sub.objects.filter(ORDER=target_order, STOCK_id=sid).first()
 
-            if existing_item:
-                existing_item.quantity = int(existing_item.quantity) + qty_int
-                existing_item.save()
-            else:
-                order_sub.objects.create(
-                    ORDER=target_order,
-                    STOCK_id=sid,
-                    quantity=qty_int,
-                    price=price
-                )
+        if existing_item:
+            existing_item.quantity = int(existing_item.quantity) + qty_int
+            existing_item.save()
+        else:
+            order_sub.objects.create(
+                ORDER=target_order, STOCK_id=sid,
+                quantity=qty_int, price=price
+            )
 
-            return JsonResponse({'status': 'ok', 'oid': target_order.id})
+        return JsonResponse({'status': 'ok', 'oid': target_order.id})
 
     except Exception as e:
-            print("Error in addtobill:", str(e))
-            return JsonResponse({'status': 'error', 'message': str(e)})
-
-
-
+        print("Error in addtobill:", str(e))
+        return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 def addFinalBill(request):

@@ -76,55 +76,71 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   Future<void> _handleGoogleLogin() async {
     setState(() => _isGoogleLoading = true);
     try {
-
+      // 1. Force clear previous google sessions taaki account chune ka option aaye
       await _googleSignIn.signOut();
 
+      // 2. Open Google Auth UI
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         setState(() => _isGoogleLoading = false);
-        return; // User canceled
+        return; // User ne bich me hi cancel kar diya
       }
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String ip = prefs.getString("ip") ?? "";
-      if (ip.isEmpty) throw const SocketException("IP not configured");
+      if (ip.isEmpty) throw const SocketException("Server IP is missing. Restart app.");
 
-      // Send to Backend
+      // 3. Send to Backend
       final response = await http.post(
         Uri.parse('$ip/auth_google'),
         body: json.encode({
           'email': googleUser.email,
           'name': googleUser.displayName,
           'photoUrl': googleUser.photoUrl,
-          'type': 'unknown', // Login page doesn't know type yet
+          'type': 'unknown', // Login page pe humein user ka role nahi pata
         }),
-      );
+      ).timeout(const Duration(seconds: 10)); // Timeout zaroor lagayein
 
       if (response.statusCode == 200) {
         final decoded = json.decode(response.body);
         String status = decoded['status'];
 
+        // 🚀 SAFELY CLEAR & RESTORE PREFS (Ye best practice hai)
+        await prefs.clear();
+        await prefs.setString("ip", ip);
+
+        // 🚀 Hum dummy password "GOOGLE_AUTH" save kar rahe hain taaki
+        // aage Splash screen ko lage ki user login hai
         if (status == 'custok') {
-          await prefs.clear();
-          await prefs.setString("ip", ip);
           await prefs.setString("cid", decoded['cid'].toString());
+          await prefs.setString("pwd", "GOOGLE_AUTH");
+
           if (!mounted) return;
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CustomerNavigationBar(initialIndex: 0)));
+          CustomSnackBar.show(context, "Google Login Successful", backgroundColor: successColor);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  CustomerNavigationBar(initialIndex: 0)));
+
         } else if (status == 'distok') {
-          await prefs.clear();
-          await prefs.setString("ip", ip);
           await prefs.setString("uid", decoded['uid'].toString());
+          await prefs.setString("pwd1", "GOOGLE_AUTH");
+
           if (!mounted) return;
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DistributorNavigationBar(initialIndex: 0)));
+          CustomSnackBar.show(context, "Google Login Successful", backgroundColor: successColor);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) =>  DistributorNavigationBar(initialIndex: 0)));
+
         } else {
-          CustomSnackBar.show(context, "Account not found. Please Register first.", backgroundColor: dangerColor);
-          _googleSignIn.signOut();
+          CustomSnackBar.show(context, "No account linked to this Google ID. Please register.", backgroundColor: dangerColor);
+          await _googleSignIn.signOut();
         }
       } else {
-        CustomSnackBar.show(context, "Server Error", backgroundColor: dangerColor);
+        // Backend Error Handling
+        final decoded = json.decode(response.body);
+        String errMsg = decoded['message'] ?? "Server Authentication Error";
+        CustomSnackBar.show(context, errMsg, backgroundColor: dangerColor);
+        await _googleSignIn.signOut();
       }
     } catch (e) {
-      CustomSnackBar.show(context, "Google Sign-In Failed: $e", backgroundColor: dangerColor);
+      CustomSnackBar.show(context, "Google Sign-In Failed: Connection timeout or error", backgroundColor: dangerColor);
+      await _googleSignIn.signOut();
     } finally {
       if (mounted) setState(() => _isGoogleLoading = false);
     }

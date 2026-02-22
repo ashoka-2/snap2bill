@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:shimmer/shimmer.dart';
@@ -206,12 +207,9 @@ class _viewBillItemsState extends State<viewBillItems> {
         },
       ),
 
-      // 🚀 MAGIC SHURU: Detect Screen Rotation
       body: OrientationBuilder(
         builder: (context, orientation) {
-          // ==========================================
-          // 📱 PORTRAIT MODE (Seedha Phone)
-          // ==========================================
+
           if (orientation == Orientation.portrait) {
             return Column(
               children: [
@@ -247,14 +245,11 @@ class _viewBillItemsState extends State<viewBillItems> {
               ],
             );
           }
-          // ==========================================
-          // 🖥️ LANDSCAPE MODE (Teda Phone / Windows)
-          // ==========================================
+
           else {
             return Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // LEFT SIDE: Available Stock (GridView mein dikhayenge kyunki jagah chodi hai)
                 if (_allStockProducts.isNotEmpty)
                   Expanded(
                     flex: 2, // Screen ka 40% hissa lega
@@ -338,19 +333,26 @@ class _viewBillItemsState extends State<viewBillItems> {
   }
 
   Future<void> _addToBill(Map product) async {
+    // 🔥 NEW LOGIC: Stock Check
+    int availableStock = int.tryParse(product['quantity'].toString()) ?? 0;
+    if (availableStock <= 0) {
+      CustomSnackBar.show(
+          context,
+          "Cannot add ${product['product_name']}. Out of stock!",
+          backgroundColor: dangerColor
+      );
+      return; // Aage mat badho
+    }
+
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String ip = prefs.getString("ip") ?? "";
     String uid = prefs.getString("uid") ?? "";
 
-    // 1. Get Order ID (Might be "0" or empty for new bills)
     String oid = prefs.getString("oid") ?? "";
-    if (oid == "0") oid = ""; // Normalize "0" to empty string for backend logic
+    if (oid == "0") oid = "";
 
-    // 🚀 CRITICAL FIX: Try fetching 'selected_cid' first, then fallback to 'cid'
     String cid =  prefs.getString("cid") ?? "";
 
-    // 🛑 Stop if we don't have enough info to create a bill
-    // If OID is missing, we MUST have CID to create a new one.
     if (oid.isEmpty && cid.isEmpty) {
       CustomSnackBar.show(
           context,
@@ -360,14 +362,12 @@ class _viewBillItemsState extends State<viewBillItems> {
       return;
     }
 
-    // CustomSnackBar.show(context, "Adding ${product['product_name']}...", backgroundColor: AppColors.primaryLight);
-
     try {
       final res = await http.post(
         Uri.parse("$ip/addtobill"),
         body: {
           'uid': uid,
-          'cid': cid, // Now this will definitely have a value
+          'cid': cid,
           'oid': oid,
           'sid': product['id'].toString(),
           'quantity': "1",
@@ -378,17 +378,13 @@ class _viewBillItemsState extends State<viewBillItems> {
       if (res.statusCode == 200) {
         var js = json.decode(res.body);
         if (js['status'] == 'ok') {
-
-          // 🚀 SAVE OID: Important for the next item!
-          // If the backend created a NEW bill, it sends us the new ID.
           if (js['oid'] != null && js['oid'].toString() != "0") {
             await prefs.setString("oid", js['oid'].toString());
           }
-
-          _loadInitialData(); // Refresh the bill list
-          // CustomSnackBar.show(context, "Item Added!", backgroundColor: AppColors.getSuccessColor(context));
+          _loadInitialData(); // Refresh karega
         } else {
-          CustomSnackBar.show(context, js['message'] ?? "Failed", backgroundColor: dangerColor);
+          // Backend ne error diya (jaise "Not enough stock")
+          CustomSnackBar.show(context, js['message'] ?? "Failed to add", backgroundColor: dangerColor);
         }
       }
     } catch (e) {
@@ -569,6 +565,12 @@ class _viewBillItemsState extends State<viewBillItems> {
     TextEditingController priceController = TextEditingController(text: item['amount'].toString());
     String? selectedUnitId = item['unit_id']?.toString();
 
+    // 🔥 NEW LOGIC: Maximum kitna add kar sakta hai?
+    // Current order mein kitna hai + Purana stock kitna bacha hai
+    int availableStock = int.tryParse(item['stock_quantity'].toString()) ?? 0;
+    int currentQtyInBill = int.tryParse(item['quantity'].toString()) ?? 0;
+    int maxAllowed = availableStock + currentQtyInBill;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -600,12 +602,15 @@ class _viewBillItemsState extends State<viewBillItems> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text("Quantity", style: TextStyle(fontWeight: FontWeight.bold)),
+                          // 🔥 UPDATE: Hint mein Max Allowed limit show kar rahe hain
+                          Text("Quantity (Max: $maxAllowed)", style: const TextStyle(fontWeight: FontWeight.bold)),
                           const SizedBox(height: 8),
                           TextField(
                             controller: qtyController,
                             keyboardType: TextInputType.number,
                             maxLength: 3,
+                            // 🔥 UPDATE: Sirf numbers daalne dega
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                             decoration: InputDecoration(counterText: "", border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)), prefixIcon: const Icon(Icons.shopping_basket_outlined, size: 18)),
                           ),
                         ],
@@ -650,11 +655,17 @@ class _viewBillItemsState extends State<viewBillItems> {
                       CustomSnackBar.show(context, "Price is too long!", backgroundColor: AppColors.dangerColor);
                       return;
                     }
-                    if (qty != null && qty > 0 && price != null) {
+
+                    // 🔥 NEW: Check lagaya ki quantity maxAllowed se upar na jaye
+                    if (qty == null || qty <= 0) {
+                      Navigator.pop(context);
+                      CustomSnackBar.show(context, "Invalid quantity", backgroundColor: AppColors.dangerColor);
+                    } else if (qty > maxAllowed) {
+                      Navigator.pop(context);
+                      CustomSnackBar.show(context, "Cannot exceed $maxAllowed items (Stock limit)", backgroundColor: AppColors.dangerColor);
+                    } else if (price != null) {
                       updateItem(item['id'].toString(), qtyController.text, priceController.text, selectedUnitId ?? "");
                       Navigator.pop(context);
-                    } else {
-                      CustomSnackBar.show(context, "Invalid input", backgroundColor: AppColors.dangerColor);
                     }
                   },
                 ),

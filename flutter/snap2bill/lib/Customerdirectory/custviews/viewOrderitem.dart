@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:snap2bill/theme/colors.dart';
@@ -289,6 +290,12 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
   void _openEditSheet(Map item, int index) {
     TextEditingController qtyController = TextEditingController(text: item['quantity'].toString());
 
+    // 🔥 NEW LOGIC: Maximum kitna add kar sakta hai?
+    // Current quantity jo order me hai + Dukan me bacha hua stock
+    int availableStock = int.tryParse(item['stock_quantity'].toString()) ?? 0;
+    int currentQty = int.tryParse(item['quantity'].toString()) ?? 0;
+    int maxAllowed = availableStock + currentQty;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -305,8 +312,10 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
             TextField(
               controller: qtyController,
               keyboardType: TextInputType.number,
+
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               decoration: InputDecoration(
-                labelText: "Quantity (1-100)",
+                labelText: "Quantity (Max: $maxAllowed)",
                 suffixText: item['unit_name'] ?? "",
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
               ),
@@ -316,10 +325,17 @@ class _ViewOrderItemsState extends State<ViewOrderItems> {
               text: "UPDATE QUANTITY",
               onPressed: () {
                 int? qty = int.tryParse(qtyController.text);
-                if (qty == null || qty <= 0 || qty > 100) {
+
+                // 🔥 NEW: Check lagaya ki enter ki hui quantity allowed se zyada na ho
+                if (qty == null || qty <= 0) {
                   Navigator.pop(context);
                   Future.delayed(const Duration(milliseconds: 200), () {
                     CustomSnackBar.show(context, "Invalid quantity", backgroundColor: dangerColor);
+                  });
+                } else if (qty > maxAllowed) {
+                  Navigator.pop(context);
+                  Future.delayed(const Duration(milliseconds: 200), () {
+                    CustomSnackBar.show(context, "Cannot exceed $maxAllowed items (Stock Limit)", backgroundColor: dangerColor);
                   });
                 } else {
                   Navigator.pop(context);
