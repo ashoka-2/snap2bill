@@ -1,107 +1,72 @@
-    /**
-     * Created by ASHOK KUMAR on 24-12-2025.
-     */
-
-    const menuRouteMap = {
-  "/admin_home": [
-    "/admin_home"
-  ],
-
-  "/admin_category": [
-    "/admin_category",
-    "/admin_add_category",
-    "/edit_category"
-  ],
-
-  "/admin_viewcustomer": [
-    "/admin_viewcustomer"
-  ],
-
-  "/admin_verify": [
-    "/admin_verify"
-  ],
-
-  "/admin_verified": [
-    "/admin_verified"
-  ],
-
-  "/admin_review": [
-    "/admin_review"
-  ],
-
-  "/admin_setting": [
-    "/admin_setting",
-
-  ],
-
-  "/view_product": [
-    "/view_product",
-    "/add_product",
-    "/edit_product"
-  ],
-
-  "/customer_feedbacks": [
-    "/customer_feedbacks"
-  ],
-
-  "/distributor_feedbacks": [
-    "/distributor_feedbacks"
-  ],
-
-  "/manage_units":[
-      "/manage_units"
-  ]
-
-
+const menuRouteMap = {
+  "/admin_home": ["/admin_home"],
+  "/admin_category": ["/admin_category", "/admin_add_category", "/edit_category"],
+  "/admin_viewcustomer": ["/admin_viewcustomer"],
+  "/admin_verify": ["/admin_verify"],
+  "/admin_verified": ["/admin_verified"],
+  "/admin_review": ["/admin_review"],
+  "/admin_setting": ["/admin_setting"],
+  "/view_product": ["/view_product", "/add_product", "/edit_product"],
+  "/customer_feedbacks": ["/customer_feedbacks"],
+  "/distributor_feedbacks": ["/distributor_feedbacks"],
+  "/manage_units": ["/manage_units"]
 };
 
-
-
-
-
-
-
-
-    const leftNavbar  = `<div class="admin-top-left-content">
-            <div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>
-        <div class="admin-mid-left-content">
-          <div id="navbar-section">
-            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>
-            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>
-            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>
-            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>
-              <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>
-            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>
-    <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>
-             <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>
-              <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>
-              <a class="nav-links" href="/manage_units"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>Manage Units</span></div></a>
-    
-          </div>
+const leftNavbar = `
+    <div class="admin-top-left-content">
+        <div class="admin-logo-box">
+            <span class="logo-text">SNAP2BILL</span>
+            <span class="sub-logo">ADMIN PANEL</span>
         </div>
-        <hr>
-     <div class="admin-bottom-left-content">
-          <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>
-            <div class="setting-dropdown">
-              <a href="/admin_setting"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>
-              <!-- ✅ Theme toggle with Remix Icon -->
-              <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">
-                <i id="themeIcon" class="ri-sun-line"></i> Switch theme
-              </a>
-              <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>
+    </div>
+    
+    <div class="admin-mid-left-content">
+        <div id="navbar-section">
+            <p class="nav-label">MAIN MENU</p>
+            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-dashboard-fill"></i><span>Overview</span></div></a>
+            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><i class="ri-group-fill"></i><span>Customers</span></div></a>
+            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-user-fill"></i><span>Verification</span></div></a>
+            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-verified-badge-fill"></i><span>Verified Team</span></div></a>
+            
+            <p class="nav-label">CATALOG</p>
+            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><i class="ri-layout-grid-fill"></i><span>Categories</span></div></a>
+            <a class="nav-links" href="/view_product"><div class="mid-left-navbars"><i class="ri-shopping-bag-3-fill"></i><span>Products</span></div></a>
+            <a class="nav-links" href="/manage_units"><div class="mid-left-navbars"><i class="ri-ruler-2-fill"></i><span>Stock Units</span></div></a>
+            
+            <p class="nav-label">COMMUNICATION</p>
+            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-smile-fill"></i><span>Reviews</span></div></a>
+            <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars"><i class="ri-message-3-fill"></i><span>Cust. Feedback</span></div></a>
+            <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars"><i class="ri-feedback-fill"></i><span>Dist. Feedback</span></div></a>
+        </div>
+    </div>
+
+    <div class="admin-bottom-left-content">
+        <div class="more-section">
+            <div class="more-btn-inner">
+                <i class="ri-settings-4-fill"></i>
+                <span>Settings</span>
+                <i class="ri-arrow-up-s-line chevron"></i>
             </div>
-          </div>
-        </div>  `;
+            <div class="setting-dropdown">
+                <a href="/admin_setting" class="setting-menu-dropdown"><i class="ri-user-settings-fill"></i> Customize UI</a>
+                <a id="themeToggle" class="setting-menu-dropdown theme-btn">
+                    <i id="themeIcon" class="ri-sun-fill"></i> Appearance
+                </a>
+                <hr class="dropdown-divider">
+                <a href="/logout" class="setting-menu-dropdown logout-item"><i class="ri-logout-circle-r-fill"></i> Sign Out</a>
+            </div>
+        </div>
+    </div>
+`;
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const sidebar = document.querySelector(".admin-left-main-content");
-      if (!sidebar) return;
-
-      sidebar.innerHTML = leftNavbar;
-
-      setActiveMenu();
-      initSettings();
-    });
+document.addEventListener("DOMContentLoaded", () => {
+    const sidebar = document.querySelector(".admin-left-main-content");
+    if (sidebar) {
+        sidebar.innerHTML = leftNavbar;
+        setActiveMenu();
+        initSettings();
+    }
+});
 
 function setActiveMenu() {
   const currentPath = window.location.pathname;

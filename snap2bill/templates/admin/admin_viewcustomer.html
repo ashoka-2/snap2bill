@@ -1,83 +1,53 @@
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Customers</title>
-<!-- Remix Icons -->
+
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
 <script defer src="{% static 'scripts/setting.js' %}"></script>
-    <script defer src="{% static 'scripts/navbar.js' %}"></script>
+<script defer src="{% static 'scripts/navbar.js' %}"></script>
 
-
-<!-- Link your external CSS files here -->
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+
 <link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">
 
-<style>
-
-
-
-
-
-
-
-
-
-</style>
 </head>
 
 <body>
 <div class="main-content">
-  <!-- Sidebar -->
-  <div class="admin-left-main-content">
-
-  </div>
+  <div class="admin-left-main-content"></div>
 
   <div class="admin-right-main-content">
 
-    {% if messages %}
-      <div id="toast-container">
-        {% for message in messages %}
-          <div class="toast {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <!-- Top Bar -->
     <div class="name-search-div">
-      <div class="heading-name"><h1 id="heading-name">Customers</h1></div>
+      <div class="heading-name"><h1>Customers</h1></div>
       <div class="search-actions">
         <div class="search-bar">
           <i class="ri-search-2-line"></i>
-          <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />
+          <input type="text" id="searchInput" placeholder="Search customer..." />
         </div>
 
-        <!-- Sort -->
-        <select id="sortOrder" class="btn-chip">
-          <option value="newest" selected>Newest</option>
-          <option value="oldest">Oldest</option>
+        <select id="sortOrder" class="btn-chip" style="outline: none;">
           <option value="name-asc">Name A–Z</option>
           <option value="name-desc">Name Z–A</option>
         </select>
 
-        <!-- Filter Trigger -->
-        <button class="btn-chip" id="openFilters" title="More filters">
-          <i class="ri-filter-line"></i><span>Filters</span>
+        <button class="btn-chip" id="openFilters">
+          <i class="ri-filter-3-line"></i><span>Filters</span>
         </button>
       </div>
     </div>
 
-    <!-- Cards Grid -->
     <div class="cards-container" id="cardsWrap">
       {% for i in customerdata %}
       <div class="card"
            data-name="{{ i.name|default_if_none:''|escape }}"
            data-email="{{ i.email|default_if_none:''|escape }}"
-           data-phone="{{ i.phone|default_if_none:''|escape }}"
            data-place="{{ i.LOCATION.place|default_if_none:''|escape }}"
-           data-pincode="{{ i.LOCATION.pincode|default_if_none:''|escape }}"
-           data-date="{{ i.created_at|date:'Y-m-d' }}">
+           data-pincode="{{ i.LOCATION.pincode|default_if_none:''|escape }}">
 
         <div class="card-head">
           <div class="avatar">
@@ -89,53 +59,44 @@
           </div>
           <div class="primary-info">
             <div class="name">{{ i.name }}</div>
-            <div class="contact-line">
-              {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i>{{ i.phone }}</span>{% endif %}
-            </div>
+            {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i>{{ i.phone }}</span>{% endif %}
           </div>
         </div>
 
         <div class="details">
-          {% if i.email %}<span class="pill mail"><i class="ri-mail-line"></i>{{ i.email }}</span>{% endif %}
+          {% if i.email %}<p><strong>Email :</strong> {{ i.email }}</p>{% endif %}
           <p><strong>Address :</strong> {{ i.LOCATION.address }}</p>
           <p><strong>Place :</strong> {{ i.LOCATION.place }}</p>
           <p><strong>Pincode :</strong> {{ i.LOCATION.pincode }}</p>
-          <p><strong>Post :</strong> {{ i.LOCATION.post }}</p>
           {% if i.bio %}<p><strong>Bio :</strong> {{ i.bio }}</p>{% endif %}
         </div>
-
       </div>
       {% endfor %}
     </div>
 
-    <!-- No Data Message -->
     <div id="noDataMessage">
-      <i class="ri-user-unfollow-line"></i>
-      <h2>No Customers Available</h2>
-      <p>Try adjusting your search or filters to find what you're looking for.</p>
+      <i class="ri-user-search-line"></i>
+      <h2>No Customers Found</h2>
+      <p>Try adjusting your search terms or filters.</p>
     </div>
 
-    <!-- Filter Drawer -->
-    <div id="filterBackdrop" class="filter-panel__backdrop" aria-hidden="true">
-      <div class="filter-panel" role="dialog" aria-modal="true">
+    <div id="filterBackdrop" class="filter-panel__backdrop">
+      <div class="filter-panel">
         <div class="fp-header">
-          <div class="fp-title">Filters</div>
-          <button class="fp-close" type="button" id="closeFilters">&times;</button>
+          <div class="fp-title">Advanced Filters</div>
+          <button class="fp-close" id="closeFilters">&times;</button>
         </div>
-
         <div class="fp-row">
           <label>Place</label>
-          <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kannur" />
+          <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kochi" />
         </div>
-
         <div class="fp-row">
           <label>Pincode</label>
-          <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 670001" />
+          <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 682001" />
         </div>
-
         <div class="fp-actions">
-          <button type="button" class="btn btn-ghost" id="fpClear">Clear</button>
-          <button type="button" class="btn btn-primary" id="fpApply">Apply</button>
+          <button type="button" class="btn-ghost" id="fpClear">Clear</button>
+          <button type="button" class="btn-primary" id="fpApply">Apply Filters</button>
         </div>
       </div>
     </div>
@@ -144,76 +105,41 @@
 </div>
 
 <script>
-
-
-  /* Filters & Sorting */
-  const normalizeForNumber = (s)=> (s||'').toString().replace(/[\s\-\.\(\)]/g,'');
   const norm = (t)=> (t||'').toString().toLowerCase().trim();
-  function parseYMD(ymd){
-    if(!ymd) return null;
-    const [y,m,d] = ymd.split('-').map(Number);
-    if(!y||!m||!d) return null;
-    return new Date(y, m-1, d, 12, 0, 0);
-  }
 
   const searchInput = document.getElementById('searchInput');
   const sortOrder   = document.getElementById('sortOrder');
   const cardsWrap   = document.getElementById('cardsWrap');
   const cards       = Array.from(document.querySelectorAll('.card'));
   const noDataMsg   = document.getElementById('noDataMessage');
-
   const fpBackdrop  = document.getElementById('filterBackdrop');
-  const openFilters = document.getElementById('openFilters');
-  const closeFilters= document.getElementById('closeFilters');
 
   function applyFiltersAndSort(){
-    const q = norm(searchInput.value); const qn = normalizeForNumber(q);
+    const q = norm(searchInput.value);
     const fPlace = norm(document.getElementById('fpPlace').value);
     const fPin = norm(document.getElementById('fpPincode').value);
 
     cards.forEach(card=>{
       const name = norm(card.dataset.name);
       const email= norm(card.dataset.email);
-      const phone= norm(card.dataset.phone);
-      const place= norm(card.dataset.place||'');
-      const pincode = norm(card.dataset.pincode||'');
-      const nameN= normalizeForNumber(name);
-      const emailN= normalizeForNumber(email);
-      const phoneN= normalizeForNumber(phone);
+      const place= norm(card.dataset.place);
+      const pincode = norm(card.dataset.pincode);
 
-      const textMatch = !q || name.includes(q) || email.includes(q) || phone.includes(q) || nameN.includes(qn) || emailN.includes(qn) || phoneN.includes(qn);
+      const textMatch = !q || name.includes(q) || email.includes(q);
       const placeMatch= !fPlace || place.includes(fPlace);
       const pinMatch  = !fPin   || pincode.includes(fPin);
 
-      card.style.display = (textMatch && placeMatch && pinMatch) ? '' : 'none';
+      card.style.display = (textMatch && placeMatch && pinMatch) ? 'block' : 'none';
     });
 
-    const visible = cards.filter(c=>c.style.display!=='none');
-
-    // Toggle No Data Message
-    if(visible.length === 0){
-        noDataMsg.style.display = 'flex';
-    } else {
-        noDataMsg.style.display = 'none';
-    }
+    const visible = cards.filter(c=>c.style.display !== 'none');
+    noDataMsg.style.display = (visible.length === 0) ? 'flex' : 'none';
 
     const order = sortOrder.value;
-
     visible.sort((a,b)=>{
       const aName = (a.dataset.name||'').toLowerCase();
       const bName = (b.dataset.name||'').toLowerCase();
-      const aDate = parseYMD(a.dataset.date);
-      const bDate = parseYMD(b.dataset.date);
-
-      if(order==='name-asc')  return aName.localeCompare(bName);
-      if(order==='name-desc') return bName.localeCompare(aName);
-      if(order==='oldest') {
-        if (aDate && bDate) return aDate - bDate;
-        return 0;
-      }
-      /* newest (default) */
-      if (aDate && bDate) return bDate - aDate;
-      return 0;
+      return order === 'name-asc' ? aName.localeCompare(bName) : bName.localeCompare(aName);
     });
 
     visible.forEach(c=>cardsWrap.appendChild(c));
@@ -222,403 +148,16 @@
   searchInput.addEventListener('input', applyFiltersAndSort);
   sortOrder.addEventListener('change', applyFiltersAndSort);
 
-  /* Drawer Actions */
-  function openPanel(){ fpBackdrop.style.display='grid'; requestAnimationFrame(()=>fpBackdrop.querySelector('.filter-panel').classList.add('open')); }
-  function closePanel(){ fpBackdrop.querySelector('.filter-panel').classList.remove('open'); setTimeout(()=>fpBackdrop.style.display='none', 150); }
-  openFilters.addEventListener('click', openPanel);
-  closeFilters.addEventListener('click', closePanel);
-  fpBackdrop.addEventListener('click', (e)=>{ if(e.target===fpBackdrop) closePanel(); });
-
-  document.getElementById('fpApply').addEventListener('click', ()=>{ applyFiltersAndSort(); closePanel(); });
-  document.getElementById('fpClear').addEventListener('click', ()=>{
+  document.getElementById('openFilters').onclick = () => fpBackdrop.style.display = 'grid';
+  document.getElementById('closeFilters').onclick = () => fpBackdrop.style.display = 'none';
+  document.getElementById('fpApply').onclick = () => { applyFiltersAndSort(); fpBackdrop.style.display = 'none'; };
+  document.getElementById('fpClear').onclick = () => {
     document.getElementById('fpPlace').value='';
     document.getElementById('fpPincode').value='';
     applyFiltersAndSort();
-  });
+  };
 
   applyFiltersAndSort();
 </script>
 </body>
 </html>
-
-
-
-
-
-{##}
-{##}
-{##}
-{##}
-{##}
-{#        {% load static %}#}
-{#        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"#}
-{#          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#        <html xmlns="http://www.w3.org/1999/xhtml">#}
-{#        <head>#}
-{#        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#        <title>Admin Customers</title>#}
-{#        <link#}
-{#          href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
-{#          rel="stylesheet"#}
-{#        />#}
-{#        <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#        <link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">#}
-{#        <style>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#        </style>#}
-{#        </head>#}
-{##}
-{#        <body>#}
-{#        <div class="main-content">#}
-{#          <div class="admin-left-main-content">#}
-{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br /> Admin Menu</div></div><hr />#}
-{#            <div class="admin-mid-left-content">#}
-{#              <div id="navbar-section">#}
-{#                <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><i class="ri-home-4-line"></i><span>Home</span></div></a>#}
-{#                <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars active"><i class="ri-user-3-line"></i><span>View Customers</span></div></a>#}
-{#                <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><i class="ri-shield-check-line"></i><span>Verify Distributors</span></div></a>#}
-{#                <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><i class="ri-award-line"></i><span>View Verified Distributors</span></div></a>#}
-{#                  <a class="nav-links" href="/admin_category"><div class="mid-left-navbars "><i class="ri-layout-grid-line"></i><span>Manage Category</span></div></a>#}
-{#                <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><i class="ri-star-line"></i><span>View Reviews</span></div></a>#}
-{#        <a class="nav-links" href="/customer_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Customer Feedback</span></div></a>#}
-{#                 <a class="nav-links" href="/distributor_feedbacks"><div class="mid-left-navbars "><i class="ri-feedback-line"></i><span>View Distributor Feedback</span></div></a>#}
-{#                  <a class="nav-links" href="/view_product"><div class="mid-left-navbars "><i class="ri-multi-image-fill"></i><span>View products</span></div></a>#}
-{##}
-{#              </div>#}
-{#            </div>#}
-{#            <hr />#}
-{#         <div class="admin-bottom-left-content">#}
-{#              <div class="more-section"><span><i class="ri-settings-3-line"></i> Setting</span>#}
-{#                <div class="setting-dropdown">#}
-{#                  <a href="#"><div class="setting-menu-dropdown"><i class="ri-tools-line"></i> Settings</div></a>#}
-{#                  <!-- ✅ Theme toggle with Remix Icon -->#}
-{#                  <a id="themeToggle" type="button" class="setting-menu-dropdown theme-btn">#}
-{#                    <i id="themeIcon" class="ri-sun-line"></i> Switch theme#}
-{#                  </a>#}
-{#                  <a href="/logout"><div class="setting-menu-dropdown"><i class="ri-logout-box-line"></i> Logout</div></a>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>  </div>#}
-{##}
-{#          <div class="admin-right-main-content">#}
-{##}
-        {#    {% if messages %}#}
-        {#      <div id="toast-container">#}
-        {#        {% for message in messages %}#}
-        {#          <div class="toast {{ message.tags }}">{{ message }}</div>#}
-        {#        {% endfor %}#}
-        {#      </div>#}
-        {#    {% endif %}#}
-{##}
-{#            <div class="name-search-div">#}
-{#              <div class="heading-name"><h1 id="heading-name">Customers</h1></div>#}
-{#              <div class="search-actions">#}
-{#                <div class="search-bar">#}
-{#                  <i class="ri-search-2-line"></i>#}
-{#                  <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />#}
-{#                </div>#}
-{##}
-{#                <!-- Sort -->#}
-{#                <select id="sortOrder" class="btn-chip">#}
-{#                  <option value="newest" selected>Newest</option>#}
-{#                  <option value="oldest">Oldest</option>#}
-{#                  <option value="name-asc">Name A–Z</option>#}
-{#                  <option value="name-desc">Name Z–A</option>#}
-{#                </select>#}
-{##}
-{#                <!-- Open filter drawer -->#}
-{#                <button class="btn-chip" id="openFilters" title="More filters">#}
-{#                  <i class="ri-filter-line"></i><span>Filters</span>#}
-{#                </button>#}
-{##}
-{#              </div>#}
-{#            </div>#}
-{##}
-{#            <!-- Flex cards -->#}
-{#            <div class="cards-container" id="cardsWrap">#}
-{#              {% for i in customerdata %}#}
-{#              <div class="card"#}
-{#                   data-name="{{ i.name|default_if_none:''|escape }}"#}
-{#                   data-email="{{ i.email|default_if_none:''|escape }}"#}
-{#                   data-phone="{{ i.phone|default_if_none:''|escape }}"#}
-{#                   data-place="{{ i.place|default_if_none:''|escape }}"#}
-{#                   data-pincode="{{ i.pincode|default_if_none:''|escape }}"#}
-{#                   data-date="{{ i.created_at|date:'Y-m-d' }}">#}
-{#                <div class="card-head">#}
-{#                  <div class="avatar">#}
-{#                    {% if i.profile_image %}#}
-{#                      <img src="{{ i.profile_image }}" alt="{{ i.name }}">#}
-{#                    {% else %}#}
-{#                      <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">#}
-{#                    {% endif %}#}
-{#                  </div>#}
-{#                  <div class="primary-info">#}
-{#                    <div class="name">{{ i.name }}</div>#}
-{#                    <div class="contact-line">#}
-{#                      {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i>{{ i.phone }}</span>{% endif %}#}
-{##}
-{#                    </div>#}
-{#                  </div>#}
-{#                </div>#}
-{##}
-{#                <div class="details">#}
-{#                     {% if i.email %}<span class="pill mail"><i class="ri-mail-line"></i>{{ i.email }}</span>{% endif %}#}
-{#                  <p><strong>Address :</strong> {{ i.address }}</p>#}
-{#                  <p><strong>Place :</strong> {{ i.place }}</p>#}
-{#                  <p><strong>Pincode :</strong> {{ i.pincode }}</p>#}
-{#                  <p><strong>Post :</strong> {{ i.post }}</p>#}
-{#                  <p class="bio"><strong>Bio :</strong> {{ i.bio }}</p>#}
-{#                </div>#}
-{#              </div>#}
-{#              {% endfor %}#}
-{#            </div>#}
-{##}
-{#            <!-- Filter Drawer -->#}
-{#            <div id="filterBackdrop" class="filter-panel__backdrop" aria-hidden="true">#}
-{#              <div class="filter-panel" role="dialog" aria-modal="true">#}
-{#                <div class="fp-header">#}
-{#                  <div class="fp-title">Filters</div>#}
-{#                  <button class="fp-close" type="button" id="closeFilters" aria-label="Close">&times;</button>#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row">#}
-{#                  <label for="fpPlace">Place</label>#}
-{#                  <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kannur" />#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row">#}
-{#                  <label for="fpPincode">Pincode</label>#}
-{#                  <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 670001" />#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row fp-check">#}
-{#                  <input id="fpHasEmail" type="checkbox" />#}
-{#                  <label for="fpHasEmail">Has Email</label>#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row fp-check">#}
-{#                  <input id="fpHasPhone" type="checkbox" />#}
-{#                  <label for="fpHasPhone">Has Phone</label>#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row">#}
-{#                  <label>Date (Specific Day)</label>#}
-{#                  <input id="fpExactDay" class="fp-input" type="date" />#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row">#}
-{#                  <label>Quick Ranges</label>#}
-{#                  <div class="quick-row">#}
-{#                    <button type="button" class="quick" data-range="today">Today</button>#}
-{#                    <button type="button" class="quick" data-range="7">Last 7 Days</button>#}
-{#                    <button type="button" class="quick" data-range="month">This Month</button>#}
-{#                  </div>#}
-{#                </div>#}
-{##}
-{#                <div class="fp-row" style="display:grid; grid-template-columns:1fr 1fr; gap:.6rem;">#}
-{#                  <div>#}
-{#                    <label for="fpFrom">From</label>#}
-{#                    <input id="fpFrom" class="fp-input" type="date" />#}
-{#                  </div>#}
-{#                  <div>#}
-{#                    <label for="fpTo">To</label>#}
-{#                    <input id="fpTo" class="fp-input" type="date" />#}
-{#                  </div>#}
-{#                </div>#}
-{##}
-{#                <div class="fp-actions">#}
-{#                  <button type="button" class="btn btn-ghost" id="fpClear">Clear</button>#}
-{#                  <button type="button" class="btn btn-primary" id="fpApply">Apply</button>#}
-{#                </div>#}
-{#              </div>#}
-{#            </div>#}
-{##}
-{#          </div>#}
-{#        </div>#}
-{##}
-{#        <script>#}
-{#          /* Sidebar dropdown */#}
-{#          const moreBtn=document.querySelector('.more-section');#}
-{#          const dropdown=document.querySelector('.setting-dropdown');#}
-{#          document.body.addEventListener('click',(e)=>{#}
-{#            if(moreBtn && moreBtn.contains(e.target)){#}
-{#              e.stopPropagation();#}
-{#              dropdown.style.display = dropdown.style.display==='block' ? 'none' : 'block';#}
-{#            } else if(dropdown && !dropdown.contains(e.target)){#}
-{#              dropdown.style.display='none';#}
-{#            }#}
-{#          });#}
-{#        const root = document.documentElement;#}
-{#          const themeBtn = document.getElementById('themeToggle');#}
-{#          const themeIcon = document.getElementById('themeIcon');#}
-{##}
-{#          const savedTheme = localStorage.getItem('theme') || 'light';#}
-{#          root.setAttribute('data-theme', savedTheme);#}
-{#          themeIcon.className = savedTheme === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{##}
-{#          themeBtn.addEventListener('click', () => {#}
-{#            const current = root.getAttribute('data-theme');#}
-{#            const next = current === 'dark' ? 'light' : 'dark';#}
-{#            root.setAttribute('data-theme', next);#}
-{#            localStorage.setItem('theme', next);#}
-{#            themeIcon.className = next === 'dark' ? 'ri-moon-line' : 'ri-sun-line';#}
-{#          });#}
-{#          /* Remove toasts later */#}
-{#          setTimeout(()=>document.querySelectorAll('.toast').forEach(t=>t.remove()),6000);#}
-{##}
-{#          /* Helpers */#}
-{#          const normalizeForNumber = (s)=> (s||'').toString().replace(/[\s\-\.\(\)]/g,'');#}
-{#          const norm = (t)=> (t||'').toString().toLowerCase().trim();#}
-{##}
-{#          // Parse YYYY-MM-DD safely in local TZ (no off-by-one):#}
-{#          function parseYMD(ymd){#}
-{#            if(!ymd) return null;#}
-{#            const [y,m,d] = ymd.split('-').map(Number);#}
-{#            if(!y || !m || !d) return null;#}
-{#            return new Date(y, m-1, d, 12, 0, 0); // noon local time to avoid DST/TZ edges#}
-{#          }#}
-{#          function ymd(dt){ if(!dt) return ''; const y = dt.getFullYear(); const m=('0'+(dt.getMonth()+1)).slice(-2); const d=('0'+dt.getDate()).slice(-2); return `${y}-${m}-${d}`; }#}
-{##}
-{#          /* Elements */#}
-{#          const searchInput = document.getElementById('searchInput');#}
-{#          const sortOrder   = document.getElementById('sortOrder');#}
-{#          const cardsWrap   = document.getElementById('cardsWrap');#}
-{#          const cards       = Array.from(document.querySelectorAll('.customer-card'));#}
-{##}
-{#          /* Filter drawer refs */#}
-{#          const fpBackdrop  = document.getElementById('filterBackdrop');#}
-{#          const openFilters = document.getElementById('openFilters');#}
-{#          const closeFilters= document.getElementById('closeFilters');#}
-{#          const fpPlace     = document.getElementById('fpPlace');#}
-{#          const fpPincode   = document.getElementById('fpPincode');#}
-{#          const fpHasEmail  = document.getElementById('fpHasEmail');#}
-{#          const fpHasPhone  = document.getElementById('fpHasPhone');#}
-{#          const fpExactDay  = document.getElementById('fpExactDay');#}
-{#          const fpFrom      = document.getElementById('fpFrom');#}
-{#          const fpTo        = document.getElementById('fpTo');#}
-{#          const fpApply     = document.getElementById('fpApply');#}
-{#          const fpClear     = document.getElementById('fpClear');#}
-{#          const quickBtns   = Array.from(document.querySelectorAll('.quick'));#}
-{##}
-{#          /* Open/close filter panel */#}
-{#          function openPanel(){ fpBackdrop.style.display='grid'; requestAnimationFrame(()=>fpBackdrop.querySelector('.filter-panel').classList.add('open')); }#}
-{#          function closePanel(){ fpBackdrop.querySelector('.filter-panel').classList.remove('open'); setTimeout(()=>fpBackdrop.style.display='none', 150); }#}
-{#          openFilters.addEventListener('click', openPanel);#}
-{#          closeFilters.addEventListener('click', closePanel);#}
-{#          fpBackdrop.addEventListener('click', (e)=>{ if(e.target===fpBackdrop) closePanel(); });#}
-{#          document.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && fpBackdrop.style.display==='grid') closePanel(); });#}
-{##}
-{#          /* Apply filters + sorting */#}
-{#          function applyFiltersAndSort(){#}
-{#            const q = norm(searchInput.value); const qn = normalizeForNumber(q);#}
-{#            const fPlace = norm(fpPlace.value); const fPin = norm(fpPincode.value);#}
-{#            const hasEmail = fpHasEmail.checked; const hasPhone = fpHasPhone.checked;#}
-{#            const exactDay = fpExactDay.value;#}
-{#            const fromVal  = fpFrom.value; const toVal = fpTo.value;#}
-{##}
-{#            const fromDate = parseYMD(fromVal);#}
-{#            const toDate   = parseYMD(toVal);#}
-{#            const exactDate= parseYMD(exactDay);#}
-{##}
-{#            cards.forEach(card=>{#}
-{#              const name = norm(card.dataset.name);#}
-{#              const email= norm(card.dataset.email);#}
-{#              const phone= norm(card.dataset.phone);#}
-{#              const place= norm(card.dataset.place||'');#}
-{#              const pincode = norm(card.dataset.pincode||'');#}
-{#              const nameN= normalizeForNumber(name);#}
-{#              const emailN= normalizeForNumber(email);#}
-{#              const phoneN= normalizeForNumber(phone);#}
-{##}
-{#              const d = parseYMD(card.dataset.date || '');#}
-{##}
-{#              const textMatch = !q || name.includes(q) || email.includes(q) || phone.includes(q) ||#}
-{#                                nameN.includes(qn) || emailN.includes(qn) || phoneN.includes(qn);#}
-{#              const placeMatch= !fPlace || (place && place.includes(fPlace));#}
-{#              const pinMatch  = !fPin   || (pincode && pincode.includes(fPin));#}
-{#              const emailMatch= !hasEmail || !!email;#}
-{#              const phoneMatch= !hasPhone || !!phone;#}
-{##}
-{#              let dateMatch = true;#}
-{#              if (exactDate){#}
-{#                dateMatch = !!d && ymd(d) === ymd(exactDate);#}
-{#              } else {#}
-{#                if (fromDate && (!d || d < new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0,0,0))) dateMatch = false;#}
-{#                if (toDate   && (!d || d > new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23,59,59))) dateMatch = false;#}
-{#              }#}
-{##}
-{#              card.style.display = (textMatch && placeMatch && pinMatch && emailMatch && phoneMatch && dateMatch) ? '' : 'none';#}
-{#            });#}
-{##}
-{#            // Sort visible cards#}
-{#            const visible = cards.filter(c=>c.style.display!=='none');#}
-{#            const order = sortOrder.value;#}
-{##}
-{#            visible.sort((a,b)=>{#}
-{#              const aName = (a.dataset.name||'').toLowerCase();#}
-{#              const bName = (b.dataset.name||'').toLowerCase();#}
-{#              const aDate = parseYMD(a.dataset.date);#}
-{#              const bDate = parseYMD(b.dataset.date);#}
-{##}
-{#              if(order==='name-asc')  return aName.localeCompare(bName);#}
-{#              if(order==='name-desc') return bName.localeCompare(aName);#}
-{#              if(order==='oldest') {#}
-{#                if (aDate && bDate) return aDate - bDate;#}
-{#                if (aDate) return -1; if (bDate) return 1; return 0;#}
-{#              }#}
-{#              /* newest (default) */#}
-{#              if (aDate && bDate) return bDate - aDate;#}
-{#              if (aDate) return -1; if (bDate) return 1; return 0;#}
-{#            });#}
-{##}
-{#            // Re-append in sorted order#}
-{#            visible.forEach(c=>cardsWrap.appendChild(c));#}
-{#          }#}
-{##}
-{#          /* Search / Sort listeners */#}
-{#          searchInput.addEventListener('input', applyFiltersAndSort);#}
-{#          sortOrder.addEventListener('change', applyFiltersAndSort);#}
-{##}
-{#          /* Quick ranges */#}
-{#          function setQuick(range){#}
-{#            const today = new Date(); today.setHours(0,0,0,0);#}
-{#            const firstDayMonth = new Date(today.getFullYear(), today.getMonth(), 1);#}
-{#            if(range==='today'){#}
-{#              fpExactDay.value = ymd(today);#}
-{#              fpFrom.value = ''; fpTo.value = '';#}
-{#            } else if(range==='7'){#}
-{#              const from = new Date(today); from.setDate(from.getDate()-6);#}
-{#              fpExactDay.value = '';#}
-{#              fpFrom.value = ymd(from); fpTo.value = ymd(today);#}
-{#            } else if(range==='month'){#}
-{#              fpExactDay.value='';#}
-{#              fpFrom.value = ymd(firstDayMonth); fpTo.value = ymd(today);#}
-{#            }#}
-{#          }#}
-{#          document.querySelectorAll('.quick').forEach(btn=>btn.addEventListener('click', ()=> setQuick(btn.dataset.range)));#}
-{##}
-{#          /* Apply & Clear */#}
-{#          fpApply.addEventListener('click', ()=>{ applyFiltersAndSort(); closePanel(); });#}
-{#          fpClear.addEventListener('click', ()=>{#}
-{#            fpPlace.value=''; fpPincode.value='';#}
-{#            fpHasEmail.checked=false; fpHasPhone.checked=false;#}
-{#            fpExactDay.value=''; fpFrom.value=''; fpTo.value='';#}
-{#            applyFiltersAndSort();#}
-{#          });#}
-{##}
-{#          /* Initial run */#}
-{#          applyFiltersAndSort();#}
-{#        </script>#}
-{#        </body>#}
-{#        </html>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}

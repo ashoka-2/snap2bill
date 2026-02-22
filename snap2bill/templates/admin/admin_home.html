@@ -1,156 +1,235 @@
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Admin Home</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard | Overview</title>
 
 <link rel="icon" type="image/png" id="dynamic-favicon" href="{% static 'images/favicon.png' %}">
 
 <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
 
- <script defer src="{% static 'scripts/setting.js' %}"></script>
-    <script defer src="{% static 'scripts/navbar.js' %}"></script>
+<script defer src="{% static 'scripts/setting.js' %}"></script>
+<script defer src="{% static 'scripts/navbar.js' %}"></script>
 
 <style>
     /* =============================
-       📊 DASHBOARD SPECIFIC STYLES
+       📊 DASHBOARD SPECIFIC STYLES & ANIMATIONS
        ============================= */
 
     .dashboard-container {
-        padding: 2rem;
         width: 100%;
+        max-width: 1400px;
+        margin: 0 auto;
+        animation: fadeUp 0.6s ease-out forwards;
     }
 
-    .welcome-banner {
-        margin-bottom: 2rem;
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
     }
+
+    /* --- Welcome Banner (Shimmer & Float) --- */
+    .welcome-banner {
+        position: relative;
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        border-radius: var(--radius-lg);
+        padding: var(--padding-2xl);
+        margin-bottom: var(--margin-2xl);
+        color: #fff;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(37, 99, 235, 0.25);
+    }
+
+    /* Animated Background Orbs */
+    .welcome-banner::before {
+        content: '';
+        position: absolute;
+        top: -50%; right: -10%;
+        width: 400px; height: 400px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 50%;
+        filter: blur(50px);
+        animation: floatOrb 8s infinite alternate ease-in-out;
+    }
+
+    .welcome-banner::after {
+        content: '';
+        position: absolute;
+        bottom: -30%; left: 10%;
+        width: 250px; height: 250px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 50%;
+        filter: blur(30px);
+        animation: floatOrb 6s infinite alternate-reverse ease-in-out;
+    }
+
+    @keyframes floatOrb {
+        0% { transform: translateY(0) scale(1); }
+        100% { transform: translateY(-30px) scale(1.1); }
+    }
+
     .welcome-banner h1 {
-        font-size: 1.8rem;
-        color: var(--text-main);
+        font-size: clamp(1.8rem, 3vw, 2.5rem);
+        font-weight: 800;
         margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+        letter-spacing: 0.5px;
     }
     .welcome-banner p {
-        color: var(--text-soft);
+        font-size: var(--font-md);
+        color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+        font-weight: 500;
     }
 
-    /* --- Stats Grid --- */
+    /* --- Stats Grid with Shine Effect --- */
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 2.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--gutter-lg);
+        margin-bottom: var(--margin-3xl);
     }
 
     .stat-card {
+        position: relative;
         background-color: var(--surface);
-        padding: 1.5rem;
-        border-radius: var(--radius);
+        padding: var(--padding-lg);
+        border-radius: var(--radius-md);
         box-shadow: var(--shadow);
         border: 1px solid var(--line);
         display: flex;
         align-items: center;
-        gap: 1.2rem;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        gap: var(--gutter-md);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    /* The Hover Shine Layer */
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0; left: -100%;
+        width: 50%; height: 100%;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,0.4), transparent);
+        transform: skewX(-20deg);
+        transition: 0.5s;
+        z-index: 0;
     }
 
     .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 1rem 2rem rgba(0,0,0,0.1);
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        border-color: var(--primary);
+    }
+
+    .stat-card:hover::after {
+        left: 150%; /* Moves shine across the card */
     }
 
     .icon-box {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.8rem;
+        position: relative;
+        z-index: 1;
+        width: 65px; height: 65px;
+        border-radius: var(--radius-sm);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 2rem;
         flex-shrink: 0;
+        transition: transform 0.3s ease;
     }
 
+    .stat-card:hover .icon-box {
+        transform: scale(1.1) rotate(-5deg);
+    }
+
+    .stat-info { position: relative; z-index: 1; }
+
     .stat-info h3 {
-        font-size: 1.8rem;
-        font-weight: 700;
+        font-size: var(--font-2xl);
+        font-weight: 800;
         color: var(--text-main);
-        line-height: 1.2;
+        line-height: 1.1;
     }
     .stat-info p {
         color: var(--text-soft);
-        font-size: 0.9rem;
-        margin-top: 0.2rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-top: 4px;
     }
 
     /* --- Card Color Variations --- */
+    .card-blue .icon-box { background: rgba(37, 99, 235, 0.1); color: #2563EB; }
+    .card-orange .icon-box { background: rgba(245, 158, 11, 0.1); color: #F59E0B; }
+    .card-green .icon-box { background: rgba(16, 185, 129, 0.1); color: #10B981; }
+    .card-purple .icon-box { background: rgba(139, 92, 246, 0.1); color: #8B5CF6; }
+    .card-red .icon-box { background: rgba(239, 68, 68, 0.1); color: #EF4444; }
+    .card-teal .icon-box { background: rgba(20, 184, 166, 0.1); color: #14B8A6; }
 
-    /* Blue (Customers) */
-    .card-blue .icon-box { background: rgba(21, 101, 192, 0.1); color: #1565c0; }
-
-    /* Orange (Pending) */
-    .card-orange .icon-box { background: rgba(255, 152, 0, 0.1); color: #ff9800; }
-
-    /* Green (Verified) */
-    .card-green .icon-box { background: rgba(76, 175, 80, 0.1); color: #4caf50; }
-
-    /* Purple (Products) */
-    .card-purple .icon-box { background: rgba(156, 39, 176, 0.1); color: #9c27b0; }
-
-    /* Red (Distributor Feedback) */
-    .card-red .icon-box { background: rgba(244, 67, 54, 0.1); color: #f44336; }
-
-    /* Teal (Customer Feedback) */
-    .card-teal .icon-box { background: rgba(0, 150, 136, 0.1); color: #009688; }
-
-    /* Yellow/Gold (Reviews) */
-    .card-yellow .icon-box { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
-
-    /* Indigo (Categories) */
-    .card-indigo .icon-box { background: rgba(63, 81, 181, 0.1); color: #3f51b5; }
-
-
-    /* --- Quick Actions Section --- */
+    /* --- Quick Actions (Dashed Premium) --- */
     .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 1rem;
+        margin-bottom: var(--margin-md);
+        padding-bottom: var(--padding-xs);
+        border-bottom: 2px solid var(--line);
     }
     .section-title {
-        font-size: 1.2rem;
-        font-weight: 600;
+        font-size: var(--font-lg);
+        font-weight: 800;
         color: var(--text-main);
     }
 
     .quick-actions-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2.5rem;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: var(--gutter-lg);
+        margin-bottom: var(--margin-2xl);
     }
 
     .action-btn {
         background-color: var(--surface);
-        border: 1px dashed var(--primary);
-        color: var(--primary);
-        padding: 1rem;
-        border-radius: var(--radius);
+        border: 2px dashed var(--border-color);
+        color: var(--text-main);
+        padding: var(--padding-xl) var(--padding-lg);
+        border-radius: var(--radius-md);
         text-align: center;
         text-decoration: none;
-        font-weight: 600;
-        transition: 0.2s;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        gap: 12px;
     }
-    .action-btn i { font-size: 1.5rem; }
+
+    .action-btn i {
+        font-size: 2.5rem;
+        color: var(--text-soft);
+        transition: all 0.3s ease;
+    }
+
     .action-btn:hover {
-        background-color: var(--primary);
-        color: #fff;
+        background-color: var(--pill-bg);
+        border-color: var(--primary);
         border-style: solid;
+        color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px var(--pill-bg);
     }
+
+    .action-btn:hover i {
+        color: var(--primary);
+        transform: scale(1.15) translateY(-5px);
+    }
+
 </style>
 </head>
 
@@ -158,8 +237,7 @@
 
     <div class="main-content">
         <div class="admin-left-main-content">
-
-        </div>
+            </div>
 
         <div class="admin-right-main-content">
 
@@ -167,20 +245,20 @@
 
                 <div class="welcome-banner">
                     <h1>Dashboard Overview</h1>
-                    <p>Welcome back, Admin. Here's what's happening today.</p>
+                    <p>Welcome back! Here's a summary of what's happening today across your platform.</p>
                 </div>
 
                 <div class="stats-grid">
 
-                    <div class="stat-card card-blue">
-                        <div class="icon-box"><i class="ri-user-3-fill"></i></div>
+                    <div class="stat-card card-blue" style="animation-delay: 0.1s;">
+                        <div class="icon-box"><i class="ri-group-fill"></i></div>
                         <div class="stat-info">
                             <h3>{{ customer_count|default:"0" }}</h3>
-                            <p>Total Customers</p>
+                            <p>Customers</p>
                         </div>
                     </div>
 
-                    <div class="stat-card card-orange">
+                    <div class="stat-card card-orange" style="animation-delay: 0.2s;">
                         <div class="icon-box"><i class="ri-time-fill"></i></div>
                         <div class="stat-info">
                             <h3>{{ pending_count|default:"0" }}</h3>
@@ -188,15 +266,15 @@
                         </div>
                     </div>
 
-                    <div class="stat-card card-green">
+                    <div class="stat-card card-green" style="animation-delay: 0.3s;">
                         <div class="icon-box"><i class="ri-shield-check-fill"></i></div>
                         <div class="stat-info">
                             <h3>{{ verified_count|default:"0" }}</h3>
-                            <p>Verified Distributors</p>
+                            <p>Verified Team</p>
                         </div>
                     </div>
 
-                    <div class="stat-card card-purple">
+                    <div class="stat-card card-purple" style="animation-delay: 0.4s;">
                         <div class="icon-box"><i class="ri-shopping-bag-3-fill"></i></div>
                         <div class="stat-info">
                             <h3>{{ product_count|default:"0" }}</h3>
@@ -204,35 +282,35 @@
                         </div>
                     </div>
 
-                    <div class="stat-card card-red">
-                        <div class="icon-box"><i class="ri-customer-service-2-line"></i></div>
-                        <div class="stat-info">
-                            <h3>{{ feedback_count|default:"0" }}</h3>
-                            <p>Distributor Feedbacks</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card card-teal">
-                        <div class="icon-box"><i class="ri-message-2-line"></i></div>
-                        <div class="stat-info">
-                            <h3>{{ cust_feedback_count|default:"0" }}</h3>
-                            <p>Customer Feedbacks</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card card-yellow">
-                        <div class="icon-box"><i class="ri-star-smile-line"></i></div>
-                        <div class="stat-info">
-                            <h3>{{ review_count|default:"0" }}</h3>
-                            <p>Total Reviews</p>
-                        </div>
-                    </div>
-
-                    <div class="stat-card card-indigo">
-                        <div class="icon-box"><i class="ri-apps-fill"></i></div>
+                    <div class="stat-card card-blue" style="animation-delay: 0.5s;">
+                        <div class="icon-box"><i class="ri-layout-grid-fill"></i></div>
                         <div class="stat-info">
                             <h3>{{ category_count|default:"0" }}</h3>
-                            <p>Total Categories</p>
+                            <p>Categories</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-teal" style="animation-delay: 0.6s;">
+                        <div class="icon-box"><i class="ri-message-3-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ cust_feedback_count|default:"0" }}</h3>
+                            <p>Cust. Feedbacks</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-red" style="animation-delay: 0.7s;">
+                        <div class="icon-box"><i class="ri-feedback-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ feedback_count|default:"0" }}</h3>
+                            <p>Dist. Feedbacks</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card card-orange" style="animation-delay: 0.8s;">
+                        <div class="icon-box"><i class="ri-star-smile-fill"></i></div>
+                        <div class="stat-info">
+                            <h3>{{ review_count|default:"0" }}</h3>
+                            <p>Service Reviews</p>
                         </div>
                     </div>
 
@@ -241,41 +319,30 @@
                 <div class="section-header">
                     <div class="section-title">Quick Actions</div>
                 </div>
+                    <br>
                 <div class="quick-actions-grid">
                     <a href="/admin_verify" class="action-btn">
-                        <i class="ri-user-search-line"></i>
+                        <i class="ri-user-search-fill"></i>
                         Verify New Users
                     </a>
                     <a href="/admin_category" class="action-btn">
-                        <i class="ri-layout-masonry-line"></i>
+                        <i class="ri-layout-masonry-fill"></i>
                         Add Category
                     </a>
-                    <a href="/view_product" class="action-btn">
-                        <i class="ri-box-3-line"></i>
-                        Manage Products
+                    <a href="/add_product" class="action-btn">
+                        <i class="ri-add-box-fill"></i>
+                        Create Product
                     </a>
                     <a href="/admin_review" class="action-btn">
-                        <i class="ri-star-half-line"></i>
+                        <i class="ri-star-half-fill"></i>
                         Check Reviews
                     </a>
                 </div>
 
             </div>
 
-            {% if messages %}
-            <div id="toast-container">
-                {% for message in messages %}
-                <div class="toast {{ message.tags }}">
-                    {% if message.tags == 'success' %}✅{% elif message.tags == 'error' %}⚠️{% endif %}
-                    {{ message }}
-                </div>
-                {% endfor %}
             </div>
-            {% endif %}
-
-        </div>
     </div>
-
 
 </body>
 </html>

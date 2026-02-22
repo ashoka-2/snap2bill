@@ -4,6 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Home</title>
    <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
@@ -25,28 +26,26 @@
         <div class="admin-right-main-content">
 
             <div class="dashboard-header">
-                <div class="header-title">
-                    <h1>Product Management</h1>
-                    <span>Overview of your inventory</span>
-                </div>
+    <div class="header-title">
+        <h1>Product Inventory</h1>
+        <span>Manage and monitor your catalog</span>
+    </div>
 
-                <div class="header-actions">
-                    <div class="filter-box">
-                        <select id="categoryFilter" onchange="filterTable()">
-                            <option value="ALL">All Categories</option>
-                        </select>
-                    </div>
-
-                    <div class="search-box">
-                        <i class="ri-search-line"></i>
-                        <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterTable()">
-                    </div>
-
-                    <a href="/add_product" class="btn-add">
-                        <i class="ri-add-line"></i> Add Product
-                    </a>
-                </div>
-            </div>
+    <div class="header-actions">
+        <div class="filter-box">
+            <select id="categoryFilter" onchange="filterTable()">
+                <option value="ALL">All Categories</option>
+            </select>
+        </div>
+        <div class="search-box">
+            <i class="ri-search-line"></i>
+            <input type="text" id="searchInput" placeholder="Search products..." onkeyup="filterTable()">
+        </div>
+        <a href="/add_product" class="btn-add">
+            <i class="ri-add-line"></i> Add Product
+        </a>
+    </div>
+</div>
 
             <div class="table-container">
                 <div class="table-wrapper">

@@ -1,194 +1,55 @@
-{#{% load static %}#}
-{##}
-{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#<html xmlns="http://www.w3.org/1999/xhtml">#}
-{#<head>#}
-{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#<title>Admin Add Category</title>#}
-{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#</head>#}
-{##}
-{#<body>#}
-{##}
-{##}
-{#    <div class="main-content">#}
-{#        <div class="admin-left-main-content">#}
-{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
-{#            <div class="admin-mid-left-content">#}
-{##}
-{#                <div id="navbar-section">#}
-{##}
-{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
-{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
-{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars"><span>Verify Distributors</span></div></a>#}
-{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
-{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
-{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars active"><span>Manage Category</span></div></a>#}
-{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
-{##}
-{#            </div>#}
-{#            </div>#}
-{#            <hr>#}
-{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
-{#             <div class="setting-dropdown">#}
-{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
-{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
-{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{##}
-{#        </div>#}
-{#        <div class="admin-right-main-content">#}
-{##}
-{##}
-{##}
-{#<form  action="/add_category_post" method="post">#}
-{#<table class="table"  border="2" >#}
-{#<caption><h1>Add Category</h1></caption>#}
-{#  <tr>#}
-{#    <th scope="col">Category Name :</th>#}
-{#    <th scope="col"><label for="category"></label>#}
-{#      <div align="left">#}
-{#        <input type="text" name="Category" id="category" />#}
-{#      </div></th>#}
-{#  </tr>#}
-{#  <tr>#}
-{#    <td colspan="2" ><input type="submit" value="Add Category"/></td>#}
-{##}
-{#  </tr>#}
-{#</table>#}
-{##}
-{##}
-{#</form>#}
-{##}
-{##}
-{#    </div>#}
-{#</div>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#<script>#}
-{#    const moreBtn = document.querySelector(".more-section");#}
-{#    const dropdown = document.querySelector(".setting-dropdown");#}
-{##}
-{#    let body = document.querySelector("body");#}
-{##}
-{#    moreBtn.addEventListener("click", function () {#}
-{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
-{#    });#}
-{##}
-{#    // Optional: close dropdown if clicked outside#}
-{#    body.addEventListener("click", function (event) {#}
-{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
-{#            dropdown.style.display = "none";#}
-{#        }#}
-{#    });#}
-{#</script>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#</body>#}
-{#</html>#}
-
-
-
-
-
-
-
-
-
-
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Admin Add Category</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Category | Snap2Bill</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/category.css' %}">
     <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
-
-<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/category.css' %}">
-
-    <link
-  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
-  rel="stylesheet"
-/>
-
-
 </head>
-
 <body>
-
 <div class="main-content">
-  <div class="admin-left-main-content">
-
-
-
-  </div>
+  <div class="admin-left-main-content"></div>
 
   <div class="admin-right-main-content">
-
-    {% if messages %}
-      <div id="toast-container">
-        {% for message in messages %}
-          <div class="toast {{ message.tags }}">{{ message }}</div>
-        {% endfor %}
-      </div>
-    {% endif %}
-
-    <div class="add-head">
+    
+    <div class="fb-header">
       <div>
-        <div class="add-title">Add Category</div>
-        <div class="add-sub">Create a new category to organize your products.</div>
+        <h1 class="fb-title">Add Category</h1>
+        <p class="add-sub">Create a new collection for your inventory.</p>
       </div>
-      <div class="add-actions">
-        <a class="btn btn-ghost" href="/admin_category">Back to Categories</a>
+      <div class="fb-actions">
+        <a href="/admin_category" class="btn btn-ghost"><i class="ri-arrow-left-line"></i> Back</a>
       </div>
     </div>
 
-    <div class="form-band">
+    <div class="form-card">
       <form action="/add_category_post" method="post">
         {% csrf_token %}
-        <div class="form-grid">
-          <label for="category" class="label">Category Name :</label>
-          <div class="control">
-            <input type="text" name="Category" id="category" class="input" placeholder="Enter category name" required minlength="2" maxlength="60" />
-            <div class="help">Use a short, clear name (2–60 characters).</div>
+        
+        <div class="form-group-custom">
+          <label for="category">Category Name</label>
+          <input type="text" name="Category" id="category" class="form-input-custom" 
+                 placeholder="e.g. Electronic Appliances" required minlength="2">
+          <div class="form-help-text">
+            <i class="ri-information-line"></i> Short and descriptive names work best.
           </div>
         </div>
-        <div class="form-actions">
-          <a class="btn btn-ghost" href="/admin_category">Cancel</a>
-          <button type="submit" class="btn btn-primary">Add Category</button>
+
+        <div class="form-actions-bar">
+          <a href="/admin_category" class="btn btn-ghost">Cancel</a>
+          <button type="submit" class="btn btn-primary">
+            <i class="ri-add-circle-line"></i> Create Category
+          </button>
         </div>
       </form>
     </div>
 
   </div>
 </div>
-
-
-
 </body>
 </html>
-
-
-
-
-
-

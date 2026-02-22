@@ -1,320 +1,93 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Distributor Feedbacks</title>
-
-<!-- 1. Favicon -->
-<link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
-
-<!-- 2. Icons & Styles -->
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-<!-- Reusing customerpage.css for consistent layout vars -->
-<link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">
-
-<!-- 3. Theme Loader -->
-<script defer src="{% static 'scripts/setting.js' %}"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributor Feedbacks | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/feedback.css' %}">
+    <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
-
-<style>
-    /* Ensure Fonts match your system */
-    @font-face {
-        font-family: magic;
-        src: url('/static/fonts/SamsungOne-400.woff2');
-    }
-    @font-face {
-        font-family: bayon;
-        src: url('/static/fonts/Bayon.ttf');
-    }
-
-    /* Page Specific Styles (Matching Admin Reviews) */
-    .fb-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .fb-title {
-        font-family: bayon, sans-serif;
-        font-size: 2rem;
-        color: var(--text-main);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin: 0;
-    }
-
-    .fb-actions {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    /* Button Styles */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.7rem 1.2rem;
-        border-radius: 99px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border: 0;
-        cursor: pointer;
-        font-size: 0.95rem;
-    }
-
-    .btn-ghost {
-        background: transparent;
-        color: var(--primary);
-        border: 1px solid var(--primary);
-    }
-    .btn-ghost:hover {
-        background: var(--bg-body);
-        transform: translateY(-2px);
-    }
-
-    .btn-primary {
-        background: linear-gradient(90deg, var(--primary), var(--accent));
-        color: #fff;
-        border: none;
-        box-shadow: var(--shadow);
-    }
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        opacity: 0.95;
-    }
-
-    /* Filter Bar - Pill Style */
-    .fb-filters {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        width: 100%;
-        background: var(--surface);
-        padding: 1rem;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--line);
-        margin-bottom: 1.5rem;
-        align-items: center;
-    }
-
-    .filter-input {
-        padding: 0.8rem 1.5rem;
-        border-radius: 99px;
-        border: 1px solid var(--line);
-        background: var(--bg-body);
-        color: var(--text-main);
-        font-family: magic, sans-serif;
-        outline: none;
-        transition: 0.2s;
-    }
-    .filter-input:focus { border-color: var(--primary); }
-
-    .search-input {
-        flex: 2;
-        min-width: 250px;
-    }
-
-    .date-input {
-        flex: 1;
-        min-width: 150px;
-        color: var(--text-soft);
-    }
-
-    /* Table Styles */
-    .table-container {
-        background: var(--surface);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--line);
-        overflow: hidden;
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
-    thead {
-        background: linear-gradient(to right, var(--bg-body), var(--surface));
-        border-bottom: 2px solid var(--line);
-    }
-
-    th {
-        padding: 1.2rem 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-    }
-
-    th i {
-        font-size: 1rem;
-        margin-right: 0.4rem;
-        vertical-align: text-bottom;
-        font-weight: 400;
-    }
-
-    td {
-        padding: 1.2rem 1.5rem;
-        color: var(--text-main);
-        border-bottom: 1px solid var(--line);
-        font-size: 0.95rem;
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    tbody tr { transition: background 0.2s; }
-    tbody tr:hover { background-color: var(--bg-body); }
-    tbody tr:hover td { color: var(--text-soft); }
-
-    /* Name Badges */
-    .user-name { font-weight: 700; color: var(--text-main); }
-    .dist-name { font-weight: 700; color: var(--accent); }
-
-    /* No Data Message */
-    #noDataMessage {
-        padding: 4rem;
-        text-align: center;
-        color: var(--text-soft);
-        display: none;
-    }
-    #noDataMessage i { font-size: 3.5rem; margin-bottom: 0.8rem; display: block; opacity: 0.5; }
-    #noDataMessage h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main); }
-
-</style>
 </head>
-
 <body>
-
 <div class="main-content">
-    <!-- Sidebar -->
-    <div class="admin-left-main-content">
-
-    </div>
-
-    <!-- Main Content -->
+    <div class="admin-left-main-content"></div>
     <div class="admin-right-main-content">
 
-        <!-- Header -->
         <div class="fb-header">
-            <div>
-                <h1 class="fb-title">Distributor Feedbacks</h1>
-                <div style="color:var(--text-soft); font-weight:600; margin-top:0.25rem;">Total Feedbacks: {{ feeddata|length }}</div>
+            <div class="fb-title-group">
+                <h1>Distributor Feedbacks</h1>
+                <span>Records: {{ feeddata|length }}</span>
             </div>
             <div class="fb-actions">
-                <a href="/admin_home" class="btn btn-ghost"><i class="ri-dashboard-line"></i> Dashboard</a>
-                <a href="/admin_verified" class="btn btn-primary"><i class="ri-user-3-line"></i> View Distributors</a>
+                <a href="/admin_verified" class="btn-premium"><i class="ri-group-2-fill"></i> View Distributors</a>
             </div>
         </div>
 
-        <!-- Filters -->
         <div class="fb-filters">
-            <i class="ri-search-2-line" style="color:var(--text-soft);"></i>
-            <input type="text" id="searchInput" class="filter-input search-input" placeholder="Search Distributor or Feedback...">
-
-            <input type="date" id="fromDate" class="filter-input date-input" title="From Date">
-            <input type="date" id="toDate" class="filter-input date-input" title="To Date">
-
-            <button id="clearFilters" class="btn btn-ghost" style="border:none; padding:0.5rem; color:var(--text-soft);">
-                <i class="ri-refresh-line"></i> Reset
-            </button>
+            <i class="ri-search-eye-line" style="color:var(--text-soft)"></i>
+            <input type="text" id="searchInput" class="filter-pill search-expand" placeholder="Filter by Distributor Name or Feedback...">
+            <input type="date" id="fromDate" class="filter-pill">
+            <input type="date" id="toDate" class="filter-pill">
+            <button id="resetFilters" class="btn-reset" type="button" title="Clear all filters">
+                    <i class="ri-refresh-line"></i> Reset </button>
         </div>
 
-        <!-- Table -->
         <div class="table-container">
-            <table>
+            <table class="styled-table">
                 <thead>
                     <tr>
-                        <th style="width: 80px;"><i class="ri-hashtag"></i> S.No</th>
-                        <th><i class="ri-store-2-line"></i> Distributor</th>
-                        <th><i class="ri-chat-quote-line"></i> Feedback</th>
-                        <th style="width: 150px;"><i class="ri-calendar-event-line"></i> Date</th>
+                        <th style="width: 80px;">S.No</th>
+                        <th>Distributor</th>
+                        <th>Message</th>
+                        <th style="width: 150px;">Date</th>
                     </tr>
                 </thead>
                 <tbody id="feedbackTableBody">
                     {% for i in feeddata %}
-                    <tr class="feedback-row"
-                           data-distributor="{% if i.DISTRIBUTOR %}{{ i.DISTRIBUTOR.name|lower }}{% else %}unknown{% endif %}"
-                            data-feedback="{{ i.feedbacks|escapejs|lower }}"
-                             data-date="{{ i.feedback_date|date:'Y-m-d' }}">
-
+                    <tr>
                         <td>{{ forloop.counter }}</td>
-
-
-
                         <td>
-                            {% if i.DISTRIBUTOR %}
-                                <span class="dist-name">{{ i.DISTRIBUTOR.name }}</span>
-                            {% else %}
-                                <span style="color:var(--text-soft);">—</span>
-                            {% endif %}
+                            <div class="name-badge">
+                                <span class="name-main" style="color: var(--accent);">{{ i.DISTRIBUTOR.name }}</span>
+                                <span class="name-sub">Verified Partner</span>
+                            </div>
                         </td>
-
-                        <td style="line-height: 1.6; max-width: 450px;">
-                            {{ i.feedbacks }}
-                        </td>
-
-                        <td style="color:var(--text-soft); font-weight:600;">
-                            {{ i.feedback_date }}
-                        </td>
+                        <td style="line-height: 1.6;">{{ i.feedbacks }}</td>
+                        <td style="color: var(--text-soft); font-weight: 600;">{{ i.feedback_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-
-            <!-- No Data Message -->
-            <div id="noDataMessage">
-                <i class="ri-inbox-archive-line"></i>
-                <h3>No feedbacks found</h3>
-                <p>Try adjusting your search terms or date range.</p>
-            </div>
+            <div id="noDataMessage"><i class="ri-ghost-smile-line"></i><h3>No distributor feedback found</h3></div>
         </div>
-
     </div>
 </div>
 
 <script>
-
-
-
-/* Distributor feedbacks — working filter (copy-paste replace karo) */
+/* Distributor Feedbacks — Tera Robust JS Logic */
 (function(){
-  // elements
   const searchInput = document.getElementById('searchInput');
   const fromDate = document.getElementById('fromDate');
   const toDate = document.getElementById('toDate');
-  const clearBtn = document.getElementById('clearFilters');
-
-  // choose rows inside feedback table body (safe)
+  const clearBtn = document.getElementById('resetFilters');
   const rows = Array.from(document.querySelectorAll('#feedbackTableBody tr'));
   const noMsg = document.getElementById('noDataMessage');
 
-  // helper: normalize text
   function normalize(t){ return (t||'').toString().toLowerCase().trim(); }
 
-  // helper: extract leading YYYY-MM-DD if present (also handles "YYYY-MM-DD HH:MM:SS...")
+  // Solid Date Extractor
   function extractDatePart(str){
     if(!str) return null;
     const m = str.toString().match(/^(\d{4}-\d{2}-\d{2})/);
     if(m) return m[1];
-    // fallback for DD/MM/YYYY
     const dmy = str.toString().match(/^(\d{2})[\/.-](\d{2})[\/.-](\d{4})/);
     if(dmy) return `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
     return null;
   }
 
-  // core filter
   function applyFilters(){
     const q = normalize(searchInput?.value || '');
     const from = extractDatePart(fromDate?.value || '');
@@ -322,13 +95,13 @@
 
     let visible = 0;
     rows.forEach(row => {
-      // skip placeholder rows (like "No feedbacks yet.") if they don't have 4 cells
       const cells = row.querySelectorAll('td');
-      if(cells.length < 3){
+      if(cells.length < 4){
         row.style.display = 'none';
         return;
       }
 
+      // Cell 1: Distributor, Cell 2: Feedback, Cell 3: Date
       const dist = normalize(cells[1].textContent);
       const text = normalize(cells[2].textContent);
       const dateText = cells[3] ? cells[3].textContent.trim() : '';
@@ -346,7 +119,6 @@
     if(noMsg) noMsg.style.display = (visible === 0) ? 'block' : 'none';
   }
 
-  // events
   if(searchInput) searchInput.addEventListener('input', applyFilters);
   if(fromDate) fromDate.addEventListener('change', applyFilters);
   if(toDate) toDate.addEventListener('change', applyFilters);
@@ -357,15 +129,8 @@
     applyFilters();
   });
 
-  // initial run
   applyFilters();
-
-  // debug helpers (use in console if needed)
-  window.__feedback_rows_count = rows.length;
-  window.__applyFeedbackFilters = applyFilters;
 })();
 </script>
-
-
 </body>
 </html>

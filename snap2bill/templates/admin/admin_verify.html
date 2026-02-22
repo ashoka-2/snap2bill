@@ -1,388 +1,130 @@
-{#{% load static %}#}
-{##}
-{##}
-{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#<html xmlns="http://www.w3.org/1999/xhtml">#}
-{#<head>#}
-{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#<title>Admin verify Distributors</title>#}
-{# <link#}
-{#    href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"#}
-{#    rel="stylesheet"#}
-{#/>#}
-{#     <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">#}
-{##}
-{##}
-{##}
-{#</head>#}
-{##}
-{#<body>#}
-{##}
-{##}
-{##}
-{##}
-{#    <div class="main-content">#}
-{#        <div class="admin-left-main-content">#}
-{#            <div class="admin-top-left-content"><div class="admin-menu">Snap2Bill <br> Admin Menu</div></div><hr>#}
-{#            <div class="admin-mid-left-content">#}
-{##}
-{#                <div id="navbar-section">#}
-{##}
-{#            <a class="nav-links" href="/admin_home"><div class="mid-left-navbars"><span>Home</span></div></a>#}
-{#            <a class="nav-links" href="/admin_viewcustomer"><div class="mid-left-navbars"><span>View Customers</span></div></a>#}
-{#            <a class="nav-links" href="/admin_verify"><div class="mid-left-navbars active"><span>Verify Distributors</span></div></a>#}
-{#            <a class="nav-links" href="/admin_verified"><div class="mid-left-navbars"><span>View Verified Distributors</span></div></a>#}
-{#            <a class="nav-links" href="/admin_review"><div class="mid-left-navbars"><span>View Reviews</span></div></a>#}
-{#            <a class="nav-links" href="/admin_category"><div class="mid-left-navbars"><span>Manage Category</span></div></a>#}
-{#            <a class="nav-links" href="/admin_feedback"><div class="mid-left-navbars"><span>View Feedback</span></div></a>#}
-{##}
-{#            </div>#}
-{#            </div>#}
-{#            <hr>#}
-{#            <div class="admin-bottom-left-content"><div class="more-section"><span>More</span>#}
-{#             <div class="setting-dropdown">#}
-{#                <a href="#"><div class="setting-menu-dropdown">Setting</div> </a>#}
-{#                <a href="#"><div class="setting-menu-dropdown">Switch theme</div> </a>#}
-{#                <a href="/logout"><div class="setting-menu-dropdown">Logout</div></a>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{##}
-{#        </div>#}
-{#        <div class="admin-right-main-content">#}
-{#<div class="name-search-div">#}
-{#           <div class="heading-name"> <h1 id="customer-name">Verify Distributors</h1></div>#}
-{##}
-{#  <!-- Search bar -->#}
-{#                <div class="search-filter">#}
-{#                    <div class="search-bar">#}
-{#                    <i class="ri-search-2-line"></i>#}
-{#                    <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />#}
-{##}
-{#                </div>#}
-{#            <div class="filter">#}
-{#                <i class="ri-filter-line"></i>#}
-{#            </div>#}
-{#                </div>#}
-{#        </div>#}
-{##}
-{#<form action="" method="post">#}
-{#<table class="table"    border="1" >#}
-{#<caption><h1>Verify Distributors</h1></caption>#}
-{#              <tr>#}
-{#                <th  scope="col">Id</th>#}
-{#                <th  scope="col">Name</th>#}
-{#                <th  scope="col">Profile Pic</th>#}
-{#                <th  scope="col">Email</th>#}
-{#                <th  scope="col">Phone number</th>#}
-{#                <th  scope="col">Address</th>#}
-{#                <th  scope="col">Place</th>#}
-{#                <th  scope="col">pincode</th>#}
-{#                <th  scope="col">post</th>#}
-{#                <th  scope="col">Latitude</th>#}
-{#                <th  scope="col">Longitude</th>#}
-{#                <th  scope="col">proof</th>#}
-{#                <th scope="col">Bio</th>#}
-{#                 <th  scope="col">verify</th>#}
-{#              </tr>#}
-{#            {% for i in distributordata %}#}
-{##}
-{#              <tr >#}
-{#                  <td>{{ forloop.counter }}</td>#}
-{#                  <td>{{ i.name }}</td>#}
-{#                  <td>{{ i.profile_image }}</td>#}
-{#                  <td>{{ i.email }}</td>#}
-{#                  <td>{{ i.phone }}</td>#}
-{#                  <td>{{ i.address }}</td>#}
-{#                  <td>{{ i.place }}</td>#}
-{#                  <td>{{ i.pincode }}</td>#}
-{#                  <td>{{ i.post }}</td>#}
-{#                  <td>{{ i.latitude }}</td>#}
-{#                  <td>{{ i.longitude }}</td>#}
-{#                  <td>{{ i.proof }}</td>#}
-{#                  <td>{{ i.bio }}</td>#}
-{#                  <td id="accept-reject"><a id="acceptbtn" href="/accept_distributor/{{ i.id }}">Accept</a><br><br>#}
-{#                      <a  id="rejectbtn" href="/reject_distributor/{{ i.id }}">Reject</a></td>#}
-{#              </tr>#}
-{#            {% endfor %}#}
-{##}
-{#            </table>#}
-{#        </form>#}
-{##}
-{# <div class="cards-container">#}
-{#    {% for i in distributordata %}#}
-{#    <div class="customer-card"#}
-{#         data-name="{{ i.name|default_if_none:''|escape }}"#}
-{#         data-email="{{ i.email|default_if_none:''|escape }}"#}
-{#         data-phone="{{ i.phone|default_if_none:''|escape }}">#}
-{##}
-{#      <!-- Avatar -->#}
-{#      <div class="avatar">#}
-{#        {% if i.profile_image %}#}
-{#          <img src="{{ i.profile_image }}" alt="{{ i.name }}">#}
-{#        {% else %}#}
-{#          <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">#}
-{#        {% endif %}#}
-{#      </div>#}
-{##}
-{#      <!-- Name + Bio -->#}
-{#      <h2 class="name">{{ i.name }}</h2>#}
-{#        <p class="email">{{ i.email }}</p>#}
-{##}
-{##}
-{#      <!-- Other details -->#}
-{#      <div class="details">#}
-{#        <p class="phone"><strong>Phone :</strong> {{ i.phone }}</p>#}
-{#        <p><strong>Address :</strong> {{ i.address }}</p>#}
-{#        <p><strong>Place :</strong> {{ i.place }}</p>#}
-{#        <p><strong>Pincode :</strong> {{ i.pincode }}</p>#}
-{#        <p><strong>Post :</strong> {{ i.post }}</p>#}
-{#                <p><strong>Latitude :</strong> {{ i.latitude }}</p>#}
-{#        <p><strong>Longitude :</strong> {{ i.longitude }}</p>#}
-{#        <p><strong>Proof :</strong> {{ i.proof }}</p>#}
-{#          <p class="bio"><strong>Bio :</strong>{{ i.bio }}</p>#}
-{#        <div id="accept-reject">#}
-{#            <a id="acceptbtn" href="/accept_distributor/{{ i.id }}">Accept</a>#}
-{#            <a  id="rejectbtn" href="/reject_distributor/{{ i.id }}">Reject</a>#}
-{#        </div>#}
-{##}
-{#      </div>#}
-{#    </div>#}
-{#    {% endfor %}#}
-{##}
-{#    </div>#}
-{##}
-{##}
-{##}
-{##}
-{#    </div>#}
-{#</div>#}
-{##}
-{##}
-{##}
-{##}
-{##}
-{##}
-{#<script>#}
-{#  // Normalize numbers: remove spaces, dashes, dots#}
-{#  function normalizeForNumber(s) {#}
-{#    return s.replace(/[\s\-\.\(\)]/g, '');#}
-{#  }#}
-{##}
-{#  document.getElementById("searchInput").addEventListener("input", function() {#}
-{#    const rawQuery = this.value || '';#}
-{#    const query = rawQuery.toLowerCase().trim();#}
-{#    const queryNorm = normalizeForNumber(query);#}
-{##}
-{#    const cards = document.querySelectorAll(".customer-card");#}
-{#    cards.forEach(card => {#}
-{#      const name = (card.dataset.name || '').toLowerCase();#}
-{#      const email = (card.dataset.email || '').toLowerCase();#}
-{#      const phone = (card.dataset.phone || '').toLowerCase();#}
-{##}
-{#      const nameNorm = normalizeForNumber(name);#}
-{#      const emailNorm = normalizeForNumber(email);#}
-{#      const phoneNorm = normalizeForNumber(phone);#}
-{##}
-{#      const matched = (#}
-{#        query === '' ||#}
-{#        name.includes(query) ||#}
-{#        email.includes(query) ||#}
-{#        phone.includes(query) ||#}
-{#        nameNorm.includes(queryNorm) ||#}
-{#        emailNorm.includes(queryNorm) ||#}
-{#        phoneNorm.includes(queryNorm)#}
-{#      );#}
-{##}
-{#      card.style.display = matched ? "" : "none";#}
-{#    });#}
-{#  });#}
-{##}
-{##}
-{##}
-{#  const moreBtn = document.querySelector(".more-section");#}
-{#    const dropdown = document.querySelector(".setting-dropdown");#}
-{##}
-{#    let body = document.querySelector("body");#}
-{##}
-{#    moreBtn.addEventListener("click", function () {#}
-{#        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";#}
-{#    });#}
-{##}
-{#    // Optional: close dropdown if clicked outside#}
-{#    body.addEventListener("click", function (event) {#}
-{#        if (!moreBtn.contains(event.target) && !dropdown.contains(event.target)) {#}
-{#            dropdown.style.display = "none";#}
-{#        }#}
-{#    });#}
-{#</script>#}
-{##}
-{##}
-{#</body>#}
-{#</html>#}
-
-
-
-
-
-
-
-
-
-
-
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin Verify Distributors</title>
-    <script defer src="{% static 'scripts/setting.js' %}"></script>
-    <script defer src="{% static 'scripts/navbar.js' %}"></script>
 
-<link
-  href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css"
-  rel="stylesheet"
-/>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet" />
+<script defer src="{% static 'scripts/setting.js' %}"></script>
+<script defer src="{% static 'scripts/navbar.js' %}"></script>
+
 <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+
 <link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">
 
 </head>
 
 <body>
 <div class="main-content">
-  <div class="admin-left-main-content">
-
-  </div>
+  <div class="admin-left-main-content"></div>
 
   <div class="admin-right-main-content">
 
     {% if messages %}
       <div id="toast-container">
         {% for message in messages %}
-          <div class="toast {{ message.tags }}">{{ message }}</div>
+          <div class="toast {{ message.tags }}">
+              {% if message.tags == 'success' %}✓{% else %}⚠️{% endif %} {{ message }}
+          </div>
         {% endfor %}
       </div>
     {% endif %}
 
     <div class="name-search-div">
-      <div class="heading-name"><h1 id="heading-name">Verify Distributors</h1></div>
+      <div class="heading-name"><h1>Verify Distributors</h1></div>
       <div class="search-actions">
         <div class="search-bar">
           <i class="ri-search-2-line"></i>
-          <input type="text" id="searchInput" placeholder="Search by name, email or phone..." />
+          <input type="text" id="searchInput" placeholder="Search by name or email..." />
         </div>
 
-        <!-- Sort -->
-        <select id="sortOrder" class="btn-chip">
-          <option value="newest" selected>Newest</option>
-          <option value="oldest">Oldest</option>
+        <select id="sortOrder" class="btn-chip" style="outline:none;">
           <option value="name-asc">Name A–Z</option>
           <option value="name-desc">Name Z–A</option>
         </select>
 
-        <!-- Filter drawer open -->
-        <button class="btn-chip" id="openFilters" title="More filters">
-          <i class="ri-filter-line"></i><span>Filters</span>
+        <button class="btn-chip" id="openFilters">
+          <i class="ri-filter-3-line"></i><span>Filters</span>
         </button>
       </div>
     </div>
 
-    <!-- Flex cards -->
     <div class="cards-container" id="cardsWrap">
       {% for i in distributordata %}
       <div class="card"
            data-name="{{ i.name|default_if_none:''|escape }}"
            data-email="{{ i.email|default_if_none:''|escape }}"
-           data-phone="{{ i.phone|default_if_none:''|escape }}"
            data-place="{{ i.LOCATION.place|default_if_none:''|escape }}"
-           data-pincode="{{ i.LOCATION.pincode|default_if_none:''|escape }}"
-           data-date="{{ i.created_at|date:'Y-m-d' }}">
-        <div class="card-head">
-          <div class="avatar">
-            {% if i.profile_image %}
-              <img src="{{ i.profile_image }}" alt="{{ i.name }}">
-            {% else %}
-              <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">
-            {% endif %}
-          </div>
-          <div class="primary-info">
-            <div class="name">{{ i.name }}</div>
-            <div class="contact-line">
-              {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i>{{ i.phone }}</span>{% endif %}
-            </div>
-          </div>
-        </div>
-
-        <div class="details">
-            {% if i.email %}<span class="pill mail"><i class="ri-mail-line"></i>{{ i.email }}</span>{% endif %}
-          <p><strong>Address :</strong> {{ i.LOCATION.address }}</p>
-          <p><strong>Place :</strong> {{ i.LOCATION.place }}</p>
-          <p><strong>Pincode :</strong> {{ i.LOCATION.pincode }}</p>
-          <p><strong>Post :</strong> {{ i.LOCATION.post }}</p>
-          <p><strong>Latitude :</strong> {{ i.latitude }}</p>
-          <p><strong>Longitude :</strong> {{ i.longitude }}</p>
-          <p class="bio"><strong>Bio :</strong> {{ i.bio }}</p>
-
-            <div class="proof-location">
-                {% if i.proof %}
-             <p class="proof"><a href="{{ i.proof }}" target="_blank" ><i class="ri-file-list-line"></i> View Proof</a></p>
-          {% endif %}
-
-                {% if i.latitude and i.longitude %}
-    <a class="btn-map" href="https://www.google.com/maps?q={{ i.latitude }},{{ i.longitude }}"
-       target="_blank" rel="noopener">
-      <i class="ri-map-pin-2-line"></i> Location
-    </a>
-  {% else %}
-    <a class="btn-map" aria-disabled="true" title="Location not available">
-      <i class="ri-map-pin-2-line"></i> No location
-    </a>
-  {% endif %}
+           data-pincode="{{ i.LOCATION.pincode|default_if_none:''|escape }}">
+        
+        <div>
+            <div class="card-head">
+              <div class="avatar">
+                {% if i.profile_image %}
+                  <img src="{{ i.profile_image }}" alt="{{ i.name }}">
+                {% else %}
+                  <img src="{% static 'images/default-avatar.png' %}" alt="default avatar">
+                {% endif %}
+              </div>
+              <div class="primary-info">
+                <div class="name">{{ i.name }}</div>
+                {% if i.phone %}<span class="pill"><i class="ri-phone-line"></i> {{ i.phone }}</span>{% endif %}
+              </div>
             </div>
 
+            <div class="details">
+                {% if i.email %}<p><strong>Email:</strong> {{ i.email }}</p>{% endif %}
+              <p><strong>Place:</strong> {{ i.LOCATION.place }} ({{ i.LOCATION.pincode }})</p>
+              <p><strong>Address:</strong> {{ i.LOCATION.address }}</p>
+              {% if i.bio %}<p class="bio">"{{ i.bio }}"</p>{% endif %}
+
+                <div class="proof-location">
+                    {% if i.proof %}
+                    <div class="proof"><a href="{{ i.proof }}" target="_blank"><i class="ri-file-user-line"></i> Identity Proof</a></div>
+                    {% endif %}
+
+                    {% if i.latitude and i.longitude %}
+                    <a class="btn-map" href="https://www.google.com/maps?q={{ i.latitude }},{{ i.longitude }}" target="_blank">
+                        <i class="ri-map-pin-fill"></i> View Map
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
         <div class="actions">
-
-          <a class="btn-action btn-accept" href="/accept_distributor/{{ i.id }}"><i class="ri-check-line"></i>Accept</a>
-          <a class="btn-action btn-reject" href="/reject_distributor/{{ i.id }}"><i class="ri-close-line"></i>Reject</a>
+          <a class="btn-action btn-accept" href="/accept_distributor/{{ i.id }}"><i class="ri-checkbox-circle-line"></i> Approve</a>
+          <a class="btn-action btn-reject" href="/reject_distributor/{{ i.id }}"><i class="ri-close-circle-line"></i> Reject</a>
         </div>
       </div>
       {% endfor %}
     </div>
 
-
-    <!-- No Data Message -->
     <div id="noDataMessage">
-      <i class="ri-user-unfollow-line"></i>
-      <h2>No Distributors Available</h2>
-      <p>Try adjusting your search or filters.</p>
+      <i class="ri-shield-user-line"></i>
+      <h2>No Pending Verifications</h2>
+      <p>All distributors are currently processed.</p>
     </div>
 
-    <!-- Filter Drawer -->
-    <div id="filterBackdrop" class="filter-panel__backdrop" aria-hidden="true">
-      <div class="filter-panel" role="dialog" aria-modal="true">
+    <div id="filterBackdrop" class="filter-panel__backdrop">
+      <div class="filter-panel">
         <div class="fp-header">
-          <div class="fp-title">Filters</div>
-          <button class="fp-close" type="button" id="closeFilters">&times;</button>
+          <div class="fp-title">Location Filter</div>
+          <button class="fp-close" id="closeFilters">&times;</button>
         </div>
-
         <div class="fp-row">
           <label>Place</label>
-          <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kannur" />
+          <input id="fpPlace" class="fp-input" type="text" placeholder="e.g., Kochi" />
         </div>
-
         <div class="fp-row">
           <label>Pincode</label>
-          <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 670001" />
+          <input id="fpPincode" class="fp-input" type="text" placeholder="e.g., 682001" />
         </div>
-
         <div class="fp-actions">
-          <button type="button" class="btn btn-ghost" id="fpClear">Clear</button>
-          <button type="button" class="btn btn-primary" id="fpApply">Apply</button>
+          <button type="button" class="btn btn-ghost" style="background:var(--line); padding:0.8rem; border-radius:8px; border:none;" id="fpClear">Clear</button>
+          <button type="button" class="btn btn-primary" style="background:var(--primary); color:white; padding:0.8rem; border-radius:8px; border:none; flex:1;" id="fpApply">Apply</button>
         </div>
       </div>
     </div>
@@ -391,115 +133,59 @@
 </div>
 
 <script>
-
-
-  /* Filters & Sorting */
-  const normalizeForNumber = (s)=> (s||'').toString().replace(/[\s\-\.\(\)]/g,'');
   const norm = (t)=> (t||'').toString().toLowerCase().trim();
-  function parseYMD(ymd){
-    if(!ymd) return null;
-    const [y,m,d] = ymd.split('-').map(Number);
-    if(!y||!m||!d) return null;
-    return new Date(y, m-1, d, 12, 0, 0);
-  }
-
   const searchInput = document.getElementById('searchInput');
   const sortOrder   = document.getElementById('sortOrder');
   const cardsWrap   = document.getElementById('cardsWrap');
   const cards       = Array.from(document.querySelectorAll('.card'));
   const noDataMsg   = document.getElementById('noDataMessage');
-
   const fpBackdrop  = document.getElementById('filterBackdrop');
-  const openFilters = document.getElementById('openFilters');
-  const closeFilters= document.getElementById('closeFilters');
 
   function applyFiltersAndSort(){
-    const q = norm(searchInput.value); const qn = normalizeForNumber(q);
+    const q = norm(searchInput.value);
     const fPlace = norm(document.getElementById('fpPlace').value);
     const fPin = norm(document.getElementById('fpPincode').value);
 
     cards.forEach(card=>{
       const name = norm(card.dataset.name);
       const email= norm(card.dataset.email);
-      const phone= norm(card.dataset.phone);
-      const place= norm(card.dataset.place||'');
-      const pincode = norm(card.dataset.pincode||'');
-      const nameN= normalizeForNumber(name);
-      const emailN= normalizeForNumber(email);
-      const phoneN= normalizeForNumber(phone);
+      const place= norm(card.dataset.place);
+      const pin  = norm(card.dataset.pincode);
 
-      const textMatch = !q || name.includes(q) || email.includes(q) || phone.includes(q) || nameN.includes(qn) || emailN.includes(qn) || phoneN.includes(qn);
+      const textMatch = !q || name.includes(q) || email.includes(q);
       const placeMatch= !fPlace || place.includes(fPlace);
-      const pinMatch  = !fPin   || pincode.includes(fPin);
+      const pinMatch  = !fPin || pin.includes(fPin);
 
-      card.style.display = (textMatch && placeMatch && pinMatch) ? '' : 'none';
+      card.style.display = (textMatch && placeMatch && pinMatch) ? 'flex' : 'none';
     });
 
-    const visible = cards.filter(c=>c.style.display!=='none');
-
-    // Toggle No Data Message
-    if(visible.length === 0){
-        noDataMsg.style.display = 'flex';
-    } else {
-        noDataMsg.style.display = 'none';
-    }
+    const visible = cards.filter(c=>c.style.display !== 'none');
+    noDataMsg.style.display = (visible.length === 0) ? 'flex' : 'none';
 
     const order = sortOrder.value;
-
     visible.sort((a,b)=>{
-      const aName = (a.dataset.name||'').toLowerCase();
-      const bName = (b.dataset.name||'').toLowerCase();
-      const aDate = parseYMD(a.dataset.date);
-      const bDate = parseYMD(b.dataset.date);
-
-      if(order==='name-asc')  return aName.localeCompare(bName);
-      if(order==='name-desc') return bName.localeCompare(aName);
-      if(order==='oldest') {
-        if (aDate && bDate) return aDate - bDate;
-        return 0;
-      }
-      /* newest (default) */
-      if (aDate && bDate) return bDate - aDate;
-      return 0;
+      const aName = norm(a.dataset.name);
+      const bName = norm(b.dataset.name);
+      return order === 'name-asc' ? aName.localeCompare(bName) : bName.localeCompare(aName);
     });
-
     visible.forEach(c=>cardsWrap.appendChild(c));
   }
 
   searchInput.addEventListener('input', applyFiltersAndSort);
   sortOrder.addEventListener('change', applyFiltersAndSort);
-
-  /* Drawer Actions */
-  function openPanel(){ fpBackdrop.style.display='grid'; requestAnimationFrame(()=>fpBackdrop.querySelector('.filter-panel').classList.add('open')); }
-  function closePanel(){ fpBackdrop.querySelector('.filter-panel').classList.remove('open'); setTimeout(()=>fpBackdrop.style.display='none', 150); }
-  openFilters.addEventListener('click', openPanel);
-  closeFilters.addEventListener('click', closePanel);
-  fpBackdrop.addEventListener('click', (e)=>{ if(e.target===fpBackdrop) closePanel(); });
-
-  document.getElementById('fpApply').addEventListener('click', ()=>{ applyFiltersAndSort(); closePanel(); });
-  document.getElementById('fpClear').addEventListener('click', ()=>{
-    document.getElementById('fpPlace').value='';
-    document.getElementById('fpPincode').value='';
+  document.getElementById('openFilters').onclick = () => fpBackdrop.style.display = 'grid';
+  document.getElementById('closeFilters').onclick = () => fpBackdrop.style.display = 'none';
+  document.getElementById('fpApply').onclick = () => { applyFiltersAndSort(); fpBackdrop.style.display = 'none'; };
+  document.getElementById('fpClear').onclick = () => {
+    document.getElementById('fpPlace').value=''; document.getElementById('fpPincode').value='';
     applyFiltersAndSort();
-  });
+  };
 
   applyFiltersAndSort();
 
-  // Optional confirm on Reject
   document.querySelectorAll('.btn-reject').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
-      if(!confirm('Reject this distributor?')) e.preventDefault();
-    });
+    btn.onclick = (e) => { if(!confirm('Are you sure you want to reject this distributor?')) e.preventDefault(); };
   });
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-

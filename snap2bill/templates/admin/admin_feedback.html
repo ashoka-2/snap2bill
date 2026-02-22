@@ -1,191 +1,136 @@
-
 {% load static %}
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
-<meta charset="utf-8" />
-<title>Customer Feedbacks</title>
-
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">
-
- <script defer src="{% static 'scripts/setting.js' %}"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Feedbacks | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/feedback.css' %}">
+    <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
-
-<style>
-/* (kept same visual style as you sent) */
-@font-face{ font-family:magic; src:url('/static/fonts/SamsungOne-400.woff2'); }
-@font-face{ font-family:bayon; src:url('/static/fonts/Bayon.ttf'); }
-
-.fb-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem; }
-.fb-title{ font-family:bayon, sans-serif; font-size:2rem; color:var(--text-main); text-transform:uppercase; letter-spacing:1px; margin:0; }
-.fb-actions{ display:flex; gap:.75rem; }
-
-.btn{ display:inline-flex; align-items:center; gap:.5rem; padding:.7rem 1.2rem; border-radius:99px; font-weight:700; border:0; cursor:pointer; font-size:.95rem; transition:transform .2s,box-shadow .2s; }
-.btn-ghost{ background:transparent; color:var(--primary); border:1px solid var(--primary); }
-.btn-primary{ background:linear-gradient(90deg,var(--primary),var(--accent)); color:#fff; box-shadow:var(--shadow); }
-
-.fb-filters{ display:flex; gap:1rem; flex-wrap:wrap; width:100%; background:var(--surface); padding:1rem; border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--line); margin-bottom:1.5rem; align-items:center; }
-.filter-input{ padding:.8rem 1.5rem; border-radius:99px; border:1px solid var(--line); background:var(--bg-body); color:var(--text-main); outline:none; transition:.2s; }
-.filter-input:focus{ border-color:var(--primary); }
-.search-input{ flex:2; min-width:250px; }
-.date-input{ flex:1; min-width:150px; color:var(--text-soft); }
-
-.table-container{ background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); border:1px solid var(--line); overflow:hidden; overflow-x:auto; }
-table{ width:100%; border-collapse:collapse; text-align:left; }
-thead{ background:linear-gradient(to right,var(--bg-body),var(--surface)); border-bottom:2px solid var(--line); }
-th{ padding:1.2rem 1.5rem; font-weight:700; color:var(--primary); text-transform:uppercase; font-size:.85rem; letter-spacing:.05em; white-space:nowrap; }
-td{ padding:1.2rem 1.5rem; color:var(--text-main); border-bottom:1px solid var(--line); font-size:.95rem; }
-tbody tr:hover{ background-color:var(--bg-body); }
-.user-name{ font-weight:700; color:var(--text-main); }
-.dist-name{ font-weight:700; color:var(--accent); }
-#noDataMessage{ padding:4rem; text-align:center; color:var(--text-soft); display:none; }
-#noDataMessage i{ font-size:3.5rem; margin-bottom:.8rem; display:block; opacity:.5; }
-</style>
 </head>
-
 <body>
-
 <div class="main-content">
-  <!-- Sidebar -->
-  <div class="admin-left-main-content">
+    <div class="admin-left-main-content"></div>
+    <div class="admin-right-main-content">
 
-  </div>
+        <div class="fb-header">
+            <div class="fb-title-group">
+                <h1>Customer Feedbacks</h1>
+                <span>Total Received: {{ feeddata|length }}</span>
+            </div>
+            <div class="fb-actions">
+                <a href="/admin_home" class="btn-premium"><i class="ri-dashboard-fill"></i> Dashboard</a>
+            </div>
+        </div>
 
-  <!-- Main Content -->
-  <div class="admin-right-main-content">
+        <div class="fb-filters">
+            <i class="ri-search-2-line" style="color:var(--text-soft)"></i>
+            <input type="text" id="searchInput" class="filter-pill search-expand" placeholder="Search Customer or Feedback Content...">
+            <input type="date" id="fromDate" class="filter-pill" title="Start Date">
+            <input type="date" id="toDate" class="filter-pill" title="End Date">
+            <button id="resetFilters" class="btn-reset" type="button" title="Clear all filters">
+                    <i class="ri-refresh-line"></i> Reset </button>
+        </div>
 
-    <div class="fb-header">
-      <div>
-        <h1 class="fb-title">Customer Feedbacks</h1>
-        <div style="color:var(--text-soft); font-weight:600; margin-top:0.25rem;">Total Feedbacks: {{ feeddata|length }}</div>
-      </div>
-      <div class="fb-actions">
-        <a href="/admin_home" class="btn btn-ghost"><i class="ri-dashboard-line"></i> Dashboard</a>
-        <a href="/admin_viewcustomer" class="btn btn-primary"><i class="ri-user-3-line"></i> View Customers</a>
-      </div>
+        <div class="table-container">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th style="width: 80px;">S.No</th>
+                        <th><i class="ri-user-heart-fill"></i> Customer</th>
+                        <th><i class="ri-chat-smile-3-fill"></i> Feedback Message</th>
+                        <th style="width: 150px;"><i class="ri-calendar-fill"></i> Date</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTableBody">
+                    {% for i in feeddata %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <div class="name-badge">
+                                <span class="name-main">{{ i.USER.name|default:"Guest User" }}</span>
+                                <span class="name-sub">Verified Customer</span>
+                            </div>
+                        </td>
+                        <td style="line-height: 1.6; color: var(--text-soft);">{{ i.feedbacks }}</td>
+                        <td style="font-weight: 700;">{{ i.feedback_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="noDataMessage"><i class="ri-inbox-archive-line"></i><h3>No records found</h3></div>
+        </div>
     </div>
-
-    <div class="fb-filters">
-      <i class="ri-search-2-line" style="color:var(--text-soft);"></i>
-      <input type="text" id="searchInput" class="filter-input search-input" placeholder="Search Customer or Feedback...">
-      <input type="date" id="fromDate" class="filter-input date-input" title="From Date">
-      <input type="date" id="toDate" class="filter-input date-input" title="To Date">
-      <button id="clearFilters" class="btn btn-ghost" style="border:none; padding:0.5rem; color:var(--text-soft);"><i class="ri-refresh-line"></i> Reset</button>
-    </div>
-
-    <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 80px;"><i class="ri-hashtag"></i> S.No</th>
-            <th><i class="ri-store-2-line"></i> Customer</th>
-            <th><i class="ri-chat-quote-line"></i> Feedback</th>
-            <th style="width: 150px;"><i class="ri-calendar-event-line"></i> Date</th>
-          </tr>
-        </thead>
-        <tbody id="feedbackTableBody">
-          {% for i in feeddata %}
-          <tr class="feedback-row"
-              data-customer="{% if i.USER %}{{ i.USER.name|lower }}{% else %}unknown{% endif %}"
-              data-feedback="{{ i.feedbacks|escapejs|lower }}"
-              data-date="{{ i.feedback_date|date:'Y-m-d' }}">
-            <td>{{ forloop.counter }}</td>
-            <td>
-              {% if i.USER %}
-                <span class="dist-name">{{ i.USER.name }}</span>
-              {% else %}
-                <span style="color:var(--text-soft);">—</span>
-              {% endif %}
-            </td>
-            <td style="line-height:1.6; max-width:450px;">{{ i.feedbacks }}</td>
-            <td style="color:var(--text-soft); font-weight:600;">{{ i.feedback_date }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-
-      <div id="noDataMessage">
-        <i class="ri-inbox-archive-line"></i>
-        <h3>No feedbacks found</h3>
-        <p>Try adjusting your search terms or date range.</p>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 <script>
+/* Customer Feedbacks — Tera Robust JS Logic */
+(function(){
+  const searchInput = document.getElementById('searchInput');
+  const fromDate = document.getElementById('fromDate');
+  const toDate = document.getElementById('toDate');
+  const clearBtn = document.getElementById('resetFilters');
+  const rows = Array.from(document.querySelectorAll('#feedbackTableBody tr'));
+  const noMsg = document.getElementById('noDataMessage');
 
+  function normalize(t){ return (t||'').toString().toLowerCase().trim(); }
 
-  // Filtering logic (robust)
-  (function(){
-    const searchInput = document.getElementById('searchInput');
-    const fromDate = document.getElementById('fromDate');
-    const toDate = document.getElementById('toDate');
-    const clearBtn = document.getElementById('clearFilters');
-    const rows = Array.from(document.querySelectorAll('#feedbackTableBody tr'));
-    const noMsg = document.getElementById('noDataMessage');
+  // Solid Date Extractor
+  function extractDatePart(str){
+    if(!str) return null;
+    const m = str.toString().match(/^(\d{4}-\d{2}-\d{2})/);
+    if(m) return m[1];
+    const dmy = str.toString().match(/^(\d{2})[\/.-](\d{2})[\/.-](\d{4})/);
+    if(dmy) return `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
+    return null;
+  }
 
-    function normalize(t){ return (t||'').toString().toLowerCase().trim(); }
+  function applyFilters(){
+    const q = normalize(searchInput?.value || '');
+    const from = extractDatePart(fromDate?.value || '');
+    const to = extractDatePart(toDate?.value || '');
 
-    function extractDatePart(str){
-      if(!str) return null;
-      const m = str.toString().match(/^(\d{4}-\d{2}-\d{2})/);
-      if(m) return m[1];
-      const dmy = str.toString().match(/^(\d{2})[\/.-](\d{2})[\/.-](\d{4})/);
-      if(dmy) return `${dmy[3]}-${dmy[2]}-${dmy[1]}`;
-      return null;
-    }
+    let visible = 0;
+    rows.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      if(cells.length < 4){
+        row.style.display = 'none';
+        return;
+      }
 
-    function applyFilters(){
-      const q = normalize(searchInput?.value || '');
-      const from = extractDatePart(fromDate?.value || '');
-      const to = extractDatePart(toDate?.value || '');
+      // Cell 1: Customer, Cell 2: Feedback, Cell 3: Date
+      const customer = normalize(cells[1].textContent);
+      const text = normalize(cells[2].textContent);
+      const dateText = cells[3] ? cells[3].textContent.trim() : '';
+      const rowDate = extractDatePart(dateText);
 
-      let visible = 0;
-      rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        // we expect 4 columns (S.No, Customer, Feedback, Date)
-        if(cells.length < 4){ row.style.display = 'none'; return; }
+      const matchText = !q || customer.includes(q) || text.includes(q);
+      const matchFrom = !from || (rowDate && rowDate >= from);
+      const matchTo   = !to   || (rowDate && rowDate <= to);
 
-        // prefer data attributes (safer) otherwise fallback to cell text
-        const customer = normalize(row.dataset.customer || cells[1].textContent);
-        const text = normalize(row.dataset.feedback || cells[2].textContent);
-        const dateText = (row.dataset.date || (cells[3] ? cells[3].textContent : '')).toString().trim();
-        const rowDate = extractDatePart(dateText);
-
-        const matchText = !q || customer.includes(q) || text.includes(q);
-        const matchFrom = !from || (rowDate && rowDate >= from);
-        const matchTo = !to || (rowDate && rowDate <= to);
-
-        const show = matchText && matchFrom && matchTo;
-        row.style.display = show ? '' : 'none';
-        if(show) visible++;
-      });
-
-      if(noMsg) noMsg.style.display = (visible === 0) ? 'block' : 'none';
-    }
-
-    if(searchInput) searchInput.addEventListener('input', applyFilters);
-    if(fromDate) fromDate.addEventListener('change', applyFilters);
-    if(toDate) toDate.addEventListener('change', applyFilters);
-    if(clearBtn) clearBtn.addEventListener('click', () => {
-      if(searchInput) searchInput.value = '';
-      if(fromDate) fromDate.value = '';
-      if(toDate) toDate.value = '';
-      applyFilters();
+      const show = matchText && matchFrom && matchTo;
+      row.style.display = show ? '' : 'none';
+      if(show) visible++;
     });
 
-    // initial run
+    if(noMsg) noMsg.style.display = (visible === 0) ? 'block' : 'none';
+  }
+
+  if(searchInput) searchInput.addEventListener('input', applyFilters);
+  if(fromDate) fromDate.addEventListener('change', applyFilters);
+  if(toDate) toDate.addEventListener('change', applyFilters);
+  if(clearBtn) clearBtn.addEventListener('click', () => {
+    if(searchInput) searchInput.value = '';
+    if(fromDate) fromDate.value = '';
+    if(toDate) toDate.value = '';
     applyFilters();
+  });
 
-    // debug helpers (use in console)
-    window.__customer_feedback_rows = rows.length;
-    window.__applyCustomerFilters = applyFilters;
-  })();
+  applyFilters();
+})();
 </script>
-
 </body>
 </html>

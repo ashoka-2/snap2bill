@@ -1,0 +1,181 @@
+/* =========================================
+   📊 UNIFIED FEEDBACK & REVIEWS CSS
+   ========================================= */
+
+/* --- 1. HEADER SECTION --- */
+
+a{
+    text-decoration: none;
+}
+
+.fb-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--margin-xl);
+    flex-wrap: wrap;
+    gap: var(--gutter-md);
+}
+
+.fb-title-group h1 {
+    font-size: var(--font-xl);
+    font-weight: 800;
+    color: var(--text-main);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.fb-title-group span {
+    color: var(--text-soft);
+    font-weight: 600;
+    font-size: var(--font-sm);
+}
+
+/* --- 2. PREMIUM FILTERS BAR --- */
+.fb-filters {
+    display: flex;
+    gap: var(--gutter-md);
+    flex-wrap: wrap;
+    background: var(--surface);
+    padding: var(--padding-sm) var(--padding-lg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    margin-bottom: var(--margin-lg);
+    align-items: center;
+}
+
+.filter-pill {
+    padding: 0.7rem 1.2rem;
+    border-radius: 50px;
+    border: 1px solid var(--line);
+    background: var(--bg-body);
+    color: var(--text-main);
+    outline: none;
+    font-size: var(--font-sm);
+    transition: 0.3s ease;
+}
+
+.filter-pill:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--pill-bg);
+}
+
+.search-expand { flex: 2; min-width: 250px; }
+
+/* --- 3. TABLE ARCHITECTURE --- */
+.table-container {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    overflow: hidden;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.styled-table thead {
+    background: var(--bg-body);
+    border-bottom: 2px solid var(--line);
+}
+
+.styled-table th {
+    padding: 1.2rem 1.5rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.styled-table td {
+    padding: 1.2rem 1.5rem;
+    color: var(--text-main);
+    border-bottom: 1px solid var(--line);
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.styled-table tr:last-child td { border-bottom: none; }
+.styled-table tbody tr:hover { background-color: var(--pill-bg); }
+
+/* --- 4. DATA BADGES & STARS --- */
+.name-badge {
+    display: flex;
+    flex-direction: column;
+}
+
+.name-main { font-weight: 700; color: var(--text-main); }
+.name-sub { font-size: 0.75rem; color: var(--text-soft); font-weight: 600; }
+
+.stars {
+    display: flex;
+    gap: 2px;
+    color: #FBBF24; /* Gold */
+}
+
+.stars i.empty { color: var(--line); }
+
+/* --- 5. BUTTONS (Master Style) --- */
+.btn-premium {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white !important;
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+}
+
+.btn-premium:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3); }
+
+/* --- 6. UTILITIES --- */
+#noDataMessage {
+    padding: 5rem;
+    text-align: center;
+    color: var(--text-soft);
+    display: none;
+}
+#noDataMessage i { font-size: 4rem; opacity: 0.3; display: block; margin-bottom: 1rem; }
+
+
+
+/* --- 7. FILTER RESET BUTTON --- */
+.btn-reset {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.7rem 1.2rem;
+    border-radius: 50px;
+    background: transparent;
+    color: var(--text-soft);
+    border: 1px solid transparent;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Icon transition ke liye */
+.btn-reset i {
+    transition: transform 0.4s ease;
+    font-size: 1.1rem;
+}
+
+/* Hover Effect - Red/Danger theme to indicate clearing/resetting */
+.btn-reset:hover {
+    background: var(--danger-bg);
+    color: var(--danger);
+    border-color: var(--danger-border);
+}
+
+/* Hover par icon 180 degree ghomega */
+.btn-reset:hover i {
+    transform: rotate(180deg);
+}

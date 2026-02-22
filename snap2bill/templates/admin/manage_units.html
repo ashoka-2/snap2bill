@@ -1,353 +1,54 @@
-{#{% load static %}#}
-{#<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">#}
-{#<html xmlns="http://www.w3.org/1999/xhtml">#}
-{#<head>#}
-{#<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />#}
-{#<title>Manage Units | Snap2Bill Admin</title>#}
-{##}
-{#    <script defer src="{% static 'scripts/setting.js' %}"></script>#}
-{#    <script defer src="{% static 'scripts/navbar.js' %}"></script>#}
-{##}
-{#    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">#}
-{#    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>#}
-{##}
-{#    <style>#}
-{#        /* CSS Integrated based on your design system */#}
-{#        .admin-right-main-content { padding: var(--padding-lg); }#}
-{##}
-{#        .unit-header {#}
-{#            display: flex; align-items: center; justify-content: space-between;#}
-{#            gap: var(--gutter-md); margin-bottom: var(--margin-lg);#}
-{#        }#}
-{##}
-{#        .unit-title { font-size: var(--font-lg); font-weight: 800; color: var(--text-main); }#}
-{#        .unit-sub { color: var(--text-soft); font-size: var(--font-sm); margin-top: var(--margin-xxs); }#}
-{##}
-{#        /* Form Band for Quick Add */#}
-{#        .form-band {#}
-{#            border: 1px solid var(--line); border-radius: var(--radius-md);#}
-{#            background: var(--surface); box-shadow: var(--shadow);#}
-{#            padding: var(--padding-xl); margin-bottom: var(--margin-lg);#}
-{#        }#}
-{##}
-{#        .form-grid { display: flex; align-items: center; gap: var(--gutter-md); }#}
-{##}
-{#        .input {#}
-{#            flex: 1; font-size: var(--font-sm); padding: var(--padding-sm);#}
-{#            border: 1px solid var(--border-color); border-radius: var(--radius-xl);#}
-{#            outline: none; transition: border-color .2s;#}
-{#        }#}
-{#        .input:focus { border-color: var(--primary); }#}
-{##}
-{#        /* Table Styles */#}
-{#        .cat-table-wrap {#}
-{#            border: 1px solid var(--border-color); border-radius: var(--radius-sm);#}
-{#            box-shadow: var(--shadow); overflow: hidden;#}
-{#        }#}
-{#        table.cat-table { width: 100%; border-collapse: collapse; background: var(--surface); }#}
-{#        .cat-table thead th {#}
-{#            background: var(--surface); color: var(--text-main); text-align: left;#}
-{#            padding: var(--padding-sm) var(--padding-lg); font-weight: 800;#}
-{#            border-bottom: 1px solid var(--line);#}
-{#        }#}
-{#        .cat-table tbody td {#}
-{#            padding: var(--padding-sm) var(--padding-lg); border-bottom: 1px solid var(--line);#}
-{#        }#}
-{##}
-{#        /* Buttons & Action Chips */#}
-{#        .btn-primary {#}
-{#            border: 0; background: linear-gradient(90deg,var(--primary),var(--accent),var(--primary));#}
-{#            background-size: 200% 100%; color: var(--white-color); font-weight: 700;#}
-{#            padding: var(--padding-sm) var(--padding-lg); border-radius: var(--radius-xl);#}
-{#            cursor: pointer; animation: moveGrad 5s linear infinite;#}
-{#        }#}
-{##}
-{#        .chip {#}
-{#            display: inline-flex; align-items: center; gap: var(--gutter-sm);#}
-{#            padding: var(--padding-btn); border-radius: var(--radius-xl);#}
-{#            font-weight: 700; font-size: var(--font-sm); text-decoration: none;#}
-{#        }#}
-{#        .chip-edit { color: var(--edit); background: var(--edit-bg); border: 1px solid var(--edit-border); }#}
-{#        .chip-del { color: var(--danger); background: var(--danger-bg); border: 1px solid var(--danger-border); }#}
-{##}
-{#        /* Modal Styles */#}
-{#        .modal-backdrop {#}
-{#            position: fixed; inset: 0; background: var(--modal-color);#}
-{#            display: none; place-items: center; z-index: 9999;#}
-{#        }#}
-{#        .modal {#}
-{#            background: var(--white-color); border-radius: var(--radius-sm);#}
-{#            box-shadow: var(--shadow); padding: var(--padding-lg);#}
-{#            width: min(90%, 400px); transform: translateY(1rem); opacity: 0;#}
-{#            transition: all 0.3s ease;#}
-{#        }#}
-{#        .modal.open { transform: translateY(0); opacity: 1; }#}
-{##}
-{#        @keyframes moveGrad { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }#}
-{#    </style>#}
-{#</head>#}
-{##}
-{#<body>#}
-{##}
-{#<div class="main-content">#}
-{#  <div class="admin-left-main-content"></div>#}
-{##}
-{#  <div class="admin-right-main-content">#}
-{##}
-{#    {% if messages %}#}
-{#      <div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 10000;">#}
-{#        {% for message in messages %}#}
-{#          <div class="toast" style="background: var(--primary); color: white; padding: 15px 25px; border-radius: 10px; margin-bottom: 10px; box-shadow: var(--shadow);">#}
-{#            {{ message }}#}
-{#          </div>#}
-{#        {% endfor %}#}
-{#      </div>#}
-{#    {% endif %}#}
-{##}
-{#    <div class="unit-header">#}
-{#      <div>#}
-{#        <div class="unit-title">Manage Stock Units</div>#}
-{#        <div class="unit-sub">Add and organize measurement units (e.g., Kg, Pcs, Litre).</div>#}
-{#      </div>#}
-{#      <div class="unit-actions">#}
-{#        <a class="btn btn-ghost" href="/admin_home"><i class="ri-dashboard-line"></i> Dashboard</a>#}
-{#      </div>#}
-{#    </div>#}
-{##}
-{#    <div class="form-band">#}
-{#        <form action="/manage_units" method="post">#}
-{#            {% csrf_token %}#}
-{#            <div class="form-grid">#}
-{#                <span class="label">New Unit:</span>#}
-{#                <input type="text" name="unit_name" class="input" placeholder="e.g. Kilogram (Kg)" required>#}
-{#                <button type="submit" class="btn btn-primary">Add Unit</button>#}
-{#            </div>#}
-{#        </form>#}
-{#    </div>#}
-{##}
-{#    <div class="search-bar">#}
-{#      <i class="ri-search-line"></i>#}
-{#      <input type="text" id="unitSearch" class="search-input" placeholder="Search units..." onkeyup="filterUnits()">#}
-{#    </div>#}
-{##}
-{#    <div class="cat-table-wrap">#}
-{#        <table class="cat-table" id="unitTable">#}
-{#          <thead>#}
-{#            <tr>#}
-{#              <th style="width:100px;">Serial</th>#}
-{#              <th>Unit Name</th>#}
-{#              <th style="width:250px;">Actions</th>#}
-{#            </tr>#}
-{#          </thead>#}
-{#          <tbody>#}
-{#            {% for i in data %}#}
-{#            <tr>#}
-{#              <td>{{ forloop.counter }}</td>#}
-{#              <td class="u-name">{{ i.unit_name }}</td>#}
-{#              <td>#}
-{#                <button type="button" class="chip chip-edit" onclick="openEditModal('{{ i.id }}', '{{ i.unit_name }}')">#}
-{#                  <i class="ri-edit-line"></i> Edit#}
-{#                </button>#}
-{#                <button type="button" class="chip chip-del" onclick="openDeleteModal('{{ i.id }}', '{{ i.unit_name }}')">#}
-{#                  <i class="ri-delete-bin-line"></i> Delete#}
-{#                </button>#}
-{#              </td>#}
-{#            </tr>#}
-{#            {% empty %}#}
-{#            <tr><td colspan="3" style="text-align:center; padding: 40px; color: var(--text-soft);">No units found. Add your first one above!</td></tr>#}
-{#            {% endfor %}#}
-{#          </tbody>#}
-{#        </table>#}
-{#    </div>#}
-{##}
-{#  </div>#}
-{#</div>#}
-{##}
-{#<div id="editModal" class="modal-backdrop">#}
-{#    <div class="modal">#}
-{#        <div class="modal-header">#}
-{#            <div class="unit-title" style="font-size: 1.2rem;">Edit Unit</div>#}
-{#            <button class="modal-close" onclick="closeModal('editModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>#}
-{#        </div>#}
-{#        <form action="/manage_units" method="post" style="margin-top: 20px;">#}
-{#            {% csrf_token %}#}
-{#            <input type="hidden" name="id" id="edit_id">#}
-{#            <input type="text" name="unit_name" id="edit_name" class="input" style="width: 100%; box-sizing: border-box;" required>#}
-{#            <div style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">#}
-{#                <button type="button" class="btn btn-ghost" onclick="closeModal('editModal')">Cancel</button>#}
-{#                <button type="submit" class="btn btn-primary">Update Unit</button>#}
-{#            </div>#}
-{#        </form>#}
-{#    </div>#}
-{#</div>#}
-{##}
-{#<div id="deleteModal" class="modal-backdrop">#}
-{#    <div class="modal" style="border-top: 4px solid var(--danger);">#}
-{#        <div class="unit-title" style="font-size: 1.2rem; color: var(--danger);">Confirm Deletion</div>#}
-{#        <p class="help" style="margin-top: 15px;">Are you sure you want to delete <strong id="del_unit_name"></strong>? This action cannot be undone.</p>#}
-{#        <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 10px;">#}
-{#            <button type="button" class="btn btn-ghost" onclick="closeModal('deleteModal')">Cancel</button>#}
-{#            <a href="#" id="del_link" class="btn" style="background: var(--danger); color: white; border-radius: var(--radius-xl); text-decoration: none; padding: 8px 20px;">Delete</a>#}
-{#        </div>#}
-{#    </div>#}
-{#</div>#}
-{##}
-{#<script>#}
-{#    // 🚀 Modal Handling#}
-{#    function openEditModal(id, name) {#}
-{#        document.getElementById('edit_id').value = id;#}
-{#        document.getElementById('edit_name').value = name;#}
-{#        showModal('editModal');#}
-{#    }#}
-{##}
-{#    function openDeleteModal(id, name) {#}
-{#        document.getElementById('del_unit_name').innerText = name;#}
-{#        document.getElementById('del_link').href = "/delete_unit/" + id;#}
-{#        showModal('deleteModal');#}
-{#    }#}
-{##}
-{#    function showModal(id) {#}
-{#        const backdrop = document.getElementById(id);#}
-{#        backdrop.style.display = 'grid';#}
-{#        setTimeout(() => backdrop.querySelector('.modal').classList.add('open'), 10);#}
-{#    }#}
-{##}
-{#    function closeModal(id) {#}
-{#        const backdrop = document.getElementById(id);#}
-{#        backdrop.querySelector('.modal').classList.remove('open');#}
-{#        setTimeout(() => backdrop.style.display = 'none', 300);#}
-{#    }#}
-{##}
-{#    // 🚀 Live Search#}
-{#    function filterUnits() {#}
-{#        let input = document.getElementById('unitSearch').value.toLowerCase();#}
-{#        let rows = document.querySelectorAll('#unitTable tbody tr');#}
-{#        rows.forEach(row => {#}
-{#            let name = row.querySelector('.u-name')?.innerText.toLowerCase();#}
-{#            if (name) row.style.display = name.includes(input) ? '' : 'none';#}
-{#        });#}
-{#    }#}
-{##}
-{#    // Auto-hide toast messages#}
-{#    setTimeout(() => {#}
-{#        const toasts = document.querySelectorAll('.toast');#}
-{#        toasts.forEach(t => t.style.display = 'none');#}
-{#    }, 3000);#}
-{#</script>#}
-{##}
-{#</body>#}
-{#</html>#}
-
-
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Manage Units | Snap2Bill Admin</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Units | Snap2Bill Admin</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/unit.css' %}">
 
     <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
-
-    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
-
-    <style>
-        .admin-right-main-content { padding: var(--padding-lg); }
-
-        /* Header Layout Fix */
-        .unit-header {
-            display: flex; align-items: center; justify-content: space-between;
-            gap: var(--gutter-md); margin-bottom: var(--margin-lg);
-            background: var(--surface); padding: var(--padding-md);
-            border-radius: var(--radius-md); border: 1px solid var(--line);
-        }
-
-        .header-actions { display: flex; align-items: center; gap: 12px; }
-
-        /* 🔍 Styled Search Bar next to Dashboard */
-        .header-search {
-            display: flex; align-items: center; gap: 8px;
-            background: var(--white-color); border: 1px solid var(--border-color);
-            padding: 8px 16px; border-radius: var(--radius-xl); width: 280px;
-            transition: all 0.3s ease;
-        }
-        .header-search:focus-within { border-color: var(--primary); box-shadow: var(--shadow); }
-        .header-search input { border: none; outline: none; font-size: var(--font-sm); width: 100%; background: transparent; }
-        .header-search i { color: var(--text-soft); font-size: 1.1rem; }
-
-        /* 🔘 Buttons Styling */
-        .btn-primary {
-            border: 0; background: linear-gradient(90deg,var(--primary),var(--accent),var(--primary));
-            background-size: 200% 100%; color: var(--white-color); font-weight: 700;
-            padding: 10px 24px; border-radius: var(--radius-xl);
-            cursor: pointer; animation: moveGrad 5s linear infinite;
-        }
-
-        .btn-ghost {
-            background: transparent; color: var(--text-main); border: 1px solid var(--border-color);
-            padding: 10px 20px; border-radius: var(--radius-xl);
-            font-weight: 700; cursor: pointer; transition: all 0.2s;
-            display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
-        }
-        .btn-ghost:hover { background: var(--pill-bg); border-color: var(--primary); }
-
-        /* ❌ Modal Cancel Button */
-        .btn-discard {
-            background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0;
-            padding: 10px 20px; border-radius: var(--radius-xl); font-weight: 700;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .btn-discard:hover { background: #e2e8f0; color: #1e293b; }
-
-        /* ... Other Layout Styles ... */
-        .form-band { border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); padding: var(--padding-xl); margin-bottom: var(--margin-lg); }
-        .input { width: 100%; font-size: var(--font-sm); padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-xl); outline: none; }
-        .cat-table-wrap { border: 1px solid var(--border-color); border-radius: var(--radius-sm); box-shadow: var(--shadow); overflow: hidden; }
-        table.cat-table { width: 100%; border-collapse: collapse; background: var(--surface); }
-        .cat-table thead th { background: var(--surface); color: var(--text-main); text-align: left; padding: 12px 20px; font-weight: 800; border-bottom: 1px solid var(--line); }
-        .cat-table tbody td { padding: 12px 20px; border-bottom: 1px solid var(--line); }
-        .chip { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: var(--radius-xl); font-weight: 700; font-size: 0.85rem; text-decoration: none; border: 1px solid transparent; }
-        .chip-edit { color: var(--edit); background: var(--edit-bg); border-color: var(--edit-border); }
-        .chip-del { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
-        .modal-backdrop { position: fixed; inset: 0; background: var(--modal-color); display: none; place-items: center; z-index: 9999; }
-        .modal { background: var(--white-color); border-radius: var(--radius-md); box-shadow: var(--shadow); padding: 25px; width: 400px; transform: translateY(1rem); opacity: 0; transition: all 0.3s ease; }
-        .modal.open { transform: translateY(0); opacity: 1; }
-        @keyframes moveGrad { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    </style>
+    <script defer src="{% static 'scripts/unit.js' %}"></script>
 </head>
 
 <body>
-
 <div class="main-content">
   <div class="admin-left-main-content"></div>
 
   <div class="admin-right-main-content">
-
-    <div class="unit-header">
-      <div>
-        <div class="unit-title">Manage Stock Units</div>
-        <div class="unit-sub">Control Pcs, Kg, Ltr, etc.</div>
+    {% if messages %}
+      <div id="toast-container">
+        {% for message in messages %}
+          <div class="toast {{ message.tags }}">{% if message.tags == 'success' %}✓{% else %}⚠️{% endif %} {{ message }}</div>
+        {% endfor %}
       </div>
+    {% endif %}
 
-      <div class="header-actions">
+    <div class="cat-header">
+      <div>
+        <h1 class="cat-title">Stock Units</h1>
+        <p class="cat-sub">Configure measurement units like Pcs, Kg, Box, etc.</p>
+      </div>
+      <div class="search-actions">
         <div class="header-search">
           <i class="ri-search-line"></i>
-          <input type="text" id="unitSearch" placeholder="Search units..." onkeyup="filterUnits()">
+          <input type="text" id="unitSearch" placeholder="Search units...">
         </div>
-        <a class="btn-ghost" href="/admin_home">
-          <i class="ri-dashboard-line"></i> Dashboard
-        </a>
+        <a class="btn btn-ghost" href="/admin_home"><i class="ri-dashboard-line"></i> Dashboard</a>
       </div>
     </div>
 
-    <div class="form-band">
+    <div class="form-band-unit">
         <form action="/manage_units" method="post">
             {% csrf_token %}
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="font-weight: 800; color: var(--text-main);">Add Unit:</span>
-                <input type="text" name="unit_name" class="input" placeholder="e.g. Gram (g)" required style="max-width: 300px;">
-                <button type="submit" class="btn-primary">Save Unit</button>
+            <div class="unit-input-group">
+                <div class="unit-badge"><i class="ri-add-line"></i></div>
+                <input type="text" name="unit_name" class="form-input-custom" placeholder="Enter Unit Name (e.g. Kg)" required>
+                <button type="submit" class="btn btn-primary">Save Unit</button>
             </div>
         </form>
     </div>
@@ -365,86 +66,44 @@
             {% for i in data %}
             <tr>
               <td>{{ forloop.counter }}</td>
-              <td class="u-name" style="font-weight: 600;">{{ i.unit_name }}</td>
+              <td class="u-name-cell" style="font-weight: 700;">{{ i.unit_name }}</td>
               <td style="text-align: center;">
-                <button type="button" class="chip chip-edit" onclick="openEditModal('{{ i.id }}', '{{ i.unit_name }}')">
-                  <i class="ri-edit-line"></i> Edit
-                </button>
-                <button type="button" class="chip chip-del" onclick="openDeleteModal('{{ i.id }}', '{{ i.unit_name }}')">
-                  <i class="ri-delete-bin-line"></i>
-                </button>
+                <button class="chip chip-edit" onclick="openEditModal('{{ i.id }}', '{{ i.unit_name }}')"><i class="ri-edit-line"></i> Edit</button>
+                <button class="chip chip-del" onclick="openDeleteModal('{{ i.id }}', '{{ i.unit_name }}')"><i class="ri-delete-bin-line"></i></button>
               </td>
             </tr>
             {% endfor %}
           </tbody>
         </table>
     </div>
-
   </div>
 </div>
 
 <div id="editModal" class="modal-backdrop">
     <div class="modal">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="font-size: 1.2rem; font-weight: 800; color: var(--text-main);">Edit Unit</div>
-            <button onclick="closeModal('editModal')" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color: var(--text-soft);">&times;</button>
-        </div>
-
+        <div class="modal-title">Edit Stock Unit</div>
         <form action="/manage_units" method="post">
             {% csrf_token %}
             <input type="hidden" name="id" id="edit_id">
-            <div style="margin-bottom: 8px; font-weight: 700; font-size: 0.8rem; color: var(--text-soft); letter-spacing: 0.05em;">UNIT NAME</div>
-            <input type="text" name="unit_name" id="edit_name" class="input" required>
-
-            <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 12px;">
-                <button type="button" class="btn-discard" onclick="closeModal('editModal')">Discard</button>
-                <button type="submit" class="btn-primary">Update Unit</button>
+            <input type="text" name="unit_name" id="edit_name" class="form-input-custom" required>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-modal-cancel" onclick="closeModal('editModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </form>
     </div>
 </div>
 
 <div id="deleteModal" class="modal-backdrop">
-    <div class="modal" style="border-top: 4px solid var(--danger);">
-        <div style="font-size: 1.2rem; font-weight: 800; color: var(--danger);">Confirm Delete</div>
-        <p style="margin-top: 15px; color: var(--text-soft); line-height: 1.5;">Are you sure you want to delete <strong id="del_unit_name" style="color: var(--text-main);"></strong>? This will affect stock measurements.</p>
-        <div style="margin-top: 25px; display: flex; justify-content: flex-end; gap: 12px;">
-            <button type="button" class="btn-discard" onclick="closeModal('deleteModal')">Keep it</button>
-            <a href="#" id="del_link" class="btn-primary" style="background: var(--danger); text-decoration: none; text-align: center;">Yes, Delete</a>
+    <div class="modal">
+        <div class="modal-icon"><i class="ri-error-warning-fill"></i></div>
+        <div class="modal-title">Delete Unit?</div>
+        <div class="modal-body">Are you sure you want to delete <strong id="del_unit_name"></strong>?</div>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-modal-cancel" onclick="closeModal('deleteModal')">Keep it</button>
+            <a href="#" id="del_link" class="btn btn btn-modal-delete">Yes, Delete</a>
         </div>
     </div>
 </div>
-
-<script>
-    function openEditModal(id, name) {
-        document.getElementById('edit_id').value = id;
-        document.getElementById('edit_name').value = name;
-        showModal('editModal');
-    }
-    function openDeleteModal(id, name) {
-        document.getElementById('del_unit_name').innerText = name;
-        document.getElementById('del_link').href = "/delete_unit/" + id;
-        showModal('deleteModal');
-    }
-    function showModal(id) {
-        const backdrop = document.getElementById(id);
-        backdrop.style.display = 'grid';
-        setTimeout(() => backdrop.querySelector('.modal').classList.add('open'), 10);
-    }
-    function closeModal(id) {
-        const backdrop = document.getElementById(id);
-        backdrop.querySelector('.modal').classList.remove('open');
-        setTimeout(() => backdrop.style.display = 'none', 300);
-    }
-    function filterUnits() {
-        let input = document.getElementById('unitSearch').value.toLowerCase();
-        let rows = document.querySelectorAll('#unitTable tbody tr');
-        rows.forEach(row => {
-            let name = row.querySelector('.u-name')?.innerText.toLowerCase();
-            if (name) row.style.display = name.includes(input) ? '' : 'none';
-        });
-    }
-</script>
-
 </body>
 </html>

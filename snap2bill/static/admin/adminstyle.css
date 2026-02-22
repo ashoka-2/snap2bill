@@ -25,138 +25,155 @@ i{
 body::-webkit-scrollbar {
   display: none;
 }
-
 :root {
-
-    --image-size:5rem;
-
-    --modal-color:#02061780;
-    --popup-bg-color:black;
-    --black-color:black;
-    --primary: #0d0bc0;
-    --accent: #3c71e9;
-    --text-main:#0a0a0a;
-    --text-soft: #8c9aa9;
-    --surface:#ffffff;
-    --bg-body: #f4f7fe;
-    --line:#e5e7eb;
-    --shadow:0 0 2rem rgba(224, 223, 214, 0.69);
+    /* Layout & Sizing (Kept exactly as yours) */
+    --image-size: 5rem;
+    --nav-margin: 20vw;
+    --full-height: 100vh;
     --gap: clamp(2rem, 2.5vw, 3rem);
 
+    /* Core Colors */
+    --primary: #2563EB;       /* Vibrant Flutter Blue */
+    --accent: #0EA5E9;        /* Cyan/Light Blue for accents */
+    --bg-body: #F4F7FE;       /* Light grayish-blue scaffold background */
+    --surface: #FFFFFF;       /* Pure white for cards */
 
-    --danger: #c60001;
-    --danger-bg: rgba(255, 0, 2, 0.29);
-    --danger-border: rgba(255, 0, 9, 0.58);
+    /* Text Colors */
+    --text-main: #0F172A;     /* Near black for high contrast */
+    --text-soft: #64748B;     /* Slate gray for subtitles */
+    --white-color: #FFFFFF;
+    --black-color: #000000;
 
+    /* Status Colors: DANGER */
+    --danger: #EF4444;
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --danger-border: rgba(239, 68, 68, 0.3);
 
+    /* Status Colors: SUCCESS */
+    --success: #10B981;
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --success-border: rgba(16, 185, 129, 0.3);
 
-    --success: #009d40;
-    --success-bg: rgba(4, 255, 10, 0.28);
-    --success-border: #b7f7b2;
+    /* Status Colors: EDIT/WARNING (Matched to your Flutter Orange/Blue) */
+    --edit: #F59E0B;          /* Snap2Bill Orange icon color */
+    --edit-bg: rgba(245, 158, 11, 0.1);
+    --edit-border: rgba(245, 158, 11, 0.3);
 
-     --edit: #002eff;
-    --edit-bg: rgba(0, 33, 255, 0.2);
-    --edit-border: #0037f7;
+    /* Components & Borders */
+    --line: #E2E8F0;          /* Soft divider lines */
+    --border-color: #CBD5E1;  /* Standard borders */
+    --icon-color: #475569;    /* Default unselected icon color */
+    --active-color: rgba(37, 99, 235, 0.08); /* Hover/Active state background */
 
+    /* Pill / Badges */
+    --pill-bg: rgba(37, 99, 235, 0.1);
+    --pill-text: #2563EB;
+    --pill-border: rgba(37, 99, 235, 0.2);
+    --pill-hover-color: rgba(37, 99, 235, 0.2);
 
+    /* Modals & Shadows */
+    --modal-color: rgba(15, 23, 42, 0.6); /* Darker backdrop for modals */
+    --popup-bg-color: #FFFFFF;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
 
-    --white-color: rgb(241, 241, 241);
-    --pill-border: rgba(50, 77, 255, 0.52);
-    --pill-text: rgb(70, 71, 255);
-    --pill-bg:rgba(21,101,192,.1);
-    --pill-hover-color: rgba(35, 25, 206, 0.25);
-    --icon-color: rgb(0, 0, 0);
-    --border-color: rgb(122, 122, 122);
-    --active-color: rgba(131, 134, 134, 0.47);
-
-
-    --radius:5px;
-    --radius-xs:10px;
-    --radius-sm:15px;
-    --radius-md:20px;
-    --radius-lg:30px;
-    --radius-xl:50px;
-    --radius-circular:50%;
-
-    --transparent:transparent;
-    --full-height:100vh;
-
+    /* Typography & Spacing (Kept your exact variables) */
+    --radius: 5px;
+    --radius-xs: 10px;
+    --radius-sm: 15px;
+    --radius-md: 20px;
+    --radius-lg: 30px;
+    --radius-xl: 50px;
+    --radius-circular: 50%;
+    --transparent: transparent;
     --padding-xs: 0.5rem;
-    --padding-sm:1rem;
+    --padding-sm: 1rem;
     --padding-lg: 1.5rem;
     --padding-xl: 2rem;
     --padding-2xl: 2.5rem;
     --padding-3xl: 3rem;
-    --padding-btn:.5rem 1rem;
-
-
-    --size-xs:0.5vw;
-    --size-sm:1vw;
-    --size-lg:1.5vw;
-    --size-xl:2vw;
-    --size-2xl:2.5vw;
-
-    --font-xs:0.5rem;
-    --font-sm:0.9rem;
-    --font-md:1rem;
-    --font-lg:1.5rem;
-    --font-xl:2rem;
-    --font-2xl:2.5rem;
-    --font-3xl:3rem;
-    --font-4xl:4rem;
-
-    --margin-xxs:0.1rem;
-    --margin-xs:0.5rem;
-    --margin-sm:1rem;
-    --margin-lg:1.5rem;
-    --margin-xl:2rem;
-    --margin-2xl:2.5rem;
-    --margin-3xl:3rem;
-
-    --nav-margin:20vw;
-
+    --padding-btn: .5rem 1rem;
+    --size-xs: 0.5vw;
+    --size-sm: 1vw;
+    --size-lg: 1.5vw;
+    --size-xl: 2vw;
+    --size-2xl: 2.5vw;
+    --font-xs: 0.5rem;
+    --font-sm: 0.9rem;
+    --font-md: 1rem;
+    --font-lg: 1.5rem;
+    --font-xl: 2rem;
+    --font-2xl: 2.5rem;
+    --font-3xl: 3rem;
+    --font-4xl: 4rem;
+    --margin-xxs: 0.1rem;
+    --margin-xs: 0.5rem;
+    --margin-sm: 1rem;
+    --margin-lg: 1.5rem;
+    --margin-xl: 2rem;
+    --margin-2xl: 2.5rem;
+    --margin-3xl: 3rem;
     --gutter-xs: 0.25rem;
     --gutter-sm: 0.5rem;
-    --gutter-md: 1rem;      /* most common */
+    --gutter-md: 1rem;
     --gutter-lg: 1.5rem;
     --gutter-xl: 2rem;
-
-
     --blur-none: 0;
     --blur-xs: 2px;
     --blur-sm: 4px;
     --blur-md: 8px;
     --blur-lg: 12px;
     --blur-xl: 20px;
-
-    /* Glass / backdrop presets */
     --blur-glass-light: blur(6px);
     --blur-glass: blur(10px);
     --blur-glass-heavy: blur(16px);
-
 }
 
-  [data-theme="dark"] {
-    --primary:#4f9eff;
-    --accent:#64b5f6;
-    --text-main: rgba(255, 255, 255, 0.85);
-    --text-soft:#9ca3af;
-    --surface:#000000;
-      --bg-body: #000000;
-    --line:rgba(255,255,255,0.15);
-    --shadow:0 0 1rem rgba(0,0,0,0.4);
+/* =========================================
+   🌙 DARK MODE (Snap2Bill Deep Theme)
+   ========================================= */
+[data-theme="dark"] {
+    /* Core Colors */
+    --primary: #3B82F6;       /* Slightly lighter blue for dark mode visibility */
+    --accent: #38BDF8;        /* Bright Cyan */
+    --bg-body: #0A0A0A;       /* Deep dark background (Flutter Scaffold) */
+    --surface: #1E1E1E;       /* Elevated Card background (Flutter Cards) */
 
-       --pill-border: rgb(76, 250, 255);
-    --pill-text: rgb(66, 225, 255);
-    --pill-bg: rgba(69, 145, 192, 0.1);
+    /* Text Colors */
+    --text-main: rgba(255, 255, 255, 0.9);
+    --text-soft: #9CA3AF;
+    --white-color: #121212;   /* Inverted for dark mode logic */
+    --black-color: #FFFFFF;
 
-    --icon-color: rgb(255, 255, 255);
-    --border-color: rgb(189, 189, 189);
-    --active-color: rgba(131, 134, 134, 0.47);
-      --popup-bg-color:white;
+    /* Components & Borders */
+    --line: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.12);
+    --icon-color: rgba(255, 255, 255, 0.8);
+    --active-color: rgba(255, 255, 255, 0.08);
 
-  }
+    /* Status Colors: Adjusting opacities for dark mode glow */
+    --danger: #F87171;
+    --danger-bg: rgba(248, 113, 113, 0.15);
+    --danger-border: rgba(248, 113, 113, 0.3);
 
+    --success: #34D399;
+    --success-bg: rgba(52, 211, 153, 0.15);
+    --success-border: rgba(52, 211, 153, 0.3);
+
+    --edit: #FBBF24;
+    --edit-bg: rgba(251, 191, 36, 0.15);
+    --edit-border: rgba(251, 191, 36, 0.3);
+
+    /* Pill / Badges */
+    --pill-bg: rgba(59, 130, 246, 0.15);
+    --pill-text: #60A5FA;
+    --pill-border: rgba(96, 165, 250, 0.3);
+    --pill-hover-color: rgba(59, 130, 246, 0.25);
+
+    /* Modals & Shadows */
+    --modal-color: rgba(0, 0, 0, 0.8);
+    --popup-bg-color: #1E1E1E;
+    --shadow: 0 10px 25px rgba(0, 0, 0, 0.4); /* Stronger shadow for depth in dark mode */
+}
 
 
 
@@ -193,45 +210,7 @@ display: flex;
 }
 
 
-.admin-left-main-content{
-    background-color: var(--surface);
-    width: var(--nav-margin);
-    /*width: 17rem;*/
-    height: var(--full-height);
-    z-index: 10;
-    position: fixed;
-   display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-right: 1px solid var(--text-main);
-}
-
-
-
-
-
-
-.admin-top-left-content{
-    padding: var(--padding-xl);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-}
-
-.admin-menu{
-    font-size: var(--font-sm);
-    font-weight: bold;
-    text-align: center;
-    padding: var(--padding-sm);
-    cursor:default;
-
-
-}
-
 .admin-mid-left-content{
-    /*height: calc(100vh - 160px); !* Top + bottom space ke hisaab se adjust *!*/
     padding: var(--padding-xs);
     width: 100%;
     display: flex;
@@ -272,63 +251,15 @@ display: flex;
 
 
 
-.mid-left-navbars{
-    padding: var(--padding-sm);
-    display: flex;
-    align-items: center;
-    cursor:pointer;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--transparent);
-
-}
-.mid-left-navbars:hover{
-    background-color: var(--active-color);
-    transition: all ease-in-out 1ms;
-    border: 1px solid var(--border-color);
-
-}
-
-.active{
-    background-color: var(--active-color);
-    border-radius:var(--radius-sm);
-    transition: all ease-in-out 1ms;
-    border: 1px solid var(--border-color) !important;
-}
-
-
-.mid-left-navbars i{
-    font-size:var(--font-sm);
-    margin-right:var(--margin-xs);
-    color:var(--icon-color);
-}
 
 
 
-.admin-bottom-left-content{
-     /*background-color: rgb(187, 44, 192);*/
-    padding: var(--padding-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.admin-bottom-left-content a{
-    text-decoration: none;
-    color: var(--text-main);
-}
 
 
-.more-section{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--padding-sm) var(--padding-xl);
-    cursor: pointer;
-    border:1px solid transparent;
-    /*color: var(--primary);*/
-}
-.more-section i{
-    color: var(--icon-color);
-}
+
+
+
+
 .more-section:hover{
         border:1px solid var(--border-color);
     background-color: var(--active-color);
@@ -461,6 +392,236 @@ display: flex;
 
 
 
+.admin-left-main-content {
+    background-color: var(--surface);
+    width: var(--nav-margin);
+    height: var(--full-height);
+    position: fixed;
+    border-right: 1px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.02);
+    z-index: 100;
+}
+
+/* Logo Section */
+.admin-logo-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--padding-xl) 0;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--primary);
+    letter-spacing: 2px;
+}
+
+.sub-logo {
+    font-size: 0.6rem;
+    font-weight: 700;
+    color: var(--text-soft);
+    letter-spacing: 3px;
+    margin-top: -5px;
+}
+
+/* Nav Labels */
+.nav-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-soft);
+    margin: 1.5rem 1rem 0.5rem 1.5rem;
+    letter-spacing: 1px;
+    opacity: 0.6;
+}
+
+/* Nav Links */
+.mid-left-navbars {
+    margin: 0.2rem 1rem;
+    padding: 0.8rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-radius: var(--radius-sm);
+    color: var(--text-soft);
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mid-left-navbars i {
+    font-size: 1.2rem !important;
+    transition: 0.3s;
+}
+
+/* Active & Hover State */
+.nav-links:hover .mid-left-navbars {
+    background: var(--bg-body);
+    color: var(--primary);
+    transform: translateX(5px);
+}
+
+.mid-left-navbars.active {
+    background: var(--pill-bg) !important;
+    color: var(--primary) !important;
+    border-left: 4px solid var(--primary);
+}
+
+.mid-left-navbars.active i {
+    color: var(--primary);
+}
+
+/* More Section (Bottom) */
+.admin-bottom-left-content {
+    padding: 1rem;
+    border-top: 1px solid var(--line);
+}
+
+.more-section {
+    position: relative;
+    padding: 1rem;
+    background: var(--bg-body);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.more-btn-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
+.chevron {
+    margin-left: auto;
+    font-size: 1rem !important;
+}
+
+/* Dropdown Premium Style */
+.setting-dropdown {
+    width: calc(100% + 20px);
+    bottom: 110%;
+    left: -10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
+    backdrop-filter: blur(15px);
+    display: none;
+    padding: 0.5rem;
+}
+
+.setting-menu-dropdown {
+    padding: 0.8rem 1rem;
+    border-radius: var(--radius-xs);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.setting-menu-dropdown:hover {
+    background: var(--pill-bg);
+    color: var(--primary);
+}
+
+.dropdown-divider {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 0.5rem 0;
+}
+
+.logout-item:hover {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+
+
+@media (max-width: 992px) {
+    :root {
+        /* Sidebar width choti kardi. Is ek line se right content auto-adjust ho jayega! */
+        --nav-margin: 80px;
+    }
+
+    /* 1. Faltu text hide karo */
+    .sub-logo,
+    .nav-label,
+    .mid-left-navbars span,
+    .more-btn-inner span,
+    .more-btn-inner .chevron {
+        display: none !important;
+    }
+
+    /* 2. Logo adjustment ("SNAP2BILL" ki jagah sirf "S2B" dikhega) */
+    .logo-text { font-size: 0; }
+    .logo-text::after {
+        content: "S2B";
+        font-size: 1.6rem;
+        color: var(--primary);
+        font-weight: 900;
+        letter-spacing: 0;
+    }
+
+    /* 3. Center the Nav Icons */
+    .mid-left-navbars {
+        justify-content: center;
+        padding: 1rem 0;
+        border-radius: 15px; /* Squircle shape for mobile */
+        margin: 0.5rem 0.8rem;
+    }
+
+    .mid-left-navbars i {
+        font-size: 1.5rem !important; /* Icons thode bade taaki touch karna asaan ho */
+        margin: 0;
+    }
+
+    /* Active state styling for mobile */
+    .mid-left-navbars.active {
+        background: var(--pill-bg) !important;
+        box-shadow: inset 4px 0 0 var(--primary);
+        border-radius: 12px;
+    }
+
+    /* 4. Bottom Settings Button */
+    .admin-bottom-left-content { padding: 0.8rem; }
+    .more-section {
+        padding: 1rem 0;
+        display: flex;
+        justify-content: center;
+    }
+    .more-btn-inner { justify-content: center; width: 100%; }
+    .more-btn-inner i { font-size: 1.6rem !important; margin: 0; }
+
+    /* 5. The Dropdown Magic (Poora screen par aayega) */
+    .setting-dropdown {
+        left: 90px; /* Sidebar ke theek right side mein pop hoga */
+        bottom: 10px; /* Screen ke bottom se chipka hua */
+        width: 220px;
+        transform-origin: bottom left; /* Animation bottom-left se khulega */
+        box-shadow: 10px 10px 40px rgba(0,0,0,0.2);
+    }
+
+    /* Ensure dropdown items text is visible (kyunki upar span hide kiya tha) */
+    .setting-menu-dropdown { font-size: 0.9rem; }
+}
+
+/* Extra small screens (Phones) */
+@media (max-width: 576px) {
+    :root {
+        --nav-margin: 70px; /* Aur patla kar diya */
+    }
+    .mid-left-navbars { margin: 0.5rem; padding: 0.8rem 0; }
+    .setting-dropdown {
+        left: 80px;
+        width: 200px;
+    }
+}
 
 
 
@@ -471,6 +632,50 @@ display: flex;
 
 
 
+
+
+
+
+
+@media (pointer: fine) {
+    body, a, button, input, select, textarea, .more-section, .action-btn {
+        cursor: none !important;
+    }
+
+    .cursor-dot, .cursor-outline {
+        position: fixed;
+        top: 0; left: 0;
+        border-radius: 50%;
+        z-index: 999999;
+        pointer-events: none;
+        opacity: 0; /* Start hidden to prevent top-left glitch */
+        transition: opacity 0.3s ease; /* Smooth fade-in */
+        will-change: transform; /* Hardware acceleration for 60fps+ */
+    }
+
+    .cursor-dot {
+        width: 8px; height: 8px;
+        background-color: var(--primary);
+    }
+
+    .cursor-outline {
+        width: 35px; height: 35px;
+        border: 2px solid var(--primary);
+        /* Transform ko CSS transition se nikal diya taaki JS bindass handle kare */
+        transition: width 0.2s ease-out, height 0.2s ease-out, background-color 0.2s ease-out, border-color 0.2s, opacity 0.3s ease;
+    }
+
+    .cursor-outline.hover-active {
+        width: 60px; height: 60px;
+        background-color: rgba(37, 99, 235, 0.1);
+        border-color: transparent;
+    }
+
+    .cursor-outline.click-active {
+        width: 25px; height: 25px;
+        background-color: rgba(37, 99, 235, 0.3);
+    }
+}
 
 
 

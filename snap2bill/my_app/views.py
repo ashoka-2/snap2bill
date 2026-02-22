@@ -1,18 +1,18 @@
 import os
 from datetime import datetime
 from collections import defaultdict
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User, Group
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
-from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q, Count
-from difflib import get_close_matches
-import numpy as np
+from django.contrib.auth import logout as auth_logout
+from dotenv import load_dotenv
+load_dotenv()
 
 import cv2
 from django.views.decorators.csrf import csrf_exempt
@@ -52,7 +52,7 @@ def get_new_filename():
     dt=datetime.now().strftime("%Y%m%d_%H%M%S")+".jpg"
     return dt
 
-#   admin@gmail.com     superuser
+
 
 
 from my_app.models import category, distributor, review, feedback, customer, product, stock, order_sub, order, payment, \
@@ -67,34 +67,42 @@ def log(request):
 
 
 def logout(request):
+    auth_logout(request)
     return redirect("/")
 
 
-
 def login_post(request):
-    un = request.POST['username']
-    psw = request.POST['password']
+    un = request.POST.get('username')
+    psw = request.POST.get('password')
+
+    # User ko authenticate karo
     data = authenticate(request, username=un, password=psw)
 
     if data is not None:
-        login(request, data)
+        # Check karo ki kya wo Admin (superuser) hai
         if data.is_superuser:
+            login(request, data)
             return redirect('/admin_home')
+        else:
+            # Agar koi customer/distributor admin portal se login try kare
+            messages.error(request, "Access Denied! Only admins can login here.")
+            return redirect('/')  # Wapis login page par bhej do
     else:
-        return  HttpResponse("Invalid")
-   
+        # Agar username ya password galat ho
+        messages.error(request, "Invalid Username or Password.")
+        return redirect('/')  # Wapis login page par bhej do
 
 
 
 
 
 
-@login_required(login_url='')
+@login_required(login_url='/')
 def change_password(request):
     return render(request, 'changePassword.html')
 
 
-
+@login_required(login_url='/')
 def change_password_post(request):
     if request.method != "POST":
         messages.error(request, "Invalid request method.")
@@ -135,7 +143,6 @@ def change_password_post(request):
     messages.success(request, "Password updated successfully.")
     return redirect('/admin_home')
 
-
 def forget_password(request):
     return render(request, 'forget_password.html')
 
@@ -147,10 +154,8 @@ def forget_password_post(request):
         return redirect('/forget_password_set')
     return HttpResponse("<script>alert('invalid');window.location='/'</script>")
 
-
 def forget_password_set(request):
     return render(request, 'forget_password_set.html')
-
 
 
 def forget_password_set_post(request):
@@ -158,14 +163,10 @@ def forget_password_set_post(request):
         newpass = request.POST.get('newpassword')
         confirmpass = request.POST.get('confirmpassword')
 
-        # 1. Server-Side Validation: Check if passwords match
         if newpass != confirmpass:
-            # Send error message to be caught by the Snackbar
             messages.error(request, "Passwords do not match!")
-            # Redirect back to the change password page (replace 'change_password_page' with your actual URL name)
             return redirect('change_password_page')
 
-            # 2. Update Password Logic
         try:
             # Check if session ID exists
             if 'fid' in request.session:
@@ -173,7 +174,6 @@ def forget_password_set_post(request):
                 obj.set_password(newpass)
                 obj.save()
 
-                # Optional: Clear the session variable so they can't change it again
                 del request.session['fid']
 
                 messages.success(request, "Password updated successfully!")
@@ -190,7 +190,7 @@ def forget_password_set_post(request):
 
 
 
-
+@login_required(login_url='/')
 def admin_home(request):
     customer_count = customer.objects.count()
     pending_count = distributor.objects.filter(status='pending').count()
@@ -214,31 +214,36 @@ def admin_home(request):
     }
     return render(request, 'admin/admin_home.html', context)
 
+@login_required(login_url='/')
 def admin_setting(request):
     return render(request,'admin/settingpage.html')
 
+@login_required(login_url='/')
 def admin_verify(request):
     distributordata = distributor.objects.filter(status='pending')
     return render(request, 'admin/admin_verify.html',{'distributordata':distributordata})
 
+@login_required(login_url='/')
 def accept_distributor(request,id):
     distributor.objects.filter(id=id).update(status='approve')
     return HttpResponse("<script>window.location='/admin_verify'</script>")
 
+@login_required(login_url='/')
 def reject_distributor(request,id):
     distributor.objects.filter(id=id).update(status='reject')
     return HttpResponse("<script>window.location='/admin_verify'</script>")
 
-
+@login_required(login_url='/')
 def admin_verified(request):
     distributordata = distributor.objects.filter(status='approve')
     return render(request, 'admin/admin_verified.html',{'distributordata':distributordata})
 
-
+@login_required(login_url='/')
 def admin_viewcustomer(request):
     customerdata = customer.objects.all()
     return render(request, 'admin/admin_viewcustomer.html',{'customerdata':customerdata})
 
+@login_required(login_url='/')
 def admin_review(request):
     reviewdata = review.objects.all().order_by('-review_date')
     return render(request, 'admin/admin_review.html', {'reviewdata': reviewdata})
@@ -282,30 +287,17 @@ def delete_review(request,id):
     review.objects.filter(id=id).delete()
     return JsonResponse({'status':'ok'})
 
-# def add_category_post(request):
-#     category_name = request.POST['Category']
-#     obj=category()
-#     obj.category_name=category_name
-#     obj.save()
-#     return HttpResponse("<script>alert(' Category Added successfully');window.location='/admin_category'</script>")
-#
-# def edit_category_post(request,id):
-#     cat=request.POST['Category']
-#     category.objects.filter(id=id).update(category_name=cat)
-#     return HttpResponse("<script>alert(' Category Updated successfully');window.location='/admin_category'</script>")
-#
-# def delete_category(request,id):
-#     data=category.objects.get(id=id)
-#     data.delete()
-#     return HttpResponse("<script>alert(' Category Deleted successfully');window.location='/admin_category'</script>")
 
+@login_required(login_url='/')
 def admin_category(request):
     data = category.objects.all()
     return render(request, 'admin/admin_category.html', {'data': data})
 
+@login_required(login_url='/')
 def admin_add_category(request):
     return render(request, 'admin/add_category.html')
 
+@login_required(login_url='/')
 def add_category_post(request):
     category_name = request.POST['Category']
     obj = category(category_name=category_name)
@@ -313,17 +305,19 @@ def add_category_post(request):
     messages.success(request, f"Category '{category_name}' added successfully!")
     return redirect('/admin_category')
 
+@login_required(login_url='/')
 def edit_category(request, id):
     data = get_object_or_404(category, id=id)
     return render(request, 'admin/edit_category.html', {'data': data})
 
+@login_required(login_url='/')
 def edit_category_post(request, id):
     cat = request.POST['Category']
     category.objects.filter(id=id).update(category_name=cat)
     messages.success(request, f"Category updated to '{cat}' successfully!")
     return redirect('/admin_category')
 
-# @require_POST
+@login_required(login_url='/')
 def delete_category(request, id):
     obj=category.objects.get(id=id)
     name = obj.category_name
@@ -331,7 +325,7 @@ def delete_category(request, id):
     messages.error(request, f"Category '{name}' deleted.")
     return redirect('/admin_category')
 
-
+@login_required(login_url='/')
 def manage_units(request):
     # --- HANDLE ADDING/EDITING ---
     if request.method == "POST":
@@ -354,7 +348,7 @@ def manage_units(request):
     return render(request, 'admin/manage_units.html', {'data': data})
 
 
-# --- HANDLE DELETION ---
+@login_required(login_url='/')
 def delete_unit(request, id):
     unit.objects.filter(id=id).delete()
     messages.error(request, "Unit Deleted.")
@@ -383,28 +377,7 @@ def view_units(request):
 
 
 
-# def admin_feedback(request):
-#     feeddata = feedback.objects.filter(type='user')
-#     return render(request,'admin/admin_feedback.html',{'feeddata':feeddata})
-# # def admin_feedback(request):
-# #     feeddata = feedback.objects.select_related('USER', 'DISTRIBUTOR').order_by('-feedback_date')
-# #     return render(request, 'admin/admin_feedback.html', {'feeddata': feeddata})
-#
-# def send_feedback(request):
-#     cid = request.POST['cid']
-#     feedbacks = request.POST['feedbacks']
-#     uid = request.POST['uid']
-#     obj = feedback()
-#     obj.feedback_date = datetime.now().date()
-#
-#     obj.feedbacks = feedbacks
-#     obj.USER_id = cid
-#     obj.DISTRIBUTOR_id = uid
-#     obj.save()
-#     return JsonResponse({'status': 'ok'})
-# from django.utils import timezone
 
-# ========== SEND FEEDBACK (Customer or Distributor) ==========
 def send_feedback(request):
     if request.method == 'POST':
         feedbacks = request.POST.get('feedbacks')
@@ -749,7 +722,7 @@ def forgotemail(request):
         try:
             sender_email = "snap2bill@gmail.com"
             receiver_email = email # change to actual recipient
-            app_password = "zfpm hiry mqgm rzer"
+            app_password = os.getenv("EMAIL_APP_PASSWORD")
             # Setup SMTP
             server = smtplib.SMTP("smtp.gmail.com", 587)
             server.starttls()
@@ -898,18 +871,18 @@ def forgotpass(request):
 
 
 
-
+@login_required(login_url='/')
 def view_product(request):
     productdata = product.objects.all()
     return render(request, 'admin/view_product.html', {'productdata': productdata})
 
-
+@login_required(login_url='/')
 def add_product(request):
     categorydtata = category.objects.all()
     return render(request,"admin/add_product.html",{'categorydata':categorydtata})
 
 
-
+@login_required(login_url='/')
 def add_product_post(request):
     product_name = request.POST['product_name']
     img = compress_image(request.FILES['image'])
@@ -928,13 +901,13 @@ def add_product_post(request):
     return redirect('/view_product')
 
 
-
+@login_required(login_url='/')
 def edit_product(request,id):
     data = product.objects.get(id=id)
     categorydata = category.objects.all()
     return render(request, 'admin/edit_product.html',{'data': data,'categorydata':categorydata})
 
-
+@login_required(login_url='/')
 def edit_product_post(request,id):
     product_name = request.POST['product_name']
 
@@ -956,7 +929,7 @@ def edit_product_post(request,id):
     return redirect('/view_product')
 
 
-
+@login_required(login_url='/')
 def delete_product(request, id):
     obj = product.objects.get(id=id)
 
@@ -1939,8 +1912,8 @@ def scanItem(request):
 
     product_names = [item.PRODUCT.product_name for item in allproduct]
     product_list_text = ", ".join(product_names)
-
-    genai.configure(api_key="AIzaSyBa8o8boGMxupOmBOk8sMW9Lmzr40LahFg")
+    api_key = os.getenv("GEMINI_API_KEY")
+    genai.configure(api_key=api_key)
     model = genai.GenerativeModel("models/gemini-2.5-flash-lite")
 
     prompt = f"""Identify from: {product_list_text}. 

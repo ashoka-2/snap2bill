@@ -1,40 +1,207 @@
-/* admin/unit.css */
+/* ==========================================================================
+   🚀 SNAP2BILL MANAGE UNITS MASTER CSS (Pure Independent)
+   ========================================================================== */
 
-/* Re-using your header styles */
-.unit-header {
+/* --- 1. HEADER & TOP ACTIONS --- */
+.cat-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--margin-2xl);
+    flex-wrap: wrap;
     gap: var(--gutter-md);
-    margin-bottom: var(--margin-lg);
 }
 
-.unit-title {
-    font-size: var(--font-lg);
+.cat-title {
+    font-size: var(--font-xl);
     font-weight: 800;
-    letter-spacing: .02em;
+    color: var(--text-main);
+    text-transform: uppercase;
+}
+
+.cat-sub {
+    color: var(--text-soft);
+    font-size: var(--font-sm);
+    margin-top: 4px;
+}
+
+.header-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    width: 280px;
+    box-shadow: var(--shadow);
+    transition: 0.3s;
+}
+
+.header-search:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--pill-bg);
+}
+
+.header-search input {
+    border: none;
+    outline: none;
+    font-size: var(--font-sm);
+    width: 100%;
+    background: transparent;
     color: var(--text-main);
 }
 
-.unit-sub {
-    color: var(--text-soft);
-    font-size: var(--font-sm);
-    margin-top: var(--margin-xxs);
+.search-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
-/* Quick Add Form Band */
-.unit-form-band {
-    margin-bottom: var(--margin-lg);
+/* --- 2. QUICK ADD FORM --- */
+.form-band-unit {
+    background: var(--surface);
+    padding: var(--padding-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    margin-bottom: var(--margin-xl);
+    box-shadow: var(--shadow);
 }
 
-/* Modal specific overrides to match your theme */
-#editUnitModal .modal, #deleteUnitModal .modal {
-    width: min(92vw, 30rem);
+.unit-input-group {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--gutter-md);
 }
 
-.empty-row {
+.unit-badge {
+    width: 45px;
+    height: 45px;
+    background: var(--pill-bg);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 1.2rem;
+    border: 1px solid var(--pill-border);
+}
+
+.form-input-custom {
+    width: 100%;
+    background: var(--bg-body);
+    border: 1px solid var(--line);
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-input-custom:focus { border-color: var(--primary); background: var(--surface); }
+
+/* --- 3. PREMIUM BUTTONS & CHIPS --- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: 0.3s;
+    border: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4); }
+
+.btn-ghost {
+    background: var(--surface);
+    color: var(--text-main);
+    border: 1px solid var(--line);
+}
+
+.chip {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.chip-edit { color: var(--primary); background: var(--pill-bg); border-color: var(--pill-border); }
+.chip-del { color: var(--danger); background: var(--danger-bg); border-color: var(--danger-border); }
+
+/* --- 4. DATA TABLE --- */
+.cat-table-wrap {
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    overflow: hidden;
+}
+
+.cat-table { width: 100%; border-collapse: collapse; }
+.cat-table th { background: var(--bg-body); padding: 1.2rem; color: var(--primary); text-align: left; font-weight: 800; border-bottom: 2px solid var(--line); }
+.cat-table td { padding: 1.2rem; border-bottom: 1px solid var(--line); color: var(--text-main); }
+.cat-table tr:hover { background-color: var(--pill-bg); }
+
+/* --- 5. MODAL SYSTEM --- */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--modal-color);
+    backdrop-filter: blur(4px);
+    display: none;
+    place-items: center;
+    z-index: 10000;
+}
+
+.modal {
+    background: var(--surface);
+    padding: 2.5rem;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 420px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
     text-align: center;
-    padding: var(--padding-xl) !important;
-    color: var(--text-soft);
-    font-style: italic;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: 0.3s;
 }
+
+.modal.open { transform: translateY(0); opacity: 1; }
+
+.modal-icon {
+    width: 60px; height: 60px;
+    background: var(--danger-bg);
+    color: var(--danger);
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 auto 1.5rem;
+}
+
+.modal-title { font-weight: 800; font-size: 1.3rem; margin-bottom: 1rem; }
+
+.modal-actions { display: flex; gap: 1rem; margin-top: 2rem; }
+
+.btn-modal-delete { background: var(--danger); color: white; flex: 1; }
+.btn-modal-cancel { background: var(--line); color: var(--text-main); flex: 1; }

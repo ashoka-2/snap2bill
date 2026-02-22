@@ -1,237 +1,35 @@
-
-
 {% load static %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Admin Reviews</title>
-
-<!-- 1. Favicon -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Reviews | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/feedback.css' %}">
     <script defer src="{% static 'scripts/setting.js' %}"></script>
     <script defer src="{% static 'scripts/navbar.js' %}"></script>
-
-<!-- 2. Icons & Styles -->
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4.7.0/fonts/remixicon.css" rel="stylesheet"/>
-<link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
-<!-- Reusing customerpage.css for shared layout styles if you have it, otherwise styles are inline below -->
-{#<link rel="stylesheet" type="text/css" href="{% static 'admin/customerpage.css' %}">#}
-
-<!-- 3. Theme Loader -->
-
-<style>
-    /* Ensure Fonts match your system */
-    @font-face {
-        font-family: magic;
-        src: url('/static/fonts/SamsungOne-400.woff2');
-    }
-    @font-face {
-        font-family: bayon;
-        src: url('/static/fonts/Bayon.ttf');
-    }
-
-    /* Page Specific Styles */
-    .rev-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
-
-    .rev-title {
-        font-family: bayon, sans-serif;
-        font-size: 2rem;
-        color: var(--text-main);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin: 0;
-    }
-
-    .rev-actions {
-        display: flex;
-        gap: 0.75rem;
-    }
-
-    /* Button Styles */
-    .btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.7rem 1.2rem;
-        border-radius: 99px;
-        text-decoration: none;
-        font-weight: 700;
-        transition: transform 0.2s, box-shadow 0.2s;
-        border: 0;
-        cursor: pointer;
-        font-size: 0.95rem;
-        color: var(--surface);
-        background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
-    }
-
-    .btn-ghost {
-        background: transparent;
-        color: var(--primary);
-        border: 1px solid var(--primary);
-    }
-    .btn-ghost:hover {
-        background: var(--bg-body);
-        transform: translateY(-2px);
-    }
-
-    .rev-filters {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        width: 100%;
-        background: var(--surface);
-        padding: 1rem;
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--line);
-        margin-bottom: 1.5rem;
-        align-items: center;
-    }
-
-    .search-input {
-        flex: 1;
-        min-width: 250px;
-        padding: 0.8rem 1rem;
-        border-radius: 99px;
-        border: 1px solid var(--line);
-        background: var(--bg-body);
-        color: var(--surface);
-        font-family: magic, sans-serif;
-        outline: none;
-        transition: 0.2s;
-    }
-    .search-input:focus { border-color: var(--primary); }
-
-    .filter-select {
-        padding: 0.8rem 1.5rem;
-        border-radius: 99px;
-        border: 1px solid var(--line);
-        background: var(--bg-body);
-        color: var(--text-main);
-        font-family: magic, sans-serif;
-        cursor: pointer;
-        outline: none;
-    }
-
-    /* Table Styles matching AdminStyle */
-    .table-container {
-        background: var(--surface);
-        border-radius: var(--radius);
-        box-shadow: var(--shadow);
-        border: 1px solid var(--line);
-        overflow: hidden; /* For rounded corners */
-        overflow-x: auto;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        text-align: left;
-    }
-
-    thead {
-        background: linear-gradient(to right, var(--bg-body), var(--surface));
-        border-bottom: 2px solid var(--line);
-    }
-
-    th {
-        padding: 1.2rem 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-        text-transform: uppercase;
-        font-size: 0.85rem;
-        letter-spacing: 0.05em;
-        white-space: nowrap;
-    }
-
-    /* Icon styling inside table headers */
-    th i {
-        font-size: 1rem;
-        margin-right: 0.4rem;
-        vertical-align: text-bottom;
-        font-weight: 400;
-    }
-
-    td {
-        padding: 1.2rem 1.5rem;
-        color: var(--text-main);
-        border-bottom: 1px solid var(--line);
-        font-size: 0.95rem;
-    }
-
-    tr:last-child td { border-bottom: none; }
-
-    tbody tr { transition: background 0.2s; }
-    tbody tr:hover { background-color: var(--bg-body); }
-
-    /* Star Rating */
-    .stars {
-        display: flex;
-        gap: 2px;
-        color: #fbbf24; /* Amber/Gold */
-    }
-    .stars i.empty {
-        color: #e2e8f0; /* Light Gray */
-    }
-    [data-theme="dark"] .stars i.empty { color: #334155; }
-
-    /* User/Distributor Badges */
-    .user-badge {
-        display: flex;
-        flex-direction: column;
-    }
-    .user-name { font-weight: 700; color: var(--text-main); }
-    .user-role { font-size: 0.8rem; color: var(--text-soft); }
-
-    /* No Data Message */
-    #noDataMessage {
-        padding: 3rem;
-        text-align: center;
-        color: var(--text-soft);
-        display: none; /* Toggled by JS */
-    }
-    #noDataMessage i { font-size: 3rem; margin-bottom: 0.5rem; display: block; opacity: 0.5; }
-
-</style>
 </head>
-
 <body>
-
 <div class="main-content">
-    <!-- Sidebar -->
-    <div class="admin-left-main-content">
-
-    </div>
-
-    <!-- Main Content -->
+    <div class="admin-left-main-content"></div>
     <div class="admin-right-main-content">
 
-        <!-- Header -->
-        <div class="rev-header">
-            <div>
-                <h1 class="rev-title">Reviews</h1>
-                <div style="color:var(--text-soft); font-weight:600; margin-top:0.25rem;">Total Reviews: {{ reviewdata|length }}</div>
+        <div class="fb-header">
+            <div class="fb-title-group">
+                <h1>Service Reviews</h1>
+                <span>Total Reviews: {{ reviewdata|length }}</span>
             </div>
-            <div class="rev-actions">
-                <a href="/admin_home" class="btn btn-ghost"><i class="ri-dashboard-line"></i> Dashboard</a>
-                  <a class="btn " href="/admin_viewcustomer"><i class="ri-user-3-line"></i> Customers</a>
-
+            <div class="fb-actions">
+                <a href="/admin_viewcustomer" class="btn-premium"><i class="ri-user-smile-fill"></i> View Customers</a>
             </div>
         </div>
 
-        <!-- Filters -->
-        <div class="rev-filters">
-            <i class="ri-search-2-line" style="color:var(--text-soft);"></i>
-            <input type="text" id="searchInput" class="search-input" placeholder="Search by Customer, Distributor or Review content...">
-
-            <select id="ratingFilter" class="filter-select">
+        <div class="fb-filters">
+            <i class="ri-star-half-fill" style="color: var(--edit);"></i>
+            <input type="text" id="searchInput" class="filter-pill search-expand" placeholder="Search Customer, Distributor or Review content...">
+            <select id="ratingFilter" class="filter-pill">
                 <option value="0">All Ratings</option>
                 <option value="5">⭐⭐⭐⭐⭐ (5 Only)</option>
                 <option value="4">⭐⭐⭐⭐ & Up</option>
@@ -239,19 +37,20 @@
                 <option value="2">⭐⭐ & Up</option>
                 <option value="1">⭐ & Up</option>
             </select>
+                <button id="resetFilters" class="btn-reset" type="button" title="Clear all filters">
+                    <i class="ri-refresh-line"></i> Reset </button>
         </div>
 
-        <!-- Table -->
         <div class="table-container">
-            <table>
+            <table class="styled-table">
                 <thead>
                     <tr>
-                        <th><i class="ri-hashtag"></i> S.No</th>
-                        <th><i class="ri-user-line"></i> Customer</th>
-                        <th><i class="ri-store-2-line"></i> Distributor</th>
-                        <th><i class="ri-chat-3-line"></i> Review</th>
-                        <th><i class="ri-star-fill"></i> Rating</th>
-                        <th><i class="ri-calendar-line"></i> Date</th>
+                        <th style="width: 60px;">#</th>
+                        <th>User & Role</th>
+                        <th>Distributor</th>
+                        <th style="width: 300px;">Review Content</th>
+                        <th>Rating</th>
+                        <th style="width: 120px;">Date</th>
                     </tr>
                 </thead>
                 <tbody id="reviewsTableBody">
@@ -259,32 +58,29 @@
                     <tr class="review-row"
                         data-customer="{{ i.USER.name|lower }}"
                         data-distributor="{{ i.DISTRIBUTOR.name|lower }}"
-                        data-review="{{ i.reviews|lower }}"
+                        data-text="{{ i.reviews|lower }}"
                         data-rating="{{ i.rating }}">
 
                         <td>{{ forloop.counter }}</td>
 
                         <td>
-                            <div class="user-badge">
-                                <span class="user-name">{{ i.USER.name }}</span>
-                                <span class="user-role">Customer</span>
+                            <div class="name-badge">
+                                <span class="name-main">{{ i.USER.name|default:"Guest" }}</span>
+                                <span class="name-sub">Customer</span>
                             </div>
                         </td>
 
                         <td>
-                            <div class="user-badge">
-                                <span class="user-name">{{ i.DISTRIBUTOR.name }}</span>
-                                <span class="user-role">Distributor</span>
+                            <div class="name-badge">
+                                <span class="name-main" style="color: var(--accent);">{{ i.DISTRIBUTOR.name }}</span>
+                                <span class="name-sub">Distributor</span>
                             </div>
                         </td>
 
-                        <td style="max-width: 300px; line-height: 1.5;">
-                            {{ i.reviews }}
-                        </td>
+                        <td style="line-height: 1.5; color: var(--text-soft);">{{ i.reviews }}</td>
 
                         <td>
                             <div class="stars">
-                                <!-- Logic to display filled/empty stars based on numeric rating -->
                                 {% if i.rating >= 1 %}<i class="ri-star-fill"></i>{% else %}<i class="ri-star-line empty"></i>{% endif %}
                                 {% if i.rating >= 2 %}<i class="ri-star-fill"></i>{% else %}<i class="ri-star-line empty"></i>{% endif %}
                                 {% if i.rating >= 3 %}<i class="ri-star-fill"></i>{% else %}<i class="ri-star-line empty"></i>{% endif %}
@@ -293,46 +89,33 @@
                             </div>
                         </td>
 
-                        <td style="color:var(--text-soft);">{{ i.review_date }}</td>
+                        <td style="font-weight: 600; color: var(--text-soft);">{{ i.review_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
 
-            <!-- No Data Message -->
-            <div id="noDataMessage">
-                <i class="ri-inbox-2-line"></i>
-                <h3>No reviews found</h3>
-                <p>Try adjusting your filters.</p>
-            </div>
+            <div id="noDataMessage"><i class="ri-star-line"></i><h3>No reviews found</h3></div>
         </div>
-
     </div>
 </div>
 
 <script>
-
-    /* --- Filtering Logic --- */
     const searchInput = document.getElementById('searchInput');
     const ratingFilter = document.getElementById('ratingFilter');
     const rows = document.querySelectorAll('.review-row');
-    const noMsg = document.getElementById('noDataMessage');
+    const noData = document.getElementById('noDataMessage');
 
     function filterReviews() {
-        const query = searchInput.value.toLowerCase();
+        const q = searchInput.value.toLowerCase().trim();
         const minRating = parseInt(ratingFilter.value);
         let visibleCount = 0;
 
         rows.forEach(row => {
-            const customer = row.dataset.customer;
-            const distributor = row.dataset.distributor;
-            const review = row.dataset.review;
-            const rating = parseInt(row.dataset.rating);
-
-            // Check Search Text
-            const matchText = customer.includes(query) || distributor.includes(query) || review.includes(query);
-            // Check Rating
-            const matchRating = rating >= minRating;
+            const matchText = row.dataset.customer.includes(q) ||
+                              row.dataset.distributor.includes(q) ||
+                              row.dataset.text.includes(q);
+            const matchRating = parseInt(row.dataset.rating) >= minRating;
 
             if (matchText && matchRating) {
                 row.style.display = '';
@@ -342,14 +125,18 @@
             }
         });
 
-        // Show "No Data" if everything is hidden
-        noMsg.style.display = (visibleCount === 0) ? 'block' : 'none';
+        noData.style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     searchInput.addEventListener('input', filterReviews);
     ratingFilter.addEventListener('change', filterReviews);
 
+    // Reset Button Logic
+    document.getElementById('resetFilters').addEventListener('click', () => {
+        searchInput.value = '';
+        ratingFilter.value = '0';
+        filterReviews();
+    });
 </script>
-
 </body>
 </html>

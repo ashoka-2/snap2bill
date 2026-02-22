@@ -1,0 +1,193 @@
+/* ==========================================================================
+   🚀 SNAP2BILL SETTINGS PAGE - FINAL POLISHED CSS
+   ========================================================================== */
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--gap);
+    align-items: start;
+}
+
+@media (min-width: 1024px) {
+    .settings-grid { grid-template-columns: 2fr 1fr; }
+}
+
+.settings-card {
+    background: var(--surface);
+    padding: var(--padding-xl);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    margin-bottom: var(--gap);
+    transition: transform 0.3s ease;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--gutter-sm);
+    font-size: var(--font-md);
+    font-weight: 800;
+    margin-bottom: var(--margin-sm);
+    color: var(--text-main);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: var(--padding-xs);
+}
+
+.card-subtitle { color: var(--text-soft); font-size: var(--font-sm); margin-bottom: 1.5rem; }
+
+/* --- 🏷️ BRANDING SECTION STYLE --- */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Modern File Input */
+.custom-file-input {
+    width: 100%;
+    padding: 1.5rem;
+    background: var(--bg-body);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-soft);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.custom-file-input:hover {
+    border-color: var(--primary);
+    background: var(--pill-bg);
+    color: var(--primary);
+}
+
+.help-text {
+    font-size: 0.75rem;
+    color: var(--text-soft);
+    margin-top: 0.6rem;
+    font-style: italic;
+}
+
+/* --- 🎨 COLOR PICKERS --- */
+.color-picker-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--gutter-md);
+}
+
+.cp-item {
+    background: var(--bg-body);
+    border: 1px solid var(--line);
+    padding: 0.8rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--gutter-md);
+    transition: border-color 0.3s;
+}
+
+.cp-item:hover { border-color: var(--primary); }
+
+.cp-item input[type="color"] {
+    -webkit-appearance: none;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px; /* Squircle shape */
+    cursor: pointer;
+    background: none;
+}
+
+.cp-item input[type="color"]::-webkit-color-swatch {
+    border-radius: 8px;
+    border: 2px solid var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cp-info label { display: block; font-size: 0.75rem; color: var(--text-soft); font-weight: 800; text-transform: uppercase; }
+.cp-info span { font-size: 0.85rem; font-family: monospace; color: var(--text-main); font-weight: 600; }
+
+/* --- 🔘 BUTTONS (The Missing Styles) --- */
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+}
+
+.card-actions {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-soft);
+    border: 1px solid var(--line);
+    padding: 0.7rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-ghost:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+    background: var(--danger-bg);
+}
+
+/* --- 🌙 SWITCH TOGGLE --- */
+.theme-switch { position: relative; width: 50px; height: 26px; }
+.theme-switch input { opacity: 0; width: 0; height: 0; }
+.theme-slider {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--border-color);
+    transition: .4s; border-radius: 34px;
+}
+.theme-slider:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px;
+    background-color: white; transition: .4s; border-radius: 50%;
+}
+input:checked + .theme-slider { background-color: var(--primary); }
+input:checked + .theme-slider:before { transform: translateX(24px); }
+
+.toggle-row { display: flex; justify-content: space-between; align-items: center; }
+
+/* --- 🛡️ SECURITY --- */
+.security-link {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 1.2rem; background: var(--bg-body);
+    border-radius: var(--radius-sm); border: 1px solid var(--line);
+    color: var(--text-main); font-weight: 700; text-decoration: none;
+    transition: 0.3s;
+}
+
+.security-link:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--surface);
+}

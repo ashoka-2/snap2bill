@@ -1,0 +1,271 @@
+
+body {
+  background-color: #030008;
+  background: url('../images/bg-login.jpg') no-repeat center center fixed;
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  margin: 0;
+  color: #ffffff;
+}
+
+body::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(3, 0, 8, 0); /* Black overlay agar chahiye toh opacity badhayein */
+  z-index: 0;
+}
+
+
+.glass-card {
+  position: relative;
+  z-index: 10;
+  width: 90%;
+  max-width: 400px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-radius: 16px;
+  padding: 3rem 2.5rem;
+  text-align: center;
+}
+
+.admin-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(168, 85, 247, 0.2); 
+  color: #d8b4fe;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(168, 85, 247, 0.4);
+}
+
+.glass-card h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.glass-card p.subtitle {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2.5rem;
+}
+
+/* =============================
+   🧾 FORM ELEMENTS
+   ============================= */
+.form-container {
+  text-align: left;
+}
+
+.input-group {
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.input-label {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 1rem 1rem;
+  font-size: 0.95rem;
+  color: #ffffff;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+input:focus {
+  border-color: var(--primary);
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+/* Show/Hide Text Toggle */
+.toggle-visibility {
+  position: absolute;
+  right: 1rem;
+  top: 2.6rem; 
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.toggle-visibility:hover {
+  color: var(--accent);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+  margin-top: 1rem;
+}
+
+.back-link, .forgot-pass {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover, .forgot-pass:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* =============================
+   🎛️ BUTTONS (Glossy Pill Design)
+   ============================= */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary), #8b5cf6);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  width: 100%;
+  padding: 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 8px 20px rgba(100, 50, 255, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  margin-bottom: 1.5rem;
+  margin-top: 1rem;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: skewX(-25deg);
+  transition: all 0.7s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 12px 25px rgba(100, 50, 255, 0.6),
+              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-primary:hover::after {
+  left: 150%;
+}
+
+.btn-primary:active {
+  transform: scale(0.97) translateY(0);
+  box-shadow: 0 4px 10px rgba(100, 50, 255, 0.3);
+}
+
+.hidden { display: none !important; }
+
+/* =============================
+   🔔 TOAST MESSAGES (JS & Django Both)
+   ============================= */
+#toast-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  z-index: 9999;
+}
+
+.toast {
+  background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  opacity: 0;
+  animation: fadeInOut 4s ease forwards;
+  font-size: var(--font-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--gutter-sm);
+}
+
+.toast.error { border-left: 4px solid var(--danger); color: #ffadad;}
+.toast.success { border-left: 4px solid var(--success); color: #b2f7b7;}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(2rem) scale(0.9); }
+  10% { opacity: 1; transform: translateY(0) scale(1); }
+  85% { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-1rem) scale(0.9); }
+}
+
+#snackbar, #js-toast {
+  visibility: hidden;
+  min-width: 280px;
+  background: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: center;
+  border-radius: 8px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1000;
+  right: 20px;
+  bottom: -50px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  border-left: 4px solid var(--danger);
+  opacity: 0;
+  transition: opacity 0.4s ease, bottom 0.4s ease;
+  font-size: 0.9rem;
+}
+
+#snackbar.show, #js-toast.show {
+  visibility: visible;
+  opacity: 1;
+  bottom: 20px;
+}
+#js-toast.success { border-left-color: var(--success); }
