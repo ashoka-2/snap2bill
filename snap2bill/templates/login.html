@@ -7,6 +7,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Snap2Bill Admin Login</title>
+        <script defer src="{% static 'scripts/setting.js' %}"></script>
+
 
   <link rel="stylesheet" type="text/css" href="{% static 'admin/adminstyle.css' %}">
   <link rel="stylesheet" type="text/css" href="{% static 'admin/auth.css' %}">
@@ -80,10 +82,8 @@
       const input = document.getElementById(id);
       const isVisible = input.type === 'text';
 
-      // Toggle input type
       input.type = isVisible ? 'password' : 'text';
 
-      // Toggle text exactly like the image requires
       btn.innerText = isVisible ? 'Show' : 'Hide';
     }
   </script>

@@ -29,8 +29,8 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
 
   // Controllers
-  final TextEditingController username = TextEditingController(text: "s526@tlsy.amritavidyalayam.edu.in");
-  final TextEditingController password = TextEditingController(text: "Password123");
+  final TextEditingController username = TextEditingController(text: "");
+  final TextEditingController password = TextEditingController(text: "");
 
   // Google Sign In
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -407,32 +407,35 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       children: [
         Text(label, style: TextStyle(color: hint, fontWeight: FontWeight.w600, fontSize: 13)),
         const SizedBox(height: 8),
-        Container(
-          decoration: BoxDecoration(
-            color: fill,
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: isErr ? dangerColor : Colors.transparent, width: 1.5),
-          ),
-          child: TextField(
-            controller: ctrl,
-            obscureText: isPass ? _obscureText : false,
-            style: TextStyle(color: text, fontWeight: FontWeight.w600),
-            onChanged: (_) {
-              if (isErr || _invalidError != null) setState(() { _usernameError = false; _passwordError = false; _invalidError = null; });
-            },
-            decoration: InputDecoration(
-              hintText: "Enter $label",
-              hintStyle: TextStyle(color: hint.withValues(alpha:0.5)),
-              prefixIcon: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: HugeIcon(icon: icon, color: iconC, size: 10),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(15),
+          child: Container(
+            decoration: BoxDecoration(
+              color: fill,
+              borderRadius: BorderRadius.circular(15),
+              border: Border.all(color: isErr ? dangerColor : Colors.transparent, width: 1.5),
+            ),
+            child: TextField(
+              controller: ctrl,
+              obscureText: isPass ? _obscureText : false,
+              style: TextStyle(color: text, fontWeight: FontWeight.w600),
+              onChanged: (_) {
+                if (isErr || _invalidError != null) setState(() { _usernameError = false; _passwordError = false; _invalidError = null; });
+              },
+              decoration: InputDecoration(
+                hintText: "Enter $label",
+                hintStyle: TextStyle(color: hint.withValues(alpha:0.5)),
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: HugeIcon(icon: icon, color: iconC, size: 10),
+                ),
+                suffixIcon: isPass ? IconButton(
+                  icon: HugeIcon(icon: _obscureText ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView, color: iconC, size: 22),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
+                ) : null,
+                border: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               ),
-              suffixIcon: isPass ? IconButton(
-                icon: HugeIcon(icon: _obscureText ? HugeIcons.strokeRoundedViewOff : HugeIcons.strokeRoundedView, color: iconC, size: 22),
-                onPressed: () => setState(() => _obscureText = !_obscureText),
-              ) : null,
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             ),
           ),
         ),

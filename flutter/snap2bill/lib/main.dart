@@ -236,7 +236,7 @@ class IpConfigPage extends StatefulWidget {
 }
 
 class _IpConfigPageState extends State<IpConfigPage> {
-  final TextEditingController ipController = TextEditingController(text: "10.64.180.28");
+  final TextEditingController ipController = TextEditingController(text: "");
   bool _isLoading = false;
 
   @override

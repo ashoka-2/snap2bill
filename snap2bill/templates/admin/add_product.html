@@ -57,10 +57,6 @@
                             </div>
                         </div>
 
-{#                        <div class="form-group">#}
-{#                            <label for="quantity">Stock Quantity</label>#}
-{#                            <input type="number" id="quantity" name="quantity" placeholder="0" min="1" required>#}
-{#                        </div>#}
 
                         <div class="form-group">
                             <label for="image">Product Image</label>
@@ -83,7 +79,6 @@
                 </form>
             </div>
 
-            <!-- Toast Container (Always present in DOM for JS use) -->
             <div id="toast-container">
                 {% if messages %}
                     {% for message in messages %}
@@ -101,23 +96,17 @@
 <script>
 
 
-    /* --- Form Validation Logic --- */
     const form = document.getElementById('addProductForm');
 
     form.addEventListener('submit', function(e) {
         let hasError = false;
 
-        // Helper to show error
         const showError = (msg) => {
             showToast(msg, 'error');
             hasError = true;
         };
 
-        // 1. Validate Product Name
-        // Requirements: At least 3 chars, allows letters, numbers, spaces
         const name = document.getElementById('product_name').value.trim();
-        // Regex allows letters (a-z, A-Z), numbers (0-9) and spaces.
-        // It prevents special symbols if strict validation is needed, but "mixture" usually implies alphanumeric.
         const nameRegex = /^[a-zA-Z0-9 ]+$/;
 
         if (name.length < 3) {
@@ -126,26 +115,21 @@
             showError("Product Name can only contain letters, numbers, and spaces.");
         }
 
-        // 2. Validate Category
         const category = document.getElementById('category').value;
         if (!category) {
             showError("Please select a valid Category.");
         }
 
-        // 3. Validate Quantity
         const quantity = document.getElementById('quantity').value;
         if (!quantity || quantity <= 0) {
             showError("Quantity must be a positive number.");
         }
 
-        // 4. Validate Image
         const image = document.getElementById('image').files.length;
         if (image === 0) {
             showError("Please upload a Product Image.");
         }
 
-        // 5. Validate Description
-        // Requirements: At least 5 characters
         const desc = document.getElementById('description').value.trim();
         if (desc.length < 5) {
             showError("Description must be at least 5 characters long.");
@@ -156,21 +140,16 @@
         }
     });
 
-    /* Helper: Show Toast Message via JS */
     function showToast(message, type) {
         const container = document.getElementById('toast-container');
         const toast = document.createElement('div');
 
-        // Match your existing CSS classes
         toast.className = `toast ${type}`;
 
-        // Add icon based on type
         const icon = type === 'success' ? '✅' : '⚠️';
         toast.innerHTML = `${icon} ${message}`;
 
         container.appendChild(toast);
-
-        // Remove after animation (matches CSS animation duration roughly)
         setTimeout(() => {
             toast.remove();
         }, 4000);
