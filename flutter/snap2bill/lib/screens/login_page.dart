@@ -95,9 +95,6 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         Uri.parse('$ip/auth_google'),
         body: json.encode({
           'email': googleUser.email,
-          'name': googleUser.displayName,
-          'photoUrl': googleUser.photoUrl,
-          'type': 'unknown', // Login page pe humein user ka role nahi pata
         }),
       ).timeout(const Duration(seconds: 10)); // Timeout zaroor lagayein
 
@@ -113,7 +110,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         // aage Splash screen ko lage ki user login hai
         if (status == 'custok') {
           await prefs.setString("cid", decoded['cid'].toString());
-          await prefs.setString("pwd", "GOOGLE_AUTH");
+
+          debugPrint("🌐 GOOGLE CUST LOGIN -> CID: ${prefs.getString('cid')} | UID: ${prefs.getString('uid')}");
 
           if (!mounted) return;
           CustomSnackBar.show(context, "Google Login Successful", backgroundColor: successColor);
@@ -121,7 +119,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
 
         } else if (status == 'distok') {
           await prefs.setString("uid", decoded['uid'].toString());
-          await prefs.setString("pwd1", "GOOGLE_AUTH");
+
+          debugPrint("🌐 GOOGLE DIST LOGIN -> CID: ${prefs.getString('cid')} | UID: ${prefs.getString('uid')}");
 
           if (!mounted) return;
           CustomSnackBar.show(context, "Google Login Successful", backgroundColor: successColor);
@@ -186,10 +185,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         String status = decoded['status'] ?? "";
 
         if (status == 'custok') {
+
           await prefs.clear();
           await prefs.setString("ip", ip);
           await prefs.setString("cid", decoded['cid'].toString());
           await prefs.setString("pwd", password.text);
+
+          debugPrint("✅ CUSTOMER LOGIN -> CID: ${prefs.getString('cid')} | UID: ${prefs.getString('uid')}");
+
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful", backgroundColor: successColor);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => CustomerNavigationBar(initialIndex: 0)));
@@ -198,6 +201,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           await prefs.setString("ip", ip);
           await prefs.setString("uid", decoded['uid'].toString());
           await prefs.setString("pwd1", password.text);
+
+          debugPrint("✅ DISTRIBUTOR LOGIN -> CID: ${prefs.getString('cid')} | UID: ${prefs.getString('uid')}");
+
           if (!mounted) return;
           CustomSnackBar.show(context, "Login Successful", backgroundColor: successColor);
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => DistributorNavigationBar(initialIndex: 0)));

@@ -95,8 +95,7 @@
 
 <script>
 
-
-    const form = document.getElementById('addProductForm');
+const form = document.getElementById('addProductForm');
 
     form.addEventListener('submit', function(e) {
         let hasError = false;
@@ -106,6 +105,7 @@
             hasError = true;
         };
 
+        // 1. Validate Product Name
         const name = document.getElementById('product_name').value.trim();
         const nameRegex = /^[a-zA-Z0-9 ]+$/;
 
@@ -115,26 +115,27 @@
             showError("Product Name can only contain letters, numbers, and spaces.");
         }
 
+        // 2. Validate Category
         const category = document.getElementById('category').value;
         if (!category) {
             showError("Please select a valid Category.");
         }
 
-        const quantity = document.getElementById('quantity').value;
-        if (!quantity || quantity <= 0) {
-            showError("Quantity must be a positive number.");
-        }
+        // ❌ QUANTITY VALIDATION REMOVED FROM HERE ❌
 
+        // 3. Validate Image
         const image = document.getElementById('image').files.length;
         if (image === 0) {
             showError("Please upload a Product Image.");
         }
 
+        // 4. Validate Description
         const desc = document.getElementById('description').value.trim();
         if (desc.length < 5) {
             showError("Description must be at least 5 characters long.");
         }
 
+        // 5. Prevent submission if there are errors
         if (hasError) {
             e.preventDefault(); // Stop form submission
         }
@@ -160,6 +161,7 @@
         const serverToasts = document.querySelectorAll('.toast');
         serverToasts.forEach(t => t.remove());
     }, 6000);
+
 
 </script>
 

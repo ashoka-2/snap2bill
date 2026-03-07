@@ -745,7 +745,7 @@ def forgotemail(request):
 
 
 
-            logo_url = "https://lh3.googleusercontent.com/d/1bxyWDmDw3-p2xNIAP5wSAGgZPx1TtzBj"
+            logo_url = "https://ik.imagekit.io/ashoka/snap2bill/snap2bill.png"
 
 
             html = f"""
@@ -2128,82 +2128,6 @@ def viewAllCustomers(request):
 
 
 
-# @csrf_exempt
-# def addtobill(request):
-#     try:
-#             # Get all possible identifiers
-#             uid = request.POST.get('uid')
-#             cid = request.POST.get('cid')
-#             sid = request.POST.get('sid')
-#             oid = request.POST.get('oid')
-#
-#             quantity = request.POST.get('quantity', 1)
-#             price = request.POST.get('price')
-#
-#             print(f"Adding to bill: UID={uid}, CID={cid}, SID={sid}, OID={oid}")
-#
-#             # 1. Basic Validation
-#             if not uid or not sid:
-#                 return JsonResponse({'status': 'error', 'message': 'Missing UID or SID'})
-#
-#             if cid:
-#                 DistributorCustomerLink.objects.get_or_create(
-#                     DISTRIBUTOR_id=uid,
-#                     CUSTOMER_id=cid
-#                 )
-#
-#             qty_int = int(float(quantity))
-#             target_order = None
-#
-#             if oid and oid not in ["", "null", "0"]:
-#                 try:
-#                     target_order = order.objects.get(id=oid)
-#                 except order.DoesNotExist:
-#                     pass
-#
-#             if not target_order and cid:
-#                 target_order = order.objects.filter(
-#                     USER_id=cid,
-#                     DISTRIBUTOR_id=uid,
-#                     order_type='offline_pending'
-#                 ).first()
-#
-#             if not target_order:
-#                 if not cid:
-#                     return JsonResponse(
-#                         {'status': 'error', 'message': 'Cannot find bill. Restart the app or re-select customer.'})
-#
-#                 # Create NEW Bill
-#                 target_order = order.objects.create(
-#                     payment_status="pending",
-#                     payment_date="pending",
-#                     date=datetime.now().date(),
-#                     amount=0,
-#                     DISTRIBUTOR_id=uid,
-#                     USER_id=cid,
-#                     order_type="offline_pending"
-#                 )
-#
-#             existing_item = order_sub.objects.filter(ORDER=target_order, STOCK_id=sid).first()
-#
-#             if existing_item:
-#                 existing_item.quantity = int(existing_item.quantity) + qty_int
-#                 existing_item.save()
-#             else:
-#                 order_sub.objects.create(
-#                     ORDER=target_order,
-#                     STOCK_id=sid,
-#                     quantity=qty_int,
-#                     price=price
-#                 )
-#
-#             return JsonResponse({'status': 'ok', 'oid': target_order.id})
-#
-#     except Exception as e:
-#             print("Error in addtobill:", str(e))
-#             return JsonResponse({'status': 'error', 'message': str(e)})
-
-
 @csrf_exempt
 def addtobill(request):
     try:
@@ -2535,110 +2459,173 @@ def auth_google(request):
     try:
         data = json.loads(request.body)
         email = data.get('email')
-        name = data.get('name')
-        photo = data.get('photoUrl')
-        user_type = data.get('type')
-        phone = data.get('phone', '')
-
-        # Ye fields frontend se shayad empty aa rahe honge, koi dikkat nahi
-        address = data.get('address', '')
-        place = data.get('place', '')
-        pincode = data.get('pincode', '')
-        post = data.get('post', '')
-        latitude = data.get('latitude', '')
-        longitude = data.get('longitude', '')
 
         if not email:
             return JsonResponse({'status': 'error', 'message': 'Email is required'}, status=400)
 
-        # 🔍 Check karte hain user pehle se hai ya nahi
         user_exists = User.objects.filter(username=email).exists()
 
         if user_exists:
-            # =================================================
-            # CASE 1: LOGIN (EXISTING USER)
-            # Yahan hum Location create NAHI karenge.
-            # =================================================
             user = User.objects.get(username=email)
 
             if user.groups.filter(name="distributor").exists():
                 try:
                     dist = distributor.objects.get(LOGIN=user)
-                    # Sirf photo update karenge agar pehle se nahi hai
-                    if not dist.profile_image and photo:
-                        dist.profile_image = photo
-                        dist.save()
-                    return JsonResponse({'status': 'distok', 'uid': str(dist.id)})
+                    return JsonResponse({'status': 'distok', 'uid': str(dist.id)}, status=200)
                 except distributor.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'})
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'}, status=400)
 
             elif user.groups.filter(name="customer").exists():
                 try:
                     cust = customer.objects.get(LOGIN=user)
-                    if not cust.profile_image and photo:
-                        cust.profile_image = photo
-                        cust.save()
-                    return JsonResponse({'status': 'custok', 'cid': str(cust.id)})
+                    return JsonResponse({'status': 'custok', 'cid': str(cust.id)}, status=200)
                 except customer.DoesNotExist:
-                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'})
+                    return JsonResponse({'status': 'error', 'message': 'User exists but no profile found'}, status=400)
             else:
-                return JsonResponse({'status': 'error', 'message': 'User type unknown'})
+                return JsonResponse({'status': 'error', 'message': 'User type unknown'}, status=400)
 
         else:
-            # =================================================
-            # CASE 2: REGISTRATION (NEW USER)
-            # Sirf yahan Location banegi
-            # =================================================
-
-            # 🚀 CHANGE: Location object ab sirf naye user ke liye banega
-            loc_obj = location.objects.create(
-                address=address, place=place, pincode=pincode, post=post
-            )
-
-            random_password = User.objects.make_random_password()
-            new_user = User.objects.create_user(username=email, email=email, password=random_password)
-            new_user.first_name = name
-            new_user.save()
-
-            if user_type == 'distributor':
-                group = Group.objects.get(name='distributor')
-                new_user.groups.add(group)
-
-                obj = distributor()
-                obj.LOGIN = new_user
-                obj.name = name
-                obj.email = email
-                obj.phone = phone
-                obj.LOCATION = loc_obj  # Link Location
-                obj.latitude = latitude
-                obj.longitude = longitude
-                obj.profile_image = photo
-                obj.status = 'pending'
-                obj.save()
-
-                return JsonResponse({'status': 'distok', 'uid': str(obj.id)})
-
-            elif user_type == 'customer':
-                group = Group.objects.get(name='customer')
-                new_user.groups.add(group)
-
-                obj = customer()
-                obj.LOGIN = new_user
-                obj.name = name
-                obj.email = email
-                obj.phone = phone
-                obj.LOCATION = loc_obj  # Link Location
-                obj.profile_image = photo
-                obj.save()
-
-                return JsonResponse({'status': 'custok', 'cid': str(obj.id)})
-
-            else:
-                new_user.delete()
-                # Location bhi delete kar do agar user type galat hai
-                loc_obj.delete()
-                return JsonResponse({'status': 'error', 'message': 'Invalid user type'})
+            return JsonResponse({
+                'status': 'not_found',
+                'message': 'No account registered with this email. Please register first.'
+            }, status=404)
 
     except Exception as e:
         print("Google Auth Error:", e)
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@csrf_exempt
+def send_verification_otp(request):
+    import random
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.mime.multipart import MIMEMultipart
+    from datetime import datetime
+    import os
+
+    if request.method == 'POST':
+        email = request.POST.get('email')
+
+        # 1. Check if email already exists
+        if User.objects.filter(username=email).exists():
+            return JsonResponse({'status': 'error', 'message': 'Email is already registered. Please login.'})
+
+        # 2. Generate 6-digit OTP
+        otp = str(random.randint(111111, 999999))
+        print("OTP generated for Verification:", otp)
+
+        try:
+            sender_email = "snap2bill@gmail.com"  # Apna email daalo
+            app_password = os.getenv("EMAIL_APP_PASSWORD")
+
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(sender_email, app_password)
+
+            msg = MIMEMultipart("alternative")
+            msg["From"] = sender_email
+            msg["To"] = email
+            msg["Subject"] = "✉️ Verify your Email - Snap2Bill"
+
+            # 🚀 ADD YOUR LOGO URL HERE
+            # Abhi ke liye ek placeholder logo dala hai. Isey apne server ki image link se badal lena.
+            logo_url = "https://ik.imagekit.io/ashoka/snap2bill/snap2bill.png"
+
+            # 🌟 PREMIUM HTML TEMPLATE (Same as Forgot Password)
+            html = f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta charset="UTF-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1.0">
+              <title>Snap2Bill Verification</title>
+            </head>
+            <body style="margin:0; padding:0; background-color:#F0F4F8; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+              <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color:#F0F4F8; padding:40px 10px;">
+                <tr>
+                  <td align="center">
+
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width:500px; background-color:#ffffff; border-radius:24px; overflow:hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+
+                      <tr>
+                        <td align="center" style="padding:40px 0 20px 0;">
+                          <img src="{logo_url}" alt="Snap2Bill Logo" width="80" style="display:block; margin-bottom:15px; border:0;">
+
+                          <h1 style="margin:0; font-size:24px; color:#1E293B; letter-spacing:-0.5px;">
+                            Snap<span style="color:#2563EB;">2</span>Bill
+                          </h1>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td style="padding:0 40px 40px 40px;">
+                          <div style="text-align:center;">
+                            <h2 style="color:#1E293B; font-size:22px; margin-bottom:10px;">Verify your email address</h2>
+                            <p style="color:#64748B; font-size:15px; line-height:1.6; margin-bottom:30px;">
+                              Welcome aboard!<br>
+                              Please use the code below to confirm your email and complete your registration process.
+                            </p>
+                          </div>
+
+                          <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:16px; padding:25px; text-align:center; margin-bottom:30px;">
+                            <span style="display:block; color:#94A3B8; font-size:12px; font-weight:bold; letter-spacing:1px; margin-bottom:10px; text-transform:uppercase;">Verification Code</span>
+                            <span style="font-family:'Courier New', Courier, monospace; font-size:38px; font-weight:bold; color:#2563EB; letter-spacing:8px; margin-left:8px;">
+                              {otp}
+                            </span>
+                          </div>
+
+                          <div style="text-align:center; margin-bottom:30px;">
+                            <p style="color:#64748B; font-size:14px; margin:0;">
+                               This code expires in <strong style="color:#F59E0B;">10 minutes</strong>.
+                            </p>
+                          </div>
+
+                          <div style="height:1px; background-color:#E2E8F0; margin-bottom:30px;"></div>
+
+                          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                              <td style="background-color:#FFFBEB; border-radius:12px; padding:15px;">
+                                <p style="margin:0; font-size:13px; color:#B45309; line-height:1.5;">
+                                  <strong>Security Reminder:</strong> Never share this code with anyone. Our team will never ask for this code.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td align="center" style="padding:0 40px 40px 40px;">
+                          <p style="color:#94A3B8; font-size:12px; margin:0;">
+                            If you didn't attempt to create an account, you can safely ignore this email.
+                          </p>
+                          <p style="color:#CBD5E1; font-size:11px; margin-top:20px;">
+                            © {datetime.now().year} Snap2Bill Inc. <br>
+                            Smart Billing Solutions
+                          </p>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+            </body>
+            </html>
+            """
+
+            msg.attach(MIMEText(html, "html"))
+            server.send_message(msg)
+            print("✅ Registration OTP Email sent successfully!", otp)
+            server.quit()
+
+            return JsonResponse({'status': 'ok', 'otp': otp})
+
+        except Exception as e:
+            print("❌ Error sending OTP email:", e)
+            return JsonResponse({'status': 'error', 'message': f"Failed to send email: {str(e)}"})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid Method'})

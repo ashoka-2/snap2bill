@@ -122,8 +122,6 @@ class _viewOrderState extends State<viewOrder> {
             // Convert Selected Date to String (YYYY-MM-DD)
             String filterStr = "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
 
-            // Backend date usually looks like "2024-02-14 10:30:00" or just "2024-02-14"
-            // We check if order date contains the selected date string
             if (order.date.contains(filterStr)) {
               list.add(order);
             }

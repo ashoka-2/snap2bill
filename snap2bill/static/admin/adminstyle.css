@@ -403,7 +403,10 @@ display: flex;
     box-shadow: 10px 0 30px rgba(0,0,0,0.02);
     z-index: 100;
 }
-
+.admin-top-left-content{
+    display: flex;
+    align-items: center;
+}
 /* Logo Section */
 .admin-logo-box {
     display: flex;
@@ -558,10 +561,9 @@ display: flex;
         display: none !important;
     }
 
-    /* 2. Logo adjustment ("SNAP2BILL" ki jagah sirf "S2B" dikhega) */
     .logo-text { font-size: 0; }
     .logo-text::after {
-        content: "S2B";
+        content: "";
         font-size: 1.6rem;
         color: var(--primary);
         font-weight: 900;

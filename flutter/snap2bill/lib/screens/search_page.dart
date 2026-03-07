@@ -311,8 +311,14 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _onProductTap(Map item) async {
-    // 1. Agar User CUSTOMER hai (cid login hai)
-    if (cid != null && cid != "null" && cid!.isNotEmpty) {
+    debugPrint("🚨 CHECKING MEMORY -> CID: $cid | UID: $uid");
+    bool isCustomer = (cid != null && cid != "null" && cid!.isNotEmpty) &&
+        (uid == null || uid == "null" || uid!.isEmpty);
+
+    bool isDistributor = (uid != null && uid != "null" && uid!.isNotEmpty) &&
+        (cid == null || cid == "null" || cid!.isEmpty);
+
+    if (isCustomer) {
       final prefs = await SharedPreferences.getInstance();
       String productId = item['id'].toString();
       await prefs.setString("pid", productId);
@@ -322,8 +328,17 @@ class _SearchPageState extends State<SearchPage> {
           MaterialPageRoute(builder: (_) => addOrder(pid: productId))
       );
     }
-    else if (uid != null && uid != "null" && uid!.isNotEmpty) {
+    else if (isDistributor) {
       _showProductDetailSheet(item);
+    }
+    else {
+      debugPrint("Session Clash! CID: $cid, UID: $uid");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: const Text("Session conflict! Please logout and login again."),
+            backgroundColor: dangerColor
+        ),
+      );
     }
   }
 

@@ -14,6 +14,9 @@ const menuRouteMap = {
 
 const leftNavbar = `
     <div class="admin-top-left-content">
+        <div>
+        <img src="https://ik.imagekit.io/ashoka/snap2bill/snap2bill.png?updatedAt=1772629266038" alt="logo" height="70">
+        </div>
         <div class="admin-logo-box">
             <span class="logo-text">SNAP2BILL</span>
             <span class="sub-logo">ADMIN PANEL</span>
